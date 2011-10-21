@@ -588,6 +588,11 @@ class DataArray(object):
                 
                 old_value = self(key)
                 
+                try:
+                    old_value = unicode(old_value, encoding="utf-8")
+                except TypeError:
+                    pass
+                
                 # We seem to have double calls on __setitem__
                 # This hack catches them
                 

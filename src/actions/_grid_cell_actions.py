@@ -47,9 +47,16 @@ class CellActions(object):
         
         old_code = self.grid.code_array(key)
         
+        try:
+            old_code = unicode(old_code, encoding="utf-8")
+            
+        except TypeError:
+            pass
+        
         if not (old_code is None and not code) and code != old_code:
             # Mark content as changed
-            post_command_event(self.main_window, ContentChangedMsg, changed=True)
+            post_command_event(self.main_window, ContentChangedMsg, 
+                               changed=True)
             
         # Set cell code
         self.grid.code_array[key] = code
