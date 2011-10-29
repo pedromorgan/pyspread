@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.6.dtd">
 <!-- eric4 project file for project pyspread -->
-<!-- Saved: 2011-10-21, 00:55:46 -->
+<!-- Saved: 2011-10-29, 20:47:32 -->
 <!-- Copyright (C) 2011 Martin Manns, mmanns@gmx.net -->
 <Project version="4.6">
   <Language>en</Language>
@@ -62,6 +62,7 @@
     <Source>src/sysvars.py</Source>
     <Source>src/gui/icons.py</Source>
     <Source>src/lib/test/test_typechecks.py</Source>
+    <Source>src/lib/testlib.py</Source>
   </Sources>
   <Forms>
   </Forms>

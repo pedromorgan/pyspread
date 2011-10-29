@@ -560,6 +560,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         row_overflow = False
         col_overflow = False
         
+        no_pasted_cells = 0
+        
         for src_row, col_data in enumerate(data):
             target_row = tl_row + src_row
             
@@ -583,6 +585,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                 
                 try:
                     self.grid.code_array[key] = cell_data
+                    no_pasted_cells +=  1
                 except KeyError:
                     pass
         
@@ -591,11 +594,11 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             
         else:
             # Show actually pasted number of cells
-            if src_row:
-                statustext = str(src_row + 1) + \
-                             " cells pasted at cell " + str(tl_key)
-            else:
-                statustext = "1 cell pasted at cell " + str(tl_key)
+            
+            plural = "s" if no_pasted_cells == 1 else ""
+            
+            statustext = str(no_pasted_cells) + " cell" + plural + \
+                         " pasted at cell " + str(tl_key)
             
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
