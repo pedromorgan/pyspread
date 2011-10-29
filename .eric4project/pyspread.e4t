@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.2.dtd">
 <!-- eric4 tasks file for project pyspread -->
-<!-- Saved: 2011-10-29, 20:47:32 -->
+<!-- Saved: 2011-10-29, 21:08:19 -->
 <Tasks version="4.2">
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Use background color for deletion</Summary>
@@ -24,7 +24,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: This still fails and I do not know how to identify binary files</Summary>
     <Description></Description>
-    <Created>2011-10-29, 20:44:33</Created>
+    <Created>2011-10-29, 20:57:34</Created>
     <Resource>
       <Filename>src/actions/test/test_main_window_actions.py</Filename>
       <Linenumber>167</Linenumber>
@@ -33,7 +33,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Save macros is pretty direct so that the necessary file</Summary>
     <Description></Description>
-    <Created>2011-10-29, 20:44:33</Created>
+    <Created>2011-10-29, 20:57:34</Created>
     <Resource>
       <Filename>src/actions/test/test_main_window_actions.py</Filename>
       <Linenumber>300</Linenumber>
@@ -42,19 +42,19 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO</Summary>
     <Description></Description>
-    <Created>2011-10-29, 20:47:23</Created>
+    <Created>2011-10-29, 21:00:06</Created>
     <Resource>
       <Filename>src/actions/test/test_grid_actions.py</Filename>
-      <Linenumber>301</Linenumber>
+      <Linenumber>329</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO</Summary>
     <Description></Description>
-    <Created>2011-10-29, 20:47:23</Created>
+    <Created>2011-10-29, 21:00:06</Created>
     <Resource>
       <Filename>src/actions/test/test_grid_actions.py</Filename>
-      <Linenumber>304</Linenumber>
+      <Linenumber>332</Linenumber>
     </Resource>
   </Task>
 </Tasks>

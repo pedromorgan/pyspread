@@ -717,7 +717,7 @@ class StatusBar(wx.StatusBar):
     def OnMessage(self, event):
         """Statusbar message event handler"""
         
-        self.SetStatusText(event.text)
+        self.SetStatusText(unicode(event.text))
     
 # end of class StatusBar
 

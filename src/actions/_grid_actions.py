@@ -123,8 +123,7 @@ class FileActions(object):
             break
         
         if line1.strip() != "[Pyspread save file version]":
-            errortext = "File format unsupported. " + filepath + \
-                " seems not to be a pyspread save file version 0.1."
+            errortext = "File format unsupported."
             raise ValueError, errortext
         
         return line2.strip()
@@ -144,11 +143,20 @@ class FileActions(object):
     def _empty_grid(self, shape):
         """Empties grid and sets shape to shape"""
         
+        # Clear cells
         self.code_array.dict_grid.clear()
+        
+        # Clear attributes
         c_a = self.code_array.dict_grid.cell_attributes
         [c_a.pop() for _ in xrange(len(c_a))]
+        
+        # Set shape
+        self.code_array.shape = shape
+        
+        # Clear caches
         self.code_array.unredo.reset()
         self.code_array.result_cache.clear()
+        
 
     
     def open(self, event):
@@ -244,6 +252,10 @@ class FileActions(object):
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
             
             return False
+        
+        except EOFError:
+            # Normally on empty grids
+            pass
         
         infile.close()
         self.opening = False

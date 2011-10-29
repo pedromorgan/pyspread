@@ -22,7 +22,7 @@
 
 """
 test_main_window_actions.py
-=======================
+===========================
 
 Unit tests for _main_window_actions.py
 
