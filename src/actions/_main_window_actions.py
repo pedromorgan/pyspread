@@ -165,15 +165,19 @@ class TxtGenerator(object):
         except IOError, err:
             statustext = "Error opening file " + path + "."
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
-            self.infile = []
+            self.infile = None
 
     def __iter__(self):
-        for line in self.infile:
-            for col in line.split():
-                yield col
         
-        infile.close()
-
+        # If self.infile is None then stopiteration is reached immediately
+        if self.infile is None:    
+            return
+        
+        for line in self.infile:
+            yield (col for col in line.split())
+    
+        self.infile.close()
+        
 class ExchangeActions(object):
     """Actions for foreign format import and export"""
     
@@ -200,7 +204,7 @@ class ExchangeActions(object):
     def _import_txt(self, path):
         """Whitespace-delimited txt import workflow. This should be fast."""
         
-        return TxtGenerator(path)
+        return TxtGenerator(self.main_window, path)
     
     def import_file(self, filepath, filterindex):
         """Imports external file

@@ -556,7 +556,7 @@ class Digest(object):
             return obj
 
         self.typehandlers = { \
-            None: make_repr, \
+            None: repr, \
             types.StringType: make_string, \
             types.UnicodeType: make_unicode, \
             types.SliceType: make_slice, \

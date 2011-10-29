@@ -588,6 +588,16 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         
         if row_overflow or col_overflow:
             self._show_final_overflow_message(row_overflow, col_overflow)
+            
+        else:
+            # Show actually pasted number of cells
+            if src_row:
+                statustext = str(src_row + 1) + \
+                             " cells pasted at cell " + str(tl_key)
+            else:
+                statustext = "1 cell pasted at cell " + str(tl_key)
+            
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         self.pasting = False
 

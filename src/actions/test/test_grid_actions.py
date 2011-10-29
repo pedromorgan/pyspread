@@ -7,14 +7,13 @@ from sys import path
 test_path = os.path.dirname(os.path.realpath(__file__))
 path.insert(0, test_path + "/../..")
 
+import bz2
 import wx
 app = wx.App()
 
 from gui._main_window import MainWindow
 from gui._grid import Grid
 import actions._grid_actions
-import lib.vartypes as vartypes
-from lib._interfaces import PysInterface
 from model.model import CodeArray
 
 from gui._events import *
@@ -236,11 +235,25 @@ class TestFileActions(object):
         pass
 
 class TestTableRowActionsMixins(object):
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+    
     def test_set_row_height(self):
         pass
         
     def test_insert_rows(self):
-        pass
+        self.grid.code_array[(1, 0, 0)] = "42"
+        
+        # Insert 1 row at row 0
+        self.grid.actions.insert_rows(0)
+        assert self.grid.code_array[(1, 0, 0)] is None
+        assert self.grid.code_array[(2, 0, 0)] == 42
+        
+        # Insert 3 rows at row 1
+        self.grid.actions.insert_rows(1, no_rows=3)
+        assert self.grid.code_array[(2, 0, 0)] is None
+        assert self.grid.code_array[(5, 0, 0)] == 42
         
     def test_delete_rows(self):
         pass
@@ -321,16 +334,15 @@ class TestGridActions(object):
     def test_new(self):
         """Tests creation of a new spreadsheets"""
         
-        no_tests = 10
         
-        dims = vartypes.getints(1, 1000000, no_tests*3)
+        
+        dims = [1, 1, 1, 10, 1, 1, 1, 10, 1, 1, 1, 10, 10, 10, 10]
         dims = zip(dims[::3], dims[1::3], dims[2::3])
         
         for dim in dims:
-            code_array = CodeArray(dim)
-            self.event.code_array = code_array
+            self.event.shape = dim
             self.grid.actions.new(self.event)
-            assert self.grid.GetTable().data_array.shape == dim
+            assert self.grid.GetTable().data_array.dict_grid.shape == dim
             
     def test_get_visible_area(self):
         pass
