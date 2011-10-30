@@ -41,6 +41,7 @@ from gui._main_window import MainWindow
 from gui._grid import Grid
 from model.model import DataArray
 from lib.selection import Selection
+from lib.testlib import main_window, code_array, grid_values, _fill_grid
 from lib.testlib import params, pytest_generate_tests
 
 from actions._main_window_actions import CsvInterface, TxtGenerator
@@ -48,8 +49,6 @@ from actions._main_window_actions import CsvInterface, TxtGenerator
 
 class TestCsvInterface(object):
     def setup_method(self, method):
-        self.main_window = MainWindow(None, -1)
-        
         self.test_filename = "test.csv"
         self.test_filename2 = "test_one_col.csv"
         self.test_filename3 = "test_write.csv"
@@ -65,7 +64,7 @@ class TestCsvInterface(object):
             
         has_header = False
 
-        return CsvInterface(self.main_window, filename, 
+        return CsvInterface(main_window, filename, 
                             dialect, digest_types, has_header)
 
     def test_get_csv_cells_gen(self):
@@ -117,7 +116,7 @@ class TestTxtGenerator(object):
     """Tests generating txt files"""
     
     def setup_method(self, method):
-        self.main_window = MainWindow(None, -1)
+        main_window = MainWindow(None, -1)
         
         self.test_filename = "test.csv"
         self.test_filename_single_col = "test_large.txt"
@@ -130,14 +129,14 @@ class TestTxtGenerator(object):
         
         # Correct file with 2 columns
         
-        txt_gen = TxtGenerator(self.main_window, self.test_filename)
+        txt_gen = TxtGenerator(main_window, self.test_filename)
         
         assert list(list(line_gen) for line_gen in txt_gen) == \
                 [['1', '2'], ['3', '4']]
         
         # Correct file with 1 column
         
-        txt_gen = TxtGenerator(self.main_window, self.test_filename_single_col)
+        txt_gen = TxtGenerator(main_window, self.test_filename_single_col)
         
         txt_list = []
         for i, line_gen in enumerate(txt_gen):
@@ -148,12 +147,12 @@ class TestTxtGenerator(object):
         
         # Missing file
         
-        txt_gen = TxtGenerator(self.main_window, self.test_filename_notthere)
+        txt_gen = TxtGenerator(main_window, self.test_filename_notthere)
         assert list(txt_gen) == []
         
         # Binary file
         
-        txt_gen = TxtGenerator(self.main_window, self.test_filename_bin)
+        txt_gen = TxtGenerator(main_window, self.test_filename_bin)
         
         has_value_error = False
         
@@ -180,23 +179,8 @@ class TestPrintActions(object):
 class TestClipboardActions(object):
     """Clipboard actions test class. Does not use actual clipboard."""
     
-    main_window = MainWindow(None, -1)
-    code_array = main_window.grid.code_array
-    
-    grid_values = { \
-        (0, 0, 0): "'Test'",
-        (999, 0, 0): "1",
-        (999, 99, 0): "$^%&$^",
-        (0, 1, 0): "1",
-        (0, 2, 0): "2",
-        (1, 1, 0): "3",
-        (1, 2, 0): "4",
-    }
-    
-        
-    for key in grid_values:
-        code_array[key] = grid_values[key]
-    
+    # Fill grid initially
+    _fill_grid(grid_values)
     
     param_copy = [ \
       {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "'Test'"},
@@ -214,7 +198,7 @@ class TestClipboardActions(object):
     def test_cut(self, selection, result):
         """Test cut, i. e. copy and deletion"""
         
-        assert self.main_window.actions.cut(selection) == result
+        assert main_window.actions.cut(selection) == result
         
         (top, left), (bottom, right) = selection.get_bbox()
         
@@ -222,14 +206,14 @@ class TestClipboardActions(object):
             for col in xrange(left, right + 1):
                 if (row, col) in selection:
                     key = row, col, 0
-                    assert self.code_array[key] is None
-                    self.code_array[key] = self.grid_values[key]
+                    assert code_array[key] is None
+                    code_array[key] = grid_values[key]
     
     @params(param_copy)
     def test_copy(self, selection, result):
         """Test copy of single values, lists and matrices"""
         
-        assert self.main_window.actions.copy(selection) == result
+        assert main_window.actions.copy(selection) == result
 
     param_copy_result = [ \
         {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "Test"},
@@ -242,7 +226,7 @@ class TestClipboardActions(object):
     def test_copy_result(self, selection, result):
         """Test copy results of single values, lists and matrices"""
         
-        assert self.main_window.actions.copy_result(selection) == result
+        assert main_window.actions.copy_result(selection) == result
     
     param_paste = [ \
         {'target': (0, 0), 'data': "1", 'checks': {(0, 0, 0): "1"}},
@@ -257,20 +241,21 @@ class TestClipboardActions(object):
     def test_paste(self, target, data, checks):
         """Test paste of single values, lists and matrices"""
         
-        self.main_window.actions.paste(target, data)
+        main_window.actions.paste(target, data)
         
         for key in checks:
-            assert self.code_array(key) == checks[key]
+            assert code_array(key) == checks[key]
         
 class TestMacroActions(object):
-    main_window = MainWindow(None, -1)
+    """Unit tests for macro actions"""
+    
     macros = "def f(x): return x * x"
     
     def test_replace_macros(self):
-        self.main_window.actions.replace_macros(self.macros)
+        main_window.actions.replace_macros(self.macros)
         
-        assert self.main_window.grid.code_array.macros == self.macros
-        self.main_window.actions.replace_macros("")
+        assert main_window.grid.code_array.macros == self.macros
+        main_window.actions.replace_macros("")
 
     def test_execute_macros(self):
         
@@ -289,9 +274,9 @@ class TestMacroActions(object):
         testmacro_string = "\n" + testmacro_infile.read()
         testmacro_infile.close()
         
-        self.main_window.actions.open_macros(filename)
+        main_window.actions.open_macros(filename)
         
-        macros = self.main_window.grid.code_array.macros 
+        macros = main_window.grid.code_array.macros 
         
         assert testmacro_string == macros
         

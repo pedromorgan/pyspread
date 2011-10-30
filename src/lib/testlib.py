@@ -27,6 +27,37 @@ Helper functions for unit tests
 
 """
 
+from gui._main_window import MainWindow
+
+   
+# Class attributes for main_window and grid
+
+main_window = MainWindow(None, -1)
+grid = main_window.grid
+code_array = grid.code_array
+
+# Standard grid values for initial filling
+
+grid_values = { \
+    (0, 0, 0): "'Test'",
+    (999, 0, 0): "1",
+    (999, 99, 0): "$^%&$^",
+    (0, 1, 0): "1",
+    (0, 2, 0): "2",
+    (1, 1, 0): "3",
+    (1, 2, 0): "4",
+    (1, 2, 2): "78",
+}
+
+
+# Helper methods for efficient testing
+
+def _fill_grid(values):
+    """Fills grid with values (use e. g. grid_values)"""
+    
+    for key in values:
+        code_array[key] = values[key]
+
 def params(funcarglist):
     """Test function parameter decorator
     
