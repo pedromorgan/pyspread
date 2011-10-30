@@ -401,11 +401,26 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         
         rect = grid.CellToRect(row, col)
         
-        size = max(1, int(3 * self.zoom))
+        size = max(1, int(self.zoom))
         
-        points = [(rect.x + rect.width - 2, rect.y + rect.height - 2), 
-                  (rect.x + rect.width - 2 - size, rect.y + rect.height - 2), 
-                  (rect.x + rect.width - 2, rect.y + rect.height - 2 - size)]
+        caret_length = 8 * size
+        
+        # Inner right and lower borders
+        border_right = rect.x + rect.width - 1
+        border_lower = rect.y + rect.height - 1
+        
+        points = [ \
+            (border_right - size, border_lower - caret_length),
+            (border_right, border_lower - caret_length),
+            (border_right, border_lower),
+            (border_right - caret_length, border_lower),
+            (border_right - caret_length, border_lower - size),
+            (border_right - size, border_lower - size),
+        ]
+        
+#        points = [(rect.x + rect.width - 2, rect.y + rect.height - 2), 
+#                  (rect.x + rect.width - 2 - size, rect.y + rect.height - 2), 
+#                  (rect.x + rect.width - 2, rect.y + rect.height - 2 - size)]
         
         dc.DrawPolygonList([points], pens=pen, brushes=brush)
         

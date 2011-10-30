@@ -49,6 +49,14 @@ grid_values = { \
     (1, 2, 2): "78",
 }
 
+# Helper methods for efficient testing
+
+def _fill_grid(values):
+    """Fills grid with values (use e. g. grid_values)"""
+    
+    for key in values:
+        code_array[key] = values[key]
+
 def restore_basic_grid():
     """Restores basic, filled grid"""
     
@@ -65,14 +73,6 @@ def basic_setup_test(func, test_key, test_val, *args, **kwargs):
     func(*args, **kwargs)
     
     assert grid.code_array(test_key) == test_val 
-
-# Helper methods for efficient testing
-
-def _fill_grid(values):
-    """Fills grid with values (use e. g. grid_values)"""
-    
-    for key in values:
-        code_array[key] = values[key]
 
 def params(funcarglist):
     """Test function parameter decorator

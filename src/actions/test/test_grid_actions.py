@@ -519,23 +519,35 @@ class TestTableActions(object):
 
 
 class TestUnRedoActions(object):
+    """Unit test class for undo and redo actions"""
+    
     def test_undo(self):
-        pass
+        """Tests undo action"""
+        
+        restore_basic_grid()
+        grid.actions.clear()
+        
+        grid.code_array[(0, 0, 0)] = "Test"
+        
+        grid.actions.undo()
+        
+        assert grid.code_array((0, 0, 0)) is None
         
     def test_redo(self):
-        pass
+        """Tests redo action"""
         
+        self.test_undo()
+        grid.actions.redo()
+        
+        assert grid.code_array((0, 0, 0)) == "Test"
 
 
 class TestGridActions(object):
     """Grid level grid actions test class"""
     
-    def setup_method(self, method):
-        class Event(object):
-            pass
-            
-        self.event = Event()
-        
+    class Event(object):
+        pass
+          
     def test_new(self):
         """Tests creation of a new spreadsheets"""
         
@@ -543,48 +555,47 @@ class TestGridActions(object):
         dims = zip(dims[::3], dims[1::3], dims[2::3])
         
         for dim in dims:
-            self.event.shape = dim
-            grid.actions.new(self.event)
+            event = self.Event()
+            event.shape = dim
+            grid.actions.new(event)
             new_shape = grid.GetTable().data_array.shape
             assert new_shape == dim
-            
-    def test_get_visible_area(self):
-        pass
-        
-    def test_switch_to_table(self):
-        pass
-        
-    def test_get_cursor(self):
-        pass
-        
-    def test_set_cursor(self):
-        pass
+    
+    param_switch_to_table = [ \
+       {'tab': 2},
+       {'tab': 0},
+    ]
+    
+    @params(param_switch_to_table)
+    def test_switch_to_table(self, tab):
+        event = self.Event()
+        event.newtable = tab
+        grid.actions.switch_to_table(event)
+        assert grid.current_table == tab
+    
+    param_cursor = [ \
+       {'key': (0, 0, 0)},
+       {'key': (0, 1, 2)},
+       {'key': (999, 99, 1)},
+    ]
+    
+    @params(param_cursor)    
+    def test_cursor(self, key):
+        grid.cursor = key
+        assert grid.cursor == key
         
 
 class TestSelectionActions(object):
     """Selection actions test class"""
     
-    def test_get_selection(self):
-        pass
-        
-    def test_select_cell(self):
-        pass
-        
-    def test_select_slice(self):
-        pass
-        
-    def test_delete_selection(self):
-        pass
+    # No tests yet because of close integration with selection in GUI
+    
+    pass
     
     
 class TestFindActions(object):
     """FindActions test class"""
     
-    def test_find(self):
-        pass
-        
-    def test_replace(self):
-        pass
-
+    # No tests yet because of close integration with selection in GUI
     
-    
+    pass

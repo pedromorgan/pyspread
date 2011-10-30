@@ -736,6 +736,9 @@ class TableChoiceIntCtrl(IntCtrl):
         self.SetToolTip(wx.ToolTip( \
             "Enter grid table number or use mouse wheel to change tables."))
         
+        # State for preventing to post GridActionTableSwitchMsg
+        self.switching = False
+        
         self.Bind(EVT_INT, self.OnInt)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
         self.parent.Bind(EVT_COMMAND_RESIZE_GRID, self.OnResizeGrid)
@@ -767,12 +770,15 @@ class TableChoiceIntCtrl(IntCtrl):
         """Event handler for grid resizing"""
         
         self.change_max(event.shape[2])
-        
+    
     def OnInt(self, event):
         """IntCtrl event method that updates the current table"""
         
-        post_command_event(self, GridActionTableSwitchMsg, 
-                           newtable=event.GetValue())
+        if not self.switching:
+            self.switching = True
+            post_command_event(self, GridActionTableSwitchMsg, 
+                               newtable=event.GetValue())
+            self.switching = False
         
         event.Skip()
     

@@ -822,13 +822,8 @@ class GridActions(object):
         
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
+            self.main_window.table_choice.SetValue(newtable)
             self.grid.ForceRefresh()
-            
-            ##self.grid.zoom_rows()
-            ##self.grid.zoom_cols()
-            ##self.grid.zoom_labels()
-            
-            ##post_entryline_text(self.grid, "")
 
     def get_cursor(self):
         """Returns current grid cursor cell (row, col, tab)"""
@@ -837,7 +832,15 @@ class GridActions(object):
                self.grid.current_table
 
     def set_cursor(self, value):
-        """Changes the grid cursor cell."""
+        """Changes the grid cursor cell.
+        
+        Parameters
+        ----------
+        
+        value: 2-tuple or 3-tuple of String
+        \trow, col, tab or row, col for target cursor position
+        
+        """
         
         if len(value) == 3:
             row, col, tab = value
@@ -901,7 +904,7 @@ class SelectionActions(object):
             self.grid.SelectAll()
             
         elif row_slc.stop is None and col_slc.stop is None:
-            # A block is selcted:
+            # A block is selected:
             self.grid.SelectBlock(row_slc.start, col_slc.start, 
                                   row_slc.stop-1, col_slc.stop-1)
         else:
