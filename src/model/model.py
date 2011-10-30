@@ -779,20 +779,28 @@ class DataArray(object):
            deletion_point <= -self.shape[axis]:
             raise IndexError, "Deletion point not in grid"
         
+        # Store all keys that are moved here because dict iteration is unsorted
+        new_key_values = {}
         
-        for key in copy(self.dict_grid):
+        # Note that the loop goes over a list that copies all dict keys
+        for key in self.dict_grid.keys():
             if deletion_point <= key[axis] < deletion_point + no_to_delete:
-                self[key] = self.pop(key)
+                self.pop(key)
             
             elif key[axis] >= deletion_point + no_to_delete:
                 new_key = list(key)
                 new_key[axis] -= no_to_delete
                 
-                self[tuple(new_key)] = self.pop(key)
+                new_key_values[tuple(new_key)] = self.pop(key)
         
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis)
         
         self._adjust_shape(-no_to_delete, axis)
+        
+        # Now re-insert moved keys
+        
+        for key in new_key_values:
+            self[key] = new_key_values[key]
 
     def set_row_height(self, row, tab, height):
         """Sets row height"""

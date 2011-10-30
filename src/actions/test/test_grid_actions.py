@@ -339,14 +339,32 @@ class TestTableRowActionsMixins(object):
     @params(param_insert_rows)
     def test_insert_rows(self, row, no_rows, test_key, test_val):
         # Set up grid
+        grid.actions.clear((1000, 100, 3))
         _fill_grid(grid_values)
         
-        # Insert 1 row at row 0
+        # Insert and test
         grid.actions.insert_rows(row, no_rows=no_rows)
         assert grid.code_array(test_key) == test_val
+
+    param_delete_rows = [ \
+       {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+       {'row': 0, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': None},
+       {'row': 0, 'no_rows': 1, 'test_key': (0, 1, 0), 'test_val': "3"},
+       {'row': 0, 'no_rows': 995, 'test_key': (4, 99, 0), 'test_val': "$^%&$^"},
+       {'row': 1, 'no_rows': 1, 'test_key': (0, 1, 0), 'test_val': "1"},
+       {'row': 1, 'no_rows': 1, 'test_key': (1, 1, 0), 'test_val': None},
+       {'row': 1, 'no_rows': 999, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+    ]
+
+    @params(param_delete_rows)
+    def test_delete_rows(self, row, no_rows, test_key, test_val):
+        # Set up grid
+        grid.actions.clear((1000, 100, 3))
+        _fill_grid(grid_values)
         
-    def test_delete_rows(self):
-        pass
+        # Delete and test
+        grid.actions.delete_rows(row, no_rows=no_rows)
+        assert grid.code_array(test_key) == test_val
         
 
 class TestTableColumnActionsMixin(object):
@@ -380,14 +398,32 @@ class TestTableColumnActionsMixin(object):
     @params(param_insert_cols)
     def test_insert_cols(self, col, no_cols, test_key, test_val):
         # Set up grid
+        grid.actions.clear((1000, 100, 3))
         _fill_grid(grid_values)
         
-        # Insert 1 row at row 0
+        # Insert and test
         grid.actions.insert_cols(col, no_cols=no_cols)
         assert grid.code_array(test_key) == test_val
         
-    def test_delete_cols(self):
-        pass
+    param_delete_cols = [ \
+       {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+       {'col': 0, 'no_cols': 1, 'test_key': (0, 2, 0), 'test_val': None},
+       {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
+       {'col': 0, 'no_cols': 95, 'test_key': (999, 4, 0), 'test_val': "$^%&$^"},
+       {'col': 1, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
+       {'col': 1, 'no_cols': 1, 'test_key': (1, 1, 0), 'test_val': "4"},
+       {'col': 1, 'no_cols': 99, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+    ]
+
+    @params(param_delete_cols)
+    def test_delete_cols(self, col, no_cols, test_key, test_val):
+        # Set up grid
+        grid.actions.clear((1000, 100, 3))
+        _fill_grid(grid_values)
+        
+        # Delete and test
+        grid.actions.delete_cols(col, no_cols=no_cols)
+        assert grid.code_array(test_key) == test_val
         
     
 class TestTableTabActionsMixin(object):
@@ -407,14 +443,31 @@ class TestTableTabActionsMixin(object):
     @params(param_insert_tabs)
     def test_insert_tabs(self, tab, no_tabs, test_key, test_val):
         # Set up grid
+        grid.actions.clear((1000, 100, 3))
         _fill_grid(grid_values)
         
-        # Insert 1 row at row 0
+        # Insert and test
         grid.actions.insert_tabs(tab, no_tabs=no_tabs)
         assert grid.code_array(test_key) == test_val
         
-    def test_delete_tabs(self):
-        pass
+    param_delete_tabs = [ \
+       {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+       {'tab': 0, 'no_tabs': 1, 'test_key': (0, 2, 0), 'test_val': None},
+       {'tab': 0, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': "78"},
+       {'tab': 2, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': None},
+       {'tab': 1, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': "78"},
+       {'tab': 0, 'no_tabs': 2, 'test_key': (1, 2, 0), 'test_val': "78"},
+    ]
+
+    @params(param_delete_tabs)
+    def test_delete_tabs(self, tab, no_tabs, test_key, test_val):
+        # Set up grid
+        grid.actions.clear((1000, 100, 3))
+        _fill_grid(grid_values)
+        
+        # Delete and test
+        grid.actions.delete_tabs(tab, no_tabs=no_tabs)
+        assert grid.code_array(test_key) == test_val
 
 class TestTableActions(object):
         
