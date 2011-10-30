@@ -40,8 +40,9 @@ app = wx.App()
 
 from lib.selection import Selection
 
-from lib.testlib import main_window, grid, code_array, grid_values, _fill_grid
+from lib.testlib import main_window, grid, code_array
 from lib.testlib import params, pytest_generate_tests
+from lib.testlib import basic_setup_test, restore_basic_grid
 
 from gui._events import *
 
@@ -338,13 +339,10 @@ class TestTableRowActionsMixins(object):
     
     @params(param_insert_rows)
     def test_insert_rows(self, row, no_rows, test_key, test_val):
-        # Set up grid
-        grid.actions.clear((1000, 100, 3))
-        _fill_grid(grid_values)
+        """Tests insertion action for rows"""
         
-        # Insert and test
-        grid.actions.insert_rows(row, no_rows=no_rows)
-        assert grid.code_array(test_key) == test_val
+        basic_setup_test(grid.actions.insert_rows, test_key, test_val, 
+                         row, no_rows=no_rows)
 
     param_delete_rows = [ \
        {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -358,13 +356,10 @@ class TestTableRowActionsMixins(object):
 
     @params(param_delete_rows)
     def test_delete_rows(self, row, no_rows, test_key, test_val):
-        # Set up grid
-        grid.actions.clear((1000, 100, 3))
-        _fill_grid(grid_values)
+        """Tests deletion action for rows"""
         
-        # Delete and test
-        grid.actions.delete_rows(row, no_rows=no_rows)
-        assert grid.code_array(test_key) == test_val
+        basic_setup_test(grid.actions.delete_rows, test_key, test_val, 
+                         row, no_rows=no_rows)
         
 
 class TestTableColumnActionsMixin(object):
@@ -397,13 +392,11 @@ class TestTableColumnActionsMixin(object):
     
     @params(param_insert_cols)
     def test_insert_cols(self, col, no_cols, test_key, test_val):
-        # Set up grid
-        grid.actions.clear((1000, 100, 3))
-        _fill_grid(grid_values)
+        """Tests insertion action for columns"""
         
-        # Insert and test
-        grid.actions.insert_cols(col, no_cols=no_cols)
-        assert grid.code_array(test_key) == test_val
+        basic_setup_test(grid.actions.insert_cols, test_key, test_val, 
+                         col, no_cols=no_cols)
+                         
         
     param_delete_cols = [ \
        {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -417,13 +410,10 @@ class TestTableColumnActionsMixin(object):
 
     @params(param_delete_cols)
     def test_delete_cols(self, col, no_cols, test_key, test_val):
-        # Set up grid
-        grid.actions.clear((1000, 100, 3))
-        _fill_grid(grid_values)
+        """Tests deletion action for columns"""
         
-        # Delete and test
-        grid.actions.delete_cols(col, no_cols=no_cols)
-        assert grid.code_array(test_key) == test_val
+        basic_setup_test(grid.actions.delete_cols, test_key, test_val, 
+                         col, no_cols=no_cols)
         
     
 class TestTableTabActionsMixin(object):
@@ -442,13 +432,10 @@ class TestTableTabActionsMixin(object):
     
     @params(param_insert_tabs)
     def test_insert_tabs(self, tab, no_tabs, test_key, test_val):
-        # Set up grid
-        grid.actions.clear((1000, 100, 3))
-        _fill_grid(grid_values)
+        """Tests insertion action for tabs"""
         
-        # Insert and test
-        grid.actions.insert_tabs(tab, no_tabs=no_tabs)
-        assert grid.code_array(test_key) == test_val
+        basic_setup_test(grid.actions.insert_tabs, test_key, test_val, 
+                         tab, no_tabs=no_tabs)
         
     param_delete_tabs = [ \
        {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -461,42 +448,74 @@ class TestTableTabActionsMixin(object):
 
     @params(param_delete_tabs)
     def test_delete_tabs(self, tab, no_tabs, test_key, test_val):
-        # Set up grid
-        grid.actions.clear((1000, 100, 3))
-        _fill_grid(grid_values)
+        """Tests deletion action for tabs"""
         
-        # Delete and test
-        grid.actions.delete_tabs(tab, no_tabs=no_tabs)
-        assert grid.code_array(test_key) == test_val
+        basic_setup_test(grid.actions.delete_tabs, test_key, test_val, 
+                         tab, no_tabs=no_tabs)
 
 class TestTableActions(object):
-        
-    def test_paste(self):
+    """Unit test class for TableActions"""
+
+    param_paste = [ \
+       {'tl_cell': (0, 0, 0), 'data': [["78"]],
+        'test_key': (0, 0, 0), 'test_val': "78"},
+       {'tl_cell': (0, 0, 0), 'data': [[None]],
+        'test_key': (0, 0, 0), 'test_val': None},
+       {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (0, 0, 0), 'test_val': "1"},
+       {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (1, 1, 0), 'test_val': "4"},
+       {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (1, 1, 1), 'test_val': None},
+       {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (0, 0, 0), 'test_val': "'Test'"},
+       {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (1, 0, 0), 'test_val': "1"},
+       {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (0, 1, 0), 'test_val': "1"},
+       {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (0, 0, 0), 'test_val': "'Test'"},
+       {'tl_cell': (123, 5, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (123, 6, 0), 'test_val': "2"},
+       {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (1, 1, 2), 'test_val': "1"},
+       {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (1, 1, 0), 'test_val': "3"},
+       {'tl_cell': (999, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (999, 0, 0), 'test_val': "1"},
+       {'tl_cell': (999, 99, 2), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (999, 99, 2), 'test_val': "1"},
+       {'tl_cell': (999, 98, 2), 'data': [["1", "2"], ["3", "4"]],
+        'test_key': (999, 99, 2), 'test_val': "2"},
+    ]
+
+    @params(param_paste)
+    def test_paste(self, tl_cell, data, test_key, test_val):
         """Tests paste into grid"""
         
-        # Test 1D paste of strings
-        tl_cell = 0, 0, 0
-        data = [map(str, [1, 2, 3, 4]), [""] * 4]
-        
-        grid.actions.paste(tl_cell, data)
-        
-        assert grid.code_array[tl_cell] == 1
-        assert grid.code_array(tl_cell) == '1'
-        assert grid.code_array[0, 1, 0] == 2
-        assert grid.code_array[0, 2, 0] == 3
-        assert grid.code_array[0, 3, 0] == 4
-        
-        # Test row overflow
-        ##TODO
-        
-        # Test col overflow
-        ##TODO
+        basic_setup_test(grid.actions.paste, test_key, test_val, tl_cell, data)
     
-    def test_on_key(self):
-        pass
+    param_change_grid_shape = [ \
+       {'shape': (1, 1, 1)},
+       {'shape': (2, 1, 3)},
+       {'shape': (1, 1, 40)},
+       {'shape': (1000, 100, 3)},
+       {'shape': (80000000, 80000000, 80000000)},
+    ]
+    
+    @params(param_change_grid_shape)
+    def test_change_grid_shape(self, shape):
+        """Tests action for changing the grid shape"""
         
-    def test_change_grid_shape(self):
-        pass
+        grid.actions.clear()
+        
+        grid.actions.change_grid_shape(shape)
+        
+        res_shape = grid.code_array.shape
+        assert res_shape == shape
+        
+        br_key = tuple(dim - 1 for dim in shape)
+        assert grid.code_array(br_key) is None
 
 
 class TestUnRedoActions(object):

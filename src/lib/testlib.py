@@ -49,6 +49,22 @@ grid_values = { \
     (1, 2, 2): "78",
 }
 
+def restore_basic_grid():
+    """Restores basic, filled grid"""
+    
+    default_test_shape = (1000, 100, 3)
+    
+    grid.actions.clear(default_test_shape)
+    _fill_grid(grid_values)
+    
+def basic_setup_test(func, test_key, test_val, *args, **kwargs):
+    """Sets up basic test env, runs func and tests test_key in grid"""
+    
+    restore_basic_grid()
+    
+    func(*args, **kwargs)
+    
+    assert grid.code_array(test_key) == test_val 
 
 # Helper methods for efficient testing
 
@@ -71,7 +87,7 @@ def params(funcarglist):
     return wrapper
 
 def pytest_generate_tests(metafunc):
-    """Hack that enables params to work in py.test environment"""
+    """Enables params to work in py.test environment"""
     
     for funcargs in getattr(metafunc.function, 'funcarglist', ()):
         metafunc.addcall(funcargs=funcargs)
