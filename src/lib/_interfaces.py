@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2008 Martin Manns
+# Copyright 2011 Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
