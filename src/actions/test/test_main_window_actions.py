@@ -41,8 +41,8 @@ from gui._main_window import MainWindow
 from gui._grid import Grid
 from model.model import DataArray
 from lib.selection import Selection
-from lib.testlib import main_window, code_array, grid_values, _fill_grid
-from lib.testlib import params, pytest_generate_tests
+from lib.testlib import main_window, code_array, grid_values, restore_basic_grid
+from lib.testlib import params, pytest_generate_tests, basic_setup_test
 
 from actions._main_window_actions import CsvInterface, TxtGenerator
 
@@ -119,7 +119,7 @@ class TestTxtGenerator(object):
         main_window = MainWindow(None, -1)
         
         self.test_filename = "test.csv"
-        self.test_filename_single_col = "test_large.txt"
+        self.test_filename_single_col = "large.txt"
         self.test_filename_notthere = "notthere.txt"
         self.test_filename_bin = "test1.pys"
         
@@ -179,9 +179,6 @@ class TestPrintActions(object):
 class TestClipboardActions(object):
     """Clipboard actions test class. Does not use actual clipboard."""
     
-    # Fill grid initially
-    _fill_grid(grid_values)
-    
     param_copy = [ \
       {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "'Test'"},
       {'selection': Selection([], [], [], [], [(999, 0)]), 'result': "1"},
@@ -198,6 +195,8 @@ class TestClipboardActions(object):
     def test_cut(self, selection, result):
         """Test cut, i. e. copy and deletion"""
         
+        restore_basic_grid()
+        
         assert main_window.actions.cut(selection) == result
         
         (top, left), (bottom, right) = selection.get_bbox()
@@ -213,6 +212,8 @@ class TestClipboardActions(object):
     def test_copy(self, selection, result):
         """Test copy of single values, lists and matrices"""
         
+        restore_basic_grid()
+        
         assert main_window.actions.copy(selection) == result
 
     param_copy_result = [ \
@@ -226,25 +227,39 @@ class TestClipboardActions(object):
     def test_copy_result(self, selection, result):
         """Test copy results of single values, lists and matrices"""
         
+        restore_basic_grid()
+        
         assert main_window.actions.copy_result(selection) == result
-    
+        
+        
+## TODO: Test hangs when doing py.test for all tests in directory
     param_paste = [ \
-        {'target': (0, 0), 'data': "1", 'checks': {(0, 0, 0): "1"}},
+        {'target': (0, 0), 'data': "1", 
+         'test_key': (0, 0, 0), 'test_val': "1"},
         {'target': (25, 25), 'data': "1\t2", 
-         'checks': {(25, 25, 0): "1", (25, 26, 0): "2", (26, 25, 0): None}},
+         'test_key': (25, 25, 0), 'test_val': "1"}, 
+        {'target': (25, 25), 'data': "1\t2", 
+         'test_key': (25, 26, 0), 'test_val': "2"}, 
+        {'target': (25, 25), 'data': "1\t2", 
+         'test_key': (26, 25, 0), 'test_val': None},
         {'target': (25, 25), 'data': "1\t2\n3\t4", 
-         'checks': {(25, 25, 0): "1", (25, 26, 0): "2", (26, 25, 0): "3"}},
-        {'target': (27, 27), 'data': u"ä", 'checks': {(27, 27, 0): u"ä"}},
+         'test_key': (25, 25, 0),  'test_val':"1"}, 
+        {'target': (25, 25), 'data': "1\t2\n3\t4", 
+         'test_key': (25, 26, 0),  'test_val':"2"},
+        {'target': (25, 25), 'data': "1\t2\n3\t4", 
+         'test_key': (26, 25, 0),  'test_val':"3"},
+        {'target': (27, 27), 'data': u"ä", 
+         'test_key': (27, 27, 0), 'test_val': u"ä"},
     ]
     
     @params(param_paste)
-    def test_paste(self, target, data, checks):
+    def test_paste(self, target, data, test_key, test_val):
         """Test paste of single values, lists and matrices"""
         
-        main_window.actions.paste(target, data)
+        restore_basic_grid()
         
-        for key in checks:
-            assert code_array(key) == checks[key]
+        basic_setup_test(main_window.actions.paste, test_key, test_val, 
+                         target, data)
         
 class TestMacroActions(object):
     """Unit tests for macro actions"""
