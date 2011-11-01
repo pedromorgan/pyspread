@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.2.dtd">
 <!-- eric4 tasks file for project pyspread -->
-<!-- Saved: 2011-10-31, 01:48:22 -->
+<!-- Saved: 2011-10-31, 02:06:56 -->
 <Tasks version="4.2">
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Code for cell selection by mouse here</Summary>
@@ -42,10 +42,10 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Use background color for deletion</Summary>
     <Description></Description>
-    <Created>2011-10-31, 01:48:04</Created>
+    <Created>2011-10-31, 02:03:59</Created>
     <Resource>
       <Filename>src/gui/_grid_renderer.py</Filename>
-      <Linenumber>432</Linenumber>
+      <Linenumber>453</Linenumber>
     </Resource>
   </Task>
 </Tasks>

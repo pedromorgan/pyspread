@@ -20,10 +20,10 @@ setup(name='pyspread',
       author='Martin Manns',
       author_email='mmanns@gmx.net',
       url='http://pyspread.sourceforge.net',
-      install_requires=['numpy (>=1.1)', 'wx (>=2.8.10)'],
+      #install_requires=['numpy (>=1.1)', 'wx (>=2.8.10)'],
       scripts=['src/pyspread.py', 'src/pyspread'],
-      packages=['_pyspread'],
-      package_data={'_pyspread': 
+      packages=['.'],
+      package_data={'.': 
                     ['share/icons/*.png', 'share/icons/actions/*.png', 
                      'share/icons/toggles/*.png', 'share/icons/toggles/*.xpm',
                      'examples/*', 'doc/help/*.html', 

@@ -74,17 +74,50 @@ class CellActions(object):
         key_str = u", ".join(map(str, ref_key))
         return u"S[" + key_str + u"]"
 
-    def _get_relative_reference(self, key, ref_key):
-        """Returns absolute reference code for key."""
+    def _get_relative_reference(self, cursor, ref_key):
+        """Returns absolute reference code for key.
         
-        magics = ["X+", "Y+", "Z+"]
+        Parameters
+        ----------
+        
+        cursor: 3-tuple of Integer
+        \tCurrent cursor position
+        ref_key: 3-tuple of Integer
+        \tAbsolute reference key
+        
+        """
+        
+        magics = ["X", "Y", "Z"]
         
         # mapper takes magic, key, ref_key to build string
-        mapper = lambda val: val[0] + str(val[2] - val[1])
+        def get_rel_key_ele(cursor_ele, ref_key_ele):
+            """Returns relative key suffix for given key and reference key"""
+            
+            # cursor is current cursor position
+            # ref_key is absolute target position
+            
+            diff_key_ele = ref_key_ele - cursor_ele
+            
+            if diff_key_ele == 0:
+                return u""
+            
+            elif diff_key_ele < 0:
+                return u"-" + str(abs(diff_key_ele))
+            
+            elif diff_key_ele > 0:
+                return u"+" + str(diff_key_ele)
+            
+            else:
+                raise ValueError, str(diff_key_ele) + "seems to be no Integer"
         
-        key_str = u", ".join(map(mapper, zip(magics, key, ref_key)))
+        key_strings = []
         
-        return u"S[" + key_str + u"]"
+        for magic, cursor_ele, ref_key_ele in zip(magics, cursor, ref_key):
+            key_strings.append(magic + get_rel_key_ele(cursor_ele, ref_key_ele))
+        
+        key_string = u", ".join(key_strings)
+        
+        return u"S[" + key_string + u"]"
 
     def append_reference_code(self, key, ref_key, ref_type="absolute"):
         """Appends reference code to cell code. 

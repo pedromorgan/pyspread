@@ -44,21 +44,102 @@ from lib.testlib import basic_setup_test, restore_basic_grid
 class TestCellActions(object):
     """Cell actions test class"""
     
-    def test_set_code(self):
-        pass
     
-    def test_delete_cell(self):
-        pass
+    param_set_code = [ \
+       {'key': (0, 0, 0), 'code': "'Test'", 'result': "'Test'"},
+       {'key': (0, 0, 0), 'code': "", 'result': None},
+       {'key': (0, 0, 1), 'code': None, 'result': None},
+       {'key': (999, 99, 2), 'code': "4", 'result': "4"},
+    ]
+
+    @params(param_set_code)
+    def test_set_code(self, key, code, result):
+        """Unit test for set_code"""
+        
+        grid.actions.set_code(key, code)
+        
+        assert grid.code_array(key) == result
+        
+        wx.Yield()
+        assert main_window.changed_since_save
     
-    def test_get_absolute_reference(self):
-        pass
+    @params(param_set_code)
+    def test_delete_cell(self, key, code, result):
+        """Unit test for delete_cell"""
+        
+        grid.actions.set_code(key, code)
+        grid.actions.delete_cell(key)
+        
+        assert grid.code_array(key) is None
+        
+    param_get_reference = [ \
+       {'cursor': (0, 0, 0), 'ref_key': (0, 0, 0), 'abs_ref': "S[0, 0, 0]",
+        'rel_ref': "S[X, Y, Z]"},
+       {'cursor': (0, 0, 1), 'ref_key': (0, 0, 1), 'abs_ref': "S[0, 0, 1]",
+        'rel_ref': "S[X, Y, Z]"},
+       {'cursor': (0, 0, 0), 'ref_key': (0, 0, 1), 'abs_ref': "S[0, 0, 1]",
+        'rel_ref': "S[X, Y, Z+1]"},
+       {'cursor': (9, 0, 0), 'ref_key': (0, 0, 0), 'abs_ref': "S[0, 0, 0]",
+        'rel_ref': "S[X-9, Y, Z]"},
+       {'cursor': (23, 2, 1), 'ref_key': (2, 2, 2), 'abs_ref': "S[2, 2, 2]",
+        'rel_ref': "S[X-21, Y, Z+1]"},
+    ]
+        
+    @params(param_get_reference)
+    def test_get_absolute_reference(self, cursor, ref_key, abs_ref, rel_ref):
+        """Unit test for _get_absolute_reference"""
+        
+        reference = grid.actions._get_absolute_reference(ref_key)
+        
+        assert reference == abs_ref
     
-    def test_get_relative_reference(self):
-        pass
+    @params(param_get_reference)
+    def test_get_relative_reference(self, cursor, ref_key, abs_ref, rel_ref):
+        """Unit test for _get_relative_reference"""
+        
+        reference = grid.actions._get_relative_reference(cursor, ref_key)
+        
+        assert reference == rel_ref
     
-    def test_append_reference_code(self):
-        pass
-    
+    @params(param_get_reference)
+    def test_append_reference_code(self, cursor, ref_key, abs_ref, rel_ref):
+        """Unit test for append_reference_code"""
+        
+        params = [
+            # Normal initial code, absolute reference
+            {'initial_code': "3 + ", 'ref_type': "absolute", 
+             "res": grid.actions._get_absolute_reference(ref_key)},
+            # Normal initial code, relative reference
+            {'initial_code': "3 + ", 'ref_type': "relative", 
+             "res": grid.actions._get_relative_reference(cursor, ref_key)},
+            # Initial code with reference, absolute reference
+            {'initial_code': "3 + S[2, 3, 1]", 'ref_type': "absolute", 
+             "res": grid.actions._get_absolute_reference(ref_key)},
+            # Initial code with reference, relative reference
+            {'initial_code': "3 + S[2, 3, 1]", 'ref_type': "relative", 
+             "res": grid.actions._get_relative_reference(cursor, ref_key)},
+        ]
+        
+        for param in params:
+            initial_code = param['initial_code'] 
+            ref_type = param['ref_type']
+            res = param['res']
+        
+            grid.actions.set_code(cursor, initial_code)
+            
+            grid.actions.append_reference_code(cursor, ref_key, ref_type)
+            
+            wx.Yield()
+            
+            result_code = main_window.entry_line.GetValue()
+            
+            if "S[" in initial_code:
+                assert result_code == initial_code[:4] + res
+                
+            else:
+                assert result_code == initial_code + res
+                
+                
     def test_set_cell_attr(self):
         pass
     
