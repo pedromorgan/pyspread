@@ -48,7 +48,6 @@ import wx
 from config import config
 
 from lib._interfaces import sorted_keys, string_match
-from lib.irange import slice_range
 from lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from lib.selection import Selection
 
@@ -565,8 +564,9 @@ class DataArray(object):
             if is_slice_like(key_ele):
                 # We have something slice-like here 
                 
-                single_keys_per_dim.append(slice_range(key_ele, 
-                                                       length = key[axis]))
+                length = key[axis]
+                slice_range = xrange(*key_ele.indices(length))
+                single_keys_per_dim.append(slice_range)
                 
             elif is_string_like(key_ele):
                 # We have something string-like here 
@@ -634,7 +634,7 @@ class DataArray(object):
             # Get first element of key that is a slice
             
             if type(key_ele) is SliceType:
-                slc_keys = slice_range(key_ele, self.dict_grid.shape[i])
+                slc_keys = xrange(*key_ele.indices(self.dict_grid.shape[i]))
                 
                 key_list = list(key)
                 

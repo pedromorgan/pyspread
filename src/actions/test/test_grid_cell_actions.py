@@ -37,6 +37,8 @@ path.insert(0, test_path + "/../..")
 import wx
 app = wx.App()
 
+from lib.selection import Selection
+
 from lib.testlib import main_window, grid, code_array
 from lib.testlib import params, pytest_generate_tests
 from lib.testlib import basic_setup_test, restore_basic_grid
@@ -56,12 +58,19 @@ class TestCellActions(object):
     def test_set_code(self, key, code, result):
         """Unit test for set_code"""
         
+        main_window.changed_since_save = False
+        
         grid.actions.set_code(key, code)
         
         assert grid.code_array(key) == result
         
         wx.Yield()
-        assert main_window.changed_since_save
+        
+        if code is None or not code:
+            assert not main_window.changed_since_save
+        else:
+            assert main_window.changed_since_save
+            
     
     @params(param_set_code)
     def test_delete_cell(self, key, code, result):
@@ -139,12 +148,35 @@ class TestCellActions(object):
             else:
                 assert result_code == initial_code + res
                 
-                
-    def test_set_cell_attr(self):
-        pass
+    param_set_cell_attr = [ \
+        {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 1,
+         'attr': ('bordercolor_right', wx.RED), 'testcell': (2, 5, 1)},
+        {'selection': Selection([(0, 0)], [(99, 99)], [], [], []), 'tab': 0,
+         'attr': ('bordercolor_right', wx.RED), 'testcell': (2, 5, 0)},
+        {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 1,
+         'attr': ('bordercolor_bottom', wx.BLUE), 'testcell': (2, 5, 1)},
+        {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 1,
+         'attr': ('bgcolor', wx.RED), 'testcell': (2, 5, 1)},
+        {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 2,
+         'attr': ('pointsize', 24), 'testcell': (2, 5, 2)},
+    ]
     
-    def test_set_attr(self):
-        pass
+    @params(param_set_cell_attr)
+    def test_set_cell_attr(self, selection, tab, attr, testcell):
+        """Unit test for _set_cell_attr"""
+        
+        main_window.changed_since_save = False
+        
+        attr = {attr[0]: attr[1]}
+        
+        grid.actions._set_cell_attr(selection, tab, attr)
+        
+        color = grid.code_array.cell_attributes[testcell][attr.keys()[0]]
+        
+        assert color == attr[attr.keys()[0]]
+        
+        wx.Yield()
+        assert main_window.changed_since_save
     
     def test_set_border_attr(self):
         pass
