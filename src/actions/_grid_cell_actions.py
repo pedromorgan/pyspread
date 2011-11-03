@@ -200,7 +200,18 @@ class CellActions(object):
         self.grid.actions._set_cell_attr(selection, table, attrs)
     
     def set_border_attr(self, attr, value, borders):
-        """Sets border attribute by adjusting selection to borders"""
+        """Sets border attribute by adjusting selection to borders
+        
+        Parameters
+        ----------
+        attr: String in ["borderwidth", "bordercolor"]
+        \tBorder attribute that shall be changed
+        value: wx.Colour or Integer
+        \tAttribute value dependent on attribute type
+        borders: Iterable over "top", "bottom", "left", "right", "inner"
+        \tSpecifies to which borders of the selection the attr is applied
+        
+        """
         
         selection = self.grid.selection
         # determine selection for core cells and selection for border cells
@@ -264,7 +275,7 @@ class CellActions(object):
         
         self.set_attr(attr, value)
     
-    # Only cell attributes that can be toogled are contained
+    # Only cell attributes that can be toggled are contained
     
     def change_frozen_attr(self):
         """Changes frozen state of cell if there is no selection"""
@@ -295,8 +306,8 @@ class CellActions(object):
     attr_toggle_values = { \
         "fontweight": [wx.NORMAL, wx.BOLD],
         "fontstyle": [wx.NORMAL, wx.ITALIC],
-        "underline": [True, False],
-        "strikethrough": [True, False],
+        "underline": [False, True],
+        "strikethrough": [False, True],
         "vertical_align": ["top", "middle", "bottom"],
         "justification": ["left", "center", "right"],
         "frozen": [True, False],
@@ -325,12 +336,12 @@ class CellActions(object):
         return attr_map[cell_attributes[key][attr_key]]
     
     def get_new_selection_attr_state(self, selection, attr_key):
-        """Returns new attr selection state for toggles
+        """Toggles new attr selection state and returns it
         
         Parameters
         ----------
         selection: Selection object
-        \tSeelction for which attr toggle shall be returned
+        \tSelection for which attr toggle shall be returned
         attr_key: Hashable
         \tAttribute key
         

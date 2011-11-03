@@ -179,10 +179,37 @@ class TestCellActions(object):
         assert main_window.changed_since_save
     
     def test_set_border_attr(self):
-        pass
+        """Unit test for set_border_attr"""
+        
+        grid.SelectBlock(10, 10, 20, 20)
+        
+        attr = "borderwidth"
+        value = 5
+        borders = ["top", "inner"]
+        tests = { \
+            (13, 14, 0): 5,
+            (53, 14, 0): 1,
+        } 
+        
+        grid.actions.set_border_attr(attr, value, borders)
+        
+        for cell in tests:
+            res = grid.code_array.cell_attributes[cell]["borderwidth_bottom"]
+            assert res == tests[cell]
+        
     
     def test_toggle_attr(self):
-        pass
+        """Unit test for toggle_attr"""
+        
+        grid.SelectBlock(10, 10, 20, 20)
+        
+        grid.actions.toggle_attr("underline")
+        
+        tests = {(13, 14, 0): True, (53, 14, 0): False}
+        
+        for cell in tests:
+            res = grid.code_array.cell_attributes[cell]["underline"]
+            assert res == tests[cell]
     
     def test_change_frozen_attr(self):
         pass
