@@ -722,8 +722,11 @@ class GridActions(object):
         labelfont.SetPointSize(max(1, int(round(default_fontsize * zoom))))
         self.grid.SetLabelFont(labelfont)
     
-    def zoom(self, zoom):
+    def zoom(self, zoom=None):
         """Zooms to zoom factor"""
+        
+        if zoom is None:
+            zoom = self.grid.grid_renderer.zoom
         
         # Zoom factor for grid content
         self.grid.grid_renderer.zoom = zoom
@@ -823,7 +826,14 @@ class GridActions(object):
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
             self.main_window.table_choice.SetValue(newtable)
-            self.grid.ForceRefresh()
+            
+            # Reset row heights and column widths by zooming
+            
+            self.zoom()
+            
+            statustext = u"Switched to tab " + str(newtable)
+            
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
     def get_cursor(self):
         """Returns current grid cursor cell (row, col, tab)"""
