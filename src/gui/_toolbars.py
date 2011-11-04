@@ -38,10 +38,9 @@ import wx.lib.colourselect as csel
 from _events import *
 
 from config import config
-from sysvars import get_default_font
+from sysvars import get_default_font, get_font_list
 from icons import icons
 
-from lib._interfaces import get_font_list
 from lib._interfaces import get_default_font
 import _widgets
 

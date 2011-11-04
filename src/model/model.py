@@ -37,9 +37,9 @@ Layer 0: KeyValueStore
 import ast
 from copy import copy
 import cStringIO
-from itertools import imap, product
+from itertools import imap, ifilter, product
 import sys
-from types import SliceType
+from types import SliceType, IntType
 
 import numpy
 
@@ -47,7 +47,6 @@ import wx
 
 from config import config
 
-from lib._interfaces import sorted_keys, string_match
 from lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from lib.selection import Selection
 
@@ -1019,6 +1018,76 @@ class CodeArray(DataArray):
 
         return outstring
     
+    def _sorted_keys(self, keys, startkey, reverse=False):
+        """Generator that yields sorted keys starting with startkey
+    
+        Parameters
+        ----------
+    
+        keys: Iterable of tuple/list
+        \tKey sequence that is sorted
+        startkey: Tuple/list
+        \tFirst key to be yielded
+        reverse: Bool
+        \tSort direction reversed if True
+    
+        """
+    
+        tuple_key = lambda t: t[::-1]
+        if reverse:
+            tuple_cmp = lambda t: t[::-1] > startkey[::-1]
+        else:
+            tuple_cmp = lambda t: t[::-1] < startkey[::-1]
+            
+        searchkeys = sorted(keys, key=tuple_key, reverse=reverse)
+        searchpos = sum(1 for _ in ifilter(tuple_cmp, searchkeys))
+        
+        searchkeys = searchkeys[searchpos:] + searchkeys[:searchpos]
+        
+        for key in searchkeys:
+            yield key
+    
+    def _string_match(self, datastring, findstring, flags=None):
+        """
+        Returns position of findstring in datastring or None if not found.
+        Flags is a list of strings. Supported strings are:
+         * "MATCH_CASE": The case has to match for valid find
+         * "WHOLE_WORD": The word has to be surrounded by whitespace characters
+                         if in the middle of the string
+         * "REG_EXP":    A regular expression is evaluated.
+        
+        """
+        
+        if type(datastring) is IntType: # Empty cell
+            return None
+        
+        if flags is None:
+            flags = []
+        
+        if "REG_EXP" in flags:
+            match = re.search(findstring, datastring)
+            if match is None:
+                pos = -1
+            else:
+                pos = match.start()
+        else:
+            if "MATCH_CASE" not in flags:
+                datastring = datastring.lower()
+                findstring = findstring.lower()
+            
+            if "WHOLE_WORD" in flags:
+                pos = -1
+                for match in re.finditer(r'\b' + findstring + r'+\b', datastring):
+                    pos = match.start()
+                    break # find 1st occurrance
+            else:
+                pos = datastring.find(findstring)
+        
+        if pos == -1:
+            return None
+        else:
+            return pos
+    
     def findnextmatch(self, startkey, find_string, flags):
         """ Returns a tuple with the position of the next match of find_string
         
@@ -1040,12 +1109,12 @@ class CodeArray(DataArray):
         
         reverse = "UP" in flags
         
-        for key in sorted_keys(self.keys(), startkey, reverse=reverse):
+        for key in self._sorted_keys(self.keys(), startkey, reverse=reverse):
             code = self(key)
             res_str = unicode(self[key])
             
-            if string_match(code, find_string, flags) is not None or \
-               string_match(res_str, find_string, flags) is not None:
+            if self._string_match(code, find_string, flags) is not None or \
+               self._string_match(res_str, find_string, flags) is not None:
                 return key
     
 # End of class CodeArray

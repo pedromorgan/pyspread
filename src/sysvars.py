@@ -44,7 +44,7 @@ def get_help_path():
     
     return get_program_path() + "doc/help/"
     
-# Screen
+# System settings
 
 def get_dpi():
     """Returns screen dpi resolution"""
@@ -66,3 +66,15 @@ def get_font_string(name):
     """Returns string representation of named system font"""
     
     return wx.SystemSettings.GetFont(name).GetFaceName()
+
+# Fonts
+
+def get_font_list():
+    """Returns a sorted list of all system font names"""
+    
+    font_enum = wx.FontEnumerator()
+    font_enum.EnumerateFacenames(wx.FONTENCODING_SYSTEM)
+    font_list = font_enum.GetFacenames()
+    font_list.sort()
+    
+    return font_list

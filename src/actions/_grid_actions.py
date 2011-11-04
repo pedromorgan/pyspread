@@ -52,7 +52,8 @@ from config import config
 
 from gui._grid_table import GridTable
 from gui._events import *
-from lib._interfaces import sign, verify, is_pyme_present, get_font_from_data
+from lib.parsers import get_font_from_data
+from lib.gpg import sign, verify, is_pyme_present
 
 from lib.selection import Selection
 from model.model import DictGrid
@@ -841,13 +842,14 @@ class GridActions(object):
         
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
+            self.main_window.table_choice.SetMax(newtable+1)
             self.main_window.table_choice.SetValue(newtable)
             
             # Reset row heights and column widths by zooming
             
             self.zoom()
             
-            statustext = u"Switched to tab " + str(newtable)
+            statustext = u"Switched to table " + str(newtable)
             
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 

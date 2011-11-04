@@ -34,7 +34,7 @@ Provides:
 
 import wx
 
-from lib._interfaces import get_font_list
+from sysvars import get_font_list
 
 from _events import *
 

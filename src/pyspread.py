@@ -20,9 +20,19 @@
 # --------------------------------------------------------------------
 
 """
-Cross-platform spreadsheet application.
 
-See __init__.py for extensive docstring.
+pyspread
+========
+
+Python spreadsheet application
+
+Run this script to start the application.
+
+Provides
+--------
+
+* Commandlineparser: Gets command line options and parameters
+* MainApplication: Initial command line operations and application launch
 
 """
 
@@ -31,6 +41,7 @@ See __init__.py for extensive docstring.
 # wx is already imported if the PyScripter wx engine is used.
 
 from sys import path, modules
+import optparse
 
 try:
     modules['wx']
@@ -49,7 +60,6 @@ except KeyError:
 from wx import App
 from wx import InitAllImageHandlers
 
-
 from gui._events import *
 
 DEBUG = False
@@ -58,6 +68,54 @@ DEBUG = False
 # the local libs are preferred.
 
 path.insert(0, "..") 
+
+class Commandlineparser(object):
+    """
+    Command line handling
+
+    Methods:
+    --------
+
+    parse: Returns command line options and arguments as 2-tuple
+
+    """
+    
+    def __init__(self):
+        from config import config
+        usage = "usage: %prog [options] [filename]"
+        version = "%prog " + unicode(config["version"])
+        self.parser = optparse.OptionParser(usage=usage, version=version)
+
+        self.parser.add_option("-d", "--dimensions", type="int", nargs=3,
+            dest="dimensions", default=config["grid_shape"], \
+            help="Dimensions of empty grid (works only without filename) "
+                 "rows, cols, tables [default: %default]")
+
+    def parse(self):
+        """
+        Returns a a tuple (options, filename)
+
+        options: The command line options
+        filename: String (defaults to None)
+        \tThe name of the file that is loaded on start-up
+
+        """
+        options, args = self.parser.parse_args()
+
+        if min(options.dimensions) < 1:
+            raise ValueError, "The number of cells in each dimension " + \
+                              "has to be greater than 0"
+
+        if len(args) > 1:
+            raise ValueError, "Only one file may be opened at a time"
+        elif len(args) == 1:
+            filename = args[0]
+        else:
+            filename = None
+
+        return options, filename
+
+# end of class Commandlineparser
 
 class MainApplication(App):
     """Main application class for pyspread."""
@@ -86,10 +144,10 @@ class MainApplication(App):
         
         # Create GPG key if not present
         
-        from lib._interfaces import is_pyme_present
+        from lib.gpg import is_pyme_present
         
         if is_pyme_present():
-            from lib._interfaces import genkey
+            from lib.gpg import genkey
             genkey()
             
         # Show application window
@@ -119,8 +177,6 @@ class MainApplication(App):
         \tFile name that is loaded on start
 
         """
-
-        from lib._interfaces import Commandlineparser
 
         cmdp = Commandlineparser()
         self.options, self.filepath = cmdp.parse()

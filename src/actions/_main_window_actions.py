@@ -52,7 +52,7 @@ import wx.html
 from sysvars import get_help_path
 
 from config import config
-from lib._interfaces import Digest
+from lib.__csv import Digest
 from gui._printout import PrintCanvas, Printout
 from gui._events import *
 

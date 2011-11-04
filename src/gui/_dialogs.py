@@ -53,8 +53,52 @@ from config import config
 from sysvars import get_program_path
 from gui._widgets import PythonSTC
 from gui._events import *
-from lib._interfaces import Digest, sniff, fill_wxgrid
-from lib._interfaces import ALPHA_ONLY, DIGIT_ONLY, Validator
+from lib.__csv import Digest
+from lib.__csv import sniff, get_first_line, csv_digest_gen, cell_key_val_gen
+
+
+class IntValidator(wx.PyValidator):
+    """IntTextCtrl input validation class"""
+    
+    def __init__(self):
+        wx.PyValidator.__init__(self)\
+        
+        self.Bind(wx.EVT_CHAR, self.OnChar)
+
+    def TransferToWindow(self):
+            return True
+            
+    def TransferFromWindow(self):
+            return True
+
+    def Clone(self):
+        return Validator()
+
+    def Validate(self, win):
+        """Returns True if Value in digits, False otherwise"""
+        
+        val = self.GetWindow().GetValue()
+        
+        for x in val:
+            if x not in string.digits:
+                return False
+
+        return True
+
+    def OnChar(self, event):
+        """Eats event if key not in digits"""
+        
+        key = event.GetKeyCode()
+
+        if key < wx.WXK_SPACE or key == wx.WXK_DELETE or key > 255 or \
+           chr(key) in string.digits:
+            event.Skip()
+
+        # Returning without calling even.Skip eats the event
+        #  before it gets to the text control
+
+
+# end of class IntValidator
 
 class ChoiceRenderer(wx.grid.PyGridCellRenderer):
     """Renders choice dialog box for grid
@@ -427,19 +471,16 @@ class CSVPreviewGrid(wx.grid.Grid):
         """
         
         # Get columns from csv
-        csvfile = open(self.csvfilepath, "rb")
-        csvreader = csv.reader(csvfile, dialect=dialect)
+        first_line = get_first_line(self.csvfilepath, dialect)
+        self.shape[1] = no_cols = len(first_line)
         
-        first_line = ""
-        for first_line in csvreader:
-            self.shape[1] = len(first_line)
-            break
-        
-        if self.shape[1] > self.GetNumberCols():
-            self.AppendCols(self.shape[1]-self.GetNumberCols())
-        elif self.shape[1] < self.GetNumberCols():
-            self.DeleteCols(pos=self.shape[1]-1, \
-                            numCols=self.GetNumberCols()-self.shape[1])
+        if no_cols > self.GetNumberCols():
+            missing_cols = no_cols - self.GetNumberCols()
+            self.AppendCols(missing_cols)
+            
+        elif no_cols < self.GetNumberCols():
+            obsolete_cols = self.GetNumberCols() - no_cols
+            self.DeleteCols(pos=no_cols-1, numCols=obsolete_cols)
         
         # Retrieve type choices
         digest_keys = self.get_digest_keys()
@@ -459,15 +500,16 @@ class CSVPreviewGrid(wx.grid.Grid):
             self.SetCellValue(has_header, col, digest_keys[col])
         
         # Fill in the rest of the lines
-        if not has_header:
-            csvfile.seek(0)
         
         self.dtypes = [self.digest_types[key] for key in self.get_digest_keys()]
         
-        key = (has_header + 1, 0)
-        fill_wxgrid(self, csvreader, self.dtypes, key)
+        topleft = (has_header + 1, 0)
         
-        csvfile.close()
+        digest_gen = csv_digest_gen(self.csvfilepath, dialect, has_header, 
+                                    self.dtypes)
+        
+        for row, col, val in cell_key_val_gen(digest_gen, self.shape, topleft):
+            self.SetCellValue(row, col, val)
         
         self.Refresh()
     
@@ -511,7 +553,6 @@ class CSVPreviewTextCtrl(wx.TextCtrl):
         csvwriter = csv.writer(csvfile, dialect=dialect)
         
         for i, line in enumerate(data):
-            #print list(line)
             csvwriter.writerow(line)
             if i >= self.preview_lines:
                 break
@@ -931,7 +972,7 @@ class CellEntryDialog(wx.Dialog):
         label = wx.StaticText(self, -1, "Row: ")
         fgs.Add(label, 0, wx.ALIGN_RIGHT|wx.CENTER)
         self.row_textctrl = \
-            wx.TextCtrl(self, -1, "", validator=Validator(DIGIT_ONLY))
+            wx.TextCtrl(self, -1, "", validator=IntValidator())
         fgs.Add(self.row_textctrl)
 
         fgs.Add((1,VSPACE)); fgs.Add((1,VSPACE))
@@ -939,14 +980,14 @@ class CellEntryDialog(wx.Dialog):
         label = wx.StaticText(self, -1, "Column: ")
         fgs.Add(label, 0, wx.ALIGN_RIGHT|wx.CENTER)
         self.col_textctrl = \
-            wx.TextCtrl(self, -1, "", validator=Validator(DIGIT_ONLY))
+            wx.TextCtrl(self, -1, "", validator=IntValidator())
         
         fgs.Add(self.col_textctrl)
         fgs.Add((1,VSPACE)); fgs.Add((1,VSPACE))
         label = wx.StaticText(self, -1, "Table: ")
         fgs.Add(label, 0, wx.ALIGN_RIGHT|wx.CENTER)
         self.tab_textctrl = \
-            wx.TextCtrl(self, -1, "", validator=Validator(DIGIT_ONLY))
+            wx.TextCtrl(self, -1, "", validator=IntValidator())
         
         fgs.Add(self.tab_textctrl)
 
