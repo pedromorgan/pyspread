@@ -498,6 +498,11 @@ class TableTabActionsMixin(object):
         post_command_event(self.main_window, ContentChangedMsg, changed=True)
         
         self.code_array.insert(tab, no_tabs, axis=2)
+        
+        # Update TableChoiceIntCtrl
+        post_command_event(self.main_window, ResizeGridMsg, 
+                           shape=self.grid.code_array.shape)
+        
 
     def delete_tabs(self, tab, no_tabs=1):
         """Deletes no_tabs tabs and marks grid as changed"""
@@ -506,6 +511,10 @@ class TableTabActionsMixin(object):
         post_command_event(self.main_window, ContentChangedMsg, changed=True)
         
         self.code_array.delete(tab, no_tabs, axis=2)
+        
+        # Update TableChoiceIntCtrl
+        post_command_event(self.main_window, ResizeGridMsg, 
+                           shape=self.grid.code_array.shape)
 
 
 class TableActions(TableRowActionsMixin, TableColumnActionsMixin, 
@@ -645,6 +654,9 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, ContentChangedMsg, changed=True)
         
         self.grid.code_array.shape = shape
+        
+        # Update TableChoiceIntCtrl
+        post_command_event(self.main_window, ResizeGridMsg, shape=shape)
 
 
 class UnRedoActions(object):
@@ -725,8 +737,11 @@ class GridActions(object):
     def zoom(self, zoom=None):
         """Zooms to zoom factor"""
         
+        status = True
+        
         if zoom is None:
             zoom = self.grid.grid_renderer.zoom
+            status = False
         
         # Zoom factor for grid content
         self.grid.grid_renderer.zoom = zoom
@@ -740,9 +755,10 @@ class GridActions(object):
         
         self.grid.ForceRefresh()
         
-        statustext = u"Zoomed to {0:.2f}.".format(zoom)
+        if status:
+            statustext = u"Zoomed to {0:.2f}.".format(zoom)
             
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
     
     def zoom_in(self):
         """Zooms in by zoom factor"""

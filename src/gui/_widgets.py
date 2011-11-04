@@ -743,7 +743,6 @@ class TableChoiceIntCtrl(IntCtrl):
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
         self.parent.Bind(EVT_COMMAND_RESIZE_GRID, self.OnResizeGrid)
 
-
     def change_max(self, no_tabs):
         """Updates to a new number of tables
         
@@ -751,8 +750,6 @@ class TableChoiceIntCtrl(IntCtrl):
         
         Parameters
         ----------
-        tab: Integer
-        \tCurrent table
         no_tabs: Integer
         \tNumber of tables for choice
         
@@ -761,8 +758,7 @@ class TableChoiceIntCtrl(IntCtrl):
         if self.GetValue() >= no_tabs:
             self.SetValue(no_tabs - 1)
         
-        if no_tabs != self.no_tabs:
-            self.SetMax(no_tabs - 1)
+        self.SetMax(no_tabs - 1)
     
     # Event handlers
     
@@ -778,10 +774,9 @@ class TableChoiceIntCtrl(IntCtrl):
             self.switching = True
             post_command_event(self, GridActionTableSwitchMsg, 
                                newtable=event.GetValue())
+            wx.Yield()
             self.switching = False
         
-        event.Skip()
-    
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
         
