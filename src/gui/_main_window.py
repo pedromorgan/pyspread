@@ -112,7 +112,7 @@ class MainWindow(wx.Frame):
         
         # Main window actions
         
-        self.actions = AllMainWindowActions(self, self.grid)
+        self.actions = AllMainWindowActions(self.grid)
         
         # Layout and bindings
         

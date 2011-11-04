@@ -27,15 +27,23 @@ Provides
 --------
 
  * sniff: Sniffs CSV dialect and header info
+ * get_first_line
+ * csv_digest_gen
+ * cell_key_val_gen
  * Digest: Converts any object to target type as good as possible
+ * CsvInterface
+ * TxtGenerator
 
 """
 
 import csv
 import datetime
+import os
 import types
 
 from config import config
+
+from gui._events import post_command_event, StatusBarMsg
 
 
 def sniff(filepath):
@@ -279,3 +287,124 @@ class Digest(object):
         return errormessage
 
 # end of class Digest
+
+
+class CsvInterface(object):
+    """CSV interface class
+    
+    Provides
+    --------
+     * __iter__: CSV reader - generator of generators of csv data cell content
+     * write: CSV writer
+    
+    """
+    
+    def __init__(self, main_window, path, dialect, digest_types, has_header):
+        self.main_window = main_window
+        self.path = path
+        self.csvfilename = os.path.split(path)[1]
+        
+        self.dialect = dialect
+        self.digest_types = digest_types
+        self.has_header = has_header
+        
+        self.first_line = False
+        
+    def __iter__(self):
+        """Generator of generators that yield csv data"""
+        
+        try:
+            csv_file = open(self.path, "r")
+            csv_reader = csv.reader(csv_file, self.dialect)
+            
+        except IOError, err:
+            statustext = "Error opening file " + self.path + "."
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            
+            csv_file = [] 
+        
+        self.first_line = self.has_header
+        
+        try:
+            for line in csv_reader:
+                yield self._get_csv_cells_gen(line)
+                self.first_line = False
+                                              
+        except Exception, err:
+            msg = 'The file "' + self.csvfilename + '" only partly loaded.' + \
+                  '\n \nError message:\n' + str(err)
+            short_msg = 'Error reading CSV file'
+            self.main_window.interfaces.display_warning(msg, short_msg)
+        
+        finally:
+            statustext = "File " + self.csvfilename + " imported successfully."
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        
+        csv_file.close()
+    
+    def _get_csv_cells_gen(self, line):
+        """Generator of values in a csv line"""
+        
+        digest_types = self.digest_types
+        
+        for j, value in enumerate(line):
+            if self.first_line:
+                digest_key = None
+                digest = lambda x: x
+            else:
+                try:
+                    digest_key = digest_types[j]
+                except IndexError:
+                    digest_key = digest_types[0]
+                    
+                digest = Digest(acceptable_types=[digest_key])
+                
+            try:
+                digest_res = digest(value)
+                
+                if digest_key is not None and digest_res != "\b" and \
+                   digest_key is not types.CodeType:
+                    digest_res = repr(digest_res)
+                elif digest_res == "\b":
+                    digest_res = None
+                
+            except Exception, err:
+                digest_res = str(err)
+            
+            yield digest_res
+    
+    def write(self, iterable):
+        """Writes values from iterable into CSV file"""
+        
+        csvfile = open(self.path, "wb")
+        csv_writer = csv.writer(csvfile, self.dialect)
+        
+        for line in iterable:
+            csv_writer.writerow(line)
+        
+        csvfile.close()
+
+
+class TxtGenerator(object):
+    """Generator of generators of Whitespace separated txt file cell content"""
+        
+    def __init__(self, main_window, path):
+        self.main_window = main_window
+        try:
+            self.infile = open(path, "r")
+            
+        except IOError:
+            statustext = "Error opening file " + path + "."
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            self.infile = None
+
+    def __iter__(self):
+        
+        # If self.infile is None then stopiteration is reached immediately
+        if self.infile is None:    
+            return
+        
+        for line in self.infile:
+            yield (col for col in line.split())
+    
+        self.infile.close()

@@ -46,28 +46,80 @@ Provides:
 """
 
 import bz2
-from copy import copy
+import os
+
+import wx
 
 from config import config
 
 from gui._grid_table import GridTable
-from gui._events import *
 from lib.parsers import get_font_from_data
 from lib.gpg import sign, verify, is_pyme_present
-
 from lib.selection import Selection
-from model.model import DictGrid
 
+from actions._main_window_actions import Actions
 from actions._grid_cell_actions import CellActions
 
-class FileActions(object):
+from gui._events import EVT_COMMAND_GRID_ACTION_NEW
+from gui._events import EVT_COMMAND_GRID_ACTION_TABLE_SWITCH
+from gui._events import EVT_COMMAND_GRID_ACTION_OPEN
+from gui._events import EVT_COMMAND_GRID_ACTION_SAVE
+from gui._events import post_command_event, SafeModeEntryMsg
+from gui._events import SafeModeExitMsg, StatusBarMsg, ContentChangedMsg
+from gui._events import ResizeGridMsg, GridActionTableSwitchMsg
+
+
+class FileActions(Actions):
     """File actions on the grid"""
     
-    def __init__(self):
+    def __init__(self, grid):
+        Actions.__init__(self, grid)
+        
         self.saving = False
         
         self.main_window.Bind(EVT_COMMAND_GRID_ACTION_OPEN, self.open) 
         self.main_window.Bind(EVT_COMMAND_GRID_ACTION_SAVE, self.save)
+
+    def _is_aborted(self, cycle, statustext, total_elements=None, freq=1000):
+        """Displays progress and returns True if abort
+        
+        Parameters
+        ----------
+        
+        statustext: String
+        \tLeft text in statusbar to be displayed
+        cycle: Integer
+        \tThe current operation cycle
+        total_elements: Integer:
+        \tThe number of elements that have to be processed
+        freq: Integer, defaults to 1000
+        \tNo. operations between two abort possibilities
+        
+        """
+        
+        # Show progress in statusbar each freq (1000) cells
+        if cycle % freq == 0:
+            # See if we know how much data comes along
+            if total_elements is None:
+                total_elements_str = ""
+            else:
+                total_elements_str = " of " + str(total_elements)
+                
+            statustext = statustext + str(cycle) + total_elements_str + \
+                        " elements processed. Press <Esc> to abort."
+            post_command_event(self.main_window, StatusBarMsg, 
+                       text=statustext)
+            
+            # Now wait for the statusbar update to be written on screen
+            wx.Yield()
+            
+            # Abort if we have to
+            if self.need_abort:
+                # We have to abort`
+                return True
+                
+        # Continue
+        return False
 
     def validate_signature(self, filename):
         """Returns True if a valid signature is present for filename"""
@@ -118,15 +170,12 @@ class FileActions(object):
         
         # Determine file version
         for line1 in infile:
+            if line1.strip() != "[Pyspread save file version]":
+                raise ValueError, "File format unsupported."
             break
+            
         for line2 in infile:
-            break
-        
-        if line1.strip() != "[Pyspread save file version]":
-            errortext = "File format unsupported."
-            raise ValueError, errortext
-        
-        return line2.strip()
+            return line2.strip()
 
     def _abort_open(self, filepath, infile):
         """Aborts file open"""
@@ -193,9 +242,6 @@ class FileActions(object):
         self.opening = True
         self.need_abort = False
         
-        # Print this on IOErrors when reading from the infile
-        ioerror_statustext = "Error reading from file " + filepath + "."
-        
         try:
             infile = bz2.BZ2File(filepath, "r")
             
@@ -226,7 +272,7 @@ class FileActions(object):
         def parser(*args):
             """Dummy parser. Raises ValueError"""
             
-            raise ValueError_grid_actions.py, "No section parser present."
+            raise ValueError, "No section parser present."
 
         section_readers = { \
             "[shape]": self.code_array.dict_grid.parse_to_shape,
@@ -257,7 +303,7 @@ class FileActions(object):
                             
                             self.grid.GetTable().ResetView()
                 else:
-                   pass
+                    pass
                 
                 # Enable abort during long saves
                 if self._is_aborted(cycle, "Loading file... "):
@@ -415,7 +461,7 @@ class FileActions(object):
         self.sign_file(filepath)
 
 
-class TableRowActionsMixin(object):
+class TableRowActionsMixin(Actions):
     """Table row controller actions"""
 
     def set_row_height(self, row, height):
@@ -450,7 +496,7 @@ class TableRowActionsMixin(object):
         self.code_array.delete(row, no_rows, axis=0)
 
 
-class TableColumnActionsMixin(object):
+class TableColumnActionsMixin(Actions):
     """Table column controller actions"""
 
     def set_col_width(self, col, width):
@@ -485,7 +531,7 @@ class TableColumnActionsMixin(object):
         self.code_array.delete(col, no_cols, axis=1)
         
 
-class TableTabActionsMixin(object):
+class TableTabActionsMixin(Actions):
     """Table tab controller actions"""
 
     def insert_tabs(self, tab, no_tabs=1):
@@ -522,7 +568,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                    TableTabActionsMixin):
     """Table controller actions"""
     
-    def __init__(self):
+    def __init__(self, grid):
+        TableRowActionsMixin.__init__(self, grid)
+        TableColumnActionsMixin.__init__(self, grid)
+        TableTabActionsMixin.__init__(self, grid)
         
         # Action states
         
@@ -538,7 +587,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         # If paste is running and Esc is pressed then we need to abort
         
         if event.GetKeyCode() == wx.WXK_ESCAPE and \
-           self.pasting or self.saving:
+           self.pasting or self.grid.actions.saving:
             self.need_abort = True
         
         event.Skip()
@@ -571,9 +620,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
     
     def paste(self, tl_key, data):
-        """Pastes data into grid table starting at top left cell tl_key
-        
-        and marks grid as changed
+        """Pastes data into grid from top left cell tl_key, marks grid changed
         
         Parameters
         ----------
@@ -609,7 +656,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         for src_row, col_data in enumerate(data):
             target_row = tl_row + src_row
             
-            if self._is_aborted(src_row, "Pasting cells... "):
+            if self.grid.actions._is_aborted(src_row, "Pasting cells... "):
                 self._abort_paste()
                 return False
             
@@ -660,7 +707,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, ResizeGridMsg, shape=shape)
 
 
-class UnRedoActions(object):
+class UnRedoActions(Actions):
     """Undo and redo operations"""
     
     def undo(self):
@@ -669,7 +716,7 @@ class UnRedoActions(object):
         # Mark content as changed
         post_command_event(self.main_window, ContentChangedMsg, changed=True)
         
-        self.code_array.unredo.undo()
+        self.grid.code_array.unredo.undo()
         
     def redo(self):
         """Calls redo in model.code_array.unredo, marks content as changed"""
@@ -677,13 +724,16 @@ class UnRedoActions(object):
         # Mark content as changed
         post_command_event(self.main_window, ContentChangedMsg, changed=True)
         
-        self.code_array.unredo.redo()
+        self.grid.code_array.unredo.redo()
 
 
-class GridActions(object):
+class GridActions(Actions):
     """Grid level grid actions"""
     
-    def __init__(self):
+    def __init__(self, grid):
+        Actions.__init__(self, grid)
+        
+        self.code_array = grid.code_array
         
         self.prev_rowcol = [] # Last mouse over cell
         
@@ -696,7 +746,7 @@ class GridActions(object):
         
         # Grid table handles interaction to code_array
         
-        self.clear(event.shape)
+        self.grid.actions.clear(event.shape)
     
         _grid_table = GridTable(self.grid, self.grid.code_array)
         self.grid.SetTable(_grid_table, True)
@@ -886,7 +936,7 @@ class GridActions(object):
     cursor = property(get_cursor, set_cursor)
     
 
-class SelectionActions(object):
+class SelectionActions(Actions):
     """Actions that affect the grid selection"""
     
     def get_selection(self):
@@ -953,7 +1003,7 @@ class SelectionActions(object):
         for key in del_keys:
             self.grid.actions.delete_cell(key)
 
-class FindActions(object):
+class FindActions(Actions):
     """Actions for finding inside the grid"""
     
     def find(self, gridpos, find_string, flags):
@@ -1027,61 +1077,17 @@ class FindActions(object):
 class AllGridActions(FileActions, TableActions, UnRedoActions, 
                      GridActions, SelectionActions, FindActions, CellActions):
     """All grid actions as a bundle"""
+
+    def __init__(self, grid):
+        FileActions.__init__(self, grid)
+        TableActions.__init__(self, grid)
+        UnRedoActions.__init__(self, grid)
+        GridActions.__init__(self, grid)
+        SelectionActions.__init__(self, grid)
+        FindActions.__init__(self, grid)
+        CellActions.__init__(self, grid)
+        
     
-    def __init__(self, grid, code_array):
-        self.main_window = grid.main_window
-        self.grid = grid
-        self.code_array = code_array
-        
-        FileActions.__init__(self)
-        TableActions.__init__(self)
-        UnRedoActions.__init__(self)
-        GridActions.__init__(self)
-        SelectionActions.__init__(self)
-        FindActions.__init__(self)
-        CellActions.__init__(self)
-
-    def _is_aborted(self, cycle, statustext, total_elements=None, freq=1000):
-        """Displays progress and returns True if abort
-        
-        Parameters
-        ----------
-        
-        statustext: String
-        \tLeft text in statusbar to be displayed
-        cycle: Integer
-        \tThe current operation cycle
-        total_elements: Integer:
-        \tThe number of elements that have to be processed
-        freq: Integer, defaults to 1000
-        \tNo. operations between two abort possibilities
-        
-        """
-        
-        # Show progress in statusbar each 1000 cells
-        if cycle % 1000 == 0:
-            # See if we know how much data comes along
-            if total_elements is None:
-                total_elements_str = ""
-            else:
-                total_elements_str = " of " + str(total_elements)
-                
-            statustext = statustext + str(cycle) + total_elements_str + \
-                        " elements processed. Press <Esc> to abort."
-            post_command_event(self.main_window, StatusBarMsg, 
-                       text=statustext)
-            
-            # Now wait for the statusbar update to be written on screen
-            wx.Yield()
-            
-            # Abort if we have to
-            if self.need_abort:
-                # We have to abort`
-                return True
-                
-        # Continue
-        return False
-
     def _replace_bbox_none(self, bbox):
         """Returns bbox, in which None is replaced by grid boundaries"""
         

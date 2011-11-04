@@ -41,7 +41,6 @@ from config import config
 from sysvars import get_default_font, get_font_list
 from icons import icons
 
-from lib._interfaces import get_default_font
 import _widgets
 
 class MainToolbar(wx.ToolBar):

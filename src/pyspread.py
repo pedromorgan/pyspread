@@ -60,7 +60,7 @@ except KeyError:
 from wx import App
 from wx import InitAllImageHandlers
 
-from gui._events import *
+from gui._events import post_command_event, GridActionOpenMsg
 
 DEBUG = False
 

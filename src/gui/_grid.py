@@ -77,7 +77,7 @@ class Grid(wx.grid.Grid):
         self.cell_handlers = GridCellEventHandlers(self)
         
         # Grid actions
-        self.actions = AllGridActions(self, self.code_array)
+        self.actions = AllGridActions(self)
         
         # Layout and bindings
         

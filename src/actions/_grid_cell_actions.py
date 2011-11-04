@@ -21,9 +21,11 @@
 
 import wx
 
-from gui._events import *
-
 from lib.selection import Selection
+
+from actions._main_window_actions import Actions
+
+from gui._events import post_command_event, EntryLineMsg, ContentChangedMsg
 
 """
 _grid_cell_actions.py
@@ -38,7 +40,7 @@ Provides:
 """
 
 
-class CellActions(object):
+class CellActions(Actions):
     """Mixin class that supplies Cell code additions, changes and deletion"""
 
     def set_code(self, key, code):
@@ -189,7 +191,7 @@ class CellActions(object):
         
         if not selection:
             # Add current cell to selection so that it gets changed
-            selection.cells.append(self.cursor[:2])
+            selection.cells.append(self.grid.actions.cursor[:2])
         
         attrs = {attr: value}
         
@@ -269,7 +271,7 @@ class CellActions(object):
             value = self.get_new_selection_attr_state(selection, attr)
             
         else:
-            value = self.get_new_cell_attr_state(self.cursor, attr)
+            value = self.get_new_cell_attr_state(self.grid.actions.cursor, attr)
         
         # Set the toggled value
         
@@ -285,13 +287,14 @@ class CellActions(object):
         if self.grid.selection:
             return
         
-        value = self.grid.code_array.cell_attributes[self.cursor]["frozen"]
+        value = self.grid.code_array.cell_attributes[ \
+                                            self.grid.actions.cursor]["frozen"]
         
         if value:
             value = False
             
         else:
-            res = self.grid.code_array._eval_cell(self.cursor)
+            res = self.grid.code_array._eval_cell(self.grid.actions.cursor)
             
             if res is None:
                 value = " "
@@ -379,12 +382,12 @@ class CellActions(object):
         # Add cursor to empty selection
         
         if not selection:
-            selection.cells.append(self.cursor[:2])
+            selection.cells.append(self.grid.actions.cursor[:2])
         
         cell_attributes = self.grid.code_array.cell_attributes
         
         for attr_selection, tab, attr_dict in cell_attributes:
-            if tab == self.cursor[2] and \
+            if tab == self.grid.actions.cursor[2] and \
                "frozen" in attr_dict and attr_dict["frozen"]:
                 # Only single cells are allowed for freezing
                 skey = attr_selection.cells[0]

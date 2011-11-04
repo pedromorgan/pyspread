@@ -25,13 +25,11 @@ pyspread config file
 
 """
 
-from copy import copy
-from os import path
 from getpass import getuser
 
 import wx
 
-from sysvars import get_program_path, get_color, get_font_string
+from sysvars import get_color, get_font_string
 
 """
 Program info
@@ -41,38 +39,34 @@ Program info
 
 
 class DefaultConfig(object):
+    """Contains default config for starting pyspread without resource file"""
+    
     def __init__(self):
         # The current version of pyspread
         self.version = '"0.1.3"'
         
-        self.set_paths()
-        self.set_window_config()
-        self.set_grid_config()
-        self.set_gpg_config()
-        self.set_csv_config()
-        
-    def set_paths(self):
-        """User defined paths"""
+        # User defined paths
+        # ------------------
         
         standardpaths = wx.StandardPaths.Get()
         self.work_path = standardpaths.GetDocumentsDir()
         
-    def set_window_config(self):
-        """Window configuration"""
+        # Window configuration
+        # --------------------
 
         self.window_position = "(10, 10)"
         self.window_size = "(wx.GetDisplaySize()[0] * 9 /10," + \
                            " wx.GetDisplaySize()[1] * 9 /10)"
                            
-        self.icon_theme ="'Tango'" 
+        self.icon_theme = "'Tango'" 
         
         self.help_window_position = "(wx.GetDisplaySize()[0] * 7 / 10, 15)"
         self.help_window_size = "(wx.GetDisplaySize()[0] * 3 /10," + \
                                 " wx.GetDisplaySize()[1] * 7 /10)"
         
 
-    def set_grid_config(self):
-        """Grid configuration"""
+        # Grid configuration
+        # ------------------
         
         self.grid_shape = "(1000, 100, 3)"
         self.max_unredo = "5000"
@@ -99,8 +93,8 @@ class DefaultConfig(object):
         # Increase and decrease factor on zoom in and zoom out
         self.zoom_factor = "0.05"
         
-    def set_gpg_config(self):
-        """GPG parameters"""
+        # GPG parameters
+        # --------------
         
         self.gpg_key_uid = repr('pyspread_' + getuser())
         self.gpg_key_passphrase = repr("pyspread") # Set this individually!
@@ -118,8 +112,8 @@ class DefaultConfig(object):
             'Expire-Date: 0\n' + \
             '</GnupgKeyParms>'
 
-    def set_csv_config(self):
-        """CSV parameters for import and export"""
+        # CSV parameters for import and export
+        # ------------------------------------
         
         # Number of bytes for the sniffer (should be larger than 1st+2nd line)
         self.sniff_size = "65536"
@@ -130,9 +124,9 @@ class Config(object):
     
     # Only keys in default_config are config keys
     
-    config_filename = "pyspreadrc"
-    
     def __init__(self, defaults=None):
+        self.config_filename = "pyspreadrc"
+        
         if defaults is None:
             self.defaults = DefaultConfig()
             

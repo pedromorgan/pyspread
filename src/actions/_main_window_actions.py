@@ -40,11 +40,7 @@ Provides:
 
 """
 
-import csv
 import os
-import types
-
-from copy import copy
 
 import wx
 import wx.html
@@ -52,132 +48,20 @@ import wx.html
 from sysvars import get_help_path
 
 from config import config
-from lib.__csv import Digest
+from lib.__csv import CsvInterface, TxtGenerator
 from gui._printout import PrintCanvas, Printout
-from gui._events import *
 
+from gui._events import post_command_event, StatusBarMsg, ContentChangedMsg
 
-class CsvInterface(object):
-    """CSV interface class
+class Actions(object):
+    """Actions base class"""
     
-    Provides
-    --------
-     * __iter__: CSV reader - generator of generators of csv data cell content
-     * write: CSV writer
-    
-    """
-    
-    def __init__(self, main_window, path, dialect, digest_types, has_header):
-        self.main_window = main_window
-        self.path = path
-        self.csvfilename = os.path.split(path)[1]
-        
-        self.dialect = dialect
-        self.digest_types = digest_types
-        self.has_header = has_header
-        
-        self.first_line = False
-        
-    def __iter__(self):
-        """Generator of generators that yield csv data"""
-        
-        try:
-            csv_file = open(self.path, "r")
-            csv_reader = csv.reader(csv_file, self.dialect)
-            
-        except IOError, err:
-            statustext = "Error opening file " + self.path + "."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
-            
-            csv_file = [] 
-        
-        self.first_line = self.has_header
-        
-        try:
-            for line in csv_reader:
-                yield self._get_csv_cells_gen(line)
-                self.first_line = False
-                                              
-        except Exception, err:
-            msg = 'The file "' + self.csvfilename + '" only partly loaded.' + \
-                  '\n \nError message:\n' + str(err)
-            short_msg = 'Error reading CSV file'
-            self.main_window.interfaces.display_warning(msg, short_msg)
-        
-        finally:
-            statustext = "File " + self.csvfilename + " imported successfully."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
-        
-        csv_file.close()
-    
-    def _get_csv_cells_gen(self, line):
-        """Generator of values in a csv line"""
-        
-        digest_types = self.digest_types
-        
-        for j, value in enumerate(line):
-            if self.first_line:
-                digest_key = None
-                digest = lambda x: x
-            else:
-                try:
-                    digest_key = digest_types[j]
-                except IndexError:
-                    digest_key = digest_types[0]
-                    
-                digest = Digest(acceptable_types=[digest_key])
-                
-            try:
-                digest_res = digest(value)
-                
-                if digest_key is not None and digest_res != "\b" and \
-                   digest_key is not types.CodeType:
-                    digest_res = repr(digest_res)
-                elif digest_res == "\b":
-                    digest_res = None
-                
-            except Exception, err:
-                digest_res = str(err)
-            
-            yield digest_res
-    
-    def write(self, iterable):
-        """Writes values from iterable into CSV file"""
-        
-        csvfile = open(self.path, "wb")
-        csv_writer = csv.writer(csvfile, self.dialect)
-        
-        for line in iterable:
-            csv_writer.writerow(line)
-        
-        csvfile.close()
+    def __init__(self, grid):
+        self.main_window = grid.main_window
+        self.grid = grid
+        self.code_array = grid.code_array
 
-
-class TxtGenerator(object):
-    """Generator of generators of Whitespace separated txt file cell content"""
-        
-    def __init__(self, main_window, path):
-        self.main_window = main_window
-        try:
-            self.infile = open(path, "r")
-            
-        except IOError, err:
-            statustext = "Error opening file " + path + "."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
-            self.infile = None
-
-    def __iter__(self):
-        
-        # If self.infile is None then stopiteration is reached immediately
-        if self.infile is None:    
-            return
-        
-        for line in self.infile:
-            yield (col for col in line.split())
-    
-        self.infile.close()
-        
-class ExchangeActions(object):
+class ExchangeActions(Actions):
     """Actions for foreign format import and export"""
     
     def _import_csv(self, path):
@@ -192,7 +76,7 @@ class ExchangeActions(object):
         except TypeError:
             return
             
-        except IOError, err:
+        except IOError:
             statustext = "Error opening file " + path + "."
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
             return
@@ -258,7 +142,7 @@ class ExchangeActions(object):
             csv_interface.write(data)
             
         except IOError, err:
-            msg = 'The file "' + path + '" could not be fully written ' + \
+            msg = 'The file "' + filepath + '" could not be fully written ' + \
                   '\n \nError message:\n' + str(err)
             short_msg = 'Error writing CSV file'
             self.main_window.interfaces.display_warning(msg, short_msg)
@@ -269,13 +153,11 @@ class ExchangeActions(object):
         self._export_csv(filepath, data)
 
 
-class PrintActions(object):
+class PrintActions(Actions):
     """Actions for printing"""
     
     def print_preview(self, print_area, print_data):
         """Launch print preview"""
-        
-        pdd = wx.PrintDialogData(print_data)
         
         # Create the print canvas
         canvas = PrintCanvas(self.main_window, self.grid, print_area)
@@ -283,13 +165,13 @@ class PrintActions(object):
         printout = Printout(canvas)
         printout2 = Printout(canvas)
         
-        self.preview = wx.PrintPreview(printout, printout2, print_data)
+        preview = wx.PrintPreview(printout, printout2, print_data)
 
-        if not self.preview.Ok():
+        if not preview.Ok():
             print "Houston, we have a problem...\n"
             return
 
-        pfrm = wx.PreviewFrame(self.preview, self.main_window, "Print preview")
+        pfrm = wx.PreviewFrame(preview, self.main_window, "Print preview")
 
         pfrm.Initialize()
         pfrm.SetPosition(self.main_window.GetPosition())
@@ -320,7 +202,7 @@ class PrintActions(object):
         canvas.Destroy()
 
 
-class ClipboardActions(object):
+class ClipboardActions(Actions):
     """Actions which affect the clipboard"""
     
     def cut(self, selection):
@@ -461,7 +343,7 @@ class ClipboardActions(object):
         
         self.main_window.grid.ForceRefresh()
 
-class MacroActions(object):
+class MacroActions(Actions):
     """Actions which affect macros"""
     
     def replace_macros(self, macros):
@@ -490,7 +372,7 @@ class MacroActions(object):
         try:
             macro_infile = open(filepath, "r")
             
-        except IOError, err:
+        except IOError:
             statustext = "Error opening file " + filepath + "."
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
             
@@ -521,7 +403,7 @@ class MacroActions(object):
         macro_outfile.close()
 
 
-class HelpActions(object):
+class HelpActions(Actions):
     """Actions for getting help"""
     
     def launch_help(self, helpname, filename):
@@ -583,13 +465,5 @@ class AllMainWindowActions(ExchangeActions, PrintActions,
                            ClipboardActions, MacroActions, HelpActions):
     """All main window actions as a bundle"""
     
-    def __init__(self, main_window, grid):
-        self.main_window = main_window
-        self.grid = grid
-        
-        ExchangeActions.__init__(self)
-        PrintActions.__init__(self)
-        ClipboardActions.__init__(self)
-        MacroActions.__init__(self)
-        HelpActions.__init__(self)
+    pass
         
