@@ -21,8 +21,8 @@
 
 
 """
-test_grid_cell_actions.py
-=========================
+test_grid_cell_actions
+======================
 
 Unit tests for _grid_sell_actions.py
 
@@ -212,6 +212,8 @@ class TestCellActions(object):
             assert res == tests[cell]
     
     def test_change_frozen_attr(self):
+        """Unit test for toggle_attr"""
+        
         pass
     
     def test_get_new_cell_attr_state(self):
