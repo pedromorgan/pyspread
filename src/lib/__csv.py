@@ -120,7 +120,7 @@ def csv_digest_gen(filepath, dialect, has_header, digest_types):
     
     csvfile.close()
 
-def cell_key_val_gen(it, shape, topleft = (0, 0)):
+def cell_key_val_gen(iterable, shape, topleft = (0, 0)):
     """Generator of row, col, value tuple from iterable of iterables
     
     it: Iterable of iterables
@@ -134,7 +134,7 @@ def cell_key_val_gen(it, shape, topleft = (0, 0)):
     
     top, left = topleft
     
-    for __row, line in enumerate(it):
+    for __row, line in enumerate(iterable):
         row = top + __row
         if row >= shape[0]:
             break

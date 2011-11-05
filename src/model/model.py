@@ -38,6 +38,7 @@ import ast
 from copy import copy
 import cStringIO
 from itertools import imap, ifilter, product
+import re
 import sys
 from types import SliceType, IntType
 
@@ -126,11 +127,11 @@ class CellAttributes(list):
         assert not any(type(key_ele) is SliceType for key_ele in key)
         
         if key in self._attr_cache:
-           cache_len, cache_dict = self._attr_cache[key]
+            cache_len, cache_dict = self._attr_cache[key]
            
-           # Use cache result only if no new attrs have been defined 
-           if cache_len == len(self):
-               return cache_dict
+            # Use cache result only if no new attrs have been defined 
+            if cache_len == len(self):
+                return cache_dict
         
         row, col, tab  = key
         
@@ -188,13 +189,14 @@ class ParserMixin(object):
         
         attrs = {}
         for col, ele in enumerate(splitline[6:]):
-            if col % 2:
+            if not (col % 2):
+                # Odd entries are keys
+                key = ast.literal_eval(ele)
+                
+            else:
                 # Even cols are values
                 attrs[key] = ast.literal_eval(ele)
                 
-            else:
-                # Odd entries are keys
-                key = ast.literal_eval(ele)
                 
         self.cell_attributes.append((selection, tab, attrs))
 
@@ -418,26 +420,36 @@ class DataArray(object):
     
     @property
     def row_heights(self):
+        """Returns row_heights dict"""
+        
         return self.dict_grid.row_heights 
     
     @property
     def col_widths(self):
+        """Returns col_widths dict"""
+        
         return self.dict_grid.col_widths  
     
     # Cell attributes mask
     @property
     def cell_attributes(self):
+        """Returns cell_attributes list"""
+        
         return self.dict_grid.cell_attributes
     
     def __iter__(self):
-        """returns iterator over self.dict_grid"""
+        """Returns iterator over self.dict_grid"""
         
         return iter(self.dict_grid)
     
     def _get_macros(self):
+        """Returns macros string"""
+        
         return self.dict_grid.macros
 
     def _set_macros(self, macros):
+        """Sets  macros string"""
+        
         self.dict_grid.macros = macros
         
     macros = property(_get_macros, _set_macros)
@@ -1077,7 +1089,8 @@ class CodeArray(DataArray):
             
             if "WHOLE_WORD" in flags:
                 pos = -1
-                for match in re.finditer(r'\b' + findstring + r'+\b', datastring):
+                matchstring = r'\b' + findstring + r'+\b'
+                for match in re.finditer(matchstring, datastring):
                     pos = match.start()
                     break # find 1st occurrance
             else:

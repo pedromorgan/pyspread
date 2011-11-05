@@ -38,21 +38,20 @@ Provides
 
 from config import config
 
+
 try:
     from pyme import core, pygpgme
     import pyme.errors
+    PYME_PRESENT = True
+    
 except ImportError:
-    pass
+    PYME_PRESENT = False
     
 
 def is_pyme_present():
     """Returns True if pyme can be imported else false"""
     
-    try:
-        from pyme import core
-        return True
-    except ImportError:
-        return False
+    return PYME_PRESENT
 
 def _passphrase_callback(hint='', desc='', prev_bad=''): 
     """Callback function needed by pyme"""
@@ -77,20 +76,20 @@ def genkey():
     # Initialize our context.
     core.check_version(None)
 
-    c = core.Context()
-    c.set_armor(1)
-    #c.set_progress_cb(callbacks.progress_stdout, None)
+    context = core.Context()
+    context.set_armor(1)
+    #context.set_progress_cb(callbacks.progress_stdout, None)
     
     # Check if standard key is already present
     keyname = config["gpg_key_uid"]
-    c.op_keylist_start(keyname, 0)
-    key = c.op_keylist_next()
+    context.op_keylist_start(keyname, 0)
+    key = context.op_keylist_next()
     if key is None:
         # Key not present --> Create new one
         print "Generating new GPG key", keyname, \
               ". This may take some time..."
-        c.op_genkey(config["gpg_key_parameters"], None, None)
-        print c.op_genkey_result().fpr
+        context.op_genkey(config["gpg_key_parameters"], None, None)
+        print context.op_genkey_result().fpr
 
 
 
@@ -123,7 +122,7 @@ def sign(filename):
 def verify(sigfilename, filefilename=None):
     """Verifies a signature, returns True if successful else False."""
     
-    c = core.Context()
+    context = core.Context()
 
     # Create Data with signed text.
     __signature = _get_file_data(sigfilename)
@@ -137,17 +136,17 @@ def verify(sigfilename, filefilename=None):
 
     # Verify.
     try:
-        c.op_verify(__signature, __file, __plain)
+        context.op_verify(__signature, __file, __plain)
     except pyme.errors.GPGMEError:
         return False
     
-    result = c.op_verify_result()
+    result = context.op_verify_result()
     
     # List results for all signatures. Status equal 0 means "Ok".
     validation_sucess = False
     
-    for sign in result.signatures:
-        if (not sign.status) and sign.validity:
+    for signature in result.signatures:
+        if (not signature.status) and signature.validity:
             validation_sucess = True
     
     return validation_sucess
