@@ -23,6 +23,9 @@ from sys import path, modules
 path.insert(0, "..") 
 path.insert(0, "../..") 
 
+import wx
+app = wx.App()
+
 from lib.selection import Selection
 import actions._grid_actions
 

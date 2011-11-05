@@ -28,6 +28,7 @@ import gmpy
 import numpy
 
 import wx
+app = wx.App()
 
 from model.model import KeyValueStore, CellAttributes, DictGrid
 from model.model import DataArray, CodeArray
