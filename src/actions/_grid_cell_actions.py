@@ -26,6 +26,7 @@ from lib.selection import Selection
 from actions._main_window_actions import Actions
 
 from gui._events import post_command_event, EntryLineMsg, ContentChangedMsg
+from gui._events import StatusBarMsg
 
 """
 _grid_cell_actions.py
@@ -198,7 +199,6 @@ class CellActions(Actions):
         table = self.grid.current_table
         
         # Change model
-        
         self.grid.actions._set_cell_attr(selection, table, attrs)
     
     def set_border_attr(self, attr, value, borders):
@@ -285,26 +285,30 @@ class CellActions(Actions):
         # Selections are not supported
         
         if self.grid.selection:
-            return
+            statustext = "Freezing selections is not supported."
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
         
-        value = self.grid.code_array.cell_attributes[ \
-                                            self.grid.actions.cursor]["frozen"]
+        cursor = self.grid.actions.cursor
         
-        if value:
-            value = False
+        frozen_res = self.grid.code_array.cell_attributes[cursor]["frozen"]
+        
+        if frozen_res is False:
+            # We have an non-frozen cell that has to be frozen`
+            res_obj = self.grid.code_array[cursor]
             
-        else:
-            res = self.grid.code_array._eval_cell(self.grid.actions.cursor)
-            
-            if res is None:
-                value = " "
-            
-            else:
-                value = str(res)
+            # Change None result to empty cell
+            if res_obj is None:
+                res_obj = u""
+                
+            frozen_code = repr(res_obj)
+
+        else: 
+            # We have a frozen cell that is unfrozen
+            frozen_code = False
             
         # Set the new frozen state / code
-        
-        self.set_attr("frozen", value)
+        selection = Selection([], [], [], [], [cursor[:2]])
+        self.set_attr("frozen", frozen_code, selection=selection)
     
     attr_toggle_values = { \
         "fontweight": [wx.NORMAL, wx.BOLD],
@@ -370,14 +374,20 @@ class CellActions(Actions):
             # Default next value
             return self.attr_toggle_values[attr_key][1]
 
-    def refresh_selected_frozen_cells(self):
+    def refresh_selected_frozen_cells(self, selection=None):
         """Refreshes content of frozen cells that are currently selected
         
         If there is no selection, the cell at the cursor is updated.
         
+        Parameters
+        ----------
+        selection: Selection, defaults to None
+        \tIf not None then use this selection instead of the grid selection
+        
         """
         
-        selection = self.grid.selection
+        if selection is None:
+            selection = self.grid.selection
         
         # Add cursor to empty selection
         
@@ -393,6 +403,7 @@ class CellActions(Actions):
                 skey = attr_selection.cells[0]
                 if skey in selection:
                     key = tuple(list(skey) + [tab])
-                    attr_dict["frozen"] = self.grid.code_array._eval_cell(key)
+                    result = self.grid.code_array._eval_cell(key)
+                    attr_dict["frozen"] = repr(result)
         
         cell_attributes._attr_cache.clear()

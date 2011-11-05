@@ -107,8 +107,7 @@ class FileActions(Actions):
                 
             statustext = statustext + str(cycle) + total_elements_str + \
                         " elements processed. Press <Esc> to abort."
-            post_command_event(self.main_window, StatusBarMsg, 
-                       text=statustext)
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
             
             # Now wait for the statusbar update to be written on screen
             wx.Yield()
@@ -181,8 +180,7 @@ class FileActions(Actions):
         """Aborts file open"""
         
         statustext = "File loading aborted."
-        post_command_event(self.main_window, StatusBarMsg, 
-                           text=statustext)
+        post_command_event(self.main_window, StatusBarMsg, text=statustext)
         
         infile.close()
         
@@ -208,8 +206,7 @@ class FileActions(Actions):
         self.code_array.dict_grid.clear()
         
         # Clear attributes
-        c_a = self.code_array.dict_grid.cell_attributes
-        [c_a.pop() for _ in xrange(len(c_a))]
+        del self.code_array.dict_grid.cell_attributes[:]
         
         if shape is not None:
             # Set shape
@@ -348,8 +345,8 @@ class FileActions(Actions):
             else:
                 statustext = 'File signed'
                 
-            post_command_event(self.main_window, StatusBarMsg, 
-                               text=statustext)
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            
         else:
             msg = 'Cannot sign the file. Maybe PyMe is not installed.'
             short_msg = 'Cannot sign file!'
@@ -359,8 +356,7 @@ class FileActions(Actions):
         """Aborts file save"""
         
         statustext = "Save aborted."
-        post_command_event(self.main_window, StatusBarMsg, 
-                           text=statustext)
+        post_command_event(self.main_window, StatusBarMsg, text=statustext)
         
         outfile.close()
         os.remove(filepath)
@@ -385,9 +381,6 @@ class FileActions(Actions):
         self.saving = True
         self.need_abort = False
         
-        # Print this on IOErrors when writing to the outfile
-        ioerror_statustext = "Error writing to file " + filepath + "."
-        
         # Save file is compressed
         try:
             outfile = bz2.BZ2File(filepath, "wb")
@@ -403,8 +396,8 @@ class FileActions(Actions):
             outfile.write("0.1\n")
             
         except IOError:
-            post_command_event(self.main_window, StatusBarMsg, 
-                               text=ioerror_statustext)
+            statustext = "Error writing to file " + filepath + "."
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
             return False
         
         # The output generators yield the lines for the outfile
@@ -438,8 +431,9 @@ class FileActions(Actions):
                     outfile.write(line.encode("utf-8"))
                     
                 except IOError:
+                    statustext = "Error writing to file " + filepath + "."
                     post_command_event(self.main_window, StatusBarMsg, 
-                                       text=ioerror_statustext)
+                                       text=statustext)
                     return False
                 
                 # Enable abort during long saves
@@ -547,8 +541,8 @@ class TableTabActionsMixin(Actions):
         self.code_array.insert(tab, no_tabs, axis=2)
         
         # Update TableChoiceIntCtrl
-        post_command_event(self.main_window, ResizeGridMsg, 
-                           shape=self.grid.code_array.shape)
+        shape = self.grid.code_array.shape
+        post_command_event(self.main_window, ResizeGridMsg, shape=shape)
         
 
     def delete_tabs(self, tab, no_tabs=1):
@@ -560,8 +554,8 @@ class TableTabActionsMixin(Actions):
         self.code_array.delete(tab, no_tabs, axis=2)
         
         # Update TableChoiceIntCtrl
-        post_command_event(self.main_window, ResizeGridMsg, 
-                           shape=self.grid.code_array.shape)
+        shape = self.grid.code_array.shape
+        post_command_event(self.main_window, ResizeGridMsg, shape=shape)
 
 
 class TableActions(TableRowActionsMixin, TableColumnActionsMixin, 
@@ -596,8 +590,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         """Aborts import"""
         
         statustext = "Paste aborted."
-        post_command_event(self.main_window, StatusBarMsg, 
-                           text=statustext)
+        post_command_event(self.main_window, StatusBarMsg, text=statustext)
         
         self.pasting = False
         self.need_abort = False
@@ -958,6 +951,8 @@ class SelectionActions(Actions):
         return Selection(block_top_left, block_bottom_right, rows, cols, cells)
     
     def select_cell(self, row, col, add_to_selected=False):
+        """Selects a single cell"""
+        
         self.grid.SelectBlock(row, col, row, col, addToSelected=add_to_selected)
     
     def select_slice(self, row_slc, col_slc, add_to_selected=False):

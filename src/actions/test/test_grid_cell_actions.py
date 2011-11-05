@@ -196,7 +196,6 @@ class TestCellActions(object):
         for cell in tests:
             res = grid.code_array.cell_attributes[cell]["borderwidth_bottom"]
             assert res == tests[cell]
-        
     
     def test_toggle_attr(self):
         """Unit test for toggle_attr"""
@@ -211,17 +210,116 @@ class TestCellActions(object):
             res = grid.code_array.cell_attributes[cell]["underline"]
             assert res == tests[cell]
     
-    def test_change_frozen_attr(self):
-        """Unit test for toggle_attr"""
+    
+    param_change_frozen_attr = [ \
+        {'cell': (0, 0, 0), 'code': None, 'result': ''},
+        {'cell': (0, 0, 0), 'code': "'Test'", 'result': 'Test'},
+        {'cell': (2, 1, 1), 'code': "'Test'", 'result': 'Test'},
+        {'cell': (2, 1, 1), 'code': "32", 'result': 32},
+    ]
+    
+    @params(param_change_frozen_attr)
+    def test_change_frozen_attr(self, cell, code, result):
+        """Unit test for change_frozen_attr"""
         
-        pass
+        grid.actions.cursor = cell
+        grid.current_table = cell[2]
+        grid.code_array[cell] = code
+        
+        grid.actions.change_frozen_attr()
+        
+        res = eval(grid.code_array.cell_attributes[cell]["frozen"])
+        
+        assert res == result
+        
+        grid.actions.change_frozen_attr()
+        
+        res2 = grid.code_array.cell_attributes[cell]["frozen"]
+        
+        assert res2 == False
     
-    def test_get_new_cell_attr_state(self):
-        pass
     
-    def test_get_new_selection_attr_state(self):
-        pass
+    param_get_new_cell_attr_state = [ \
+        {'cell': (0, 0, 0), 'attr': "fontweight", 
+         'before': wx.NORMAL, 'next': wx.BOLD},
+        {'cell': (2, 1, 3), 'attr': "fontweight", 
+         'before': wx.NORMAL, 'next': wx.BOLD},
+        {'cell': (2, 1, 3), 'attr': "fontweight", 
+         'before': wx.BOLD, 'next': wx.NORMAL},
+        {'cell': (2, 1, 3), 'attr': "vertical_align", 
+         'before': "top", 'next': "middle"},
+    ]
+    
+    @params(param_get_new_cell_attr_state)
+    def test_get_new_cell_attr_state(self, cell, attr, before, next):
+        """Unit test for get_new_cell_attr_state"""
+        
+        grid.actions.cursor = cell
+        grid.current_table = cell[2]
+        
+        selection = Selection([], [], [], [], [cell[:2]])
+        grid.actions.set_attr(attr, before, selection)
+        
+        res = grid.actions.get_new_cell_attr_state(cell, attr)
+        
+        assert res == next
+    
+    param_get_new_selection_attr_state = [ \
+        {'selection': Selection([], [], [], [], [(0, 0)]), 'cell': (0, 0, 0),
+         'attr': "fontweight", 'before': wx.NORMAL, 'next': wx.BOLD},
+        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 2),
+         'attr': "fontweight", 'before': wx.NORMAL, 'next': wx.BOLD},
+        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 2),
+         'attr': "fontweight", 'before': wx.BOLD, 'next': wx.NORMAL},
+        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 2),
+         'attr': "vertical_align", 'before': "top", 'next': "middle"},
+        {'selection': Selection([(1, 0)], [(23, 2)], [], [], []), 
+         'cell': (2, 1, 2),
+         'attr': "vertical_align", 'before': "top", 'next': "middle"},
+    ]
+    
+    @params(param_get_new_selection_attr_state)
+    def test_get_new_selection_attr_state(self, cell, selection, attr, 
+                                          before, next):
+        """Unit test for get_new_selection_attr_state"""
+        
+        grid.actions.cursor = cell
+        grid.current_table = cell[2]
+        
+        grid.actions.set_attr(attr, before, selection)
+        
+        res = grid.actions.get_new_selection_attr_state(selection, attr)
+        
+        assert res == next
     
     def test_refresh_selected_frozen_cells(self):
-        pass
+        """Unit test for refresh_selected_frozen_cells"""
         
+        cell = (0, 0, 0)
+        
+        code1 = "1"
+        code2 = "2"
+        
+        grid.actions.cursor = cell
+        
+        # Fill cell
+        grid.code_array[cell] = code1
+        
+        assert grid.code_array[cell] == 1
+        
+        # Freeze cell
+        grid.actions.cursor = cell
+        grid.current_table = cell[2]
+        grid.actions.change_frozen_attr()
+        
+        res = eval(grid.code_array.cell_attributes[cell]["frozen"])
+        assert res == eval(code1)
+        
+        # Change cell code
+        grid.code_array[cell] = code2
+        assert grid.code_array[cell] == 1
+        
+        # Refresh cell
+        selection = Selection([], [], [], [], [cell[:2]])
+        grid.actions.refresh_selected_frozen_cells(selection=selection)
+        assert grid.code_array[cell] == 2

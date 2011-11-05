@@ -896,8 +896,8 @@ class CodeArray(DataArray):
         # Frozen cell handling
         if all(type(k) is not SliceType for k in key):
             frozen_res = self.cell_attributes[key]["frozen"]
-            if frozen_res is not False:
-                return frozen_res
+            if not(frozen_res is False):
+                return eval(frozen_res)
         
         # Normal cell handling
         
