@@ -308,23 +308,66 @@ class TestCodeArray(object):
 
     def test_make_nested_list(self):
         """Unit test for _make_nested_list"""
+        
+        pass
 
     def test_has_assignment(self):
         """Unit test for _has_assignment"""
+        
+        pass
 
     def test_eval_cell(self):
         """Unit test for _eval_cell"""
+        
+        pass
 
     def test_execute_macros(self):
         """Unit test for execute_macros"""
         
+        pass
+        
     def test_sorted_keys(self):
         """Unit test for _sorted_keys"""
+        
+        code_array = self.code_array
+        
+        keys = [(1, 0, 0), (2, 0, 0), (0, 1, 0), (0, 99, 0), (0, 0, 0), 
+                (0, 0, 99), (1, 2, 3)]
+        assert list(code_array._sorted_keys(keys, (0, 1, 0))) == \
+             [(0, 1, 0), (0, 99, 0), (1, 2, 3), (0, 0, 99), (0, 0, 0), 
+              (1, 0, 0), (2, 0, 0)]
+        sk = list(code_array._sorted_keys(keys, (0, 3, 0), reverse=True))
+        assert sk == [(0, 1, 0), (2, 0, 0), (1, 0, 0), (0, 0, 0), (0, 0, 99), 
+              (1, 2, 3), (0, 99, 0)]
 
     def test_string_match(self):
         """Tests creation of _string_match"""
         
-        pass
+        code_array = self.code_array
+        
+        test_strings = ["", "Hello", " Hello", "Hello ", " Hello ", "Hello\n",
+                        "THelloT", " HelloT", "THello ", "hello", "HELLO", "sd"]
+                        
+        search_string = "Hello"
+        
+        # Normal search
+        flags = []
+        results = [None, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, None]
+        for test_string, result in zip(test_strings, results):
+            res = code_array._string_match(test_string, search_string, flags)
+            assert res == result
+        
+        flags = ["MATCH_CASE"]
+        results = [None, 0, 1, 0, 1, 0, 1, 1, 1, None, None, None]
+        for test_string, result in zip(test_strings, results):
+            res = code_array._string_match(test_string, search_string, flags)
+            assert  res == result
+        
+        flags = ["WHOLE_WORD"]
+        results = [None, 0, 1, 0, 1, 0, None, None, None, 0, 0, None]
+        for test_string, result in zip(test_strings, results):
+            res = code_array._string_match(test_string, search_string, flags)
+            assert  res == result
 
     def test_findnextmatch(self):
         """Find method test"""

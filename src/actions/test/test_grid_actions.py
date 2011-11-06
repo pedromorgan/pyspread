@@ -21,8 +21,8 @@
 
 
 """
-test_grid_actions.py
-====================
+test_grid_actions
+=================
 
 Unit tests for _grid_actions.py
 

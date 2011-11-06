@@ -30,24 +30,34 @@ from lib.selection import Selection
 import actions._grid_actions
 
 class TestSelection(object):
-    """Unit test for Selection"""
+    """Unit tests for Selection"""
     
     def setup_method(self, method):
         """Creates selection"""
         
         self.selection = Selection([], [], [], [], [(32, 53), (34, 56)])
         self.SelectionCls = actions._grid_actions.Selection
+    
+    def test_nonzero(self):
+        """Unit test for __nonzero__"""
         
-    def test_str(self):
-        """Test string representation"""
+        pass
+    
+    def test_repr(self):
+        """Unit test for __repr__"""
         
         assert str(self.selection) == \
                "Selection([], [], [], [], [(32, 53), (34, 56)])"
+               
+    def test_eq(self):
+        """Unit test for __eq__"""
+        
+        pass
         
     def test_contains(self):
-        """Tests __contains__ functionality of selection class
+        """Unit test for __contains__
         
-        (ele in selection)"""
+        Used in: ele in selection"""
         
         assert (32, 53) in self.selection
         assert not (23, 34534534) in self.selection
@@ -76,10 +86,12 @@ class TestSelection(object):
         # Test cell selection
     
     def test_insert(self):
+        """Unit test for insert"""
+        
         pass
     
     def test_get_bbox(self):
-        """Test bounding box creation"""
+        """Unit test for get_bbox"""
         
         assert self.selection.get_bbox() == ((32, 53), (34, 56))
         
