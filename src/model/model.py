@@ -883,10 +883,20 @@ class CodeArray(DataArray):
     def __setitem__(self, key, value):
         """Sets cell code and resets result cache"""
         
-        DataArray.__setitem__(self, key, value)
+        # Prevent unchanged cells from being recalculated on cursor movement
         
-        # Reset result cache
-        self.result_cache = {} 
+        repr_key = repr(key)
+        
+        unchanged = (repr_key in self.result_cache and \
+                     value == self(key)) or \
+                    ((value is None or value == "") and \
+                     repr_key not in self.result_cache)
+
+        DataArray.__setitem__(self, key, value)
+
+        if not unchanged:
+            # Reset result cache
+            self.result_cache = {} 
     
     def __getitem__(self, key):
         """Returns _eval_cell"""
