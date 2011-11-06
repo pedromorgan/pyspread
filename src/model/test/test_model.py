@@ -35,8 +35,6 @@ from model.model import DataArray, CodeArray
 
 from lib.selection import Selection
 
-import lib.vartypes as v
-
 class TestKeyValueStore(object):
     """Unit test for KeyValueStore"""
     
@@ -73,11 +71,11 @@ class TestCellAttributes(object):
         selection_1 = Selection([(2, 2)], [(4, 5)], [55], [55, 66], [(34, 56)])
         selection_2 = Selection([], [], [], [], [(32, 53), (34, 56)])
         
-        self.cell_attr.append((selection_1, {"testattr": 3}))
-        self.cell_attr.append((selection_2, {"testattr": 2}))
+        self.cell_attr.append((selection_1, 0, {"testattr": 3}))
+        self.cell_attr.append((selection_2, 0, {"testattr": 2}))
         
-        assert self.cell_attr[32, 53]["testattr"] == 2
-        assert self.cell_attr[2, 2]["testattr"] == 3
+        assert self.cell_attr[32, 53, 0]["testattr"] == 2
+        assert self.cell_attr[2, 2, 0]["testattr"] == 3
 
 class TestParserMixin(object):
     """Unit test for ParserMixin"""
@@ -149,6 +147,14 @@ class TestDataArray(object):
 
     def test_cell_attributes(self):
         pass
+        
+    def test_iter(self):
+        pass
+
+    def test_macros(self):
+        """Unit test for _get_macros and _set_macros"""
+        
+        pass
 
     def test_keys(self):
         pass
@@ -156,30 +162,27 @@ class TestDataArray(object):
     def test_pop(self):
         pass
 
-    def test_get_shape(self):
-        """Test shape attribute"""
+    def test_shape(self):
+        """Unit test for _get_shape and _set_shape"""
         
         assert self.data_array.shape == (100, 100, 100)
-        
-    def test_set_shape(self):
-        """Test shape attribute"""
         
         self.data_array.shape = (10000, 100, 100)
         
         assert self.data_array.shape == (10000, 100, 100)
         
     def test_getstate(self):
-        """Test pickle support"""
+        """Unit test for __getstate__ (pickle support)"""
         
         assert "dict_grid" in self.data_array.__getstate__()
 
-    def test_getitem(self):
-        """Test shape attribute"""
+    def test_str(self):
+        """Unit test for __str__"""
         
-        pass 
+        pass
 
-    def test_setitem(self):
-        """Single and multiple item assignment test"""
+    def test_slicing(self):
+        """Unit test for __getitem__ and __setitem__"""
         
         self.data_array[0, 0, 0] = "'Test'"
         ##assert len(self.grid.unredo.undolist) == 1
@@ -187,18 +190,27 @@ class TestDataArray(object):
         ##assert len(self.grid.unredo.undolist) == 2
         
         assert self.data_array[0, 0, 0] == "'Tes'"
-        for teststring in v.getstrings(number=100, maxlength=1000):
-            x, y, z = [gmpy.rand('next', maxdim) \
-                            for maxdim in self.data_array.shape]
-            self.data_array[x, y, z] = "".join(["'", teststring, "'"])
-            
-            assert self.data_array[x, y, z] == "".join(["'", teststring, "'"])
         
     def test_cell_array_generator(self):
-        """"""
+        """Unit test for cell_array_generator"""
+        
+        pass
+
+    def test_adjust_shape(self):
+        """Unit test for _adjust_shape"""
         
         pass
         
+    def test_set_cell_attributes(self):
+        """Unit test for _set_cell_attributes"""
+        
+        pass
+
+    def test_adjust_cell_attributes(self):
+        """Unit test for _adjust_cell_attributes"""
+        
+        pass
+
     def test_insert(self):
         """Tests insert operation"""
         
@@ -236,13 +248,15 @@ class TestCodeArray(object):
         
         self.code_array = CodeArray((100, 10, 3))
         
-    def test_getitem(self):
-        """Test for item getting, slicing, basic evaluation correctness."""
+    def test_slicing(self):
+        """Unit test for __getitem__ and __setitem__"""
+        
+        #Test for item getting, slicing, basic evaluation correctness
         
         shape = self.code_array.shape
-        x_list = v.getints(1, shape[0]-1, 100)
-        y_list = v.getints(1, shape[1]-1, 100)
-        z_list = v.getints(1, shape[2]-1, 100)
+        x_list = [0, shape[0]-1]
+        y_list = [0, shape[1]-1]
+        z_list = [0, shape[2]-1]
         for x, y, z in zip(x_list, y_list, z_list):
             assert self.code_array[x, y, z] == None
             self.code_array[:x, :y, :z]
@@ -252,12 +266,9 @@ class TestCodeArray(object):
         orig_shape = self.code_array.shape
         assert get_shape == orig_shape
         
-        empty_grid = CodeArray((0, 0, 0))
-        assert empty_grid[:, :, :].tolist() == []
-        
         gridsize = 100
         filled_grid = CodeArray((gridsize, 10, 1))
-        for i in v.getints(-2**99, 2**99, 10):
+        for i in [-2**99, 2**99, 0]:
             for j in xrange(gridsize):
                 filled_grid[j, 0, 0] = str(i)
                 filled_grid[j, 1, 0] = str(i) + '+' + str(j)
@@ -292,17 +303,28 @@ class TestCodeArray(object):
         
         assert filled_grid[1, 0, 0] == sum(numpy.arange(0, 10, 0.1))
         
-        filled_grid[0, 0, 0] = "S[5:10, 1, 0]"
-        assert filled_grid[0, 0, 0].tolist() == range(7, 12)
+        ##filled_grid[0, 0, 0] = "S[5:10, 1, 0]"
+        ##assert filled_grid[0, 0, 0].tolist() == range(7, 12)
 
-    def test_cycle_detection(self):
-        """Tests creation of cycle detection graph"""
+    def test_make_nested_list(self):
+        """Unit test for _make_nested_list"""
+
+    def test_has_assignment(self):
+        """Unit test for _has_assignment"""
+
+    def test_eval_cell(self):
+        """Unit test for _eval_cell"""
+
+    def test_execute_macros(self):
+        """Unit test for execute_macros"""
         
-        self.code_array[0, 1, 0] = 'S[1, 1, 0]'
-        self.code_array[1, 1, 0] = 'S[0, 1, 0]'
-        res = self.code_array[1, 1, 0]
-        comp = KeyError("Circular dependency at (1, 1, 0)")
-        assert repr(res) == repr(comp)
+    def test_sorted_keys(self):
+        """Unit test for _sorted_keys"""
+
+    def test_string_match(self):
+        """Tests creation of _string_match"""
+        
+        pass
 
     def test_findnextmatch(self):
         """Find method test"""

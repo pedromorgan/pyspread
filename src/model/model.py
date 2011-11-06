@@ -529,8 +529,11 @@ class DataArray(object):
         
         return {"dict_grid": self.dict_grid}
     
+    def __str__(self):
+        return self.dict_grid.__str__()
+    
     # Slice support
-       
+    
     def __getitem__(self, key):
         """Adds slicing access to cell code retrieval
         
@@ -562,9 +565,6 @@ class DataArray(object):
         # key_ele should be a single cell
         
         return self.dict_grid[key]
-    
-    def __str__(self):
-        return self.dict_grid.__str__()
     
     def __setitem__(self, key, value):
         """Accepts index and slice keys"""
@@ -643,10 +643,8 @@ class DataArray(object):
         for i, key_ele in enumerate(key):
             
             # Get first element of key that is a slice
-            
             if type(key_ele) is SliceType:
                 slc_keys = xrange(*key_ele.indices(self.dict_grid.shape[i]))
-                
                 key_list = list(key)
                 
                 key_list[i] = None
