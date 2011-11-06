@@ -997,6 +997,8 @@ class SelectionActions(Actions):
         
         for key in del_keys:
             self.grid.actions.delete_cell(key)
+        
+        self.grid.code_array.result_cache.clear()
 
 class FindActions(Actions):
     """Actions for finding inside the grid"""
