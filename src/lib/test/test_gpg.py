@@ -36,33 +36,55 @@ path.insert(0, "../..")
 import wx
 app = wx.App()
 
+import os
+
+import lib.gpg as gpg
+from lib.testlib import params, pytest_generate_tests
+
+from config import config
     
 def test_is_pyme_present():
     """Unit test for is_pyme_present"""
     
-    pass
+    try:
+        import pyme
+        pyme_present = True
+    except ImportError:
+        pyme_present = False
+        
+    assert gpg.is_pyme_present() == pyme_present
 
-def test_passphrase_callback():
-    """Unit test for _passphrase_callback"""
+def _set_sig(filename, sigfilename):
     
-    pass
-
-def test_get_file_data():
-    """Unit test for _get_file_data"""
     
-    pass
-
-def test_genkey():
-    """Unit test for genkey"""
+    signature = gpg.sign(filename)
     
-    pass
+    sigfile = open(sigfilename, "w")
+    sigfile.write(signature)
+    sigfile.close()
 
 def test_sign():
     """Unit test for sign"""
     
-    pass
+    filename = "test1.pys"
+    sigfilename = filename + ".sig"
+    
+    _set_sig(filename, sigfilename)
+    
+    valid = gpg.verify(sigfilename, filename)
+    
+    assert valid
 
-def test_verify():
+param_verify = [ \
+    {'filename': "test1.pys", 'sigfilename': "test1.pys.sig", 'valid': True},
+    {'filename': "test1.pys", 'sigfilename': "test1.pys.empty", 'valid': False},
+    {'filename': "test1.pys", 'sigfilename': "test1.pys.nonsense", 
+     'valid': False},
+]
+
+@params(param_verify)
+def test_sign_verify(filename, sigfilename, valid):
     """Unit test for verify"""
     
-    pass
+    assert valid == gpg.verify(sigfilename, filename)    
+    

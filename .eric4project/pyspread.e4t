@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.2.dtd">
 <!-- eric4 tasks file for project pyspread -->
-<!-- Saved: 2011-11-06, 23:17:32 -->
+<!-- Saved: 2011-11-08, 21:27:46 -->
 <Tasks version="4.2">
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Code for cell selection by mouse here</Summary>
@@ -24,7 +24,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: This still fails and I do not know how to identify binary files</Summary>
     <Description></Description>
-    <Created>2011-11-05, 19:39:59</Created>
+    <Created>2011-11-08, 21:26:07</Created>
     <Resource>
       <Filename>src/actions/test/test_main_window_actions.py</Filename>
       <Linenumber>165</Linenumber>
@@ -33,7 +33,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Test hangs when doing py.test for all tests in directory</Summary>
     <Description></Description>
-    <Created>2011-11-05, 19:39:59</Created>
+    <Created>2011-11-08, 21:26:07</Created>
     <Resource>
       <Filename>src/actions/test/test_main_window_actions.py</Filename>
       <Linenumber>235</Linenumber>
@@ -42,7 +42,7 @@
   <Task priority="1" completed="False" bugfix="False">
     <Summary>TODO: Save macros is pretty direct so that the necessary file</Summary>
     <Description></Description>
-    <Created>2011-11-05, 19:39:59</Created>
+    <Created>2011-11-08, 21:26:07</Created>
     <Resource>
       <Filename>src/actions/test/test_main_window_actions.py</Filename>
       <Linenumber>299</Linenumber>
