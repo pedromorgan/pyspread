@@ -36,21 +36,50 @@ path.insert(0, "../..")
 import wx
 app = wx.App()
 
+from lib.testlib import params, pytest_generate_tests
+
+from lib.clipboard import Clipboard
+
 class TestClipboard(object):
     """Unit tests for Clipboard"""
     
-    def test_convert_clipboard(self):
+    clipboard = Clipboard()
+    
+    param_convert_clipboard = [ \
+        {'data': "1\t2\t3", 'sep': "\t", 'res': [['1', '2', '3']]},
+        {'data': "1\t2\t3\n4\t5\t6", 'sep': "\t", 
+         'res': [['1', '2', '3'], ['4', '5', '6']]},
+        {'data': "1,2,3\n4,5,6", 'sep': ",", 
+         'res': [['1', '2', '3'], ['4', '5', '6']]},
+    ]
+    
+    @params(param_convert_clipboard)
+    def test_convert_clipboard(self, data, sep, res):
         """Unit test for _convert_clipboard"""
         
-        pass
+        gengen = self.clipboard._convert_clipboard(data, sep)
+        result = list(list(linegen) for linegen in gengen)
+        
+        assert result == res
     
-    def test_get_clipboard(self):
-        """Unit test for get_clipboard"""
-        
-        pass
+    param_set_get_clipboard = [ \
+        {'text': ""},
+        {'text': "Test"},
+        {'text': u"ÓÓó€ëáßðïœ"},
+        {'text': "Test1\tTest2"},
+        {'text': "\b"},
+    ]
     
-    def test_set_clipboard(self):
-        """Unit test for set_clipboard"""
+    @params(param_set_get_clipboard)
+    def test_set_get_clipboard(self, text):
+        """Unit test for get_clipboard and set_clipboard"""
         
-        pass
+        clipboard = wx.TheClipboard
         
+        textdata = wx.TextDataObject()
+        textdata.SetText(text)
+        clipboard.Open()
+        clipboard.SetData(textdata)
+        clipboard.Close()
+        
+        assert self.clipboard.get_clipboard() == text
