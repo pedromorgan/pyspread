@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.6.dtd">
 <!-- eric4 project file for project pyspread -->
-<!-- Saved: 2011-11-10, 00:05:07 -->
+<!-- Saved: 2011-11-10, 21:54:26 -->
 <!-- Copyright (C) 2011 Martin Manns, mmanns@gmx.net -->
 <Project version="4.6">
   <Language>en</Language>
@@ -13,59 +13,58 @@
   <Email>mmanns@gmx.net</Email>
   <Sources>
     <Source>setup.py</Source>
-    <Source>src/pyspread.py</Source>
-    <Source>src/config.py</Source>
-    <Source>src/gui/_menubars.py</Source>
-    <Source>src/gui/_events.py</Source>
-    <Source>src/gui/_main_window.py</Source>
-    <Source>src/gui/_grid.py</Source>
-    <Source>src/gui/_toolbars.py</Source>
-    <Source>src/gui/_widgets.py</Source>
-    <Source>src/gui/_dialogs.py</Source>
-    <Source>src/actions/_grid_actions.py</Source>
-    <Source>src/actions/_main_window_actions.py</Source>
-    <Source>src/actions/_grid_cell_actions.py</Source>
-    <Source>src/gui/_grid_table.py</Source>
-    <Source>src/gui/_grid_renderer.py</Source>
-    <Source>src/gui/_gui_interfaces.py</Source>
-    <Source>src/actions/test/test_grid_cell_actions.py</Source>
-    <Source>src/actions/test/test_grid_actions.py</Source>
-    <Source>src/actions/test/test_main_window_actions.py</Source>
-    <Source>src/gui/_printout.py</Source>
-    <Source>src/lib/test/test_xrect.py</Source>
-    <Source>src/lib/selection.py</Source>
-    <Source>src/model/model.py</Source>
-    <Source>src/model/test/test_model.py</Source>
-    <Source>src/lib/test/test_selection.py</Source>
-    <Source>doc/help/__init__.py</Source>
-    <Source>share/icons/Tango/24x24/actions/__init__.py</Source>
-    <Source>doc/help/faq.html</Source>
-    <Source>doc/help/manual.html</Source>
-    <Source>doc/help/tutorial.html</Source>
-    <Source>src/model/unredo.py</Source>
-    <Source>src/lib/typechecks.py</Source>
-    <Source>src/model/test/test_unredo.py</Source>
-    <Source>src/lib/xrect.py</Source>
-    <Source>COPYING</Source>
+    <Source>pyspread/src/pyspread.py</Source>
+    <Source>pyspread/src/config.py</Source>
+    <Source>pyspread/src/gui/_menubars.py</Source>
+    <Source>pyspread/src/gui/_events.py</Source>
+    <Source>pyspread/src/gui/_main_window.py</Source>
+    <Source>pyspread/src/gui/_grid.py</Source>
+    <Source>pyspread/src/gui/_toolbars.py</Source>
+    <Source>pyspread/src/gui/_widgets.py</Source>
+    <Source>pyspread/src/gui/_dialogs.py</Source>
+    <Source>pyspread/src/actions/_grid_actions.py</Source>
+    <Source>pyspread/src/actions/_main_window_actions.py</Source>
+    <Source>pyspread/src/actions/_grid_cell_actions.py</Source>
+    <Source>pyspread/src/gui/_grid_table.py</Source>
+    <Source>pyspread/src/gui/_grid_renderer.py</Source>
+    <Source>pyspread/src/gui/_gui_interfaces.py</Source>
+    <Source>pyspread/src/actions/test/test_grid_cell_actions.py</Source>
+    <Source>pyspread/src/actions/test/test_grid_actions.py</Source>
+    <Source>pyspread/src/actions/test/test_main_window_actions.py</Source>
+    <Source>pyspread/src/gui/_printout.py</Source>
+    <Source>pyspread/src/lib/test/test_xrect.py</Source>
+    <Source>pyspread/src/lib/selection.py</Source>
+    <Source>pyspread/src/model/model.py</Source>
+    <Source>pyspread/src/model/test/test_model.py</Source>
+    <Source>pyspread/src/lib/test/test_selection.py</Source>
+    <Source>pyspread/doc/help/__init__.py</Source>
+    <Source>pyspread/share/icons/Tango/24x24/actions/__init__.py</Source>
+    <Source>pyspread/doc/help/faq.html</Source>
+    <Source>pyspread/doc/help/manual.html</Source>
+    <Source>pyspread/doc/help/tutorial.html</Source>
+    <Source>pyspread/src/model/unredo.py</Source>
+    <Source>pyspread/src/lib/typechecks.py</Source>
+    <Source>pyspread/src/model/test/test_unredo.py</Source>
+    <Source>pyspread/src/lib/xrect.py</Source>
+    <Source>pyspread/COPYING</Source>
     <Source>PKG-INFO</Source>
     <Source>README</Source>
-    <Source>thanks</Source>
-    <Source>pyspread.desktop</Source>
-    <Source>pyspread.rst</Source>
+    <Source>pyspread/thanks</Source>
+    <Source>pyspread/pyspread.desktop</Source>
+    <Source>pyspread/pyspread.rst</Source>
     <Source>changelog</Source>
-    <Source>authors</Source>
-    <Source>src/sysvars.py</Source>
-    <Source>src/gui/icons.py</Source>
-    <Source>src/lib/test/test_typechecks.py</Source>
-    <Source>src/lib/testlib.py</Source>
-    <Source>src/lib/gpg.py</Source>
-    <Source>src/lib/clipboard.py</Source>
-    <Source>src/lib/__csv.py</Source>
-    <Source>src/lib/parsers.py</Source>
-    <Source>src/lib/test/test_clipboard.py</Source>
-    <Source>src/lib/test/test_csv.py</Source>
-    <Source>src/lib/test/test_parsers.py</Source>
-    <Source>src/lib/test/test_gpg.py</Source>
+    <Source>pyspread/src/sysvars.py</Source>
+    <Source>pyspread/src/gui/icons.py</Source>
+    <Source>pyspread/src/lib/test/test_typechecks.py</Source>
+    <Source>pyspread/src/lib/testlib.py</Source>
+    <Source>pyspread/src/lib/gpg.py</Source>
+    <Source>pyspread/src/lib/clipboard.py</Source>
+    <Source>pyspread/src/lib/__csv.py</Source>
+    <Source>pyspread/src/lib/parsers.py</Source>
+    <Source>pyspread/src/lib/test/test_clipboard.py</Source>
+    <Source>pyspread/src/lib/test/test_csv.py</Source>
+    <Source>pyspread/src/lib/test/test_parsers.py</Source>
+    <Source>pyspread/src/lib/test/test_gpg.py</Source>
   </Sources>
   <Forms>
   </Forms>
@@ -77,7 +76,7 @@
   </Interfaces>
   <Others>
   </Others>
-  <MainScript>src/pyspread.py</MainScript>
+  <MainScript>pyspread/src/pyspread.py</MainScript>
   <Vcs>
     <VcsType>None</VcsType>
   </Vcs>
