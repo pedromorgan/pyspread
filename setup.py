@@ -20,10 +20,8 @@ setup(name='pyspread',
          'share/icons/Tango/24x24/toggles/*.png', 
          'share/icons/Tango/24x24/toggles/*.xpm',
          'doc/help/*.html', 'doc/help/images/*.png',
+         'examples/*',
          'COPYING', 'thanks', 'faq', 'authors']},
-      data_files=[ \
-        ('', ['examples/*.py']),
-      ],
       classifiers=[ \
         'Development Status :: 4 - Beta',
         'Environment :: X11 Applications :: GTK',
