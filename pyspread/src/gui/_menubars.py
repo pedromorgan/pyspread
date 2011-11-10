@@ -182,7 +182,7 @@ class MainMenu(_filledMenu):
             [item, [PageSetupMsg, "Page setup", 
                 "Setup printer page"]], \
             [item, [PrintPreviewMsg, "Print preview\tShift+Ctrl+p", 
-                "Print previe&w", wx.ID_PREVIEW]], \
+                "Print preview", wx.ID_PREVIEW]], \
             [item, [PrintMsg, "&Print\tCtrl+p", 
                 "Print current spreadsheet", wx.ID_PRINT]], \
             ["Separator"], \

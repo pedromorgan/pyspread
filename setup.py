@@ -19,10 +19,10 @@ setup(name='pyspread',
          'share/icons/Tango/24x24/actions/*.png', 
          'share/icons/Tango/24x24/toggles/*.png', 
          'share/icons/Tango/24x24/toggles/*.xpm',
-         'doc/help/*.html', 'doc/help/images/*.png', 
+         'doc/help/*.html', 'doc/help/images/*.png',
          'COPYING', 'thanks', 'faq', 'authors']},
       data_files=[ \
-        ('examples', ['examples/*']),
+        ('', ['examples/*.py']),
       ],
       classifiers=[ \
         'Development Status :: 4 - Beta',
