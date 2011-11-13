@@ -98,19 +98,6 @@ class DefaultConfig(object):
         
         self.gpg_key_uid = repr('pyspread_' + getuser())
         self.gpg_key_passphrase = repr("pyspread") # Set this individually!
-        
-        self.gpg_key_parameters = \
-            '<GnupgKeyParms format="internal">\n' + \
-            'Key-Type: DSA\n' + \
-            'Key-Length: 2048\n' + \
-            'Subkey-Type: ELG-E\n' + \
-            'Subkey-Length: 2048\n' + \
-            'Name-Real: ' + eval(self.gpg_key_uid) + '\n' + \
-            'Name-Comment: Pyspread savefile signature keys\n' + \
-            'Name-Email: pyspread@127.0.0.1\n' + \
-            'Passphrase: ' + eval(self.gpg_key_passphrase) + '\n' + \
-            'Expire-Date: 0\n' + \
-            '</GnupgKeyParms>'
 
         # CSV parameters for import and export
         # ------------------------------------

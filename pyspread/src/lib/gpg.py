@@ -73,6 +73,19 @@ def _get_file_data(filename):
 def genkey():
     """Creates a new standard GPG key"""
     
+    gpg_key_parameters = \
+        '<GnupgKeyParms format="internal">\n' + \
+        'Key-Type: DSA\n' + \
+        'Key-Length: 2048\n' + \
+        'Subkey-Type: ELG-E\n' + \
+        'Subkey-Length: 2048\n' + \
+        'Name-Real: ' + config["gpg_key_uid"] + '\n' + \
+        'Name-Comment: Pyspread savefile signature keys\n' + \
+        'Name-Email: pyspread@127.0.0.1\n' + \
+        'Passphrase: ' + config["gpg_key_passphrase"] + '\n' + \
+        'Expire-Date: 0\n' + \
+        '</GnupgKeyParms>'
+    
     # Initialize our context.
     core.check_version(None)
 
@@ -88,7 +101,7 @@ def genkey():
         # Key not present --> Create new one
         print "Generating new GPG key", keyname, \
               ". This may take some time..."
-        context.op_genkey(config["gpg_key_parameters"], None, None)
+        context.op_genkey(gpg_key_parameters, None, None)
         print context.op_genkey_result().fpr
 
 
