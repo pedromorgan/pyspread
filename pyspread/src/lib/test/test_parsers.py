@@ -31,12 +31,36 @@ import wx
 
 app= wx.App()
 
-import lib.parsers as parsers
-        
-def test_get_font_from_data():
-    pass
+from lib.testlib import params, pytest_generate_tests
+
+from lib.parsers import get_font_from_data, get_pen_from_data
+
+param_font = [ \
+    {"fontdata": "Sans 13", "face": "Sans", "size": 13},
+    {"fontdata": "Serif 43", "face": "Serif", "size": 43},
+]
+
+@params(param_font)
+def test_get_font_from_data(fontdata, face, size):
+    """Unit test for get_font_from_data"""
     
-def test_get_pen_from_data():
-    pass
-        
+    font = get_font_from_data(fontdata)
+    
+    assert font.GetFaceName() == face
+    assert font.GetPointSize() == size
+
+param_pen = [ \
+    {"pendata": [wx.RED.GetRGB(), 4], "width": 4, "color": wx.Colour(255, 0, 0, 255)},
+    {"pendata": [wx.BLUE.GetRGB(), 1], "width": 1, "color": wx.Colour(0, 0, 255, 255)},
+    {"pendata": [wx.GREEN.GetRGB(), 0], "width": 0, "color": wx.Colour(0, 255, 0, 255)},
+]
+
+@params(param_pen)
+def test_get_pen_from_data(pendata, width, color):
+    """Unit test for get_pen_from_data"""
+    
+    pen = get_pen_from_data(pendata)
+    
+    assert pen.GetColour() == color
+    assert pen.GetWidth() == width
 
