@@ -30,10 +30,10 @@ import numpy
 import wx
 app = wx.App()
 
-from model.model import KeyValueStore, CellAttributes, DictGrid
-from model.model import DataArray, CodeArray
+from pyspread.src.model.model import KeyValueStore, CellAttributes, DictGrid
+from pyspread.src.model.model import DataArray, CodeArray
 
-from lib.selection import Selection
+from pyspread.src.lib.selection import Selection
 
 class TestKeyValueStore(object):
     """Unit test for KeyValueStore"""

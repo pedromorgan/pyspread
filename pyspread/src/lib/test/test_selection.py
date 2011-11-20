@@ -26,7 +26,7 @@ path.insert(0, "../..")
 import wx
 app = wx.App()
 
-from lib.selection import Selection
+from pyspread.src.lib.selection import Selection
 import actions._grid_actions
 
 class TestSelection(object):

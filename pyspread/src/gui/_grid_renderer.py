@@ -36,11 +36,11 @@ import types
 
 import wx.grid
 
-import lib.xrect as xrect
+import pyspread.src.lib.xrect as xrect
 
-from lib.parsers import get_pen_from_data, get_font_from_data
+from pyspread.src.lib.parsers import get_pen_from_data, get_font_from_data
 
-from config import config
+from pyspread.src.config import config
 
 class GridRenderer(wx.grid.PyGridCellRenderer):
     """This renderer draws borders and text at specified font, size, color"""

@@ -26,7 +26,7 @@ path.insert(0, "../..")
 import wx
 app = wx.App()
 
-from model.unredo import UnRedo
+from pyspread.src.model.unredo import UnRedo
 
 class TestUnRedo(object):
     """Unit test for UnRedo"""

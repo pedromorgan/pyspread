@@ -46,10 +46,10 @@ import numpy
 
 import wx
 
-from config import config
+from pyspread.src.config import config
 
-from lib.typechecks import is_slice_like, is_string_like, is_generator_like
-from lib.selection import Selection
+from pyspread.src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
+from pyspread.src.lib.selection import Selection
 
 from unredo import UnRedo
 

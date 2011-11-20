@@ -33,7 +33,7 @@ import types
 
 import wx
 
-from sysvars import get_program_path
+from pyspread.src.sysvars import get_program_path
 
 class _ArtProvider(wx.ArtProvider):
     """Provides extra icons in addition to the standard ones

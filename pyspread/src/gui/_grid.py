@@ -39,10 +39,10 @@ from _grid_renderer import GridRenderer
 from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
 
-import lib.xrect as xrect
-from model.model import CodeArray
+import pyspread.src.lib.xrect as xrect
+from pyspread.src.model.model import CodeArray
 
-from actions._grid_actions import AllGridActions
+from pyspread.src.actions._grid_actions import AllGridActions
 
 class Grid(wx.grid.Grid):
     """Pyspread's main grid"""

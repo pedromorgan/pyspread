@@ -1,26 +1,29 @@
 #!/usr/bin/env python
 
-from distutils2.core import setup, find_packages
+from distutils.core import setup
+from distutils.sysconfig import get_python_lib
 
 setup(name='pyspread',
       version='0.1.3',
-      summary='Python Spreadsheet',
+      description='Python Spreadsheet',
+      license='GPL v3 :: GNU General Public License',
       keywords=['spreadsheet', 'pyspread'],
       author='Martin Manns',
       author_email='mmanns@gmx.net',
-      home_page='http://pyspread.sourceforge.net',
-      license='GPL v3 :: GNU General Public License',
-      packages=find_packages(),
+      url='http://pyspread.sourceforge.net',
       requires=['numpy (>=1.1)', 'wx (>=2.8.10)'],
-      scripts=['pyspread'],
-      package_dir={'': ''},
+      packages=[''],
+      scripts=['pyspread/pyspread'],
       package_data={'':
-        ['share/icons/*.png',
-         'share/icons/Tango/24x24/actions/*.png', 
-         'share/icons/Tango/24x24/toggles/*.png', 
-         'share/icons/Tango/24x24/toggles/*.xpm',
-         'doc/help/*.html', 'doc/help/images/*.png',
-         'examples/*',
+        ['pyspread/src/*.py',
+         'pyspread/src/pyspread',
+         'pyspread/src/*/*.py',
+         'pyspread/share/icons/*.png',
+         'pyspread/share/icons/Tango/24x24/actions/*.png', 
+         'pyspread/share/icons/Tango/24x24/toggles/*.png', 
+         'pyspread/share/icons/Tango/24x24/toggles/*.xpm',
+         'pyspread/doc/help/*.html', 'pyspread/doc/help/images/*.png',
+         'pyspread/examples/*',
          'COPYING', 'thanks', 'faq', 'authors']},
       classifiers=[ \
         'Development Status :: 4 - Beta',

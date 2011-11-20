@@ -26,9 +26,9 @@ path.insert(0, "../..")
 import wx
 app = wx.App()
 
-from lib.testlib import params, pytest_generate_tests
+from pyspread.src.lib.testlib import params, pytest_generate_tests
 
-from lib.typechecks import is_slice_like, is_string_like, is_generator_like
+from pyspread.src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
 
 param_slc = [ \
     {"slc": slice(None, None, None), "res": True},

@@ -36,23 +36,23 @@ import wx.aui
 
 import wx.lib.agw.genericmessagedialog as GMD
 
-from config import config
+from pyspread.src.config import config
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, FindToolbar, AttributesToolbar
 from _widgets import EntryLine, StatusBar, TableChoiceIntCtrl
 
-from lib.clipboard import Clipboard
+from pyspread.src.lib.clipboard import Clipboard
 
 from _gui_interfaces import GuiInterfaces
-from gui.icons import icons
+from pyspread.src.gui.icons import icons
 
 from _grid import Grid
-from model.model import CodeArray
+from pyspread.src.model.model import CodeArray
 
 from _events import *
 
-from actions._main_window_actions import AllMainWindowActions
+from pyspread.src.actions._main_window_actions import AllMainWindowActions
 
 class MainWindow(wx.Frame):
     """Main window of pyspread"""

@@ -50,23 +50,23 @@ import os
 
 import wx
 
-from config import config
+from pyspread.src.config import config
 
-from gui._grid_table import GridTable
-from lib.parsers import get_font_from_data
-from lib.gpg import sign, verify, is_pyme_present
-from lib.selection import Selection
+from pyspread.src.gui._grid_table import GridTable
+from pyspread.src.lib.parsers import get_font_from_data
+from pyspread.src.lib.gpg import sign, verify, is_pyme_present
+from pyspread.src.lib.selection import Selection
 
-from actions._main_window_actions import Actions
-from actions._grid_cell_actions import CellActions
+from pyspread.src.actions._main_window_actions import Actions
+from pyspread.src.actions._grid_cell_actions import CellActions
 
-from gui._events import EVT_COMMAND_GRID_ACTION_NEW
-from gui._events import EVT_COMMAND_GRID_ACTION_TABLE_SWITCH
-from gui._events import EVT_COMMAND_GRID_ACTION_OPEN
-from gui._events import EVT_COMMAND_GRID_ACTION_SAVE
-from gui._events import post_command_event, SafeModeEntryMsg
-from gui._events import SafeModeExitMsg, StatusBarMsg, ContentChangedMsg
-from gui._events import ResizeGridMsg, GridActionTableSwitchMsg
+from pyspread.src.gui._events import EVT_COMMAND_GRID_ACTION_NEW
+from pyspread.src.gui._events import EVT_COMMAND_GRID_ACTION_TABLE_SWITCH
+from pyspread.src.gui._events import EVT_COMMAND_GRID_ACTION_OPEN
+from pyspread.src.gui._events import EVT_COMMAND_GRID_ACTION_SAVE
+from pyspread.src.gui._events import post_command_event, SafeModeEntryMsg
+from pyspread.src.gui._events import SafeModeExitMsg, StatusBarMsg, ContentChangedMsg
+from pyspread.src.gui._events import ResizeGridMsg, GridActionTableSwitchMsg
 
 
 class FileActions(Actions):

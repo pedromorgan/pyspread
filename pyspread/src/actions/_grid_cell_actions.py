@@ -21,12 +21,12 @@
 
 import wx
 
-from lib.selection import Selection
+from pyspread.src.lib.selection import Selection
 
-from actions._main_window_actions import Actions
+from pyspread.src.actions._main_window_actions import Actions
 
-from gui._events import post_command_event, EntryLineMsg, ContentChangedMsg
-from gui._events import StatusBarMsg
+from pyspread.src.gui._events import post_command_event, EntryLineMsg, ContentChangedMsg
+from pyspread.src.gui._events import StatusBarMsg
 
 """
 _grid_cell_actions.py

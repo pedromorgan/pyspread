@@ -34,7 +34,7 @@ Provides:
 
 import wx
 
-from sysvars import get_font_list
+from pyspread.src.sysvars import get_font_list
 
 from _events import *
 

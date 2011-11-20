@@ -60,14 +60,14 @@ except KeyError:
 from wx import App
 from wx import InitAllImageHandlers
 
-from gui._events import post_command_event, GridActionOpenMsg
-
-DEBUG = False
-
 # If pyspread is installed but run from a local dir
 # the local libs are preferred.
 
 path.insert(0, "..") 
+
+from pyspread.src.gui._events import post_command_event, GridActionOpenMsg
+
+DEBUG = False
 
 class Commandlineparser(object):
     """
@@ -81,7 +81,7 @@ class Commandlineparser(object):
     """
     
     def __init__(self):
-        from config import config
+        from pyspread.src.config import config
         usage = "usage: %prog [options] [filename]"
         version = "%prog " + unicode(config["version"])
         self.parser = optparse.OptionParser(usage=usage, version=version)
@@ -134,7 +134,7 @@ class MainApplication(App):
         InitAllImageHandlers()
 
         # Main window creation
-        from gui._main_window import MainWindow
+        from pyspread.src.gui._main_window import MainWindow
         
         self.main_window = MainWindow(None, title="pyspread")
         
@@ -144,10 +144,10 @@ class MainApplication(App):
         
         # Create GPG key if not present
         
-        from lib.gpg import is_pyme_present
+        from pyspread.src.lib.gpg import is_pyme_present
         
         if is_pyme_present():
-            from lib.gpg import genkey
+            from pyspread.src.lib.gpg import genkey
             genkey()
             
         # Show application window
