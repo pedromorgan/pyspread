@@ -36,7 +36,7 @@ from pyspread.src.model.model import DataArray, CodeArray
 from pyspread.src.lib.selection import Selection
 
 class TestKeyValueStore(object):
-    """Unit test for KeyValueStore"""
+    """Unit tests for KeyValueStore"""
     
     def setup_method(self, method):
         """Creates empty KeyValueStore"""
@@ -53,7 +53,7 @@ class TestKeyValueStore(object):
         assert self.k_v_store[(1,2,3)] == 7
 
 class TestCellAttributes(object):
-    """Unit test for CellAttributes"""
+    """Unit tests for CellAttributes"""
     
     def setup_method(self, method):
         """Creates empty CellAttributes"""
@@ -78,10 +78,22 @@ class TestCellAttributes(object):
         assert self.cell_attr[2, 2, 0]["testattr"] == 3
 
 class TestParserMixin(object):
-    """Unit test for ParserMixin"""
+    """Unit tests for ParserMixin"""
+    
+    def setup_method(self, method):
+        """Creates empty DictGrid"""
+        
+        self.dict_grid = DictGrid((10, 10, 10))
     
     def test_parse_to_shape(self):
-        pass
+        """Unit test for parse_to_shape"""
+        
+        line = "12\t12\t32"
+        
+        self.dict_grid.parse_to_shape(line)
+        
+        assert self.dict_grid.shape == (12, 12, 32)
+        
 
     def test_parse_to_grid(self):
         pass
@@ -99,7 +111,7 @@ class TestParserMixin(object):
         pass
 
 class TestStringGeneratorMixin(object):
-    """Unit test for StringGeneratorMixin"""
+    """Unit tests for StringGeneratorMixin"""
     
     def test_grid_to_strings(self):
         pass
@@ -118,7 +130,7 @@ class TestStringGeneratorMixin(object):
 
 
 class TestDictGrid(object):
-    """Unit test for DictGrid"""
+    """Unit tests for DictGrid"""
     
     def setup_method(self, method):
         """Creates empty DictGrid"""
@@ -132,7 +144,7 @@ class TestDictGrid(object):
             self.dict_grid[100, 0, 0]
         
 class TestDataArray(object):
-    """Unit test for DataArray"""
+    """Unit tests for DataArray"""
     
     def setup_method(self, method):
         """Creates empty DataArray"""
@@ -241,7 +253,7 @@ class TestDataArray(object):
 
 
 class TestCodeArray(object):
-    """Unit test for CodeArray"""
+    """Unit tests for CodeArray"""
     
     def setup_method(self, method):
         """Creates empty DataArray"""
