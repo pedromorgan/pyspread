@@ -96,19 +96,44 @@ class TestParserMixin(object):
         
 
     def test_parse_to_grid(self):
-        pass
+        """Unit test for parse_to_grid"""
+        
+        line = "1\t2\t3\t'123'"
+        
+        self.dict_grid.parse_to_grid(line)
+        
+        assert self.dict_grid[(1, 2, 3)] == '123'
 
     def test_parse_to_attribute(self):
         pass
 
     def test_parse_to_height(self):
-        pass
+        """Unit test for parse_to_height"""
+        
+        line = "1\t0\t45"
+        
+        self.dict_grid.parse_to_height(line)
+        
+        assert self.dict_grid.row_heights[(1, 0, 0)] == 45
 
     def test_parse_to_width(self):
-        pass
+        """Unit test for parse_to_width"""
+        
+        line = "1\t0\t43"
+        
+        self.dict_grid.parse_to_width(line)
+        
+        assert self.dict_grid.col_widths[(1, 0, 0)] == 43
 
     def test_parse_to_macro(self):
-        pass
+        """Unit test for parse_to_macro"""
+        
+        line = "Test"
+        
+        self.dict_grid.parse_to_macro(line)
+        
+        assert self.dict_grid.macros == line
+        
 
 class TestStringGeneratorMixin(object):
     """Unit tests for StringGeneratorMixin"""
