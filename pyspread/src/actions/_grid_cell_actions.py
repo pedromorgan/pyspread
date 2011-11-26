@@ -299,8 +299,10 @@ class CellActions(Actions):
             # Change None result to empty cell
             if res_obj is None:
                 res_obj = u""
-                
+            
+            numpy.set_printoptions(threshold=2**100)
             frozen_code = repr(res_obj)
+            numpy.set_printoptions()
 
         else: 
             # We have a frozen cell that is unfrozen

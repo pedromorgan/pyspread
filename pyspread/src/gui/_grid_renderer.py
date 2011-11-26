@@ -100,7 +100,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
     def get_text_rotorect(self, text_pos, text_extent):
         """Returns a RotoRect for given cell text"""
         
-        import lib.xrect as xrect
+        import pyspread.src.lib.xrect as xrect
         
         pt_ll = self.get_textbox_edges(text_pos, text_extent)[1]
         
