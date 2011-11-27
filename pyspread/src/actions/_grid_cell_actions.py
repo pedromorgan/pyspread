@@ -20,6 +20,7 @@
 # --------------------------------------------------------------------
 
 import wx
+import numpy
 
 from pyspread.src.lib.selection import Selection
 

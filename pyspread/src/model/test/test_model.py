@@ -98,7 +98,7 @@ class TestParserMixin(object):
     def test_parse_to_grid(self):
         """Unit test for parse_to_grid"""
         
-        line = "1\t2\t3\t'123'"
+        line = "1\t2\t3\t123'"
         
         self.dict_grid.parse_to_grid(line)
         
@@ -114,7 +114,7 @@ class TestParserMixin(object):
         
         self.dict_grid.parse_to_height(line)
         
-        assert self.dict_grid.row_heights[(1, 0, 0)] == 45
+        assert self.dict_grid.row_heights[(1, 0)] == 45
 
     def test_parse_to_width(self):
         """Unit test for parse_to_width"""
@@ -123,7 +123,7 @@ class TestParserMixin(object):
         
         self.dict_grid.parse_to_width(line)
         
-        assert self.dict_grid.col_widths[(1, 0, 0)] == 43
+        assert self.dict_grid.col_widths[(1, 0)] == 43
 
     def test_parse_to_macro(self):
         """Unit test for parse_to_macro"""

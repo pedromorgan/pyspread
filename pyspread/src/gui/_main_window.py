@@ -878,7 +878,8 @@ class MainWindowEventHandlers(object):
     def OnManual(self, event):
         """Manual launch event handler"""
         
-        self.main_window.actions.launch_help("Pyspread manual", "manual.html")
+        self.main_window.actions.launch_help("First steps", 
+            "First steps in pyspread.html")
     
     def OnTutorial(self, event):
         """Tutorial launch event handler"""
