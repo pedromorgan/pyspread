@@ -144,6 +144,7 @@ class FileActions(Actions):
         """Leaves save mode"""
         
         self.code_array.safe_mode = False
+        self.code_array.result_cache.clear()
         post_command_event(self.main_window, SafeModeExitMsg)
         
     def approve(self, filepath):

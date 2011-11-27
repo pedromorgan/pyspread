@@ -51,7 +51,8 @@ from pyspread.src.config import config
 from pyspread.src.lib.__csv import CsvInterface, TxtGenerator
 from pyspread.src.gui._printout import PrintCanvas, Printout
 
-from pyspread.src.gui._events import post_command_event, StatusBarMsg, ContentChangedMsg
+from pyspread.src.gui._events import post_command_event, SafeModeEntryMsg
+from pyspread.src.gui._events import StatusBarMsg, ContentChangedMsg
 
 class Actions(object):
     """Actions base class"""
@@ -381,10 +382,14 @@ class MacroActions(Actions):
         # Mark content as changed
         post_command_event(self.main_window, ContentChangedMsg, changed=True)
         
+        
         macrocode = macro_infile.read()
         macro_infile.close()
         
         self.grid.code_array.macros += "\n" + macrocode.strip("\n")
+        
+        self.main_window.grid.actions.enter_safe_mode()
+        post_command_event(self.main_window, SafeModeEntryMsg)
         
     def save_macros(self, filepath, macros):
         """Saves macros to file

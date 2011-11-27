@@ -964,11 +964,15 @@ class CodeArray(DataArray):
         
         code = self(key)
         
+        # Return cell value if in safe mode
+        
+        if self.safe_mode:
+            return code
+        
         # If cell is not present return None
         
         if code is None:
             return
-        
         
         elif is_generator_like(code):
             # We have a generator object
