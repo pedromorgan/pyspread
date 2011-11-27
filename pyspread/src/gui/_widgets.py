@@ -695,9 +695,11 @@ class EntryLine(wx.TextCtrl):
         if self.ignore_changes:
             return
         
-        ## TODO: Code for cell selection by mouse here
+        # Handle <Return> as code entry
         
-        #print event.GetKeyCode()
+        if event.GetKeyCode() == 13:
+            # Return pressed
+            self.parent.grid.SetFocus()
         
         event.Skip()
         
