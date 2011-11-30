@@ -46,10 +46,10 @@ import numpy
 
 import wx
 
-from pyspread.src.config import config
+from src.config import config
 
-from pyspread.src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
-from pyspread.src.lib.selection import Selection
+from src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
+from src.lib.selection import Selection
 
 from unredo import UnRedo
 
@@ -986,6 +986,9 @@ class CodeArray(DataArray):
         if self._has_assignment(split_exp):
             glob_var = split_exp[0].strip()
             expression = "=".join(split_exp[1:])
+            
+            # Delete result cache because assignment changes results
+            self.result_cache.clear()
         else:
             glob_var = None
             expression = code

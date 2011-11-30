@@ -49,12 +49,12 @@ import wx.grid
 from wx.lib.wordwrap import wordwrap
 import wx.stc as stc
 
-from pyspread.src.config import config
-from pyspread.src.sysvars import get_program_path
-from pyspread.src.gui._widgets import PythonSTC
-from pyspread.src.gui._events import *
-from pyspread.src.lib.__csv import Digest
-from pyspread.src.lib.__csv import sniff, get_first_line, csv_digest_gen, cell_key_val_gen
+from src.config import config
+from src.sysvars import get_program_path
+from src.gui._widgets import PythonSTC
+from src.gui._events import *
+from src.lib.__csv import Digest
+from src.lib.__csv import sniff, get_first_line, csv_digest_gen, cell_key_val_gen
 
 
 class IntValidator(wx.PyValidator):

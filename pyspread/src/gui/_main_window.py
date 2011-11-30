@@ -36,23 +36,23 @@ import wx.aui
 
 import wx.lib.agw.genericmessagedialog as GMD
 
-from pyspread.src.config import config
+from src.config import config
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, FindToolbar, AttributesToolbar
 from _widgets import EntryLine, StatusBar, TableChoiceIntCtrl
 
-from pyspread.src.lib.clipboard import Clipboard
+from src.lib.clipboard import Clipboard
 
 from _gui_interfaces import GuiInterfaces
-from pyspread.src.gui.icons import icons
+from src.gui.icons import icons
 
 from _grid import Grid
-from pyspread.src.model.model import CodeArray
+from src.model.model import CodeArray
 
 from _events import *
 
-from pyspread.src.actions._main_window_actions import AllMainWindowActions
+from src.actions._main_window_actions import AllMainWindowActions
 
 class MainWindow(wx.Frame):
     """Main window of pyspread"""
@@ -878,8 +878,8 @@ class MainWindowEventHandlers(object):
     def OnManual(self, event):
         """Manual launch event handler"""
         
-        self.main_window.actions.launch_help("First steps", 
-            "First steps in pyspread.html")
+        self.main_window.actions.launch_help("First steps in pyspread", 
+            "First steps in html")
     
     def OnTutorial(self, event):
         """Tutorial launch event handler"""

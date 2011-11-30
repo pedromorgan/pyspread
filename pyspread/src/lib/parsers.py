@@ -33,7 +33,7 @@ Provides
 
 import wx
 
-from pyspread.src.sysvars import get_default_font
+from src.sysvars import get_default_font
 
 def get_font_from_data(fontdata):
     """Returns wx.Font from fontdata string"""

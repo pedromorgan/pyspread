@@ -695,12 +695,14 @@ class EntryLine(wx.TextCtrl):
         if self.ignore_changes:
             return
         
-        # Handle <Return> as code entry
+        # Handle special keys
         
-        if event.GetKeyCode() == 13:
-            # Return pressed
+        keycode = event.GetKeyCode()
+        
+        if keycode == 13:
+            # <Return> pressed --> Focus on grid
             self.parent.grid.SetFocus()
-        
+            
         event.Skip()
         
 # end of class EntryLine

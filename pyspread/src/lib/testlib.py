@@ -27,7 +27,7 @@ Helper functions for unit tests
 
 """
 
-from pyspread.src.gui._main_window import MainWindow
+from src.gui._main_window import MainWindow
 
    
 # Class attributes for main_window and grid

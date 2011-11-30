@@ -28,7 +28,7 @@ UnRedo contains the UnRedo class that manages undo and redo operations.
 
 """
 
-from pyspread.src.config import config
+from src.config import config
 
 class UnRedo(object):
     """Undo/Redo framework class.

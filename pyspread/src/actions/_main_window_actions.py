@@ -45,14 +45,14 @@ import os
 import wx
 import wx.html
 
-from pyspread.src.sysvars import get_help_path
+from src.sysvars import get_help_path
 
-from pyspread.src.config import config
-from pyspread.src.lib.__csv import CsvInterface, TxtGenerator
-from pyspread.src.gui._printout import PrintCanvas, Printout
+from src.config import config
+from src.lib.__csv import CsvInterface, TxtGenerator
+from src.gui._printout import PrintCanvas, Printout
 
-from pyspread.src.gui._events import post_command_event, SafeModeEntryMsg
-from pyspread.src.gui._events import StatusBarMsg, ContentChangedMsg
+from src.gui._events import post_command_event, SafeModeEntryMsg
+from src.gui._events import StatusBarMsg, ContentChangedMsg
 
 class Actions(object):
     """Actions base class"""

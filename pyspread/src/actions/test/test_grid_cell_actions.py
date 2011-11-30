@@ -37,11 +37,11 @@ path.insert(0, test_path + "/../..")
 import wx
 app = wx.App()
 
-from pyspread.src.lib.selection import Selection
+from src.lib.selection import Selection
 
-from pyspread.src.lib.testlib import main_window, grid, code_array
-from pyspread.src.lib.testlib import params, pytest_generate_tests
-from pyspread.src.lib.testlib import basic_setup_test, restore_basic_grid
+from src.lib.testlib import main_window, grid, code_array
+from src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import basic_setup_test, restore_basic_grid
 
 class TestCellActions(object):
     """Cell actions test class"""

@@ -38,15 +38,15 @@ import bz2
 import wx
 app = wx.App()
 
-from pyspread.src.lib.selection import Selection
+from src.lib.selection import Selection
 
-from pyspread.src.lib.testlib import main_window, grid, code_array
-from pyspread.src.lib.testlib import params, pytest_generate_tests
-from pyspread.src.lib.testlib import basic_setup_test, restore_basic_grid
+from src.lib.testlib import main_window, grid, code_array
+from src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import basic_setup_test, restore_basic_grid
 
-from pyspread.src.lib.gpg import sign
+from src.lib.gpg import sign
 
-from pyspread.src.gui._events import *
+from src.gui._events import *
 
 class TestFileActions(object):
     """File actions test class"""

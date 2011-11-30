@@ -34,7 +34,7 @@ Provides:
 
 import wx
 
-from pyspread.src.sysvars import get_font_list
+from src.sysvars import get_font_list
 
 from _events import *
 
@@ -284,7 +284,8 @@ class MainMenu(_filledMenu):
             [item, [MacroSaveMsg, "&Save macro list", 
                         "Save macro list"]]]], \
         [wx.Menu, "&Help", [\
-            [item, [ManualMsg, "&Manual", "Launch manual"]],
+            [item, [ManualMsg, "First &Steps", 
+                "Launch First Steps in pyspread"]],
             [item, [TutorialMsg, "&Tutorial", "Launch tutorial"]],
             [item, [FaqMsg, "&FAQ", "Launch frequently asked questions"]],
             ["Separator"], \

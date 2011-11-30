@@ -39,9 +39,9 @@ app = wx.App()
 import os
 
 import lib.gpg as gpg
-from pyspread.src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import params, pytest_generate_tests
 
-from pyspread.src.config import config
+from src.config import config
     
 def test_is_pyme_present():
     """Unit test for is_pyme_present"""

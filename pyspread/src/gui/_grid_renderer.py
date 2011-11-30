@@ -36,11 +36,11 @@ import types
 
 import wx.grid
 
-import pyspread.src.lib.xrect as xrect
+import src.lib.xrect as xrect
 
-from pyspread.src.lib.parsers import get_pen_from_data, get_font_from_data
+from src.lib.parsers import get_pen_from_data, get_font_from_data
 
-from pyspread.src.config import config
+from src.config import config
 
 class GridRenderer(wx.grid.PyGridCellRenderer):
     """This renderer draws borders and text at specified font, size, color"""
@@ -100,7 +100,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
     def get_text_rotorect(self, text_pos, text_extent):
         """Returns a RotoRect for given cell text"""
         
-        import pyspread.src.lib.xrect as xrect
+        import src.lib.xrect as xrect
         
         pt_ll = self.get_textbox_edges(text_pos, text_extent)[1]
         

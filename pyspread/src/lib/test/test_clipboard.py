@@ -36,9 +36,9 @@ path.insert(0, "../..")
 import wx
 app = wx.App()
 
-from pyspread.src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import params, pytest_generate_tests
 
-from pyspread.src.lib.clipboard import Clipboard
+from src.lib.clipboard import Clipboard
 
 class TestClipboard(object):
     """Unit tests for Clipboard"""

@@ -19,9 +19,9 @@
 # --------------------------------------------------------------------
 
 import py.test as pytest
-from sys import path, modules
-path.insert(0, "..") 
-path.insert(0, "../..") 
+#from sys import path, modules
+#path.insert(0, "..") 
+#path.insert(0, "../..") 
 
 import gmpy
 
@@ -30,10 +30,10 @@ import numpy
 import wx
 app = wx.App()
 
-from pyspread.src.model.model import KeyValueStore, CellAttributes, DictGrid
-from pyspread.src.model.model import DataArray, CodeArray
+from src.model.model import KeyValueStore, CellAttributes, DictGrid
+from src.model.model import DataArray, CodeArray
 
-from pyspread.src.lib.selection import Selection
+from src.lib.selection import Selection
 
 class TestKeyValueStore(object):
     """Unit tests for KeyValueStore"""
@@ -98,11 +98,11 @@ class TestParserMixin(object):
     def test_parse_to_grid(self):
         """Unit test for parse_to_grid"""
         
-        line = "1\t2\t3\t123'"
+        line = "1\t2\t3\t123"
         
         self.dict_grid.parse_to_grid(line)
         
-        assert self.dict_grid[(1, 2, 3)] == '123'
+        assert self.dict_grid[(1, 2, 3)] == "123"
 
     def test_parse_to_attribute(self):
         pass

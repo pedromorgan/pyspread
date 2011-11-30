@@ -65,7 +65,7 @@ from wx import InitAllImageHandlers
 
 path.insert(0, "..") 
 
-from pyspread.src.gui._events import post_command_event, GridActionOpenMsg
+from src.gui._events import post_command_event, GridActionOpenMsg
 
 DEBUG = False
 
@@ -81,7 +81,7 @@ class Commandlineparser(object):
     """
     
     def __init__(self):
-        from pyspread.src.config import config
+        from src.config import config
         usage = "usage: %prog [options] [filename]"
         version = "%prog " + unicode(config["version"])
         self.parser = optparse.OptionParser(usage=usage, version=version)
@@ -134,7 +134,7 @@ class MainApplication(App):
         InitAllImageHandlers()
 
         # Main window creation
-        from pyspread.src.gui._main_window import MainWindow
+        from src.gui._main_window import MainWindow
         
         self.main_window = MainWindow(None, title="pyspread")
         
@@ -144,10 +144,10 @@ class MainApplication(App):
         
         # Create GPG key if not present
         
-        from pyspread.src.lib.gpg import is_pyme_present
+        from src.lib.gpg import is_pyme_present
         
         if is_pyme_present():
-            from pyspread.src.lib.gpg import genkey
+            from src.lib.gpg import genkey
             genkey()
             
         # Show application window

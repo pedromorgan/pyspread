@@ -37,8 +37,8 @@ import wx.lib.colourselect as csel
 
 from _events import *
 
-from pyspread.src.config import config
-from pyspread.src.sysvars import get_default_font, get_font_list
+from src.config import config
+from src.sysvars import get_default_font, get_font_list
 from icons import icons
 
 import _widgets

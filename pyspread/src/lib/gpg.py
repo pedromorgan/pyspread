@@ -36,7 +36,7 @@ Provides
 
 """
 
-from pyspread.src.config import config
+from src.config import config
 
 
 try:

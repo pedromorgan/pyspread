@@ -31,9 +31,9 @@ import wx
 
 app= wx.App()
 
-from pyspread.src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import params, pytest_generate_tests
 
-from pyspread.src.lib.parsers import get_font_from_data, get_pen_from_data
+from src.lib.parsers import get_font_from_data, get_pen_from_data
 
 param_font = [ \
     {"fontdata": "Sans 13", "face": "Sans", "size": 13},

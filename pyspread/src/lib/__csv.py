@@ -41,9 +41,9 @@ import datetime
 import os
 import types
 
-from pyspread.src.config import config
+from src.config import config
 
-from pyspread.src.gui._events import post_command_event, StatusBarMsg
+from src.gui._events import post_command_event, StatusBarMsg
 
 
 def sniff(filepath):

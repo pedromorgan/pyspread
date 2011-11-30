@@ -37,14 +37,14 @@ path.insert(0, test_path + "/../..")
 import wx
 app = wx.App()
 
-from pyspread.src.gui._main_window import MainWindow
-from pyspread.src.gui._grid import Grid
-from pyspread.src.model.model import DataArray
-from pyspread.src.lib.selection import Selection
-from pyspread.src.lib.testlib import main_window, code_array, grid_values, restore_basic_grid
-from pyspread.src.lib.testlib import params, pytest_generate_tests, basic_setup_test
+from src.gui._main_window import MainWindow
+from src.gui._grid import Grid
+from src.model.model import DataArray
+from src.lib.selection import Selection
+from src.lib.testlib import main_window, code_array, grid_values, restore_basic_grid
+from src.lib.testlib import params, pytest_generate_tests, basic_setup_test
 
-from pyspread.src.actions._main_window_actions import CsvInterface, TxtGenerator
+from src.actions._main_window_actions import CsvInterface, TxtGenerator
 
 
 class TestCsvInterface(object):
