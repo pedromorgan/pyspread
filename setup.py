@@ -4,7 +4,7 @@ from distutils.core import setup
 from distutils.sysconfig import get_python_lib
 
 setup(name='pyspread',
-      version='0.1.3',
+      version='0.2.0',
       description='Python Spreadsheet',
       license='GPL v3 :: GNU General Public License',
       keywords=['spreadsheet', 'pyspread'],

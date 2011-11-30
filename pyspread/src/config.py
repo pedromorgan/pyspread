@@ -42,9 +42,6 @@ class DefaultConfig(object):
     """Contains default config for starting pyspread without resource file"""
     
     def __init__(self):
-        # The current version of pyspread
-        self.version = '"0.1.3"'
-        
         # User defined paths
         # ------------------
         
@@ -114,6 +111,9 @@ class Config(object):
     def __init__(self, defaults=None):
         self.config_filename = "pyspreadrc"
         
+        # The current version of pyspread
+        self.version = '"0.2.0"'
+        
         if defaults is None:
             self.defaults = DefaultConfig()
             
@@ -128,6 +128,9 @@ class Config(object):
     
     def __getitem__(self, key):
         """Main config element read access"""
+        
+        if key == "version":
+            return self.version
         
         return eval(getattr(self.data, key))
     
