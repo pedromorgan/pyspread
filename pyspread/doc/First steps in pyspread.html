@@ -1,0 +1,364 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <title></title>
+  <meta name="GENERATOR" content="LibreOffice 3.4  (Linux)">
+  <meta name="CREATED" content="20110811;23200800">
+  <meta name="CHANGED" content="20111126;2323900">
+  <style type="text/css">
+	<!--
+		@page { margin: 0.79in }
+		P { margin-bottom: 0.08in }
+		P.western { so-language: en-US }
+		P.cjk { font-size: 10pt }
+		H1 { margin-bottom: 0.08in }
+		H1.western { font-family: "Liberation Sans"; font-size: 14pt; so-language: en-US }
+		H1.cjk { font-family: "Bitstream Vera Sans"; font-size: 16pt }
+		H1.ctl { font-family: "FreeSans"; font-size: 16pt }
+		H2 { margin-top: 0.07in; margin-bottom: 0.07in; text-decoration: underline }
+		H2.western { font-family: "Liberation Sans"; font-size: 12pt; so-language: en-US; font-style: normal }
+		H2.cjk { font-size: 14pt; font-style: italic; font-weight: normal }
+		H2.ctl { font-family: "FreeSans"; font-size: 14pt; font-style: italic }
+		H3 { margin-top: 0.07in; margin-bottom: 0.04in }
+		H3.western { font-family: "Liberation Sans"; font-size: 12pt; so-language: en-US }
+		H3.ctl { font-family: "FreeSans" }
+		P.code-western { background: transparent; font-family: "DejaVu Sans Mono", monospace; so-language: en-US }
+		P.code-cjk { background: transparent; font-size: 10pt }
+		P.code-ctl { background: transparent }
+		A:link { so-language: zxx }
+	-->
+	</style>
+</head>
+<body dir="LTR" lang="de-DE">
+<p style="margin-top: 0.17in; page-break-after: avoid;" align="CENTER"><font
+ face="Liberation Sans"><font size="5"><b>First
+steps in pyspread</b></font></font></p>
+<p style="margin-top: 0.17in; page-break-after: avoid;" align="CENTER"><img
+ src="First%20steps%20in%20pyspread_html_m2366b820.png" name="graphics1"
+ height="50" width="39" align="BOTTOM" border="0"></p>
+<p style="margin-top: 0.17in; page-break-after: avoid;" align="CENTER"><font
+ face="Liberation Sans"><font size="4"><i>by
+Martin Manns 2011</i></font></font></p>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+<h1 class="western" lang="en-US">About this document</h1>
+<p class="western" lang="en-US">This document shall provide a quick
+overview over pyspread.</p>
+<h1 class="western" lang="en-US">What is pyspread?</h1>
+<p class="western" lang="en-US">Pyspread is a spreadsheet application
+that computes Python expressions in its cells. It is written in the
+programming language Python. </p>
+<p class="western" lang="en-US">The core mission of pyspread is to
+make coding in a spreadsheet as pythonic as possible. Cell functions
+that are known from conventional spreadsheets such as Excel<font
+ face="Arial, sans-serif">™</font><font face="Arial">,
+gnumeric or OpenOffice.org Calc are not supported.</font> Instead
+Python expressions are entered into the spreadsheet cells. Each cell
+returns a Python object. These objects can represent anything
+including lists or matrices. </p>
+<p class="western" lang="en-US">At least basic knowledge of Python is
+required to effectively use pyspread.</p>
+<p class="western" lang="en-US">Pyspread provides a three dimensional
+grid that can comprise millions of rows, columns and tables. However
+currently, a dictionary is used for storing all grid data. Therefore,
+tables with many filled cells may require considerable amounts of
+RAM.</p>
+<h1 class="western" lang="en-US">Current limitations</h1>
+<p class="western" lang="en-US">External libraries such as matplotlib
+that set states in several steps may be unusable or hard to use
+because cell execution order is not guaranteed. They should be used
+from within a macro.</p>
+<p class="western" lang="en-US">There is no chart creation GUI
+interface.</p>
+<p class="western" lang="en-US">There is no cell auto-fill
+functionality.</p>
+<p class="western" lang="en-US">Cell execution cannot be interrupted
+or terminated if slow and therefore may block pyspread.</p>
+<p class="western" lang="en-US">Toolbar positions are not saved in
+the config file.</p>
+<p class="western" lang="en-US">Cycle detection can be tricked. Cell
+results can be unstable if cyclic dependencies are introduced.</p>
+<p class="western" lang="en-US">Cell attributes cannot be set in the
+menu.</p>
+<h1 class="western" lang="en-US">Installation</h1>
+<h2 class="western" lang="en-US">Requirements</h2>
+<p class="western" style="margin-bottom: 0in;">Linux and *nix
+platforms with GTK+ support.<br>
+<br>
+<u>Dependencies </u>
+</p>
+<ul>
+  <li>
+    <p class="western" style="margin-bottom: 0in;" lang="en-US"><a
+ href="http://www.python.org/">Python</a> &gt;=2.4 &lt;3.0 </p>
+  </li>
+  <li>
+    <p class="western" style="margin-bottom: 0in;" lang="en-US"><a
+ href="http://numpy.scipy.org/">numpy</a> &gt;=1.1.0</p>
+  </li>
+  <li>
+    <p class="western" lang="en-US"><a href="http://www.wxpython.org/">wxPython</a>
+&gt;=2.8.10.1 (unicode version required). </p>
+  </li>
+  <li>
+    <p class="western" style="margin-bottom: 0in;" lang="en-US"><a
+ href="http://pyme.sourceforge.net/">PyMe</a> &gt;=0.8.1</p>
+    <p class="western" style="margin-bottom: 0in;" lang="en-US"></p>
+  </li>
+</ul>
+<p class="western" lang="en-US"><u>Highly recommended for full
+functionality </u>
+</p>
+<ul>
+  <li>
+    <p class="western" style="margin-bottom: 0in;" lang="en-US"><a
+ href="http://code.google.com/p/gmpy/">gmpy</a> &gt;=1.1.0</p>
+  </li>
+  <li>
+    <p class="western" lang="en-US"><a
+ href="http://rpy.sourceforge.net/">rpy</a> &gt;=1.0.3. </p>
+  </li>
+</ul>
+<h2 class="western" lang="en-US">Installation from source</h2>
+<ol>
+  <li>
+    <p class="western" lang="en-US">Untar the source package into a
+directory of your choice:<br>
+tar xzvf pyspread-&lt;version number&gt;.tar.gz</p>
+  </li>
+  <li>
+    <p class="western" lang="en-US">Run:<br>
+python setup.py install</p>
+  </li>
+</ol>
+<h2 class="western" lang="en-US">Installation from .deb package</h2>
+<p class="western" lang="en-US">Download the deb package and type</p>
+<p class="western" lang="en-US">dpkg -i &lt;package name&gt;</p>
+<h1 class="western" lang="en-US">The pyspread workplace</h1>
+<h2 class="western" lang="en-US">Starting and quitting pyspread</h2>
+<p class="western" lang="en-US">Type</p>
+<blockquote>$ pyspread</blockquote>
+<blockquote style="margin-left: 0in;" lang="en-US">from the command
+prompt.</blockquote>
+<blockquote style="margin-left: 0in;" lang="en-US">You can quit
+pyspread by closing the main window or by selecting File → Quit
+from the menu.</blockquote>
+<h2 class="western" lang="en-US">Pyspread main window</h2>
+<p class="western" lang="en-US">The main window consists of the title
+bar, the menu, toolbars, the entry line, the table selector, the grid
+and a status bar (see Figure 1).</p>
+<p class="western" lang="en-US"><img
+ style="width: 1185px; height: 910px;" alt="Frame1" name="Frame1"
+ src="First%20steps%20in%20pyspread_html_fig1.png"></p>
+<h2 class="western" lang="en-US">Using the menus</h2>
+<p class="western" lang="en-US">There are two menus in pyspread: The
+main menu and the context menu. The main menu is visible above the
+tool bars. The context menu is accessible by right-clicking on the
+grid.</p>
+<p class="western" lang="en-US">The main menu makes all pyspread
+functions but cell formatting available. The latter is only available
+via tool bar and not yet integrated into the main menu.</p>
+<p class="western" lang="en-US">All options in the context menu are
+available from the main menu as well.</p>
+<h2 class="western" lang="en-US">Using dialogs</h2>
+<p class="western" lang="en-US">Pyspread uses both modal and
+non-modal dialogs. Modal dialogs block further usage of pyspread
+while open while non-modal dialogs allow continuing the usage of the
+main program. Non modal dialogs are:</p>
+<ul>
+  <li>
+    <p class="western" lang="en-US">The Search &amp; Replace dialog</p>
+  </li>
+</ul>
+<h2 class="western" lang="en-US">Basic preferences</h2>
+<p class="western" lang="en-US">Pyspread stores its configuration in
+a file ~/.pyspreadrc</p>
+<p class="western" lang="en-US">This file is created when first
+starting pyspread. Removing it resets configuration.</p>
+<p class="western" lang="en-US">Initial configuration can be viewed
+in pyspread/src/config.py</p>
+<h1 class="western" lang="en-US">Basic concepts</h1>
+<h2 class="western" lang="en-US">3D grid</h2>
+<p class="western" lang="en-US">Pyspread features only one grid at a
+time. However, this grid is 3D, i. e. there are rows, columns and
+tables in the grid. The main difference to common spreadsheets is
+that each dimension is considered equal. Therefore, deleting a row
+deletes this row in all(!) tables.</p>
+<p class="western" lang="en-US">There are no sheets at the moment, in
+which row operations do not affect other tabs. Sheet functionality
+may become part of future releases.</p>
+<h2 class="western" lang="en-US">Everything is accessible</h2>
+<p class="western" lang="en-US">All parts of pyspread are written in
+Python. Therefore all objects can be accessed from within each cell.
+This is also the case for external modules.</p>
+<p class="western" lang="en-US">There are 4 convenient “magic”
+objects, which are merely syntactic sugar: S, X, Y and Z.</p>
+<p class="western" lang="en-US">S is the grid data object. It is
+ultimately based on a dict. However, it consists of several layers on
+top. When indexing or slicing, it behaves similarly to a 3D
+numpy-array that returns result objects. When calling it (like a
+function) with a 3 tuple, it returns the cell code.</p>
+<p class="western" lang="en-US">X, Y and Z represent the current cell
+coordinates. When copied to another cell, these coordinates change
+accordingly. This approach allows relative addressing by adding the
+relative coordinates to X, Y or Z. Therefore, no special relative
+addressing methods are needed.</p>
+<p class="western" lang="en-US">External modules are accessible from
+each cell. Unfortunately, Python’s convenient import syntax </p>
+<p class="code-western" lang="en-US">from xx import yy </p>
+<p class="western" lang="en-US">is no expression. Therefore, the
+expression </p>
+<p class="code-western" lang="en-US">xx = __import__(“xx”) </p>
+<p class="western" lang="en-US">has to be used.</p>
+<h2 class="western" lang="en-US">Python code as cell language</h2>
+<p class="western" lang="en-US">Pyspread uses Python expressions in
+each cell. This is similar to typing expressions into the Python
+shell. However, there is no guaranteed execution order. Furthermore,
+all results are accessible from each other cell.</p>
+<p class="western" lang="en-US">Variable assignment works only once
+in each cell. Therefore</p>
+<p class="code-western" lang="en-US">a = b = 2</p>
+<p class="western" lang="en-US">is <b>invalid</b> in pyspread.</p>
+<h2 class="western" lang="en-US">Trust based security</h2>
+<p class="western" lang="en-US">Since Python expressions are
+evaluated in pyspread, a spreadsheet is as powerful as any program.
+Therefore, it could harm the system or even send confidential data to
+third persons over the Internet. Even though this is basically the
+case for all office applications, the easy access to such behavior
+makes precautions necessary. The idea in pyspread is that you – the
+user – are trustworthy and no-one else. If you save a file then a
+signature is saved with it (suffix .pys.sig). Only you can re-open
+the file directly. If anyone else opens the file, it is displayed in
+safe mode, i. e. each cell displays the cell code and no cell code is
+evaluated. The user can approve the file, after which the cell code
+is evaluated. When the user then saves the file, it is newly signed.
+Then it can be re-opened without safe mode.</p>
+<p class="western" lang="en-US">An intended side-effect of this
+approach is that when two users open the file on a network share, the
+signature file of one user is not recognized by the other, which
+makes re-approval necessary.</p>
+<p class="western" lang="en-US">Technically, signing is done with
+GPG. When starting pyspread the first time as a user, a new GPG key
+pair (name pyspred_&lt;user_id&gt;) is created, which is then used
+for signing files.</p>
+<h1 class="western" lang="en-US">Common spreadsheet tasks</h1>
+<h2 class="western" lang="en-US">Moving in the spreadsheet</h2>
+<p class="western" lang="en-US">Movement in the grid can be achieved
+by:</p>
+<ul>
+  <li>
+    <p class="western" lang="en-US">Scrolling with the scrollbars</p>
+  </li>
+  <li>
+    <p class="western" lang="en-US">Selecting “View → Go to cell” from
+the main menu</p>
+  </li>
+  <li>
+    <p class="western" lang="en-US">Moving the grid cursor with the
+arrow keys</p>
+  </li>
+  <li>
+    <p class="western" lang="en-US">Clicking on a cell</p>
+  </li>
+  <li>
+    <p class="western" lang="en-US">Accessing the grid API (advanced)</p>
+  </li>
+</ul>
+<p class="western" lang="en-US">This covers row and column movement.</p>
+<p class="western" lang="en-US">Table movement is described in the
+next paragraph</p>
+<h2 class="western" lang="en-US">Switching tables</h2>
+<p class="western" lang="en-US">Tables can be switched by changing
+the number in the table switch textbox that is situated right of the
+entry line directly above the grid.</p>
+<p class="western" lang="en-US">This can be achieved by either typing
+in a table number or by moving the mouse over the table switch
+textbox and then scrolling with the mouse wheel.</p>
+<h3 class="western" lang="en-US">Entering data</h3>
+<p class="western" lang="en-US">Data is entered into the grid cells
+by selecting a cell and then typing the text. The text can also be
+entered into the text-entry line. The text is accepted and evaluated
+when &lt;Enter&gt; is pressed or when a new cell is selected. Note
+that &lt;Enter&gt; does not work from withing the text entry line.</p>
+<h3 class="western" lang="en-US">Changing and deleting cell content</h3>
+<p class="western" lang="en-US">In order to change cell content
+double-click on the cell or select the cell and edit the text in the
+entry line.</p>
+<p class="western" lang="en-US">A cell can be deleted by selecting it
+and pressing &lt;Del&gt;. This also works for selections.</p>
+<h3 class="western" lang="en-US">Copy and Paste operations</h3>
+<h3 class="western" lang="en-US">Marking cells</h3>
+<h3 class="western" lang="en-US">Undoing work steps</h3>
+<h3 class="western" lang="en-US">Creating an empty spreadsheet</h3>
+<h3 class="western" lang="en-US">Loading and saving a spreadsheet</h3>
+<h3 class="western" lang="en-US">CSV data import and export</h3>
+<h3 class="western" lang="en-US">Printing</h3>
+<h2 class="western" lang="en-US">Finding and replacing cell code</h2>
+<h3 class="western" lang="en-US">Sorting</h3>
+<p class="western" lang="en-US">Sorting rows of column 0: </p>
+<p class="code-western" lang="en-US">[S.__setitem__((i, 0, 0),
+repr(val)) for i, val in enumerate(reversed(sorted(S[:,0,0])))]</p>
+<h1 class="western" lang="en-US">Working with formulas</h1>
+<h2 class="western" lang="en-US">Python expressions</h2>
+<h2 class="western" lang="en-US">Result object</h2>
+<h2 class="western" lang="en-US">Example: Using sum</h2>
+<h2 class="western" lang="en-US">Frozen cells</h2>
+<h2 class="western" lang="en-US">Absolute cell access</h2>
+<h2 class="western" lang="en-US">Relative cell access</h2>
+<h2 class="western" lang="en-US">Assigning variables</h2>
+<h2 class="western" lang="en-US">Macros</h2>
+<h2 class="western" lang="en-US">Module import</h2>
+<h2 class="western" lang="en-US">Cyclic references</h2>
+<h2 class="western" lang="en-US">Result stability</h2>
+<h2 class="western" lang="en-US">Error handling</h2>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+<h1 class="western" lang="en-US">Using help</h1>
+<h2 class="western" lang="en-US">Tutorial access</h2>
+<h2 class="western" lang="en-US">In-code documentation</h2>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+<h1 class="western" lang="en-US">Table design</h1>
+<h2 class="western" lang="en-US">Formatting basics</h2>
+<h2 class="western" lang="en-US">Fonts and font attributes</h2>
+<h2 class="western" lang="en-US">Text alignment, justification and
+rotation</h2>
+<h2 class="western" lang="en-US">Border and background color</h2>
+<h2 class="western" lang="en-US">Row height and column width</h2>
+<h2 class="western" lang="en-US">Insertion and deletion of rows and
+columns</h2>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+<h1 class="western" lang="en-US">pyspread and security</h1>
+<h2 class="western" lang="en-US">More than your average spreadsheet</h2>
+<h2 class="western" lang="en-US">Dangers of using pyspread</h2>
+<h2 class="western" lang="en-US">Security benefits and risks from
+save file signatures</h2>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+<h1 class="western" lang="en-US">Charts</h1>
+<h2 class="western" lang="en-US">Charts with matplotlib</h2>
+<h2 class="western" lang="en-US">Charts with rpy2</h2>
+<h2 class="western" lang="en-US">Charts with pychart</h2>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+<h1 class="western" lang="en-US">Advanced topics</h1>
+<h2 class="western" lang="en-US">Drawing cell content with a cell
+formula</h2>
+<h2 class="western" lang="en-US">Handling large amounts of data</h2>
+<h2 class="western" lang="en-US">Substituting pivot tables</h2>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+<p class="western" lang="en-US"><br>
+<br>
+</p>
+</body>
+</html>
