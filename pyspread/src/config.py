@@ -31,6 +31,8 @@ import wx
 
 from sysvars import get_color, get_font_string
 
+VERSION = "0.2.0"
+
 """
 Program info
 ============
@@ -112,7 +114,7 @@ class Config(object):
         self.config_filename = "pyspreadrc"
         
         # The current version of pyspread
-        self.version = '"0.2.0"'
+        self.version = VERSION
         
         if defaults is None:
             self.defaults = DefaultConfig()
