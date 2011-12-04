@@ -313,12 +313,24 @@ class TestDataArray(object):
     def test_cell_array_generator(self):
         """Unit test for cell_array_generator"""
         
-        pass
+        cell_array = self.data_array[:5, 0, 0]
+        
+        assert list(cell_array) == [None] * 5
+        
+        cell_array = self.data_array[:5, :5, 0]
+        
+        assert [list(c) for c in cell_array] == [[None] * 5] * 5
+        
+        cell_array = self.data_array[:5, :5, :5]
+        
+        assert [[list(e) for e in c] for c in cell_array] == [[[None] * 5] * 5] * 5
 
     def test_adjust_shape(self):
         """Unit test for _adjust_shape"""
         
-        pass
+        self.data_array._adjust_shape(2, 0)
+        res = list(self.data_array.shape)
+        assert res == [102, 100, 100]
         
     def test_set_cell_attributes(self):
         """Unit test for _set_cell_attributes"""
