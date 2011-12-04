@@ -852,7 +852,7 @@ class DimensionsEntryDialog(wx.Dialog):
         self.Columns_Label = wx.StaticText(self, -1, "Columns", \
                                            style=wx.ALIGN_CENTRE)
         self.Y_DimensionsEntry = wx.TextCtrl(self, -1, "")
-        self.Tabs_Label = wx.StaticText(self, -1, "Tabs", style=wx.ALIGN_CENTRE)
+        self.Tabs_Label = wx.StaticText(self, -1, "Tables", style=wx.ALIGN_CENTRE)
         self.Z_DimensionsEntry = wx.TextCtrl(self, -1, "")
         
         self.textctrls = [self.X_DimensionsEntry, 
