@@ -105,7 +105,14 @@ class TestParserMixin(object):
         assert self.dict_grid[(1, 2, 3)] == "123"
 
     def test_parse_to_attribute(self):
-        pass
+        """Unit test for parse_to_attribute"""
+        
+        line = "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42"
+        
+        self.dict_grid.parse_to_attribute(line)
+        
+        assert self.dict_grid.cell_attributes[(3, 4, 0)]['borderwidth_bottom'] == 42
+        
 
     def test_parse_to_height(self):
         """Unit test for parse_to_height"""

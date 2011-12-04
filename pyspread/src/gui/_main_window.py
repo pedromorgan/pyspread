@@ -879,7 +879,7 @@ class MainWindowEventHandlers(object):
         """Manual launch event handler"""
         
         self.main_window.actions.launch_help("First steps in pyspread", 
-            "First steps in html")
+            "First steps in pyspread.html")
     
     def OnTutorial(self, event):
         """Tutorial launch event handler"""
