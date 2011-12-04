@@ -144,23 +144,85 @@ class TestParserMixin(object):
 
 class TestStringGeneratorMixin(object):
     """Unit tests for StringGeneratorMixin"""
-    
+     
+    def setup_method(self, method):
+        """Creates empty DictGrid"""
+        
+        self.dict_grid = DictGrid((100, 100, 100))
+     
     def test_grid_to_strings(self):
-        pass
+        """Unit test for grid_to_strings"""
+        
+        self.dict_grid[(3, 2, 1)] = "42"
+        grid_string_list = list(self.dict_grid.grid_to_strings())
+        
+        expected_res =  [ \
+        "[shape]\n",
+        "100\t100\t100\n",
+        "[grid]\n",
+        '3\t2\t1\t42\n',
+        ]
+        assert grid_string_list == expected_res
 
     def test_attributes_to_strings(self):
-        pass
-
+        """Unit test for attributes_to_strings"""
+        
+        line = "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42"
+        self.dict_grid.parse_to_attribute(line)
+        
+        attr_string_list = list(self.dict_grid.attributes_to_strings())
+        
+        expected_res =  [ \
+        "[attributes]\n",
+        "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
+        ]
+        
+        assert attr_string_list == expected_res
+        
     def test_heights_to_strings(self):
-        pass
+        """Unit test for heights_to_strings"""
+        
+        self.dict_grid.row_heights[(2, 0)] = 77
+        
+        expected_res =  [ \
+        "[row_heights]\n",
+        "2\t0\t77\n",
+        ]
+        
+        height_string_list = list(self.dict_grid.heights_to_strings())
+        
+        assert height_string_list == expected_res
+        
 
     def test_widths_to_strings(self):
-        pass
-
+        """Unit test for widths_to_strings"""
+        
+        self.dict_grid.col_widths[(2, 0)] = 77
+        
+        expected_res =  [ \
+        "[col_widths]\n",
+        "2\t0\t77\n",
+        ]
+        
+        width_string_list = list(self.dict_grid.widths_to_strings())
+        
+        assert width_string_list == expected_res
+        
     def test_macros_to_strings(self):
-        pass
-
-
+        """Unit test for macros_to_strings"""
+        
+        self.dict_grid.macros = "Test"
+        
+        expected_res =  [ \
+        "[macros]\n",
+        "Test\n",
+        ]
+        
+        macros_string_list = list(self.dict_grid.macros_to_strings())
+        
+        assert macros_string_list == expected_res
+        
+        
 class TestDictGrid(object):
     """Unit tests for DictGrid"""
     
