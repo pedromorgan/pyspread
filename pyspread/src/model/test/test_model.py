@@ -232,10 +232,13 @@ class TestDictGrid(object):
         self.dict_grid = DictGrid((100, 100, 100))
         
     def test_getitem(self):
-        """Test __getitem__"""
+        """Unit test for __getitem__"""
         
         with pytest.raises(IndexError):
             self.dict_grid[100, 0, 0]
+        
+        self.dict_grid[(2, 4, 5)] = "Test"
+        assert self.dict_grid[(2, 4, 5)] == "Test"
         
 class TestDataArray(object):
     """Unit tests for DataArray"""
@@ -244,29 +247,36 @@ class TestDataArray(object):
         """Creates empty DataArray"""
         
         self.data_array = DataArray((100, 100, 100))
-    
-    def test_row_heights(self):
-        pass
-
-    def test_col_widths(self):
-        pass
-
-    def test_cell_attributes(self):
-        pass
         
     def test_iter(self):
-        pass
-
-    def test_macros(self):
-        """Unit test for _get_macros and _set_macros"""
+        """Unit test for __iter__"""
         
-        pass
+        assert list(iter(self.data_array)) == []
+        
+        self.data_array[(1, 2, 3)] = "12"
+        self.data_array[(1, 2, 4)] = "13"
+        
+        assert sorted(list(iter(self.data_array))) == [(1, 2, 3), (1, 2, 4)]
 
     def test_keys(self):
-        pass
+        """Unit test for keys"""
+        
+        assert self.data_array.keys() == []
+        
+        self.data_array[(1, 2, 3)] = "12"
+        self.data_array[(1, 2, 4)] = "13"
+        
+        assert sorted(self.data_array.keys()) == [(1, 2, 3), (1, 2, 4)]
 
     def test_pop(self):
-        pass
+        """Unit test for pop"""
+        
+        self.data_array[(1, 2, 3)] = "12"
+        self.data_array[(1, 2, 4)] = "13"
+        
+        assert "12" == self.data_array.pop((1, 2, 3))
+        
+        assert sorted(self.data_array.keys()) == [(1, 2, 4)]
 
     def test_shape(self):
         """Unit test for _get_shape and _set_shape"""
@@ -285,7 +295,10 @@ class TestDataArray(object):
     def test_str(self):
         """Unit test for __str__"""
         
-        pass
+        self.data_array[(1, 2, 3)] = "12"
+        
+        data_array_str = str(self.data_array) 
+        assert data_array_str == "{(1, 2, 3): '12'}"
 
     def test_slicing(self):
         """Unit test for __getitem__ and __setitem__"""
@@ -318,7 +331,7 @@ class TestDataArray(object):
         pass
 
     def test_insert(self):
-        """Tests insert operation"""
+        """Unit test for insert operation"""
         
         self.data_array[2, 3, 4] = 42
         self.data_array.insert(1, 100, 0)
@@ -340,9 +353,13 @@ class TestDataArray(object):
         assert self.data_array.shape == (99, 100, 100)
         
     def test_set_row_height(self):
+        """Unit test for set_row_height"""
+        
         pass
 
     def test_set_col_width(self):
+        """Unit test for set_col_width"""
+        
         pass
 
 
