@@ -143,7 +143,8 @@ class TestTxtGenerator(object):
             txt_list.append(list(line_gen))
             if i == 3:
                 break
-        assert txt_list == [['00'], ['11'], ['24'], ['39']]
+        assert txt_list == [['00'], ['877452769922012304'], 
+	  ['877453769923767209'], ['877454769925522116']]
         
         # Missing file
         
