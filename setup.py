@@ -27,7 +27,7 @@ setup(name='pyspread',
          'pyspread/pyspread/doc/help/*.html', 'pyspread/doc/help/images/*.png',
          'pyspread/examples/*',
          'pyspread/COPYING', 'pyspread/thanks', 'pyspread/faq', 
-         'authors']},
+         'authors', 'pyspread.pth']},
       classifiers=[ \
         'Development Status :: 4 - Beta',
         'Environment :: X11 Applications :: GTK',
