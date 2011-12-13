@@ -877,8 +877,11 @@ class CodeArray(DataArray):
              "<", ">", "<=", ">=", "==", "!=", "<>",
             ]
     
-    # Cache for results from __getitem calls
+    # Cache for results from __getitem__ calls
     result_cache = {}
+    
+    # Cache for frozen objects
+    frozen_cache = {}
     
     def __setitem__(self, key, value):
         """Sets cell code and resets result cache"""
@@ -904,8 +907,8 @@ class CodeArray(DataArray):
         # Frozen cell handling
         if all(type(k) is not SliceType for k in key):
             frozen_res = self.cell_attributes[key]["frozen"]
-            if not(frozen_res is False):
-                return eval(frozen_res)
+            if frozen_res:
+                return self.frozen_cache[repr(key)]
         
         # Normal cell handling
         

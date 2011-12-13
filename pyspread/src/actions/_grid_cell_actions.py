@@ -291,27 +291,17 @@ class CellActions(Actions):
         
         cursor = self.grid.actions.cursor
         
-        frozen_res = self.grid.code_array.cell_attributes[cursor]["frozen"]
+        frozen = self.grid.code_array.cell_attributes[cursor]["frozen"]
         
-        if frozen_res is False:
+        if not frozen:
             # We have an non-frozen cell that has to be frozen`
             res_obj = self.grid.code_array[cursor]
             
-            # Change None result to empty cell
-            if res_obj is None:
-                res_obj = u""
-            
-            numpy.set_printoptions(threshold=2**100)
-            frozen_code = repr(res_obj)
-            numpy.set_printoptions()
-
-        else: 
-            # We have a frozen cell that is unfrozen
-            frozen_code = False
+            self.grid.code_array.frozen_cache[repr(cursor)] = res_obj
             
         # Set the new frozen state / code
         selection = Selection([], [], [], [], [cursor[:2]])
-        self.set_attr("frozen", frozen_code, selection=selection)
+        self.set_attr("frozen", not frozen, selection=selection)
     
     attr_toggle_values = { \
         "fontweight": [wx.NORMAL, wx.BOLD],
@@ -407,6 +397,6 @@ class CellActions(Actions):
                 if skey in selection:
                     key = tuple(list(skey) + [tab])
                     result = self.grid.code_array._eval_cell(key)
-                    attr_dict["frozen"] = repr(result)
+                    self.grid.code_array.frozen_cache[repr(key)] = result
         
         cell_attributes._attr_cache.clear()
