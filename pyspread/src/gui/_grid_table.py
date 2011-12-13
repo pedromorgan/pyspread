@@ -31,6 +31,7 @@ Provides
 
 """
 
+import wx
 import wx.grid
 
 class GridTable(wx.grid.PyGridTableBase):
@@ -86,12 +87,11 @@ class GridTable(wx.grid.PyGridTableBase):
         if table is None:
             table = self.grid.current_table
         
-        return self.data_array((row, col, table))
+        wx.BeginBusyCursor() 
+        result = self.data_array((row, col, table))
+        wx.EndBusyCursor() 
         
-        if value is None:
-            return u""
-        else:
-            return value
+        return result
     
     def SetValue(self, row, col, value, refresh=True):
         """Set the value of a cell"""

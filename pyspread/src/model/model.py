@@ -175,7 +175,7 @@ class ParserMixin(object):
         row, col, tab, code = self._split_tidy(line, maxsplit=3)
         key = self._get_key(row, col, tab)
         
-        self[key] = code
+        self[key] = unicode(code, encoding='utf-8')
     
     def parse_to_attribute(self, line):
         """Parses line and appends cell attribute"""
