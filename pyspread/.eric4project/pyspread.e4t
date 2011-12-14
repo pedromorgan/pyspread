@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.2.dtd">
 <!-- eric4 tasks file for project pyspread -->
-<!-- Saved: 2011-12-13, 01:59:54 -->
+<!-- Saved: 2011-12-14, 19:02:33 -->
 <Tasks version="4.2">
+  <Task priority="1" completed="False" bugfix="False">
+    <Summary>TODO: Use background color for deletion</Summary>
+    <Description></Description>
+    <Created>2011-12-14, 18:58:42</Created>
+    <Resource>
+      <Filename>src/gui/_grid_renderer.py</Filename>
+      <Linenumber>458</Linenumber>
+    </Resource>
+  </Task>
 </Tasks>
