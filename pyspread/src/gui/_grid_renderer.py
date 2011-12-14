@@ -187,12 +187,18 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             yield cell_rect
 
     def draw_text_label(self, dc, res, rect, grid, key):
-        """Draws text label of cell"""
+        """Draws text label of cell
+        
+        Text is truncated at config["max_result_length"]
+        """
+        
+        result_length = config["max_result_length"]
         
         try:
-            res_text = unicode(res)
+            res_text = unicode(res)[:1000]
+            
         except UnicodeDecodeError:
-            res_text = unicode(res, encoding="utf-8")
+            res_text = unicode(res, encoding="utf-8")[:1000]
         
         
         if not res_text:

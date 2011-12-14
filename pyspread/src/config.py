@@ -70,6 +70,9 @@ class DefaultConfig(object):
         self.grid_shape = "(1000, 100, 3)"
         self.max_unredo = "5000"
         
+        # Maximum result length in a cell in characters
+        self.max_result_length =  "1000"
+        
         # Colors
         self.grid_color = repr(get_color(wx.SYS_COLOUR_3DSHADOW))
         self.selection_color = repr(get_color(wx.SYS_COLOUR_HIGHLIGHT))

@@ -293,10 +293,17 @@ class CellActions(Actions):
         
         frozen = self.grid.code_array.cell_attributes[cursor]["frozen"]
         
-        if not frozen:
-            # We have an non-frozen cell that has to be frozen`
-            res_obj = self.grid.code_array[cursor]
+        if frozen:
+            # We have an frozen cell that has to be unfrozen
             
+            # Delete frozen cache content
+            self.grid.code_array.frozen_cache.pop(repr(cursor))
+            
+        else:
+            # We have an non-frozen cell that has to be frozen
+            
+            # Add frozen cache content
+            res_obj = self.grid.code_array[cursor]
             self.grid.code_array.frozen_cache[repr(cursor)] = res_obj
             
         # Set the new frozen state / code
