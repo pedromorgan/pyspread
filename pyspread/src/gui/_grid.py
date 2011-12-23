@@ -510,7 +510,7 @@ class GridEventHandlers(object):
         cursor = self.grid.actions.cursor
         click_key = event.GetRow(), event.GetCol(), self.grid.current_table
         
-        if event.ControlDown() and event.ShiftDown():
+        if event.ControlDown() and not event.ShiftDown() and event.AltDown():
             # Add click position as relative reference
             self.grid.actions.append_reference_code(cursor, click_key, 
                                                     ref_type="relative")
@@ -524,7 +524,7 @@ class GridEventHandlers(object):
             self.grid.main_window.entry_line.SetInsertionPointEnd()
             
             
-        elif event.ControlDown() and not event.ShiftDown():
+        elif event.ControlDown() and event.ShiftDown() and not event.AltDown():
             # Add click position as absolute reference
             self.grid.actions.append_reference_code(cursor, click_key, 
                                                     ref_type="absolute")
