@@ -103,10 +103,8 @@ h3 {
 </head>
 <body>
 <div style="float: right;">
-<a href="http://sourceforge.net/projects/pyspread"><img
- src="http://sflogo.sourceforge.net/sflogo.php?group_id=224598&amp;type=9"
- alt="Get pyspread at SourceForge.net. Fast, secure and Free Open Source software downloads"
- height="15" width="80"></a></div>
+<a href="http://sourceforge.net/projects/pyspread"><br>
+</a></div>
 <!-- Title -->
 <div style="float: left; width: 80px; height: 80px;"><img
  src="images/pyspread.png"
@@ -119,11 +117,10 @@ h3 {
 <!-- Menu -->
 <div id="menu"><a href="index.html" class="menu"
  style="font-weight: bold; color: black; text-decoration: overline;">home</a>&nbsp;
-|&nbsp;&nbsp;
-<a class="menu" href="news.html">news</a>&nbsp;
-|&nbsp;&nbsp; <a class="menu" href="download.html">download</a>&nbsp;
+|&nbsp;
+<a class="menu" href="download.html">download</a>&nbsp;
 |&nbsp;&nbsp; <a class="menu" href="docs.html">docs</a>&nbsp;
-|&nbsp;&nbsp; <a class="menu" href="contribute.html" target="_blank">contribute</a>&nbsp;
+|&nbsp;&nbsp; <a class="menu" href="contribute.html">contribute</a>&nbsp;
 |&nbsp;&nbsp;
 <a class="menu" href="http://sourceforge.net/tracker/?group_id=224598"
  target="_blank">bugs</a>
@@ -138,19 +135,22 @@ h3 {
       <th
  style="vertical-align: top; background-color: white; width: 102px;">About<br>
       </th>
-      <td style="vertical-align: top;">Pyspread is a
-Python spreadsheet application. It is based on and written in the
+      <td style="vertical-align: top;">Pyspread is a non-traditional
+spreadsheet application that is based on and written in the
 programming language <a href="http://www.python.org/">Python</a>. <br>
       <br>
-Instead of spreadsheet formulas, Python expressions are entered into
-the spreadsheet cells. Each expression returns a Python object that can
+The goal of pyspread is to be the most pythonic spreadsheet.<br>
+      <br>
+Pyspread expects Python expressions in its grid cells, which makes a
+spreadsheet specific language obsolete. Each cell returns a Python
+object that can
 be accessed from other cells. These objects can represent anything
 including lists or matrices.<br>
       <br>
-The benefit of this non-traditional spreadsheet concept is that no
-spreadsheet specific language has to be learned because the cell
-functions are Python code. This makes cell code compact and easy to
-read.<br>
+Pyspread is free
+software. It is released under the <a
+ href="http://www.gnu.org/copyleft/gpl.html">GPL
+v3</a>.<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -166,26 +166,20 @@ read.<br>
       <td style="vertical-align: top;">
       <ul style="text-align: left;">
         <li> Three
-dimensional grid</li>
-        <li>Huge grids with up to 80 million rows and columns<br>
+dimensional grid with up to 80 million rows<br>
         </li>
-        <li>Cells can return complex data types such as lists, trees or
-matrices</li>
-        <li>Macros for functionalities that are
-too complex for a single Python expression </li>
+        <li>Macros</li>
         <li>CSV import and export</li>
-        <li>Clipboard access</li>
-        <li>Python module access from
-each cell, which allows:</li>
+        <li>Save file signatures for preventing foreign code execution <br>
+        </li>
+        <li>Python module access, which allows:</li>
         <ul>
-          <li>Arbitrary size rational numbers (via <a
- href="http://code.google.com/p/gmpy/">gmpy</a>), </li>
-          <li>Fixed point decimal numbers for business calculations,
-(via
-the <a href="http://docs.python.org/library/decimal.html">decimal</a>
-module from the standard library) </li>
-          <li>Advanced statistics including plotting functions (via <a
- href="http://rpy.sourceforge.net/">RPy</a>)</li>
+          <li>Matrix operations via <a href="http://numpy.scipy.org/">numpy</a></li>
+          <li>Fixed point decimal numbers for business calculations via
+            <a href="http://docs.python.org/library/decimal.html">decimal</a>
+          </li>
+          <li>Advanced statistics and plotting via <a
+ href="http://rpy.sourceforge.net/">RPy</a></li>
           <li>Much more via <span style="font-style: italic;">&lt;your
 favourite module&gt;</span></li>
         </ul>
@@ -201,22 +195,13 @@ favourite module&gt;</span></li>
       </a> </td>
     </tr>
     <tr>
-      <th style="vertical-align: top;">warning<br>
+      <th style="vertical-align: top;">news<br>
       </th>
-      <td style="vertical-align: top;">The code in each cell is
-executed similarly to a Python script. Pyspread does not limit what
-this code can do. This powerful feature has its drawbacks. A
-spreadsheet may very well delete everything ion your hard
-drive or send your data via the Internet. Of course this is a
-non-issue if you sandbox properly or if you only use self developed
-spreadsheets. <br>
-      <br>
-Since this is not the case for everyone (see
-discussion at <a href="http://lwn.net/Articles/364745/">lwn.net</a>),
-a GPG signature based trust model for spreadsheet files has been
-introduced. It ensures that only your own trusted files are executed on
-loading. Untrusted files are displayed in safe mode. You can approve a
-file manually. Inspect carefully.</td>
+      <td style="vertical-align: top; text-align: left;">December 2011:
+Pyspread 0.2.0 is out. Get it from <a
+ href="https://github.com/downloads/manns/pyspread/pyspread-0.2.0.tar.gz">here</a>.<br>
+December 2011: The main site is moving from Sourceforge to github.<br>
+      </td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;"><br>
@@ -227,8 +212,12 @@ file manually. Inspect carefully.</td>
       </th>
       <td style="vertical-align: top;">Pyspread is designed for Linux
 and other GTK platforms.<br>
-Due to time restrictions, Windows™ support has been discontinued for
-version 0.2 and later. If you would like to maintain a Windows version
+      <br>
+Due to time restrictions, Windows™ support has been discontinued
+starting with
+version 0.2.0. If you run Windows, get version 0.1.2 from <a
+ href="http://pypi.python.org/packages/source/p/pyspread/pyspread-0.1.2.tar.gz#md5=501d9d2e150b5dc8a0f44ff303e4cb71">here</a>.
+If you would like to maintain a Windows version
 please contact me.<br>
       <br>
       <span style="text-decoration: underline;">Dependencies </span><br>
@@ -238,12 +227,12 @@ please contact me.<br>
         <li><a href="http://numpy.scipy.org/">numpy</a> &gt;=1.1.0</li>
         <li><a href="http://www.wxpython.org/">wxPython</a>
 &gt;=2.8.10.1 (unicode version required)</li>
+        <li><a href="http://pyme.sourceforge.net/">PyMe</a> &gt;=0.8.1</li>
       </ul>
       <span style="text-decoration: underline;">Highly recommended for
 full
-functionality </span><br>
+functionality of the example files </span><br>
       <ul>
-        <li><a href="http://pyme.sourceforge.net/">PyMe</a> &gt;=0.8.1</li>
         <li><a href="http://code.google.com/p/gmpy/">gmpy</a>
 &gt;=1.1.0</li>
         <li><a href="http://rpy.sourceforge.net/">rpy</a> &gt;=1.0.3</li>
@@ -253,49 +242,6 @@ functionality </span><br>
       </td>
       <td style="width: 211px;"><br>
       </td>
-    </tr>
-    <tr>
-      <th style="vertical-align: top;">Maturity<br>
-      </th>
-      <td style="vertical-align: top;">Pyspread 0.2 is in early Beta
-release. This means that the core functionality is fully implemented.
-However, there are significant changes in save files and APIs.
-Furthermore, the program needs testing and polish.<br>
-      <br>
-Therefore, using pyspread for business critical applications is still
-not recommended.<br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-    </tr>
-    <tr>
-      <th style="vertical-align: top;">Contribute<br>
-      </th>
-      <td style="vertical-align: top;">Help making pyspread better. You
-do not have to code yourself for that.
-Post bug reports. E-Mail me comments or ideas for improvement. If you
-are
-would like to join development please have a look at the <a
- href="contribute.html">contribute</a> page.<br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-    </tr>
-    <tr>
-      <th style="vertical-align: top;">License</th>
-      <td style="vertical-align: top;">Pyspread is free
-software.<br>
-It is released under the <a href="http://www.gnu.org/copyleft/gpl.html">GPL
-v3</a>.<br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td><a href="images/screenshot_sinus_large.png"><br>
-      </a> </td>
     </tr>
     <tr>
       <th style="vertical-align: top;">contact<br>
@@ -314,8 +260,8 @@ v3</a>.<br>
 </p>
 <p><span style="font-style: italic;"><small>Copyright 2008-2011 Martin
 Manns</small><br style="font-style: italic;">
-</span><span style="font-style: italic;"><small>Last changed: 03.
-November 2011</small>
+</span><span style="font-style: italic;"><small>Last changed: 23.
+December 2011</small>
 </span></p>
 <p> <a href="http://validator.w3.org/check?uri=referer"><img
  src="http://www.w3.org/Icons/valid-html401"
