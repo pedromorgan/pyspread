@@ -4,13 +4,13 @@ from distutils.core import setup
 from distutils.sysconfig import get_python_lib
 
 setup(name='pyspread',
-      version='0.2.0',
+      version='0.2.1',
       description='Python Spreadsheet',
       license='GPL v3 :: GNU General Public License',
       keywords=['spreadsheet', 'pyspread'],
       author='Martin Manns',
       author_email='mmanns@gmx.net',
-      url='http://pyspread.sourceforge.net',
+      url='http://manns.github.com/pyspread/',
       requires=['numpy (>=1.1)', 'wx (>=2.8.10)'],
       packages=[''],
       scripts=['pyspread/pyspread'],
