@@ -35,6 +35,7 @@ Provides:
   - DimensionsEntryDialog
   - CellEntryDialog
   - AboutDialog
+  - ConfigDialog
 
 """
 
@@ -1089,3 +1090,55 @@ class AboutDialog(object):
         self.Destroy()
 
 # end of class AboutDialog
+
+class PreferencesDialog(wx.Dialog):
+    """Dialog for changing pyspread's configuration preferences"""
+    
+    parameters = ( \
+        ("max_unredo", { \
+            "label": u"Max. undo steps", 
+            "tooltip": u"Maximum number of undo steps",
+        }),
+        ("grid_shape", { \
+            "label": u"Grid shape",
+            "tooltip": u"Initial shape of grid when staring pyspread",
+        }),
+        ("max_result_length", { \
+            "label": u"Max. result length",
+            "tooltip": u"Maximum length of cell result string",
+        }),
+    )
+    
+    def __init__(self, *args, **kwargs):
+        kwargs["title"] = u"Preferences"
+        kwargs["style"] = \
+            wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
+        wx.Dialog.__init__(self, *args, **kwargs)
+        
+        self.labels = []
+        self.textctrls = []
+        
+        self.grid_sizer = wx.FlexGridSizer(len(self.parameters), 2, 10, 10)
+        
+        for parameter, info in self.parameters:
+            label = info["label"]
+            tooltip = info["tooltip"]
+            value = config[parameter]
+            
+            self.labels.append(wx.StaticText(self, -1, label))
+            self.labels[-1].SetToolTipString(tooltip)
+            
+            self.textctrls.append(wx.TextCtrl(self, -1, repr(value)))
+            self.textctrls[-1].SetToolTipString(tooltip)
+            
+            self.grid_sizer.Add(self.labels[-1], 0, 0, 0)
+            self.grid_sizer.Add(self.textctrls[-1], 0, wx.EXPAND, 0)
+        
+        self.SetSizer(self.grid_sizer)
+        
+        self.grid_sizer.Fit(self)
+        self.grid_sizer.AddGrowableCol(1)
+        self.Layout()
+        
+
+# end of class PreferencesDialog

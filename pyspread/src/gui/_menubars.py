@@ -186,6 +186,9 @@ class MainMenu(_filledMenu):
             [item, [PrintMsg, "&Print\tCtrl+p", 
                 "Print current spreadsheet", wx.ID_PRINT]], \
             ["Separator"], \
+            [item, [PreferencesMsg, "Preferences...", 
+                u"Change preferences of pyspread", wx.ID_PREFERENCES]], \
+            ["Separator"], \
             [item, [CloseMsg, "&Quit\tCtrl+q", "Exit Program", wx.ID_EXIT]]] \
         ], \
         [wx.Menu, "&Edit", [\

@@ -64,6 +64,8 @@ TitleMsg, EVT_COMMAND_TITLE = new_command_event()
 SafeModeEntryMsg, EVT_COMMAND_SAFE_MODE_ENTRY = new_command_event()
 SafeModeExitMsg, EVT_COMMAND_SAFE_MODE_EXIT = new_command_event()
 
+PreferencesMsg, EVT_COMMAND_PREFERENCES = new_command_event()
+
 CloseMsg, EVT_COMMAND_CLOSE = new_command_event()
 
 ManualMsg, EVT_COMMAND_MANUAL = new_command_event()

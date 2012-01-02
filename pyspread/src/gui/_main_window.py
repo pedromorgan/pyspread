@@ -42,6 +42,8 @@ from _menubars import MainMenu
 from _toolbars import MainToolbar, FindToolbar, AttributesToolbar
 from _widgets import EntryLine, StatusBar, TableChoiceIntCtrl
 
+from _dialogs import PreferencesDialog
+
 from src.lib.clipboard import Clipboard
 
 from _gui_interfaces import GuiInterfaces
@@ -215,6 +217,10 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, handlers.OnClose)
         self.Bind(EVT_COMMAND_CLOSE, handlers.OnClose)
         
+        # Preferences events
+        
+        self.Bind(EVT_COMMAND_PREFERENCES, handlers.OnPreferences)
+        
         # Toolbar toggle events
         
         self.Bind(EVT_COMMAND_MAINTOOLBAR_TOGGLE, 
@@ -380,6 +386,15 @@ class MainWindowEventHandlers(object):
         # Close main_window
         
         self.main_window.Destroy()
+    
+    # Preferences events
+    
+    def OnPreferences(self, event):
+        """Preferences event handler that launches preferences dialog"""
+        
+        dialog = PreferencesDialog(self.main_window)
+        
+        dialog.ShowModal()
     
     # Toolbar events
     
