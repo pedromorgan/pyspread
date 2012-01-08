@@ -195,10 +195,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         result_length = config["max_result_length"]
         
         try:
-            res_text = unicode(res)[:1000]
+            res_text = unicode(res)[:result_length]
             
         except UnicodeDecodeError:
-            res_text = unicode(res, encoding="utf-8")[:1000]
+            res_text = unicode(res, encoding="utf-8")[:result_length]
         
         
         if not res_text:

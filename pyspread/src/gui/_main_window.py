@@ -29,6 +29,7 @@ Provides:
 
 """
 
+import ast
 import os
 
 import wx
@@ -41,8 +42,6 @@ from src.config import config
 from _menubars import MainMenu
 from _toolbars import MainToolbar, FindToolbar, AttributesToolbar
 from _widgets import EntryLine, StatusBar, TableChoiceIntCtrl
-
-from _dialogs import PreferencesDialog
 
 from src.lib.clipboard import Clipboard
 
@@ -392,9 +391,22 @@ class MainWindowEventHandlers(object):
     def OnPreferences(self, event):
         """Preferences event handler that launches preferences dialog"""
         
-        dialog = PreferencesDialog(self.main_window)
+        preferences = self.interfaces.get_preferences_from_user()
         
-        dialog.ShowModal()
+        if preferences:
+            for key in preferences:
+                old_type = type(config[key])
+                new_type = type(ast.literal_eval(preferences[key]))
+                if old_type is new_type:
+                    config[key] = preferences[key]
+                else:
+                    # Display type error in status bar
+                    statustext = "Parameter " + key + " has type " + \
+                        str(new_type) + " instead of expected type " + \
+                        str(old_type) + "."
+                    post_command_event(self.main_window, StatusBarMsg, 
+                                       text=statustext)
+        
     
     # Toolbar events
     

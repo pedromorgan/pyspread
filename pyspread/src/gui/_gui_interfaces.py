@@ -37,7 +37,8 @@ import wx
 import wx.lib.agw.genericmessagedialog as GMD
 
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
-from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
+from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog 
+from _dialogs import PreferencesDialog
 
 
 class ModalDialogInterfaceMixin(object):
@@ -68,6 +69,23 @@ class ModalDialogInterfaceMixin(object):
         dim_dialog.Destroy()
         
         return dim
+    
+    def get_preferences_from_user(self):
+        """Launches preferences dialog and returns dict with preferences"""
+        
+        dlg = PreferencesDialog(self.main_window)
+        
+        change_choice = dlg.ShowModal()
+        
+        preferences = {}
+        
+        if change_choice == wx.ID_OK:
+            for (parameter, _), textctrl in zip(dlg.parameters, dlg.textctrls):
+                preferences[parameter] = textctrl.Value
+        
+        dlg.Destroy()
+        
+        return preferences
     
     def get_save_request_from_user(self):
         """Queries user if grid should be saved"""

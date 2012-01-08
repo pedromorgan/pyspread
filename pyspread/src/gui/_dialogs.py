@@ -1134,10 +1134,17 @@ class PreferencesDialog(wx.Dialog):
             self.grid_sizer.Add(self.labels[-1], 0, 0, 0)
             self.grid_sizer.Add(self.textctrls[-1], 0, wx.EXPAND, 0)
         
+        self.ok_button = wx.Button(self, wx.ID_OK)
+        self.cancel_button = wx.Button(self, wx.ID_CANCEL)
+        self.grid_sizer.Add(self.ok_button, 0, 0, 0)
+        self.grid_sizer.Add(self.cancel_button, 0, 0, 0)
+        
         self.SetSizer(self.grid_sizer)
         
         self.grid_sizer.Fit(self)
         self.grid_sizer.AddGrowableCol(1)
+        for row in xrange(len(self.parameters)):
+            self.grid_sizer.AddGrowableRow(row)
         self.Layout()
         
 
