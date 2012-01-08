@@ -1101,7 +1101,7 @@ class PreferencesDialog(wx.Dialog):
         }),
         ("grid_shape", { \
             "label": u"Grid shape",
-            "tooltip": u"Initial shape of grid when staring pyspread",
+            "tooltip": u"Initial shape of grid when starting pyspread",
         }),
         ("max_result_length", { \
             "label": u"Max. result length",
