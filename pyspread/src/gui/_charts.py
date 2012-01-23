@@ -88,6 +88,57 @@ class LineParameterPanel(wx.Panel):
         }),
     ]
 
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent, -1)
+
+        sizer = wx.GridFlexSizer()
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.panel_1 = wx.Panel(self, -1)
+        self.label_1 = wx.StaticText(self.panel_1, -1, "Line width", style=wx.ALIGN_CENTRE)
+        self.combo_box_1 = wx.ComboBox(self.panel_1, -1, choices=[], style=wx.CB_DROPDOWN)
+        self.label_3 = wx.StaticText(self.panel_1, -1, "Line style", style=wx.ALIGN_CENTRE)
+        self.combo_box_2 = wx.ComboBox(self.panel_1, -1, choices=[], style=wx.CB_DROPDOWN)
+        self.label_2 = wx.StaticText(self.panel_1, -1, "Line color", style=wx.ALIGN_CENTRE)
+        self.button_1 = wx.Button(self.panel_1, -1, "button_1")
+        self.label_4 = wx.StaticText(self.panel_1, -1, "Alpha", style=wx.ALIGN_CENTRE)
+        self.slider_1 = wx.Slider(self.panel_1, -1, 0, 0, 100, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
+
+    def __set_properties(self):
+        # begin wxGlade: MyFrame.__set_properties
+        self.SetTitle("frame_1")
+        self.combo_box_1.SetMinSize((-1,-1))
+        self.combo_box_2.SetMinSize((-1, -1))
+        self.panel_1.SetMinSize((-1,-1))
+        # end wxGlade
+
+    def __do_layout(self):
+        # begin wxGlade: MyFrame.__do_layout
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        grid_sizer_1 = wx.FlexGridSizer(2, 4, 5, 10)
+        grid_sizer_1.Add(self.label_1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+        grid_sizer_1.Add(self.combo_box_1, 0, wx.EXPAND, 0)
+        grid_sizer_1.Add(self.label_3, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 2)
+        grid_sizer_1.Add(self.combo_box_2, 0, wx.EXPAND, 0)
+        grid_sizer_1.Add(self.label_2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add(self.button_1, 0, wx.EXPAND, 0)
+        grid_sizer_1.Add(self.label_4, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 2)
+        grid_sizer_1.Add(self.slider_1, 0, wx.EXPAND, 0)
+        self.panel_1.SetSizer(grid_sizer_1)
+        grid_sizer_1.AddGrowableCol(1)
+        grid_sizer_1.AddGrowableCol(3)
+        sizer_1.Add(self.panel_1, 1, wx.ALL | wx.EXPAND, 2)
+        self.SetSizer(sizer_1)
+        sizer_1.Fit(self)
+        self.Layout()
+        # end wxGlade
+
 # End of class LineEntryPanel
 
 
