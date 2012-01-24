@@ -32,6 +32,11 @@ import os
 
 from sysvars import get_program_path
 
+import wx
+app = wx.App()
+
+from src.lib.gpg import genkey
+
 def run_tests():
     """Looks for py.test files and runs py.test"""
     
@@ -48,4 +53,7 @@ def run_tests():
                     os.system(sys_cmd)
 
 if __name__ == "__main__":
+
+    genkey()
+    
     run_tests()
