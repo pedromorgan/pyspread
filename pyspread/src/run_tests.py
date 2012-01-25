@@ -35,13 +35,35 @@ from sysvars import get_program_path
 import wx
 app = wx.App()
 
-from src.lib.gpg import genkey
+from src.lib.gpg import genkey, sign
+
+
+def create_valid_signatures():
+    """Createsb all valid signatures for test files"""
+
+    valid_test_filepaths = [ \
+        "actions/test/test1.pys",
+        "actions/test/test4.pys",
+        "lib/test/test1.pys",
+    ]
+
+    for filepath in valid_test_filepaths:
+        try:
+            os.remove(filepath + ".sig")
+        except OSError:
+            pass
+
+        signature = sign(filepath)
+        signfile = open(filepath + '.sig','wb')
+        signfile.write(signature)
+        signfile.close()
+
 
 def run_tests():
     """Looks for py.test files and runs py.test"""
-    
+
     source_path = get_program_path() + "src/"
-    
+
     for root, dirs, files in os.walk(source_path):
         if root[-4:] == "test":
             for __file in files:
@@ -55,5 +77,7 @@ def run_tests():
 if __name__ == "__main__":
 
     genkey()
-    
+
+    create_valid_signatures()
+
     run_tests()
