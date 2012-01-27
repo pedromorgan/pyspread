@@ -41,10 +41,12 @@ from src.lib.gpg import genkey, sign
 def create_valid_signatures():
     """Createsb all valid signatures for test files"""
 
+    source_path = get_program_path() + "src/"
+
     valid_test_filepaths = [ \
-        "actions/test/test1.pys",
-        "actions/test/test4.pys",
-        "lib/test/test1.pys",
+        source_path + "actions/test/test1.pys",
+        source_path + "actions/test/test4.pys",
+        source_path + "lib/test/test1.pys",
     ]
 
     for filepath in valid_test_filepaths:
