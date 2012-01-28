@@ -284,6 +284,12 @@ class MainMenu(_filledMenu):
                 [item, [AlignmentMsg, alignment, alignment] \
                 ] for alignment in [_("Top"), _("Center"), _("Bottom")]]
                 ], \
+            ["Separator"], \
+            [item, [TextColorDialogMsg, _("Text color..."),
+                    _("Launch color dialog to specify text color.")]],
+            [item, [BgColorDialogMsg, _("Background color..."),
+                    _("Launch color dialog to specify background color.")]],
+            ["Separator"], \
             [item, [RotationDialogMsg, _("Rotation..."),
                     _("Set text rotation.")]
                 ]

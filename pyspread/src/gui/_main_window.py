@@ -244,6 +244,8 @@ class MainWindow(wx.Frame):
 
         # Format events
         self.Bind(EVT_COMMAND_FONTDIALOG, handlers.OnFontDialog)
+        self.Bind(EVT_COMMAND_TEXTCOLORDIALOG, handlers.OnTextColorDialog)
+        self.Bind(EVT_COMMAND_BGCOLORDIALOG, handlers.OnBgColorDialog)
 
         # Print events
 
@@ -837,7 +839,7 @@ class MainWindowEventHandlers(object):
     # Format events
 
     def OnFontDialog(self, event):
-        """Event handler for focusing find toolbar text widget"""
+        """Event handler for launching font dialog"""
 
         # Get current font data from current cell
         cursor = self.main_window.grid.actions.cursor
@@ -867,6 +869,45 @@ class MainWindowEventHandlers(object):
                                weight=font.GetWeightString())
             post_command_event(self.main_window, FontItalicsMsg,
                                style=font.GetStyleString())
+
+    def OnTextColorDialog(self, event):
+        """Event handler for launching text color dialog"""
+
+        dlg = wx.ColourDialog(self.main_window)
+
+        # Ensure the full colour dialog is displayed,
+        # not the abbreviated version.
+        dlg.GetColourData().SetChooseFull(True)
+
+        if dlg.ShowModal() == wx.ID_OK:
+
+            # Fetch color data
+            data = dlg.GetColourData()
+            color = data.GetColour().GetRGB()
+
+            post_command_event(self.main_window, TextColorMsg, color=color)
+
+        dlg.Destroy()
+
+    def OnBgColorDialog(self, event):
+        """Event handler for launching background color dialog"""
+
+        dlg = wx.ColourDialog(self.main_window)
+
+        # Ensure the full colour dialog is displayed,
+        # not the abbreviated version.
+        dlg.GetColourData().SetChooseFull(True)
+
+        if dlg.ShowModal() == wx.ID_OK:
+
+            # Fetch color data
+            data = dlg.GetColourData()
+            color = data.GetColour().GetRGB()
+
+            post_command_event(self.main_window, BackgroundColorMsg,
+                               color=color)
+
+        dlg.Destroy()
 
     # Macro events
 

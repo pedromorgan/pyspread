@@ -38,24 +38,24 @@ import wx.lib.newevent
 
 def post_command_event(target, msg_cls, **kwargs):
     """Posts command event to main window
-    
+
     Command events propagate.
-    
+
     Parameters
     ----------
      * msg_cls: class
     \tMessage class from new_command_event()
      * kwargs: dict
     \tMessage arguments
-    
+
     """
-    
+
     msg = msg_cls(id=-1, **kwargs)
     wx.PostEvent(target, msg)
 
 
 new_command_event = wx.lib.newevent.NewCommandEvent
-    
+
 # Main window
 # ===========
 
@@ -67,6 +67,10 @@ SafeModeExitMsg, EVT_COMMAND_SAFE_MODE_EXIT = new_command_event()
 PreferencesMsg, EVT_COMMAND_PREFERENCES = new_command_event()
 
 CloseMsg, EVT_COMMAND_CLOSE = new_command_event()
+
+FontDialogMsg, EVT_COMMAND_FONTDIALOG = new_command_event()
+TextColorDialogMsg, EVT_COMMAND_TEXTCOLORDIALOG = new_command_event()
+BgColorDialogMsg, EVT_COMMAND_BGCOLORDIALOG = new_command_event()
 
 ManualMsg, EVT_COMMAND_MANUAL = new_command_event()
 TutorialMsg, EVT_COMMAND_TUTORIAL = new_command_event()
@@ -100,7 +104,6 @@ CodeEntryMsg, EVT_COMMAND_CODE_ENTRY = new_command_event()
 
 # Cell attribute events
 
-FontDialogMsg, EVT_COMMAND_FONTDIALOG = new_command_event()
 FontMsg, EVT_COMMAND_FONT = new_command_event()
 FontSizeMsg, EVT_COMMAND_FONTSIZE = new_command_event()
 FontBoldMsg, EVT_COMMAND_FONTBOLD = new_command_event()
@@ -156,13 +159,13 @@ PasteMsg, EVT_COMMAND_PASTE = new_command_event()
 
 # Grid view events
 
-RefreshSelectionMsg , EVT_COMMAND_REFRESH_SELECTION = new_command_event()
-DisplayGotoCellDialogMsg , EVT_COMMAND_DISPLAY_GOTO_CELL_DIALOG = \
+RefreshSelectionMsg, EVT_COMMAND_REFRESH_SELECTION = new_command_event()
+DisplayGotoCellDialogMsg, EVT_COMMAND_DISPLAY_GOTO_CELL_DIALOG = \
                                                     new_command_event()
-GotoCellMsg , EVT_COMMAND_GOTO_CELL = new_command_event()
-ZoomInMsg , EVT_COMMAND_ZOOM_IN = new_command_event()
-ZoomOutMsg , EVT_COMMAND_ZOOM_OUT = new_command_event()
-ZoomStandardMsg , EVT_COMMAND_ZOOM_STANDARD = new_command_event()
+GotoCellMsg, EVT_COMMAND_GOTO_CELL = new_command_event()
+ZoomInMsg, EVT_COMMAND_ZOOM_IN = new_command_event()
+ZoomOutMsg, EVT_COMMAND_ZOOM_OUT = new_command_event()
+ZoomStandardMsg, EVT_COMMAND_ZOOM_STANDARD = new_command_event()
 
 # Find events
 
@@ -195,14 +198,14 @@ RedoMsg, EVT_COMMAND_REDO = new_command_event()
 # ============
 
 # tuple dim
-GridActionNewMsg, EVT_COMMAND_GRID_ACTION_NEW = new_command_event() 
+GridActionNewMsg, EVT_COMMAND_GRID_ACTION_NEW = new_command_event()
 
 # attr dict: keys: filepath: string, interface: object
-GridActionOpenMsg, EVT_COMMAND_GRID_ACTION_OPEN = new_command_event() 
-GridActionSaveMsg, EVT_COMMAND_GRID_ACTION_SAVE = new_command_event() 
+GridActionOpenMsg, EVT_COMMAND_GRID_ACTION_OPEN = new_command_event()
+GridActionSaveMsg, EVT_COMMAND_GRID_ACTION_SAVE = new_command_event()
 
 GridActionTableSwitchMsg, EVT_COMMAND_GRID_ACTION_TABLE_SWITCH = \
-                                                  new_command_event() 
+                                                  new_command_event()
 
 # EntryLine
 # =========
