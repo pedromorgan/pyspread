@@ -41,31 +41,30 @@ Provides
 # wx is already imported if the PyScripter wx engine is used.
 
 from sys import path, modules
+from sysvars import get_program_path
+
 import optparse
+
+path.insert(0, get_program_path())
 
 try:
     modules['wx']
 except KeyError:
     # End of patch
-    
+
     # Select wx version 2.8 if possible
 
     try:
         import wxversion
         wxversion.select(['2.8', '2.9'])
-        
+
     except ImportError:
         pass
 
 from wx import App
 from wx import InitAllImageHandlers
 
-# If pyspread is installed but run from a local dir
-# the local libs are preferred.
-
-path.insert(0, "..") 
-
-from src.gui._events import post_command_event, GridActionOpenMsg
+from gui._events import post_command_event, GridActionOpenMsg
 
 DEBUG = False
 
@@ -79,9 +78,9 @@ class Commandlineparser(object):
     parse: Returns command line options and arguments as 2-tuple
 
     """
-    
+
     def __init__(self):
-        from src.config import config
+        from config import config
         usage = "usage: %prog [options] [filename]"
         version = "%prog " + unicode(config["version"])
         self.parser = optparse.OptionParser(usage=usage, version=version)
@@ -119,14 +118,14 @@ class Commandlineparser(object):
 
 class MainApplication(App):
     """Main application class for pyspread."""
-    
+
     dimensions = (1, 1, 1) # Will be overridden anyways
     options = {}
     filename = None
-    
+
     def OnInit(self):
         """Init class that is automatically run on __init__"""
-        
+
         # Get command line options and arguments
         self.get_cmd_args()
 
@@ -134,32 +133,32 @@ class MainApplication(App):
         InitAllImageHandlers()
 
         # Main window creation
-        from src.gui._main_window import MainWindow
-        
+        from gui._main_window import MainWindow
+
         self.main_window = MainWindow(None, title="pyspread")
-        
+
         ## Set dimensions
-        
+
         ## Initialize file loading via event
-        
+
         # Create GPG key if not present
-        
-        from src.lib.gpg import is_pyme_present
-        
+
+        from lib.gpg import is_pyme_present
+
         if is_pyme_present():
-            from src.lib.gpg import genkey
+            from lib.gpg import genkey
             genkey()
-            
+
         # Show application window
         self.SetTopWindow(self.main_window)
         self.main_window.Show()
 
         # Load filename if provided
         if self.filepath is not None:
-            post_command_event(self.main_window, GridActionOpenMsg, 
+            post_command_event(self.main_window, GridActionOpenMsg,
                                attr={"filepath": self.filepath})
             self.main_window.filepath = self.filepath
-        
+
         return True
 
 
@@ -168,7 +167,7 @@ class MainApplication(App):
 
         Created attributes
         ------------------
-        
+
         options: dict
         \tCommand line options
         dimensions: Three tuple of Int
@@ -187,7 +186,7 @@ class MainApplication(App):
 
 def __main__():
     """Compatibility hack"""
-    
+
     pass
 
 

@@ -18,9 +18,6 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from sys import path, modules
-path.insert(0, "..") 
-path.insert(0, "../..") 
 
 import types
 
@@ -43,9 +40,9 @@ param_font = [ \
 @params(param_font)
 def test_get_font_from_data(fontdata, face, size):
     """Unit test for get_font_from_data"""
-    
+
     font = get_font_from_data(fontdata)
-    
+
     assert font.GetFaceName() == face
     assert font.GetPointSize() == size
 
@@ -58,9 +55,9 @@ param_pen = [ \
 @params(param_pen)
 def test_get_pen_from_data(pendata, width, color):
     """Unit test for get_pen_from_data"""
-    
+
     pen = get_pen_from_data(pendata)
-    
+
     assert pen.GetColour() == color
     assert pen.GetWidth() == width
 

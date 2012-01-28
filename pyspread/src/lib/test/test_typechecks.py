@@ -18,10 +18,6 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from sys import path, modules
-
-path.insert(0, "..") 
-path.insert(0, "../..") 
 
 import wx
 app = wx.App()
@@ -43,7 +39,7 @@ param_slc = [ \
 @params(param_slc)
 def test_is_slice_like(slc, res):
     """Unit test for is_slice_like"""
-    
+
     assert is_slice_like(slc) == res
 
 param_str = [ \
@@ -60,7 +56,7 @@ param_str = [ \
 @params(param_str)
 def test_is_string_like(string, res):
     """Unit test for is_string_like"""
-    
+
     assert is_string_like(string) == res
 
 param_gen = [ \
@@ -77,5 +73,5 @@ param_gen = [ \
 @params(param_gen)
 def test_is_generator_like(gen, res):
     """Unit test for is_generator_like"""
-    
+
     assert is_generator_like(gen) == res

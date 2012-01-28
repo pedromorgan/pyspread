@@ -30,6 +30,7 @@ Runs all unit tests for pyspread
 
 import os
 
+from sys import path
 from sysvars import get_program_path
 
 import wx
@@ -37,6 +38,7 @@ app = wx.App()
 
 from src.lib.gpg import genkey, sign
 
+# Remember to set PYTHONPATH to current dir
 
 def create_valid_signatures():
     """Createsb all valid signatures for test files"""

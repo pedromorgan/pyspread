@@ -19,9 +19,6 @@
 # --------------------------------------------------------------------
 
 import py.test as pytest
-from sys import path, modules
-path.insert(0, "..") 
-path.insert(0, "../..")
 
 import wx
 app = wx.App()
@@ -32,17 +29,17 @@ class TestUnRedo(object):
     """Unit test for UnRedo"""
     def setup_method(self, method):
         """Setup for dummy undo steps"""
-        
+
         self.unredo = UnRedo()
         self.list = []
         self.step = (self.list.append, ["Test"], self.list.pop, [])
-    
+
     def test_mark(self):
         """Test for marking step delimiters"""
-    
+
         self.unredo.mark()
         assert self.unredo.undolist == [] # Empty undolist needs no marking
-        
+
         self.unredo.undolist = [self.step]
         self.unredo.mark()
         assert self.unredo.undolist[-1] == "MARK"
@@ -53,7 +50,7 @@ class TestUnRedo(object):
         self.unredo.undo()
         assert self.list == ["Test"]
         assert self.unredo.redolist == [self.step]
-        
+
         # Test Mark
         self.unredo.mark()
         self.list.pop()
@@ -62,7 +59,7 @@ class TestUnRedo(object):
         assert self.list == ["Test"]
         assert "MARK" not in self.unredo.undolist
         assert "MARK" in self.unredo.redolist
-        
+
         # When Redolist != [], a MARK should appear
         self.unredo.mark()
         self.list.pop()
@@ -79,19 +76,19 @@ class TestUnRedo(object):
         self.unredo.redolist = [self.step]
         self.unredo.redo()
         assert self.list == []
-        
+
         # Test Mark
 
     def test_reset(self):
         """Test for resettign undo"""
-        
+
         self.unredo.reset()
         assert self.unredo.undolist == []
         assert self.unredo.redolist == []
 
     def test_append(self):
         """Tests append operation"""
-        
+
         self.unredo.append(self.step[:2], self.step[2:])
         assert len(self.unredo.undolist) == 1
         assert self.unredo.undolist[0] == self.step
