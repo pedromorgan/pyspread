@@ -56,7 +56,7 @@ def create_valid_signatures():
             pass
 
         signature = sign(filepath)
-        signfile = open(filepath + '.sig','wb')
+        signfile = open(filepath + '.sig', 'wb')
         signfile.write(signature)
         signfile.close()
 
