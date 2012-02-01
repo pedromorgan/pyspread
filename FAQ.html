@@ -128,52 +128,86 @@ h3 {
 </div>
 <p>
 </p>
-<br>
+<div style="text-align: left;">
+<style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }</style></div>
+<h1>
+<p
+ style="margin-top: 0.17in; page-break-after: avoid; text-align: left;"><font
+ face="Liberation Sans"><font size="5"><b>pyspread FAQ</b></font></font><br>
+</p>
+</h1>
 <table
  style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;"
  cellpadding="15" cellspacing="0" border="0">
   <tbody>
     <tr>
       <th
- style="vertical-align: top; background-color: white; width: 102px;">user
-manual<br>
+ style="vertical-align: top; background-color: white; width: 102px;">What
+kind of expressions can a cell contain?<br>
       </th>
-      <td style="vertical-align: top;"><a href="First%20steps.html">First
-steps
-into pyspread.</a></td>
+      <td style="vertical-align: top;">A cell can contain any normal
+Python expression such as a
+list comprehension or a generator expression. However, it cannot
+contain statements such as
+      <pre>for i in xrange(10): pass<br></pre>
+      <p>
+If you want to program more complex algorithms then use the macro
+editor.<br>
+There, you can define functions that use arbitrary Python code and is
+callable from any cell.
+      </p>
+      <p><b>Example:</b><br>
+Type in the macro editor:
+      </p>
+      <pre>def factorize(number):<br>    """Silly factorizing algorithm for demonstration purposes only"""<br>    counter = 1<br>    result = []<br>    while counter &lt;= number:<br>        if number&nbsp;% counter == 0:<br>            result.append(counter)<br>        counter += 1<br>    return result</pre>
+      <p>And in the cell:
+      </p>
+      <pre> factorize(25)</pre>
+      <p>Result is:
+      </p>
+      <pre> [1 5 25]</pre>
+      </td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="width: 211px;"><br>
       </td>
     </tr>
     <tr>
-      <th style="vertical-align: top;">Tutorial<br>
-      </th>
-      <td style="vertical-align: top;">The pyspread tutorial.<br>
-      </td>
+      <th style="vertical-align: top;">What are the boundaries for the
+number of
+rows/columns/sheets? </th>
+      <td style="vertical-align: top;">These are limited by your memory
+(and maybe your stack
+restriction
+if any). However, the grid is restricted to a number that changes with
+row size.
+For standard size (GTK), 80 000 000 rows can be displayed. </td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
     </tr>
     <tr>
-      <th style="vertical-align: top;">faq<br>
-      </th>
-      <td style="vertical-align: top;"><a href="FAQ.html">Frequently
-asked questions.</a><br>
-      </td>
+      <th style="vertical-align: top;">Is the new file-format
+considered stable, or will it
+change again? </th>
+      <td style="vertical-align: top;">The new file format is stable.
+This means that future
+versions of Pyspread will be able to read the old format.</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
     </tr>
     <tr>
-      <th style="vertical-align: top;">podcast<br>
-      </th>
-      <td style="vertical-align: top;"><a
- href="videos/pyspread_podcast_1.mp4">How to import large amounts of
-data.</a><br>
-      </td>
+      <th style="vertical-align: top;">Can pyspread still read the old
+format? </th>
+      <td style="vertical-align: top;">
+      <style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }h2 { margin-top: 0.07in; margin-bottom: 0.07in; text-decoration: underline; }h2.western { font-family: "Liberation Sans"; font-size: 12pt; font-style: normal; }h2.cjk { font-size: 14pt; font-style: italic; font-weight: normal; }h2.ctl { font-family: "FreeSans"; font-size: 14pt; font-style: italic; }a:link {  }</style>Unfortunately
+not. If you have old pys files, install both
+versions of pyspread and copy the cell contents via the Clipboard from
+the old to the new version. However, cell formatting cannot be
+preserved this way.</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;"><br>
