@@ -1,7 +1,34 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright 2011 Martin Manns
+# Distributed under the terms of the GNU General Public License
+
+# --------------------------------------------------------------------
+# pyspread is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# pyspread is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 from distutils.core import setup
-from distutils.sysconfig import get_python_lib
+
+
+from sys import path
+path.insert(0, "./pyspread")
+from pyspread.src.lib.gpg import genkey
+
+print "Generating GPG key pair...",
+genkey()
+print "Done."
 
 setup(name='pyspread',
       version='0.2.1',
@@ -21,13 +48,13 @@ setup(name='pyspread',
          'pyspread/src/*/*.py',
          'pyspread/src/*/test/*',
          'pyspread/share/icons/*.png',
-         'pyspread/share/icons/Tango/24x24/actions/*.png', 
-         'pyspread/share/icons/Tango/24x24/toggles/*.png', 
+         'pyspread/share/icons/Tango/24x24/actions/*.png',
+         'pyspread/share/icons/Tango/24x24/toggles/*.png',
          'pyspread/share/icons/Tango/24x24/toggles/*.xpm',
-         'pyspread/doc/help/*.html', 
+         'pyspread/doc/help/*.html',
          'pyspread/doc/help/images/*.png',
          'pyspread/examples/*',
-         'pyspread/COPYING', 'pyspread/thanks', 'pyspread/faq', 
+         'pyspread/COPYING', 'pyspread/thanks', 'pyspread/faq',
          'authors', 'pyspread.pth']},
       classifiers=[ \
         'Development Status :: 4 - Beta',

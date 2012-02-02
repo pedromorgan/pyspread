@@ -29,6 +29,8 @@ from getpass import getuser
 
 import wx
 
+dummy_app = wx.App()
+
 from sysvars import get_color, get_font_string
 
 VERSION = "0.2.1"

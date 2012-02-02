@@ -1,0 +1,5 @@
+0.2.1
+ * Format menu added (done)
+ * Printing bug fixed (done)
+ * Switched from GPG to HMAC
+ * Secret key generation moved into setup.py

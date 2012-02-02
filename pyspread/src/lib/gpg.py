@@ -43,36 +43,36 @@ try:
     from pyme import core, pygpgme
     import pyme.errors
     PYME_PRESENT = True
-    
+
 except ImportError:
     PYME_PRESENT = False
-    
+
 
 def is_pyme_present():
     """Returns True if pyme can be imported else false"""
-    
+
     return PYME_PRESENT
 
-def _passphrase_callback(hint='', desc='', prev_bad=''): 
+def _passphrase_callback(hint='', desc='', prev_bad=''):
     """Callback function needed by pyme"""
-    
+
     return config["gpg_key_passphrase"]
 
 def _get_file_data(filename):
     """Returns pyme.core.Data object of file."""
-    
+
     # Required because of unicode bug in pyme
-    
+
     infile = open(filename, "rb")
     infile_content = infile.read()
     infile.close()
-    
+
     return core.Data(string=infile_content)
 
 
 def genkey():
     """Creates a new standard GPG key"""
-    
+
     gpg_key_parameters = \
         '<GnupgKeyParms format="internal">\n' + \
         'Key-Type: DSA\n' + \
@@ -85,14 +85,14 @@ def genkey():
         'Passphrase: ' + config["gpg_key_passphrase"] + '\n' + \
         'Expire-Date: 0\n' + \
         '</GnupgKeyParms>'
-    
+
     # Initialize our context.
     core.check_version(None)
 
     context = core.Context()
     context.set_armor(1)
     #context.set_progress_cb(callbacks.progress_stdout, None)
-    
+
     # Check if standard key is already present
     keyname = config["gpg_key_uid"]
     context.op_keylist_start(keyname, 0)
@@ -108,38 +108,38 @@ def genkey():
 
 def sign(filename):
     """Returns detached signature for file"""
-    
+
     plaintext = _get_file_data(filename)
-    
+
     ciphertext = core.Data()
-    
+
     ctx = core.Context()
 
     ctx.set_armor(1)
     ctx.set_passphrase_cb(_passphrase_callback)
-    
+
     ctx.op_keylist_start(config["gpg_key_uid"], 0)
     sigkey = ctx.op_keylist_next()
     ##print sigkey.uids[0].uid
-    
+
     ctx.signers_clear()
     ctx.signers_add(sigkey)
-    
+
     ctx.op_sign(plaintext, ciphertext, pygpgme.GPGME_SIG_MODE_DETACH)
-    
+
     ciphertext.seek(0, 0)
     signature = ciphertext.read()
-    
+
     return signature
 
 def verify(sigfilename, filefilename=None):
     """Verifies a signature, returns True if successful else False."""
-    
+
     context = core.Context()
 
     # Create Data with signed text.
     __signature = _get_file_data(sigfilename)
-    
+
     if filefilename:
         __file = _get_file_data(filefilename)
         __plain = None
@@ -152,14 +152,14 @@ def verify(sigfilename, filefilename=None):
         context.op_verify(__signature, __file, __plain)
     except pyme.errors.GPGMEError:
         return False
-    
+
     result = context.op_verify_result()
-    
+
     # List results for all signatures. Status equal 0 means "Ok".
     validation_sucess = False
-    
+
     for signature in result.signatures:
         if (not signature.status) and signature.validity:
             validation_sucess = True
-    
+
     return validation_sucess
