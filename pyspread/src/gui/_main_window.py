@@ -554,7 +554,6 @@ class MainWindowEventHandlers(object):
         self.main_window.filepath = filepath
 
         # Load file into grid
-
         post_command_event(self.main_window, GridActionOpenMsg,
                            attr={"filepath": filepath})
 
@@ -565,8 +564,8 @@ class MainWindowEventHandlers(object):
 
         # Display file load in status bar
 
-        statustext = "File " + filepath + " loaded."
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        #statustext = "File " + filepath + " loaded."
+        #post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         self.main_window.grid.ForceRefresh()
 

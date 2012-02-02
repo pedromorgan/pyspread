@@ -21,15 +21,6 @@
 
 from distutils.core import setup
 
-
-from sys import path
-path.insert(0, "./pyspread")
-from pyspread.src.lib.gpg import genkey
-
-print "Generating GPG key pair...",
-genkey()
-print "Done."
-
 setup(name='pyspread',
       version='0.2.1',
       description='Python Spreadsheet',
