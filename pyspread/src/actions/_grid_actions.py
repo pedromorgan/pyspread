@@ -54,7 +54,7 @@ from src.config import config
 
 from src.gui._grid_table import GridTable
 from src.lib.parsers import get_font_from_data
-from src.lib.gpg import sign, verify, is_pyme_present
+from src.lib.gpg import sign, verify
 from src.lib.selection import Selection
 
 from src.actions._main_window_actions import Actions
@@ -331,25 +331,19 @@ class FileActions(Actions):
     def sign_file(self, filepath):
         """Signs file if possible"""
 
-        if is_pyme_present():
-            signature = sign(filepath)
-            signfile = open(filepath + '.sig', 'wb')
-            signfile.write(signature)
-            signfile.close()
+        signature = sign(filepath)
+        signfile = open(filepath + '.sig', 'wb')
+        signfile.write(signature)
+        signfile.close()
 
-            # Statustext differs if a save has occurred
+        # Statustext differs if a save has occurred
 
-            if self.code_array.safe_mode:
-                statustext = 'File saved and signed'
-            else:
-                statustext = 'File signed'
-
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
-
+        if self.code_array.safe_mode:
+            statustext = 'File saved and signed'
         else:
-            msg = 'Cannot sign the file. Maybe PyMe is not installed.'
-            short_msg = 'Cannot sign file!'
-            self.main_window.interfaces.display_warning(msg, short_msg)
+            statustext = 'File signed'
+
+        post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
     def _abort_save(self, filepath, outfile):
         """Aborts file save"""

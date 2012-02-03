@@ -36,27 +36,20 @@ Provides
 
 """
 
+import wx
+
 from src.config import config
 
 
-try:
-    from pyme import core, pygpgme
-    import pyme.errors
-    PYME_PRESENT = True
+from pyme import core, pygpgme, callbacks
+import pyme.errors
 
-except ImportError:
-    PYME_PRESENT = False
-
-
-def is_pyme_present():
-    """Returns True if pyme can be imported else false"""
-
-    return PYME_PRESENT
 
 def _passphrase_callback(hint='', desc='', prev_bad=''):
     """Callback function needed by pyme"""
 
     return config["gpg_key_passphrase"]
+
 
 def _get_file_data(filename):
     """Returns pyme.core.Data object of file."""
@@ -98,12 +91,40 @@ def genkey():
     context.op_keylist_start(keyname, 0)
     key = context.op_keylist_next()
     if key is None:
-        # Key not present --> Create new one
-        print "Generating new GPG key", keyname, \
-              ". This may take some time..."
-        context.op_genkey(gpg_key_parameters, None, None)
-        print context.op_genkey_result().fpr
 
+
+        # Key not present --> Create new one
+        #print "Generating new GPG key", keyname, \
+        #      ". This may take some time..."
+
+        # Show progress dialog
+
+        dlg = wx.ProgressDialog("GPG key generation",
+                               "Generating new GPG key " + keyname + \
+                               ".\nThis may take some time.\n" + \
+                               "Progress bar may stall. Please wait.",
+                               maximum=200,
+                               parent=None,
+                               style=wx.PD_ELAPSED_TIME)
+        class CBFs(object):
+            """Callback functions for pyme"""
+
+            progress = 0
+
+            def cbf(self, what=None, type=None, current=None, total=None,
+                    hook=None):
+                """Callback function that updates progress dialog"""
+
+                dlg.Update(self.progress % 199)
+                self.progress += 1
+
+        cbfs = CBFs()
+
+        context.set_progress_cb(cbfs.cbf, None)
+
+        context.op_genkey(gpg_key_parameters, None, None)
+
+        dlg.Destroy()
 
 
 def sign(filename):
@@ -131,6 +152,7 @@ def sign(filename):
     signature = ciphertext.read()
 
     return signature
+
 
 def verify(sigfilename, filefilename=None):
     """Verifies a signature, returns True if successful else False."""
