@@ -37,11 +37,12 @@ Provides
 """
 
 import wx
+import wx.lib.agw.genericmessagedialog as GMD
 
 from src.config import config
 
 
-from pyme import core, pygpgme, callbacks
+from pyme import core, pygpgme
 import pyme.errors
 
 
@@ -63,49 +64,171 @@ def _get_file_data(filename):
     return core.Data(string=infile_content)
 
 
+def choose_uid(context):
+    """Displays gpg key choice and returns uid name or None on Cancel"""
+
+    gpg_uids = []
+    uid_strings = []
+
+    for key in context.op_keylist_all("", 0):
+        if key.can_sign and key.owner_trust and not key.invalid:
+            for uid in key.uids:
+                uid_data = uid.uid, uid.name, uid.email, uid.comment
+                gpg_uids.append(uid.name)
+                uid_strings.append("\t".join(uid_data))
+
+    dlg = wx.SingleChoiceDialog(
+            None,
+            'Choose a GPG key that you own for signing pyspread save files.\n'
+            'Pressing Cancel creates a new key.',
+            'Choose key',
+            uid_strings, wx.CHOICEDLG_STYLE,
+            )
+
+    if dlg.ShowModal() == wx.ID_OK:
+        uid = gpg_uids[uid_strings.index(dlg.GetStringSelection())]
+
+    else:
+        uid = None
+
+    dlg.Destroy()
+
+    return uid
+
+
+def get_key_params_string(params):
+    """Returns parameter string from given params dict"""
+
+    param_head = '<GnupgKeyParms format="internal">'
+    param_foot = '</GnupgKeyParms>'
+
+    param_str_list = [param_head, param_foot]
+
+    for param in params[::-1]:
+        param_str_list.insert(1, ": ".join(param))
+
+    return str("\n".join(param_str_list))
+
+
+class GPGParamsDialog(wx.Dialog):
+    """Gets GPG key paarmeters from user"""
+
+    def __init__(self, parent, ID, title, params):
+        wx.Dialog.__init__(self, parent, ID, title)
+
+        sizer = wx.FlexGridSizer(len(params), 2, 5, 5)
+
+        label = wx.StaticText(self, -1, "GPG key data")
+        sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
+        sizer.Add(wx.Panel(self, -1), 0, wx.ALIGN_CENTRE | wx.ALL, 5)
+
+        self.textctrls = []
+
+        for labeltext, _, pwd in params:
+            label = wx.StaticText(self, -1, labeltext)
+            sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
+
+            if pwd:
+                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1),
+                                       style=wx.TE_PASSWORD)
+            else:
+                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1))
+
+            self.textctrls.append(textctrl)
+
+            sizer.Add(textctrl, 1, wx.ALIGN_CENTRE | wx.ALL, 5)
+
+        btn = wx.Button(self, wx.ID_OK)
+        btn.SetDefault()
+        sizer.Add(btn)
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+
+
+def get_key_params_from_user():
+    """Displays parameter entry dialog and returns parameter string"""
+
+    gpg_key_parameters = [ \
+        ('Key-Type', 'DSA'),
+        ('Key-Length', '2048'),
+        ('Subkey-Type', 'ELG-E'),
+        ('Subkey-Length', '2048'),
+        ('Expire-Date', '0'),
+    ]
+
+    PASSWD = True
+    NO_PASSWD = False
+
+    params = [ \
+        ['Real name', 'Name-Real', NO_PASSWD],
+        ['Passphrase', 'Passphrase', PASSWD],
+        ['E-mail', 'Name-Email', NO_PASSWD],
+        ['Real name', 'Name-Comment', NO_PASSWD],
+    ]
+
+    vals = [""]
+
+    while "" in vals:
+        dlg = GPGParamsDialog(None, -1, "Enter GPG key parameters", params)
+        dlg.CenterOnScreen()
+
+        dlg.ShowModal()
+        vals = [textctrl.Value for textctrl in dlg.textctrls]
+        dlg.Destroy()
+
+        if "" in vals:
+            msg = "Please enter a value in each field."
+
+            dlg = GMD.GenericMessageDialog(None, msg, "Missing value",
+                                           wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+
+    for (_, key, _), val in zip(params, vals):
+        gpg_key_parameters.insert(-2, (key, val))
+
+    print gpg_key_parameters
+
+    return get_key_params_string(gpg_key_parameters)
+
+
 def genkey():
     """Creates a new standard GPG key"""
-
-    gpg_key_parameters = \
-        '<GnupgKeyParms format="internal">\n' + \
-        'Key-Type: DSA\n' + \
-        'Key-Length: 2048\n' + \
-        'Subkey-Type: ELG-E\n' + \
-        'Subkey-Length: 2048\n' + \
-        'Name-Real: ' + config["gpg_key_uid"] + '\n' + \
-        'Name-Comment: Pyspread savefile signature keys\n' + \
-        'Name-Email: pyspread@127.0.0.1\n' + \
-        'Passphrase: ' + config["gpg_key_passphrase"] + '\n' + \
-        'Expire-Date: 0\n' + \
-        '</GnupgKeyParms>'
 
     # Initialize our context.
     core.check_version(None)
 
     context = core.Context()
     context.set_armor(1)
-    #context.set_progress_cb(callbacks.progress_stdout, None)
 
     # Check if standard key is already present
     keyname = config["gpg_key_uid"]
     context.op_keylist_start(keyname, 0)
     key = context.op_keylist_next()
+
+    # If no key is chosen generate one
+
+    if key is None:
+        # If no GPG key is set in config, choose one
+
+        uid = choose_uid(context)
+        config["gpg_key_uid"] = repr(uid)
+
     if key is None:
 
-
         # Key not present --> Create new one
-        #print "Generating new GPG key", keyname, \
-        #      ". This may take some time..."
 
         # Show progress dialog
 
         dlg = wx.ProgressDialog("GPG key generation",
                                "Generating new GPG key " + keyname + \
-                               ".\nThis may take some time.\n" + \
+                               ".\nThis may take some time.\n \n" + \
                                "Progress bar may stall. Please wait.",
                                maximum=200,
                                parent=None,
                                style=wx.PD_ELAPSED_TIME)
+
         class CBFs(object):
             """Callback functions for pyme"""
 
@@ -119,6 +242,10 @@ def genkey():
                 self.progress += 1
 
         cbfs = CBFs()
+
+        gpg_key_parameters = get_key_params_from_user()
+
+        print gpg_key_parameters
 
         context.set_progress_cb(cbfs.cbf, None)
 

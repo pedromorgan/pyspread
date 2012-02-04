@@ -63,7 +63,6 @@ class DefaultConfig(object):
         self.help_window_size = "(wx.GetDisplaySize()[0] * 3 /10," + \
                                 " wx.GetDisplaySize()[1] * 7 /10)"
 
-
         # Grid configuration
         # ------------------
 
@@ -71,7 +70,7 @@ class DefaultConfig(object):
         self.max_unredo = "5000"
 
         # Maximum result length in a cell in characters
-        self.max_result_length =  "1000"
+        self.max_result_length = "1000"
 
         # Colors
         self.grid_color = repr(get_color(wx.SYS_COLOUR_3DSHADOW))
@@ -98,8 +97,8 @@ class DefaultConfig(object):
         # GPG parameters
         # --------------
 
-        self.gpg_key_uid = repr('pyspread_' + getuser())
-        self.gpg_key_passphrase = repr("pyspread") # Set this individually!
+        self.gpg_key_uid = repr('None')
+        self.gpg_key_passphrase = repr("")  # Set this individually!
 
         # CSV parameters for import and export
         # ------------------------------------
