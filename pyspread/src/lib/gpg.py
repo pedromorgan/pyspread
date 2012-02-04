@@ -36,11 +36,13 @@ Provides
 
 """
 
+import sys
+
 import wx
 import wx.lib.agw.genericmessagedialog as GMD
 
 from src.config import config
-
+from src.gui._dialogs import GPGParamsDialog
 
 from pyme import core, pygpgme
 import pyme.errors
@@ -110,42 +112,6 @@ def get_key_params_string(params):
     return str("\n".join(param_str_list))
 
 
-class GPGParamsDialog(wx.Dialog):
-    """Gets GPG key paarmeters from user"""
-
-    def __init__(self, parent, ID, title, params):
-        wx.Dialog.__init__(self, parent, ID, title)
-
-        sizer = wx.FlexGridSizer(len(params), 2, 5, 5)
-
-        label = wx.StaticText(self, -1, "GPG key data")
-        sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
-        sizer.Add(wx.Panel(self, -1), 0, wx.ALIGN_CENTRE | wx.ALL, 5)
-
-        self.textctrls = []
-
-        for labeltext, _, pwd in params:
-            label = wx.StaticText(self, -1, labeltext)
-            sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
-
-            if pwd:
-                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1),
-                                       style=wx.TE_PASSWORD)
-            else:
-                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1))
-
-            self.textctrls.append(textctrl)
-
-            sizer.Add(textctrl, 1, wx.ALIGN_CENTRE | wx.ALL, 5)
-
-        btn = wx.Button(self, wx.ID_OK)
-        btn.SetDefault()
-        sizer.Add(btn)
-
-        self.SetSizer(sizer)
-        sizer.Fit(self)
-
-
 def get_key_params_from_user():
     """Displays parameter entry dialog and returns parameter string"""
 
@@ -164,7 +130,7 @@ def get_key_params_from_user():
         ['Real name', 'Name-Real', NO_PASSWD],
         ['Passphrase', 'Passphrase', PASSWD],
         ['E-mail', 'Name-Email', NO_PASSWD],
-        ['Real name', 'Name-Comment', NO_PASSWD],
+        ['Comment', 'Name-Comment', NO_PASSWD],
     ]
 
     vals = [""]
@@ -173,8 +139,11 @@ def get_key_params_from_user():
         dlg = GPGParamsDialog(None, -1, "Enter GPG key parameters", params)
         dlg.CenterOnScreen()
 
-        dlg.ShowModal()
+        if dlg.ShowModal() != wx.ID_OK:
+            sys.exit()
+
         vals = [textctrl.Value for textctrl in dlg.textctrls]
+
         dlg.Destroy()
 
         if "" in vals:
@@ -188,9 +157,7 @@ def get_key_params_from_user():
     for (_, key, _), val in zip(params, vals):
         gpg_key_parameters.insert(-2, (key, val))
 
-    print gpg_key_parameters
-
-    return get_key_params_string(gpg_key_parameters)
+    return gpg_key_parameters
 
 
 def genkey():
@@ -215,7 +182,10 @@ def genkey():
         uid = choose_uid(context)
         config["gpg_key_uid"] = repr(uid)
 
-    if key is None:
+    if key is None and uid is not None:
+        ## TODO
+        pass
+    elif key is None and uid is None:
 
         # Key not present --> Create new one
 
@@ -245,11 +215,16 @@ def genkey():
 
         gpg_key_parameters = get_key_params_from_user()
 
-        print gpg_key_parameters
+        config["gpg_key_uid"] = repr(str( \
+            [val for key, val in gpg_key_parameters if key == 'Name-Real'][0]))
+        config["gpg_key_passphrase"] = repr(str(([val \
+            for key, val in gpg_key_parameters if key == 'Passphrase'][0])))
+
+        gpg_key_parameters_string = get_key_params_string(gpg_key_parameters)
 
         context.set_progress_cb(cbfs.cbf, None)
 
-        context.op_genkey(gpg_key_parameters, None, None)
+        context.op_genkey(gpg_key_parameters_string, None, None)
 
         dlg.Destroy()
 

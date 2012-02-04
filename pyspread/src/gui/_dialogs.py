@@ -36,6 +36,7 @@ Provides:
   - CellEntryDialog
   - AboutDialog
   - ConfigDialog
+  - GPGParamsDialog
 
 """
 
@@ -1147,5 +1148,45 @@ class PreferencesDialog(wx.Dialog):
             self.grid_sizer.AddGrowableRow(row)
         self.Layout()
 
-
 # end of class PreferencesDialog
+
+
+class GPGParamsDialog(wx.Dialog):
+    """Gets GPG key paarmeters from user"""
+
+    def __init__(self, parent, ID, title, params):
+        wx.Dialog.__init__(self, parent, ID, title)
+
+        sizer = wx.FlexGridSizer(len(params), 2, 5, 5)
+
+        label = wx.StaticText(self, -1, "GPG key data")
+        sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
+        sizer.Add(wx.Panel(self, -1), 0, wx.ALIGN_CENTRE | wx.ALL, 5)
+
+        self.textctrls = []
+
+        for labeltext, _, pwd in params:
+            label = wx.StaticText(self, -1, labeltext)
+            sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
+
+            if pwd:
+                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1),
+                                       style=wx.TE_PASSWORD)
+            else:
+                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1))
+
+            self.textctrls.append(textctrl)
+
+            sizer.Add(textctrl, 1, wx.ALIGN_CENTRE | wx.ALL, 5)
+
+        ok_button = wx.Button(self, wx.ID_OK)
+        ok_button.SetToolTipString("Starts key generation.")
+        ok_button.SetDefault()
+        sizer.Add(ok_button)
+
+        cancel_button = wx.Button(self, wx.ID_CANCEL)
+        cancel_button.SetToolTipString("Exits pyspread.")
+        sizer.Add(cancel_button)
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
