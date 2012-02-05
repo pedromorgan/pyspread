@@ -180,11 +180,23 @@ def genkey():
         # If no GPG key is set in config, choose one
 
         uid = choose_uid(context)
-        config["gpg_key_uid"] = repr(uid)
+        
 
     if key is None and uid is not None:
-        ## TODO
-        pass
+        config["gpg_key_uid"] = repr(uid)
+        
+	dlg = wx.TextEntryDialog(
+                None, 'Please enter your GPG key passphrase.\n' \
+                'Note that it will be stored as clear text in .pyspreadrc',
+                'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
+
+        if dlg.ShowModal() == wx.ID_OK:
+	      config["gpg_key_passphrase"] = dlg.GetValue()
+	else:
+	      sys.exit()
+
+        dlg.Destroy()
+      
     elif key is None and uid is None:
 
         # Key not present --> Create new one
