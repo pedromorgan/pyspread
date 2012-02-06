@@ -332,6 +332,11 @@ class FileActions(Actions):
         """Signs file if possible"""
 
         signature = sign(filepath)
+        if signature is None:
+            statustext = 'Error signing file. File is not signed.'
+            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            return
+
         signfile = open(filepath + '.sig', 'wb')
         signfile.write(signature)
         signfile.close()

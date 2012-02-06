@@ -1092,6 +1092,7 @@ class AboutDialog(object):
 
 # end of class AboutDialog
 
+
 class PreferencesDialog(wx.Dialog):
     """Dialog for changing pyspread's configuration preferences"""
 
@@ -1108,6 +1109,15 @@ class PreferencesDialog(wx.Dialog):
             "label": u"Max. result length",
             "tooltip": u"Maximum length of cell result string",
         }),
+        ("gpg_key_uid", { \
+            "label": u"GPG key name",
+            "tooltip": u"Name of the GPG key that is used for signing files",
+        }),
+        ("gpg_key_passphrase", { \
+            "label": u"GPG key passphrase",
+            "tooltip": \
+                u"Passphrase of the GPG key that is used for signing files",
+        }),
     )
 
     def __init__(self, *args, **kwargs):
@@ -1119,7 +1129,7 @@ class PreferencesDialog(wx.Dialog):
         self.labels = []
         self.textctrls = []
 
-        self.grid_sizer = wx.FlexGridSizer(len(self.parameters), 2, 10, 10)
+        self.grid_sizer = wx.FlexGridSizer(len(self.parameters), 2, 2, 2)
 
         for parameter, info in self.parameters:
             label = info["label"]
@@ -1129,7 +1139,11 @@ class PreferencesDialog(wx.Dialog):
             self.labels.append(wx.StaticText(self, -1, label))
             self.labels[-1].SetToolTipString(tooltip)
 
-            self.textctrls.append(wx.TextCtrl(self, -1, repr(value)))
+            if "passphrase" in parameter:
+                self.textctrls.append(wx.TextCtrl(self, -1, str(value),
+                                        style=wx.TE_PASSWORD | wx.OK))
+            else:
+                self.textctrls.append(wx.TextCtrl(self, -1, str(value)))
             self.textctrls[-1].SetToolTipString(tooltip)
 
             self.grid_sizer.Add(self.labels[-1], 0, 0, 0)
@@ -1144,9 +1158,13 @@ class PreferencesDialog(wx.Dialog):
 
         self.grid_sizer.Fit(self)
         self.grid_sizer.AddGrowableCol(1)
+
         for row in xrange(len(self.parameters)):
             self.grid_sizer.AddGrowableRow(row)
+
         self.Layout()
+
+        self.SetSize((300, -1))
 
 # end of class PreferencesDialog
 

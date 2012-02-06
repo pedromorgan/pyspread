@@ -44,7 +44,7 @@ import wx.lib.agw.genericmessagedialog as GMD
 from src.config import config
 from src.gui._dialogs import GPGParamsDialog
 
-from pyme import core, pygpgme
+from pyme import core, pygpgme, errors
 import pyme.errors
 
 
@@ -133,11 +133,14 @@ def get_key_params_from_user():
         ['Comment', 'Name-Comment', NO_PASSWD],
     ]
 
-    vals = [""]
+    vals = [""] * len(params)
 
     while "" in vals:
         dlg = GPGParamsDialog(None, -1, "Enter GPG key parameters", params)
         dlg.CenterOnScreen()
+
+        for val, textctrl in zip(vals, dlg.textctrls):
+            textctrl.SetValue(val)
 
         if dlg.ShowModal() != wx.ID_OK:
             sys.exit()
@@ -160,6 +163,20 @@ def get_key_params_from_user():
     return gpg_key_parameters
 
 
+def get_gpg_passwd():
+    """Opens a dialog for a GPG password and returns the password or None"""
+
+    dlg = wx.TextEntryDialog(None, 'Please enter your GPG key passphrase.\n' \
+            'Note that it will be stored as clear text in .pyspreadrc',
+            'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
+
+    if dlg.ShowModal() == wx.ID_OK:
+        dlg.Destroy()
+        return dlg.GetValue()
+
+    dlg.Destroy()
+
+
 def genkey():
     """Creates a new standard GPG key"""
 
@@ -176,28 +193,21 @@ def genkey():
 
     # If no key is chosen generate one
 
-    if key is None:
+    if key is None or not key:
         # If no GPG key is set in config, choose one
 
         uid = choose_uid(context)
-        
 
-    if key is None and uid is not None:
+    if (key is None or not key) and uid is not None:
         config["gpg_key_uid"] = repr(uid)
-        
-	dlg = wx.TextEntryDialog(
-                None, 'Please enter your GPG key passphrase.\n' \
-                'Note that it will be stored as clear text in .pyspreadrc',
-                'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
+        passwd = get_gpg_passwd()
 
-        if dlg.ShowModal() == wx.ID_OK:
-	      config["gpg_key_passphrase"] = dlg.GetValue()
-	else:
-	      sys.exit()
+        if passwd is None:
+            sys.exit()
+        else:
+            config["gpg_key_passphrase"] = repr(passwd)
 
-        dlg.Destroy()
-      
-    elif key is None and uid is None:
+    elif (key is None or not key) and uid is None:
 
         # Key not present --> Create new one
 
@@ -260,7 +270,20 @@ def sign(filename):
     ctx.signers_clear()
     ctx.signers_add(sigkey)
 
-    ctx.op_sign(plaintext, ciphertext, pygpgme.GPGME_SIG_MODE_DETACH)
+    passwd_is_incorrect = True
+
+    while passwd_is_incorrect:
+        try:
+            ctx.op_sign(plaintext, ciphertext, pygpgme.GPGME_SIG_MODE_DETACH)
+            passwd_is_incorrect = False
+
+        except errors.GPGMEError:
+            passwd = get_gpg_passwd()
+            if passwd is None:
+                return
+
+            config["gpg_key_passphrase"] = repr(passwd)
+            ctx.set_passphrase_cb(_passphrase_callback)
 
     ciphertext.seek(0, 0)
     signature = ciphertext.read()
