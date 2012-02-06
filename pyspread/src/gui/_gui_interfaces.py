@@ -31,6 +31,7 @@ Provides:
 
 import csv
 import os
+import sys
 import types
 
 import wx
@@ -38,7 +39,7 @@ import wx.lib.agw.genericmessagedialog as GMD
 
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
-from _dialogs import PreferencesDialog
+from _dialogs import PreferencesDialog, GPGParamsDialog
 
 
 class ModalDialogInterfaceMixin(object):
@@ -310,3 +311,66 @@ class GuiInterfaces(DialogInterfaceMixin, ModalDialogInterfaceMixin):
     def __init__(self, main_window):
         self.main_window = main_window
 
+def get_key_params_from_user():
+    """Displays parameter entry dialog and returns parameter string"""
+
+    gpg_key_parameters = [ \
+        ('Key-Type', 'DSA'),
+        ('Key-Length', '2048'),
+        ('Subkey-Type', 'ELG-E'),
+        ('Subkey-Length', '2048'),
+        ('Expire-Date', '0'),
+    ]
+
+    PASSWD = True
+    NO_PASSWD = False
+
+    params = [ \
+        ['Real name', 'Name-Real', NO_PASSWD],
+        ['Passphrase', 'Passphrase', PASSWD],
+        ['E-mail', 'Name-Email', NO_PASSWD],
+        ['Comment', 'Name-Comment', NO_PASSWD],
+    ]
+
+    vals = [""] * len(params)
+
+    while "" in vals:
+        dlg = GPGParamsDialog(None, -1, "Enter GPG key parameters", params)
+        dlg.CenterOnScreen()
+
+        for val, textctrl in zip(vals, dlg.textctrls):
+            textctrl.SetValue(val)
+
+        if dlg.ShowModal() != wx.ID_OK:
+            sys.exit()
+
+        vals = [textctrl.Value for textctrl in dlg.textctrls]
+
+        dlg.Destroy()
+
+        if "" in vals:
+            msg = "Please enter a value in each field."
+
+            dlg = GMD.GenericMessageDialog(None, msg, "Missing value",
+                                           wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+
+    for (_, key, _), val in zip(params, vals):
+        gpg_key_parameters.insert(-2, (key, val))
+
+    return gpg_key_parameters
+
+
+def get_gpg_passwd_from_user():
+    """Opens a dialog for a GPG password and returns the password or None"""
+
+    dlg = wx.TextEntryDialog(None, 'Please enter your GPG key passphrase.\n' \
+            'Note that it will be stored as clear text in .pyspreadrc',
+            'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
+
+    if dlg.ShowModal() == wx.ID_OK:
+        dlg.Destroy()
+        return dlg.GetValue()
+
+    dlg.Destroy()

@@ -39,10 +39,10 @@ Provides
 import sys
 
 import wx
-import wx.lib.agw.genericmessagedialog as GMD
 
 from src.config import config
-from src.gui._dialogs import GPGParamsDialog
+from src.gui._gui_interfaces import get_key_params_from_user
+from src.gui._gui_interfaces import get_gpg_passwd_from_user
 
 from pyme import core, pygpgme, errors
 import pyme.errors
@@ -112,71 +112,6 @@ def get_key_params_string(params):
     return str("\n".join(param_str_list))
 
 
-def get_key_params_from_user():
-    """Displays parameter entry dialog and returns parameter string"""
-
-    gpg_key_parameters = [ \
-        ('Key-Type', 'DSA'),
-        ('Key-Length', '2048'),
-        ('Subkey-Type', 'ELG-E'),
-        ('Subkey-Length', '2048'),
-        ('Expire-Date', '0'),
-    ]
-
-    PASSWD = True
-    NO_PASSWD = False
-
-    params = [ \
-        ['Real name', 'Name-Real', NO_PASSWD],
-        ['Passphrase', 'Passphrase', PASSWD],
-        ['E-mail', 'Name-Email', NO_PASSWD],
-        ['Comment', 'Name-Comment', NO_PASSWD],
-    ]
-
-    vals = [""] * len(params)
-
-    while "" in vals:
-        dlg = GPGParamsDialog(None, -1, "Enter GPG key parameters", params)
-        dlg.CenterOnScreen()
-
-        for val, textctrl in zip(vals, dlg.textctrls):
-            textctrl.SetValue(val)
-
-        if dlg.ShowModal() != wx.ID_OK:
-            sys.exit()
-
-        vals = [textctrl.Value for textctrl in dlg.textctrls]
-
-        dlg.Destroy()
-
-        if "" in vals:
-            msg = "Please enter a value in each field."
-
-            dlg = GMD.GenericMessageDialog(None, msg, "Missing value",
-                                           wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
-
-    for (_, key, _), val in zip(params, vals):
-        gpg_key_parameters.insert(-2, (key, val))
-
-    return gpg_key_parameters
-
-
-def get_gpg_passwd():
-    """Opens a dialog for a GPG password and returns the password or None"""
-
-    dlg = wx.TextEntryDialog(None, 'Please enter your GPG key passphrase.\n' \
-            'Note that it will be stored as clear text in .pyspreadrc',
-            'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
-
-    if dlg.ShowModal() == wx.ID_OK:
-        dlg.Destroy()
-        return dlg.GetValue()
-
-    dlg.Destroy()
-
-
 def genkey():
     """Creates a new standard GPG key"""
 
@@ -200,7 +135,7 @@ def genkey():
 
     if (key is None or not key) and uid is not None:
         config["gpg_key_uid"] = repr(uid)
-        passwd = get_gpg_passwd()
+        passwd = get_gpg_passwd_from_user()
 
         if passwd is None:
             sys.exit()
@@ -278,7 +213,7 @@ def sign(filename):
             passwd_is_incorrect = False
 
         except errors.GPGMEError:
-            passwd = get_gpg_passwd()
+            passwd = get_gpg_passwd_from_user()
             if passwd is None:
                 return
 
