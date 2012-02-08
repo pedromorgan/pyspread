@@ -1118,6 +1118,10 @@ class PreferencesDialog(wx.Dialog):
             "tooltip": \
                 u"Passphrase of the GPG key that is used for signing files",
         }),
+        ("gpg_key_passphrase_isstored", { \
+            "label": u"Store passphrase in config file",
+            "tooltip": u"If False then the passprase is not stored on exit",
+        }),
     )
 
     def __init__(self, *args, **kwargs):
@@ -1139,7 +1143,7 @@ class PreferencesDialog(wx.Dialog):
             self.labels.append(wx.StaticText(self, -1, label))
             self.labels[-1].SetToolTipString(tooltip)
 
-            if "passphrase" in parameter:
+            if "gpg_key_passphrase" == parameter:
                 self.textctrls.append(wx.TextCtrl(self, -1, str(value),
                                         style=wx.TE_PASSWORD | wx.OK))
             else:

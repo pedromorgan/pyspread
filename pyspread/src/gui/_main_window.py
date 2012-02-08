@@ -290,13 +290,13 @@ class MainWindow(wx.Frame):
 
 # End of class MainWindow
 
+
 class MainWindowEventHandlers(object):
     """Contains main window event handlers"""
 
     def __init__(self, parent):
         self.main_window = parent
         self.interfaces = parent.interfaces
-
 
     # Main window events
 
@@ -380,12 +380,21 @@ class MainWindowEventHandlers(object):
         self.main_window._mgr.UnInit()
 
         # Save config
-
         config.save()
 
         # Close main_window
 
         self.main_window.Destroy()
+
+        # Set file mode to 600 to protect GPG passwd a bit
+        sp = wx.StandardPaths.Get()
+        pyspreadrc_path = sp.GetUserConfigDir() + "/." + config.config_filename
+        try:
+            os.chmod(pyspreadrc_path, 0600)
+        except OSError:
+            dummyfile = open(pyspreadrc_path, "w")
+            dummyfile.close()
+            os.chmod(pyspreadrc_path, 0600)
 
     # Preferences events
 
@@ -396,18 +405,10 @@ class MainWindowEventHandlers(object):
 
         if preferences:
             for key in preferences:
-                old_type = type(config[key])
-                new_type = type(ast.literal_eval(preferences[key]))
-                if old_type is new_type:
+                if type(config[key]) in (type(u""), type("")):
                     config[key] = preferences[key]
                 else:
-                    # Display type error in status bar
-                    statustext = "Parameter " + key + " has type " + \
-                        str(new_type) + " instead of expected type " + \
-                        str(old_type) + "."
-                    post_command_event(self.main_window, StatusBarMsg,
-                                       text=statustext)
-
+                    config[key] = ast.literal_eval(preferences[key])
 
     # Toolbar events
 
@@ -441,7 +442,8 @@ class MainWindowEventHandlers(object):
     def OnAttributesToolbarToggle(self, event):
         """Format toolbar toggle event handler"""
 
-        attributes_toolbar = self.main_window._mgr.GetPane("attributes_toolbar")
+        attributes_toolbar = \
+            self.main_window._mgr.GetPane("attributes_toolbar")
 
         self._toggle_pane(attributes_toolbar)
 
@@ -543,8 +545,9 @@ class MainWindowEventHandlers(object):
                    "All files (*.*)|*.*"
         message = "Choose pyspread file to open."
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user( \
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard,
+                                                          message, style)
 
         if filepath is None:
             return
@@ -597,7 +600,7 @@ class MainWindowEventHandlers(object):
                    "All files (*.*)|*.*"
         message = "Choose filename for saving."
         style = wx.SAVE | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user( \
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
                                     wildcard, message, style)
 
         if filepath is not None:
@@ -650,7 +653,7 @@ class MainWindowEventHandlers(object):
                             "Tab delimited text file (*.*)|*.*"
         message = "Choose file to import."
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user( \
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
                                     wildcard, message, style)
 
         if filepath is None:
@@ -745,7 +748,8 @@ class MainWindowEventHandlers(object):
         """Page setup handler for printing framework"""
 
         print_data = self.main_window.print_data
-        new_print_data = self.main_window.interfaces.get_print_setup(print_data)
+        new_print_data = \
+            self.main_window.interfaces.get_print_setup(print_data)
         self.main_window.print_data = new_print_data
 
     def _get_print_area(self):
@@ -997,7 +1001,6 @@ class MainWindowEventHandlers(object):
 
         self.main_window.actions.launch_help("Python tutorial",
             "http://docs.python.org/tutorial/")
-
 
     def OnAbout(self, event):
         """About dialog event handler"""

@@ -123,17 +123,21 @@ def genkey():
 
     # Check if standard key is already present
     keyname = config["gpg_key_uid"]
-    context.op_keylist_start(keyname, 0)
+    context.op_keylist_start(str(keyname), 0)
     key = context.op_keylist_next()
 
     # If no key is chosen generate one
 
-    if key is None or not key:
+    no_key = key is None or not key or not keyname
+
+    if no_key:
         # If no GPG key is set in config, choose one
 
         uid = choose_uid(context)
 
-    if (key is None or not key) and uid is not None:
+    if no_key and uid is not None:
+        # A key has been chosen
+
         config["gpg_key_uid"] = repr(uid)
         passwd = get_gpg_passwd_from_user()
 
@@ -142,9 +146,8 @@ def genkey():
         else:
             config["gpg_key_passphrase"] = repr(passwd)
 
-    elif (key is None or not key) and uid is None:
-
-        # Key not present --> Create new one
+    elif no_key and uid is None:
+        # No key has been chosen --> Create new one
 
         # Show progress dialog
 

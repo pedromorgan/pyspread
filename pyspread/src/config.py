@@ -25,7 +25,7 @@ pyspread config file
 
 """
 
-from getpass import getuser
+import os
 
 import wx
 
@@ -97,8 +97,9 @@ class DefaultConfig(object):
         # GPG parameters
         # --------------
 
-        self.gpg_key_uid = repr('None')
-        self.gpg_key_passphrase = repr('None')  # Set this individually!
+        self.gpg_key_uid = repr('')
+        self.gpg_key_passphrase = repr('')
+        self.gpg_key_passphrase_isstored = repr(True)
 
         # CSV parameters for import and export
         # ------------------------------------
@@ -157,7 +158,12 @@ class Config(object):
         """Saves configuration file"""
 
         for key in self.defaults.__dict__:
-            self.cfg_file.Write(key, getattr(self.data, key))
+            print key, self["gpg_key_passphrase_isstored"]
+            if not key == "gpg_key_passphrase" or \
+               self["gpg_key_passphrase_isstored"]:
+                self.cfg_file.Write(key, getattr(self.data, key))
+            else:
+                self.cfg_file.Write(key, "''")
 
 
 config = Config()
