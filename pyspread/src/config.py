@@ -158,7 +158,6 @@ class Config(object):
         """Saves configuration file"""
 
         for key in self.defaults.__dict__:
-            print key, self["gpg_key_passphrase_isstored"]
             if not key == "gpg_key_passphrase" or \
                self["gpg_key_passphrase_isstored"]:
                 self.cfg_file.Write(key, getattr(self.data, key))

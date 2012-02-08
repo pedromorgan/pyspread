@@ -51,7 +51,7 @@ import pyme.errors
 def _passphrase_callback(hint='', desc='', prev_bad=''):
     """Callback function needed by pyme"""
 
-    return config["gpg_key_passphrase"]
+    return str(config["gpg_key_passphrase"])
 
 
 def _get_file_data(filename):
@@ -122,8 +122,8 @@ def genkey():
     context.set_armor(1)
 
     # Check if standard key is already present
-    keyname = config["gpg_key_uid"]
-    context.op_keylist_start(str(keyname), 0)
+    keyname = str(config["gpg_key_uid"])
+    context.op_keylist_start(keyname, 0)
     key = context.op_keylist_next()
 
     # If no key is chosen generate one
@@ -201,7 +201,7 @@ def sign(filename):
     ctx.set_armor(1)
     ctx.set_passphrase_cb(_passphrase_callback)
 
-    ctx.op_keylist_start(config["gpg_key_uid"], 0)
+    ctx.op_keylist_start(str(config["gpg_key_uid"]), 0)
     sigkey = ctx.op_keylist_next()
     ##print sigkey.uids[0].uid
 
