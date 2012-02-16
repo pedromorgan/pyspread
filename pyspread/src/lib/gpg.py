@@ -87,8 +87,19 @@ def choose_uid(context):
             uid_strings, wx.CHOICEDLG_STYLE,
             )
 
+    sizer = dlg.GetSizer()
+    store_passwd_checkbox = wx.CheckBox(dlg, True, "   Store passphrase",
+                                        style=wx.ALIGN_RIGHT)
+    store_passwd_checkbox.SetValue(True)
+
+    sizer.Insert(1, store_passwd_checkbox)
+
+    dlg.SetBestFittingSize()
+
     if dlg.ShowModal() == wx.ID_OK:
         uid = gpg_uids[uid_strings.index(dlg.GetStringSelection())]
+        config["gpg_key_passphrase_isstored"] = \
+            repr(store_passwd_checkbox.Value)
 
     else:
         uid = None

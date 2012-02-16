@@ -37,6 +37,8 @@ import types
 import wx
 import wx.lib.agw.genericmessagedialog as GMD
 
+from config import config
+
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from _dialogs import PreferencesDialog, GPGParamsDialog
@@ -345,6 +347,8 @@ def get_key_params_from_user():
             sys.exit()
 
         vals = [textctrl.Value for textctrl in dlg.textctrls]
+        config["gpg_key_passphrase_isstored"] = \
+            repr(dlg.store_passwd_checkbox.Value)
 
         dlg.Destroy()
 
