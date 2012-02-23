@@ -43,7 +43,6 @@ Provides:
 import cStringIO
 import csv
 import os
-import struct
 import types
 
 import wx
@@ -55,8 +54,8 @@ from src.config import config
 from src.sysvars import get_program_path
 from src.gui._widgets import PythonSTC
 from src.gui._events import *
-from src.lib.__csv import Digest
-from src.lib.__csv import sniff, get_first_line, csv_digest_gen, cell_key_val_gen
+from src.lib.__csv import Digest, sniff, get_first_line
+from src.lib.__csv import csv_digest_gen, cell_key_val_gen
 
 
 class IntValidator(wx.PyValidator):
@@ -240,7 +239,6 @@ class CsvParameterWidgets(object):
 
         self.choice_dialects.SetSelection(0)
 
-
     def _setup_param_widgets(self):
         """Creates the parameter entry widgets and binds them to methods"""
 
@@ -284,10 +282,10 @@ class CsvParameterWidgets(object):
         sizer_csvoptions = wx.FlexGridSizer(3, 4, 5, 5)
 
         # Adding parameter widgets to sizer_csvoptions
-        leftpos = wx.LEFT|wx.ADJUST_MINSIZE
-        rightpos = wx.RIGHT|wx.EXPAND
+        leftpos = wx.LEFT | wx.ADJUST_MINSIZE
+        rightpos = wx.RIGHT | wx.EXPAND
 
-        current_label_margin = 0 # smaller for left column
+        current_label_margin = 0  # smaller for left column
         other_label_margin = 15
 
         for label, widget in zip(self.param_labels, self.param_widgets):
@@ -390,6 +388,7 @@ class CsvParameterWidgets(object):
 
         return csv.get_dialect('user'), has_header
 
+
 class CSVPreviewGrid(wx.grid.Grid):
     """The grid of the csv import parameter entry panel"""
 
@@ -406,7 +405,6 @@ class CSVPreviewGrid(wx.grid.Grid):
 
     # Only add date and time if dateutil is installed
     try:
-        from dateutil.parser import parse
         import datetime
         digest_types['Date'] = datetime.date
         digest_types['DateTime'] = datetime.datetime
@@ -429,7 +427,7 @@ class CSVPreviewGrid(wx.grid.Grid):
         self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.OnMouse)
         self.Bind(wx.grid.EVT_GRID_EDITOR_CREATED, self.OnGridEditorCreated)
 
-    def OnMouse (self, event):
+    def OnMouse(self, event):
         """Reduces clicks to enter an edit control"""
 
         self.SetGridCursor(event.Row, event.Col)
@@ -482,7 +480,7 @@ class CSVPreviewGrid(wx.grid.Grid):
 
         elif no_cols < self.GetNumberCols():
             obsolete_cols = self.GetNumberCols() - no_cols
-            self.DeleteCols(pos=no_cols-1, numCols=obsolete_cols)
+            self.DeleteCols(pos=no_cols - 1, numCols=obsolete_cols)
 
         # Retrieve type choices
         digest_keys = self.get_digest_keys()
@@ -503,7 +501,8 @@ class CSVPreviewGrid(wx.grid.Grid):
 
         # Fill in the rest of the lines
 
-        self.dtypes = [self.digest_types[key] for key in self.get_digest_keys()]
+        self.dtypes = \
+            [self.digest_types[key] for key in self.get_digest_keys()]
 
         topleft = (has_header + 1, 0)
 
@@ -537,7 +536,7 @@ class CSVPreviewGrid(wx.grid.Grid):
 class CSVPreviewTextCtrl(wx.TextCtrl):
     """The grid of the csv export parameter entry panel"""
 
-    preview_lines = 100 # Lines that are shown in preview
+    preview_lines = 100  # Lines that are shown in preview
 
     def fill(self, data, dialect):
         """Fills the grid for preview of csv data
@@ -579,7 +578,8 @@ class CsvImportDialog(wx.Dialog):
         self.csvfilepath = kwds.pop("csvfilepath")
         self.csvfilename = os.path.split(self.csvfilepath)[1]
 
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.THICK_FRAME
+        kwds["style"] = \
+            wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
 
         wx.Dialog.__init__(self, *args, **kwds)
 
@@ -596,9 +596,7 @@ class CsvImportDialog(wx.Dialog):
         self._set_properties()
         self._do_layout()
 
-
         self.grid.fill_cells(dialect, self.has_header)
-
 
     def _set_properties(self):
         """Sets dialog title and size limitations of the widgets"""
@@ -617,10 +615,9 @@ class CsvImportDialog(wx.Dialog):
         # Sub sizers
         sizer_buttons = wx.FlexGridSizer(1, 3, 5, 5)
 
-
         # Adding buttons to sizer_buttons
         for button in [self.button_cancel, self.button_ok]:
-            sizer_buttons.Add(button, 0, wx.ALL|wx.EXPAND, 5)
+            sizer_buttons.Add(button, 0, wx.ALL | wx.EXPAND, 5)
 
         sizer_buttons.AddGrowableRow(0)
         for col in xrange(3):
@@ -628,9 +625,9 @@ class CsvImportDialog(wx.Dialog):
 
         # Adding main components
         sizer_dialog.Add(self.csvwidgets.sizer_csvoptions,  \
-                         0, wx.ALL|wx.EXPAND, 5)
-        sizer_dialog.Add(self.grid,  1, wx.ALL|wx.EXPAND, 0)
-        sizer_dialog.Add(sizer_buttons,  0, wx.ALL|wx.EXPAND, 5)
+                         0, wx.ALL | wx.EXPAND, 5)
+        sizer_dialog.Add(self.grid,  1, wx.ALL | wx.EXPAND, 0)
+        sizer_dialog.Add(sizer_buttons,  0, wx.ALL | wx.EXPAND, 5)
 
         self.SetSizer(sizer_dialog)
 
@@ -658,7 +655,8 @@ class CsvExportDialog(wx.Dialog):
 
         self.data = kwds.pop('data')
 
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.THICK_FRAME
+        kwds["style"] = \
+            wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
 
         wx.Dialog.__init__(self, *args, **kwds)
 
@@ -667,7 +665,7 @@ class CsvExportDialog(wx.Dialog):
         self.has_header = False
 
         self.preview_textctrl = CSVPreviewTextCtrl(self, -1, \
-            style=wx.TE_MULTILINE|wx.TE_READONLY|wx.HSCROLL)
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
         self.button_cancel = wx.Button(self, wx.ID_CANCEL, "")
         self.button_apply = wx.Button(self, wx.ID_APPLY, "")
@@ -675,7 +673,6 @@ class CsvExportDialog(wx.Dialog):
 
         self._set_properties()
         self._do_layout()
-
 
         self.preview_textctrl.fill(data=self.data, dialect=dialect)
 
@@ -698,10 +695,9 @@ class CsvExportDialog(wx.Dialog):
         # Sub sizers
         sizer_buttons = wx.FlexGridSizer(1, 3, 5, 5)
 
-
         # Adding buttons to sizer_buttons
         for button in [self.button_cancel, self.button_apply, self.button_ok]:
-            sizer_buttons.Add(button, 0, wx.ALL|wx.EXPAND, 5)
+            sizer_buttons.Add(button, 0, wx.ALL | wx.EXPAND, 5)
 
         sizer_buttons.AddGrowableRow(0)
         for col in xrange(3):
@@ -709,9 +705,9 @@ class CsvExportDialog(wx.Dialog):
 
         # Adding main components
         sizer_dialog.Add(self.csvwidgets.sizer_csvoptions,  \
-                         0, wx.ALL|wx.EXPAND, 5)
-        sizer_dialog.Add(self.preview_textctrl,  1, wx.ALL|wx.EXPAND, 0)
-        sizer_dialog.Add(sizer_buttons,  0, wx.ALL|wx.EXPAND, 5)
+                         0, wx.ALL | wx.EXPAND, 5)
+        sizer_dialog.Add(self.preview_textctrl,  1, wx.ALL | wx.EXPAND, 0)
+        sizer_dialog.Add(sizer_buttons,  0, wx.ALL | wx.EXPAND, 5)
 
         self.SetSizer(sizer_dialog)
 
@@ -743,23 +739,28 @@ class MacroDialog(wx.Frame):
     def __init__(self, parent, macros, *args, **kwds):
 
         # begin wxGlade: MacroDialog.__init__
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.THICK_FRAME
+        kwds["style"] = \
+            wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
 
         self.parent = parent
         self.macros = macros
 
         wx.Frame.__init__(self, parent, *args, **kwds)
 
-        self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_3D|wx.SP_BORDER)
+        self.splitter = wx.SplitterWindow(self, -1,
+                                          style=wx.SP_3D | wx.SP_BORDER)
 
         self.upper_panel = wx.Panel(self.splitter, -1)
         self.lower_panel = wx.Panel(self.splitter, -1)
 
         self.codetext_ctrl = PythonSTC(self.upper_panel, -1,
-          style=wx.TE_PROCESS_ENTER|wx.TE_PROCESS_TAB|wx.TE_MULTILINE|wx.EXPAND)
+                                       style=wx.TE_PROCESS_ENTER | \
+                                       wx.TE_PROCESS_TAB | \
+                                       wx.TE_MULTILINE | \
+                                       wx.EXPAND)
 
         self.result_ctrl = wx.TextCtrl(self.lower_panel, -1,
-          style=wx.TE_MULTILINE|wx.TE_READONLY)
+          style=wx.TE_MULTILINE | wx.TE_READONLY)
 
         self.ok_button = wx.Button(self.lower_panel, wx.ID_OK)
         self.apply_button = wx.Button(self.lower_panel, wx.ID_APPLY)
@@ -796,7 +797,9 @@ class MacroDialog(wx.Frame):
         self.upper_panel.SetSizer(upper_sizer)
         self.lower_panel.SetSizer(lower_sizer)
 
-        self.splitter.SplitHorizontally(self.upper_panel, self.lower_panel, 500)
+        self.splitter.SplitHorizontally(self.upper_panel,
+                                        self.lower_panel,
+                                        500)
         dialog_main_sizer.Add(self.splitter, 1, wx.EXPAND, 0)
         self.SetSizer(dialog_main_sizer)
         self.Layout()
@@ -846,15 +849,18 @@ class DimensionsEntryDialog(wx.Dialog):
     """Input dialog for the 3 dimensions of a grid"""
 
     def __init__(self, parent, *args, **kwds):
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE|wx.MINIMIZE_BOX|wx.STAY_ON_TOP
+        kwds["style"] = \
+            wx.DEFAULT_DIALOG_STYLE | wx.MINIMIZE_BOX | wx.STAY_ON_TOP
         wx.Dialog.__init__(self, parent, *args, **kwds)
 
-        self.Rows_Label = wx.StaticText(self, -1, "Rows", style=wx.ALIGN_CENTRE)
+        self.Rows_Label = wx.StaticText(self, -1, "Rows",
+                                        style=wx.ALIGN_CENTRE)
         self.X_DimensionsEntry = wx.TextCtrl(self, -1, "")
         self.Columns_Label = wx.StaticText(self, -1, "Columns", \
                                            style=wx.ALIGN_CENTRE)
         self.Y_DimensionsEntry = wx.TextCtrl(self, -1, "")
-        self.Tabs_Label = wx.StaticText(self, -1, "Tables", style=wx.ALIGN_CENTRE)
+        self.Tabs_Label = wx.StaticText(self, -1, "Tables",
+                                        style=wx.ALIGN_CENTRE)
         self.Z_DimensionsEntry = wx.TextCtrl(self, -1, "")
 
         self.textctrls = [self.X_DimensionsEntry,
@@ -884,20 +890,20 @@ class DimensionsEntryDialog(wx.Dialog):
 
         grid_sizer_1 = wx.GridSizer(4, 2, 3, 3)
         grid_sizer_1.Add(self.Rows_Label, 0, \
-                         wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 3)
+                         wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_1.Add(self.X_DimensionsEntry, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.Columns_Label, 0, \
-                         wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 3)
+                         wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_1.Add(self.Y_DimensionsEntry, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.Tabs_Label, 0, \
-                         wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 3)
+                         wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_1.Add(self.Z_DimensionsEntry, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.ok_button, 0, \
-                        wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL| \
-                        wx.ALIGN_CENTER_VERTICAL|wx.FIXED_MINSIZE, 3)
+                        wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | \
+                        wx.ALIGN_CENTER_VERTICAL | wx.FIXED_MINSIZE, 3)
         grid_sizer_1.Add(self.cancel_button, 0, \
-                        wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL| \
-                        wx.ALIGN_CENTER_VERTICAL|wx.FIXED_MINSIZE, 3)
+                        wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | \
+                        wx.ALIGN_CENTER_VERTICAL | wx.FIXED_MINSIZE, 3)
         self.SetSizer(grid_sizer_1)
         grid_sizer_1.Fit(self)
         self.Layout()
@@ -953,6 +959,7 @@ class DimensionsEntryDialog(wx.Dialog):
 
 # end of class DimensionsEntryDialog
 
+
 class CellEntryDialog(wx.Dialog):
     """Allows entring three digits"""
 
@@ -966,34 +973,36 @@ class CellEntryDialog(wx.Dialog):
 
         fgs = wx.FlexGridSizer(0, 2)
 
-
         fgs.Add(wx.StaticText(self, -1, "Goto cell:"))
-        fgs.Add((1,1))
-        fgs.Add((1,VSPACE)); fgs.Add((1,VSPACE))
+        fgs.Add((1, 1))
+        fgs.Add((1, VSPACE))
+        fgs.Add((1, VSPACE))
 
         label = wx.StaticText(self, -1, "Row: ")
-        fgs.Add(label, 0, wx.ALIGN_RIGHT|wx.CENTER)
+        fgs.Add(label, 0, wx.ALIGN_RIGHT | wx.CENTER)
         self.row_textctrl = \
             wx.TextCtrl(self, -1, "", validator=IntValidator())
         fgs.Add(self.row_textctrl)
 
-        fgs.Add((1,VSPACE)); fgs.Add((1,VSPACE))
+        fgs.Add((1, VSPACE))
+        fgs.Add((1, VSPACE))
 
         label = wx.StaticText(self, -1, "Column: ")
-        fgs.Add(label, 0, wx.ALIGN_RIGHT|wx.CENTER)
+        fgs.Add(label, 0, wx.ALIGN_RIGHT | wx.CENTER)
         self.col_textctrl = \
             wx.TextCtrl(self, -1, "", validator=IntValidator())
 
         fgs.Add(self.col_textctrl)
-        fgs.Add((1,VSPACE)); fgs.Add((1,VSPACE))
+        fgs.Add((1, VSPACE))
+        fgs.Add((1, VSPACE))
         label = wx.StaticText(self, -1, "Table: ")
-        fgs.Add(label, 0, wx.ALIGN_RIGHT|wx.CENTER)
+        fgs.Add(label, 0, wx.ALIGN_RIGHT | wx.CENTER)
         self.tab_textctrl = \
             wx.TextCtrl(self, -1, "", validator=IntValidator())
 
         fgs.Add(self.tab_textctrl)
 
-        buttons = wx.StdDialogButtonSizer() #wx.BoxSizer(wx.HORIZONTAL)
+        buttons = wx.StdDialogButtonSizer()  # wx.BoxSizer(wx.HORIZONTAL)
         b = wx.Button(self, wx.ID_OK, "OK")
         b.SetDefault()
         buttons.AddButton(b)
@@ -1001,7 +1010,7 @@ class CellEntryDialog(wx.Dialog):
         buttons.Realize()
 
         border = wx.BoxSizer(wx.VERTICAL)
-        border.Add(fgs, 1, wx.GROW|wx.ALL, 25)
+        border.Add(fgs, 1, wx.GROW | wx.ALL, 25)
         border.Add(buttons)
         self.SetSizer(border)
         border.Fit(self)
@@ -1041,9 +1050,9 @@ class AboutDialog(object):
         info = wx.AboutDialogInfo()
         info.Name = "pyspread"
         info.Version = config["version"]
-        info.Copyright = "(C) Martin Manns 2008-2011"
+        info.Copyright = "(C) Martin Manns 2008-2012"
         info.Description = wordwrap(
-            "A cross-platform Python spreadsheet application.\nPyspread is "
+            "A non-traditional Python spreadsheet application.\nPyspread is "
             "based on and written in the programming language Python.",
             350, wx.ClientDC(parent))
         info.WebSite = ("http://pyspread.sourceforge.net",
@@ -1066,7 +1075,7 @@ class AboutDialog(object):
         self.SetTitle("About pyspread")
 
         self.about_label.SetLabel("pyspread " + VERSION + \
-                                  "\nCopyright Martin Manns 2008-2011")
+                                  "\nCopyright Martin Manns 2008-2012")
 
     def _do_layout(self):
         """Layout sizers"""
@@ -1074,13 +1083,13 @@ class AboutDialog(object):
         sizer_v = wx.BoxSizer(wx.VERTICAL)
         sizer_h = wx.BoxSizer(wx.HORIZONTAL)
         sizer_h.Add(self.logo_pyspread, 0, \
-            wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 10)
+            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 10)
         sizer_h.Add(self.about_label, 0, \
-            wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 10)
+            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 10)
         sizer_v.Add(sizer_h)
         self.SetSizer(sizer_v)
         sizer_v.Add(self.button_close, 0, \
-            wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 10)
+            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 10)
         sizer_v.Fit(self)
         self.Layout()
         self.Centre()
