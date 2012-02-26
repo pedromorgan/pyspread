@@ -186,9 +186,15 @@ class MainWindow(wx.Frame):
             Top().CloseButton(False).MaximizeButton(False).
             LeftDockable(True).RightDockable(True))
 
-        # Add the main grid
-        self._mgr.AddPane(self.grid, wx.CENTER)
+        # Load perspective from config
+        window_layout = config["window_layout"]
+        
+        if window_layout:
+            self._mgr.LoadPerspective(window_layout)
 
+        # Add the main grid
+        self._mgr.AddPane(self.grid, wx.CENTER)        
+        
         # Tell the manager to 'commit' all the changes just made
         self._mgr.Update()
 
@@ -375,6 +381,10 @@ class MainWindowEventHandlers(object):
                 # User wants to save content
                 post_command_event(self.main_window, SaveMsg)
 
+        # Save the AUI state
+        
+        config["window_layout"] = repr(self.main_window._mgr.SavePerspective())
+        
         # Uninit the AUI stuff
 
         self.main_window._mgr.UnInit()
