@@ -56,7 +56,7 @@ class DefaultConfig(object):
         self.window_position = "(10, 10)"
         self.window_size = "(wx.GetDisplaySize()[0] * 9 /10," + \
                            " wx.GetDisplaySize()[1] * 9 /10)"
-        self.window_layout = ""
+        self.window_layout = "''"
         self.icon_theme = "'Tango'"
 
         self.help_window_position = "(wx.GetDisplaySize()[0] * 7 / 10, 15)"

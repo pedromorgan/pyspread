@@ -31,6 +31,7 @@ Provides:
 
 import ast
 import os
+import gettext
 
 import wx
 import wx.aui
@@ -52,6 +53,7 @@ from _events import *
 
 from src.actions._main_window_actions import AllMainWindowActions
 
+_ = gettext.gettext
 
 class MainWindow(wx.Frame):
     """Main window of pyspread"""
@@ -147,13 +149,28 @@ class MainWindow(wx.Frame):
         # Leave save mode
         post_command_event(self, SafeModeExitMsg)
 
-        # Enable menu bar view item checkmarks
-        toggles = ["Main toolbar", "Format toolbar", "Find toolbar",
-                   "Entry line", "Table choice"]
-        for toggle in toggles:
-            toggle_id = self.menubar.FindMenuItem("View", toggle)
+    def _set_menu_toggles(self):
+        """Enable menu bar view item checkmarks"""
+
+        toggles = [ \
+            (self.main_toolbar, "main_window_toolbar", _("Main toolbar")),
+            (self.attributes_toolbar, "attributes_toolbar",
+                                                       _("Format toolbar")),
+            (self.find_toolbar, "find_toolbar", _("Find toolbar")),
+            (self.entry_line, "entry_line", _("Entry line")),
+            (self.table_choice, "table_choice", _("Table choice")),
+        ]
+
+        for toolbar, pane_name, toggle_label in toggles:
+            # Get pane from aui manager
+            pane = self._mgr.GetPane(pane_name)
+
+            # Get menu item to toggle
+            toggle_id = self.menubar.FindMenuItem("View", toggle_label)
             toggle_item = self.menubar.FindItemById(toggle_id)
-            toggle_item.Check(True)
+
+            # Adjust toggle to pane visibility
+            toggle_item.Check(pane.IsShown())
 
     def _do_layout(self):
         """Adds widgets to the wx.aui manager and controls the layout"""
@@ -188,15 +205,17 @@ class MainWindow(wx.Frame):
 
         # Load perspective from config
         window_layout = config["window_layout"]
-        
+
         if window_layout:
             self._mgr.LoadPerspective(window_layout)
 
         # Add the main grid
-        self._mgr.AddPane(self.grid, wx.CENTER)        
-        
+        self._mgr.AddPane(self.grid, wx.CENTER)
+
         # Tell the manager to 'commit' all the changes just made
         self._mgr.Update()
+
+        self._set_menu_toggles()
 
     def _bind(self):
         """Bind events to handlers"""
@@ -382,9 +401,9 @@ class MainWindowEventHandlers(object):
                 post_command_event(self.main_window, SaveMsg)
 
         # Save the AUI state
-        
+
         config["window_layout"] = repr(self.main_window._mgr.SavePerspective())
-        
+
         # Uninit the AUI stuff
 
         self.main_window._mgr.UnInit()
