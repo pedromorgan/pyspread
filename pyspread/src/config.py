@@ -25,19 +25,13 @@ pyspread config file
 
 """
 
-import os
+from ast import literal_eval
 
 import wx
 
 from sysvars import get_color, get_font_string
 
 VERSION = "0.2.1"
-
-"""
-Program info
-============
-
-"""
 
 
 class DefaultConfig(object):
@@ -137,7 +131,7 @@ class Config(object):
         if key == "version":
             return self.version
 
-        return eval(getattr(self.data, key))
+        return literal_eval(getattr(self.data, key))
 
     def __setitem__(self, key, value):
         """Main config element write access"""
@@ -166,11 +160,3 @@ class Config(object):
 
 
 config = Config()
-
-
-
-
-
-
-
-

@@ -55,6 +55,7 @@ from src.actions._main_window_actions import AllMainWindowActions
 
 _ = gettext.gettext
 
+
 class MainWindow(wx.Frame):
     """Main window of pyspread"""
 
@@ -330,14 +331,18 @@ class MainWindowEventHandlers(object):
 
         # Store window position in config
 
-        config["window_position"] = repr(event.GetPosition())
+        position = event.GetPosition()
+
+        config["window_position"] = repr((position.x, position.y))
 
     def OnSize(self, event):
         """Main window move event"""
 
-        # Store window position in config
+        # Store window size in config
 
-        config["window_size"] = repr(event.GetSize())
+        size = event.GetSize()
+
+        config["window_size"] = repr((size.width, size.height))
 
     def OnContentChanged(self, event):
         """Titlebar star adjustment event handler"""
