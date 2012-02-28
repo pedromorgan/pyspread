@@ -48,14 +48,14 @@ class DefaultConfig(object):
         # --------------------
 
         self.window_position = "(10, 10)"
-        self.window_size = "(wx.GetDisplaySize()[0] * 9 /10," + \
-                           " wx.GetDisplaySize()[1] * 9 /10)"
+        self.window_size = repr((wx.GetDisplaySize()[0] * 9 / 10,
+                                 wx.GetDisplaySize()[1] * 9 / 10))
         self.window_layout = "''"
         self.icon_theme = "'Tango'"
 
-        self.help_window_position = "(wx.GetDisplaySize()[0] * 7 / 10, 15)"
-        self.help_window_size = "(wx.GetDisplaySize()[0] * 3 /10," + \
-                                " wx.GetDisplaySize()[1] * 7 /10)"
+        self.help_window_position = repr((wx.GetDisplaySize()[0] * 7 / 10, 15))
+        self.help_window_size = repr((wx.GetDisplaySize()[0] * 3 / 10,
+                                      wx.GetDisplaySize()[1] * 7 / 10))
 
         # Grid configuration
         # ------------------

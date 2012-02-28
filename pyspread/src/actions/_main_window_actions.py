@@ -460,12 +460,19 @@ class HelpActions(Actions):
     def OnHelpMove(self, event):
         """Help window move event handler stores position in config"""
 
-        config["help_window_position"] = repr(event.GetPosition())
+        position = event.GetPosition()
+        config["help_window_position"] = repr((position.x, position.y))
+
+        event.Skip()
 
     def OnHelpSize(self, event):
         """Help window size event handler stores size in config"""
 
-        config["help_window_size"] = repr(event.GetSize())
+        size = event.GetSize()
+        config["help_window_size"] = repr((size.width, size.height))
+
+        event.Skip()
+
 
 class AllMainWindowActions(ExchangeActions, PrintActions,
                            ClipboardActions, MacroActions, HelpActions):

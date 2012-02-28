@@ -44,6 +44,7 @@ from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
 
+
 class Grid(wx.grid.Grid):
     """Pyspread's main grid"""
 
@@ -83,6 +84,13 @@ class Grid(wx.grid.Grid):
 
         self._layout()
         self._bind()
+
+        # Update toolbars
+        self.cell_handlers._update_entry_line((0, 0, 0))
+        self.cell_handlers._update_attribute_toolbar((0, 0, 0))
+
+        # Focus on grid so that typing can start immediately
+        self.SetFocus()
 
     def _states(self):
         """Sets grid states"""
@@ -216,16 +224,16 @@ class Grid(wx.grid.Grid):
         topleft_x = self.YToRow(self.GetViewStart()[1] * self.ScrollLineX)
         topleft_y = self.XToCol(self.GetViewStart()[0] * self.ScrollLineY)
         topleft = (topleft_x, topleft_y)
-        row, col = topleft_x + 1, topleft_y + 1 # Ensures visibility
+        row, col = topleft_x + 1, topleft_y + 1  # Ensures visibility
 
         while self.IsVisible(row, topleft[1], wholeCellVisible=False):
             row += 1
         while self.IsVisible(topleft[0], col, wholeCellVisible=False):
             col += 1
-        lowerright = (row, col) # This cell is *not* visible
+        lowerright = (row, col)  # This cell is *not* visible
         return (slice(topleft[0], lowerright[0]), \
                 slice(topleft[1], lowerright[1]),
-                slice(self.current_table, self.current_table+1))
+                slice(self.current_table, self.current_table + 1))
 
     def colliding_cells(self, row, col, textbox):
         """Generates distance, row, col tuples of colliding cells
@@ -245,7 +253,7 @@ class Grid(wx.grid.Grid):
                 yield 0, 0
 
             else:
-                for pos in xrange(-dist, dist+1):
+                for pos in xrange(-dist, dist + 1):
                     yield pos, dist
                     yield pos, -dist
                     yield dist, pos
@@ -303,6 +311,9 @@ class Grid(wx.grid.Grid):
                 return "DOWN"
             else:
                 return "UP"
+
+# End of class Grid
+
 
 class GridCellEventHandlers(object):
     """Contains grid cell event handlers incl. attribute events"""
@@ -480,6 +491,18 @@ class GridCellEventHandlers(object):
 
         event.Skip()
 
+    def _update_entry_line(self, key):
+        """Updates the entry line"""
+
+        cell_code = self.grid.code_array(key)
+        post_command_event(self.grid, EntryLineMsg, text=cell_code)
+
+    def _update_attribute_toolbar(self, key):
+        """Updates the attribute toolbar"""
+
+        post_command_event(self.grid, ToolbarUpdateMsg, key=key,
+                           attr=self.grid.code_array.cell_attributes[key])
+
     # Cell selection event handlers
 
     def OnCellSelected(self, event):
@@ -491,14 +514,10 @@ class GridCellEventHandlers(object):
         self.grid.ForceRefresh()
 
         # Update entry line
-        cell_code = self.grid.code_array(key)
-        post_command_event(self.grid, EntryLineMsg, text=cell_code)
+        self._update_entry_line(key)
 
         # Update attribute toolbar
-
-        post_command_event(self.grid, ToolbarUpdateMsg,
-                           key=key,
-                           attr=self.grid.code_array.cell_attributes[key])
+        self._update_attribute_toolbar(key)
 
         event.Skip()
 
@@ -700,7 +719,8 @@ class GridEventHandlers(object):
             statustext = "Found '" + text + "' in cell " + \
                          unicode(list(findpos)) + "."
 
-        post_command_event(self.grid.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.grid.main_window, StatusBarMsg,
+                           text=statustext)
 
         event.Skip()
 
@@ -718,14 +738,16 @@ class GridEventHandlers(object):
     def _wxflag2flag(self, wxflag):
         """Converts wxPython integer flag to pyspread flag list"""
 
-        wx_flags = { 0: ["UP", ],
-                     1: ["DOWN"],
-                     2: ["UP", "WHOLE_WORD"],
-                     3: ["DOWN", "WHOLE_WORD"],
-                     4: ["UP", "MATCH_CASE"],
-                     5: ["DOWN", "MATCH_CASE"],
-                     6: ["UP", "WHOLE_WORD", "MATCH_CASE"],
-                     7: ["DOWN", "WHOLE_WORD", "MATCH_CASE"] }
+        wx_flags = { \
+            0: ["UP", ],
+            1: ["DOWN"],
+            2: ["UP", "WHOLE_WORD"],
+            3: ["DOWN", "WHOLE_WORD"],
+            4: ["UP", "MATCH_CASE"],
+            5: ["DOWN", "MATCH_CASE"],
+            6: ["UP", "WHOLE_WORD", "MATCH_CASE"],
+            7: ["DOWN", "WHOLE_WORD", "MATCH_CASE"],
+        }
 
         return wx_flags[wxflag]
 
@@ -787,7 +809,6 @@ class GridEventHandlers(object):
                 bb_right = self.grid.code_array.shape[1] - 1
 
             return bb_bottom - bb_top + 1, bb_right - bb_left + 1
-
 
     def OnInsertRows(self, event):
         """Insert the maximum of 1 and the number of selected rows"""
@@ -870,7 +891,8 @@ class GridEventHandlers(object):
         self.grid.GetTable().ResetView()
 
         statustext = "Grid dimensions changed to " + str(new_shape) + "."
-        post_command_event(self.grid.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.grid.main_window, StatusBarMsg,
+                           text=statustext)
 
         event.Skip()
 
@@ -916,6 +938,4 @@ class GridEventHandlers(object):
         self.grid.GetTable().ResetView()
         self.grid.Refresh()
 
-
 # End of class GridEventHandlers
-
