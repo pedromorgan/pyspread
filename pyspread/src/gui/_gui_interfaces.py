@@ -60,7 +60,8 @@ class ModalDialogInterfaceMixin(object):
         # Grid dimension dialog
 
         if no_dim != 3:
-            raise NotImplementedError, "Currently, only 3D grids are supported."
+            raise NotImplementedError, \
+                  "Currently, only 3D grids are supported."
 
         dim_dialog = DimensionsEntryDialog(self.main_window)
 
@@ -83,8 +84,8 @@ class ModalDialogInterfaceMixin(object):
         preferences = {}
 
         if change_choice == wx.ID_OK:
-            for (parameter, _), textctrl in zip(dlg.parameters, dlg.textctrls):
-                preferences[parameter] = repr(textctrl.Value)
+            for (parameter, _), ctrl in zip(dlg.parameters, dlg.textctrls):
+                preferences[parameter] = repr(ctrl.Value)
 
         dlg.Destroy()
 
@@ -138,8 +139,8 @@ class ModalDialogInterfaceMixin(object):
                               style=wx.OK | wx.ICON_WARNING):
         """Displays a warning message"""
 
-        dlg = GMD.GenericMessageDialog(self.main_window, message, short_message,
-                                       style)
+        dlg = GMD.GenericMessageDialog(self.main_window, message,
+                                       short_message, style)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -147,8 +148,8 @@ class ModalDialogInterfaceMixin(object):
                         style=wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING):
         """Launches proceeding dialog and returns True if ok to proceed"""
 
-        dlg = GMD.GenericMessageDialog(self.main_window, message, short_message,
-                                       style)
+        dlg = GMD.GenericMessageDialog(self.main_window, message,
+                                       short_message, style)
 
         choice = dlg.ShowModal()
 

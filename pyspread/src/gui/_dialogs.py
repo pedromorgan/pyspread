@@ -48,6 +48,7 @@ import types
 import wx
 import wx.grid
 from wx.lib.wordwrap import wordwrap
+import wx.lib.masked
 import wx.stc as stc
 
 from src.config import config
@@ -1102,6 +1103,23 @@ class AboutDialog(object):
 # end of class AboutDialog
 
 
+class CheckBoxCtrl(wx.CheckBox):
+    """CheckBox class that mimicks TextCtrl class"""
+
+    def __init__(self, parent, uid, value, **kwargs):
+        wx.CheckBox.__init__(self, parent, uid, **kwargs)
+        self.SetValue(value)
+
+    def get_value_str(self):
+        """Returns string representation of CheckBox state"""
+
+        return repr(self.GetValue())
+
+    Value = property(get_value_str, wx.CheckBox.SetValue)
+
+# end of class CheckBoxCtrl
+
+
 class PreferencesDialog(wx.Dialog):
     """Dialog for changing pyspread's configuration preferences"""
 
@@ -1109,27 +1127,60 @@ class PreferencesDialog(wx.Dialog):
         ("max_unredo", { \
             "label": u"Max. undo steps",
             "tooltip": u"Maximum number of undo steps",
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "allow_long": True},
+            "prepocessor": int,
         }),
-        ("grid_shape", { \
-            "label": u"Grid shape",
-            "tooltip": u"Initial shape of grid when starting pyspread",
+        ("grid_rows", { \
+            "label": u"Grid rows",
+            "tooltip": u"Initial number of grid rows when starting pyspread",
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "allow_long": True},
+            "prepocessor": int,
+        }),
+        ("grid_columns", { \
+            "label": u"Grid columns",
+            "tooltip": u"Initial number of grid columns when starting " \
+                       u"pyspread",
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "allow_long": True},
+            "prepocessor": int,
+        }),
+        ("grid_tables", { \
+            "label": u"Grid tables",
+            "tooltip": u"Initial number of grid tables when starting pyspread",
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "allow_long": True},
+            "prepocessor": int,
         }),
         ("max_result_length", { \
             "label": u"Max. result length",
             "tooltip": u"Maximum length of cell result string",
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "allow_long": True},
+            "prepocessor": int,
         }),
         ("gpg_key_uid", { \
             "label": u"GPG key name",
             "tooltip": u"Name of the GPG key that is used for signing files",
+            "widget": wx.TextCtrl,
+            "widget_params": {},
+            "prepocessor": unicode,
         }),
         ("gpg_key_passphrase", { \
             "label": u"GPG key passphrase",
             "tooltip": \
                 u"Passphrase of the GPG key that is used for signing files",
+            "widget": wx.TextCtrl,
+            "widget_params": {"style": wx.TE_PASSWORD | wx.OK},
+            "prepocessor": unicode,
         }),
         ("gpg_key_passphrase_isstored", { \
             "label": u"Store passphrase in config file",
             "tooltip": u"If False then the passprase is not stored on exit",
+            "widget": CheckBoxCtrl,
+            "widget_params": {},
+            "prepocessor": bool,
         }),
     )
 
@@ -1140,6 +1191,8 @@ class PreferencesDialog(wx.Dialog):
         wx.Dialog.__init__(self, *args, **kwargs)
 
         self.labels = []
+
+        # Controls for entering parameters, NOT only TextCtrls
         self.textctrls = []
 
         self.grid_sizer = wx.FlexGridSizer(len(self.parameters), 2, 2, 2)
@@ -1152,12 +1205,13 @@ class PreferencesDialog(wx.Dialog):
             self.labels.append(wx.StaticText(self, -1, label))
             self.labels[-1].SetToolTipString(tooltip)
 
-            if "gpg_key_passphrase" == parameter:
-                self.textctrls.append(wx.TextCtrl(self, -1, str(value),
-                                        style=wx.TE_PASSWORD | wx.OK))
-            else:
-                self.textctrls.append(wx.TextCtrl(self, -1, str(value)))
-            self.textctrls[-1].SetToolTipString(tooltip)
+            widget = info["widget"]
+            preproc = info["prepocessor"]
+
+            ctrl = widget(self, -1, preproc(value), **info["widget_params"])
+            ctrl.SetToolTipString(tooltip)
+
+            self.textctrls.append(ctrl)
 
             self.grid_sizer.Add(self.labels[-1], 0, 0, 0)
             self.grid_sizer.Add(self.textctrls[-1], 0, wx.EXPAND, 0)
@@ -1183,7 +1237,11 @@ class PreferencesDialog(wx.Dialog):
 
 
 class GPGParamsDialog(wx.Dialog):
-    """Gets GPG key paarmeters from user"""
+    """Gets GPG key parameters from user
+
+    This dialog lets the user choose a new GPG key
+
+    """
 
     def __init__(self, parent, ID, title, params):
         wx.Dialog.__init__(self, parent, ID, title)

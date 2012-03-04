@@ -103,7 +103,12 @@ class MainWindow(wx.Frame):
 
         # Main grid
 
-        dimensions = config["grid_shape"]
+        dimensions = ( \
+            config["grid_rows"],
+            config["grid_columns"],
+            config["grid_tables"],
+        )
+
         self.grid = Grid(self, -1, dimensions=dimensions)
 
         # IntCtrl for table choice

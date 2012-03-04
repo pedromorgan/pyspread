@@ -60,7 +60,12 @@ class DefaultConfig(object):
         # Grid configuration
         # ------------------
 
-        self.grid_shape = "(1000, 100, 3)"
+        ##self.grid_shape = "(1000, 100, 3)"
+
+        self.grid_rows = "1000"
+        self.grid_columns = "100"
+        self.grid_tables = "3"
+
         self.max_unredo = "5000"
 
         # Maximum result length in a cell in characters
