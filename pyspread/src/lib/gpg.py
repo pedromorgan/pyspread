@@ -150,7 +150,8 @@ def genkey():
         # A key has been chosen
 
         config["gpg_key_uid"] = repr(uid)
-        passwd = get_gpg_passwd_from_user()
+        passwd = get_gpg_passwd_from_user( \
+            config["gpg_key_passphrase_isstored"])
 
         if passwd is None:
             sys.exit()
@@ -227,7 +228,8 @@ def sign(filename):
             passwd_is_incorrect = False
 
         except errors.GPGMEError:
-            passwd = get_gpg_passwd_from_user()
+            passwd = get_gpg_passwd_from_user( \
+                config["gpg_key_passphrase_isstored"])
             if passwd is None:
                 return
 

@@ -366,12 +366,25 @@ def get_key_params_from_user():
     return gpg_key_parameters
 
 
-def get_gpg_passwd_from_user():
-    """Opens a dialog for a GPG password and returns the password or None"""
+def get_gpg_passwd_from_user(stored=True):
+    """Opens a dialog for a GPG password and returns the password or None
 
-    dlg = wx.TextEntryDialog(None, 'Please enter your GPG key passphrase.\n' \
-            'Note that it will be stored as clear text in .pyspreadrc',
-            'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
+    Parameters
+    ----------
+
+    stored: Bool
+    \tIf True then a message is displayed that the password is stored on disk
+
+    """
+
+    if stored:
+        stored_msg = \
+            '\nNote that it will be stored as clear text in .pyspreadrc'
+    else:
+        stored_msg = ''
+
+    dlg = wx.TextEntryDialog(None, 'Please enter your GPG key passphrase.' + \
+            stored_msg, 'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
 
     if dlg.ShowModal() == wx.ID_OK:
         dlg.Destroy()
