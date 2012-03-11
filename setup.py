@@ -22,7 +22,7 @@
 from distutils.core import setup
 
 setup(name='pyspread',
-      version='0.2.0',
+      version='0.2.1',
       description='Python Spreadsheet',
       license='GPL v3 :: GNU General Public License',
       keywords=['spreadsheet', 'pyspread'],
