@@ -204,6 +204,7 @@ GridActionNewMsg, EVT_COMMAND_GRID_ACTION_NEW = new_command_event()
 GridActionOpenMsg, EVT_COMMAND_GRID_ACTION_OPEN = new_command_event()
 GridActionSaveMsg, EVT_COMMAND_GRID_ACTION_SAVE = new_command_event()
 
+# For calling the grid
 GridActionTableSwitchMsg, EVT_COMMAND_GRID_ACTION_TABLE_SWITCH = \
                                                   new_command_event()
 

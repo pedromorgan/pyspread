@@ -759,22 +759,30 @@ class TableChoiceIntCtrl(IntCtrl):
         \tNumber of tables for choice
 
         """
-
+        
+        self.no_tabs = no_tabs
+        
         if self.GetValue() >= no_tabs:
             self.SetValue(no_tabs - 1)
-
+        
         self.SetMax(no_tabs - 1)
 
     # Event handlers
 
     def OnResizeGrid(self, event):
         """Event handler for grid resizing"""
-
+        
         self.change_max(event.shape[2])
 
     def OnInt(self, event):
         """IntCtrl event method that updates the current table"""
 
+        self.SetMax(self.no_tabs - 1)
+        if event.GetValue() > self.GetMax():
+            print event.GetValue(), self.GetMax()
+            self.SetValue(self.GetMax())
+            return
+            
         if not self.switching:
             self.switching = True
             post_command_event(self, GridActionTableSwitchMsg,
@@ -785,6 +793,8 @@ class TableChoiceIntCtrl(IntCtrl):
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
 
+        self.SetMax(self.no_tabs - 1)
+        
         if event.GetWheelRotation() > 0:
             new_table = self.GetValue() + 1
         else:
