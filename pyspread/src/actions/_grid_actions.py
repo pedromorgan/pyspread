@@ -880,8 +880,8 @@ class GridActions(Actions):
 
         newtable = event.newtable
 
-        no_tabs = self.grid.code_array.shape[2]
-
+        no_tabs = self.grid.code_array.shape[2] - 1
+        
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
             self.main_window.table_choice.SetMax(newtable+1)

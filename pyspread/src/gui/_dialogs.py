@@ -74,7 +74,7 @@ class IntValidator(wx.PyValidator):
             return True
 
     def Clone(self):
-        return Validator()
+        return wx.Validator()
 
     def Validate(self, win):
         """Returns True if Value in digits, False otherwise"""

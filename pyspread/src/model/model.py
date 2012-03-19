@@ -957,15 +957,34 @@ class CodeArray(DataArray):
                (not max(op in code[0] for op in self.operators)) and \
                code[0].count("(") == code[0].count(")")
 
+    def _get_updated_environment(self, env_dict=None):
+        """Returns globals environment with 'magic' variable
+        
+        Parameters
+        ----------
+        env_dict: Dict, defaults to {'S': self}
+        \tDict that maps global variable name to value
+        
+        """
+        
+        if env_dict is None:
+            env_dict = {'S': self}
+        
+        env = globals().copy()
+        env.update(env_dict)
+        
+        return env
+
     def _eval_cell(self, key):
         """Evaluates one cell"""
 
         # Set up environment for evaluation
-        env = globals().copy()
-        env.update( {'X':key[0], 'Y':key[1], 'Z':key[2],
-                     'R':key[0], 'C':key[1], 'T':key[2],
-                     'S':self } )
-
+        
+        env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2],
+                    'R': key[0], 'C': key[1], 'T': key[2],
+                    'S': self }
+        env = self._get_updated_environment(env_dict=env_dict)
+        
         code = self(key)
 
         # Return cell value if in safe mode
@@ -1023,6 +1042,9 @@ class CodeArray(DataArray):
 
         # Windows exec does not like Windows newline
         self.macros = self.macros.replace('\r\n', '\n')
+        
+        # Set up environment for evaluation
+        globals().update(self._get_updated_environment())
 
         # Create file-like string to capture output
         code_out = cStringIO.StringIO()
