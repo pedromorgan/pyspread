@@ -1,5 +1,10 @@
 0.2.1
- * Format menu added (done)
- * Printing bug fixed (done)
- * Switched from GPG to HMAC
- * Secret key generation moved into setup.py
+ * Format menu added
+ * Printing bug (first line not printed) fixed
+ * GPG key choice dialog added
+ * Secret key generation dialog added
+ * Password saving in pyspreadrc is now optional
+ * Preferences dialog entries are now validated
+ * Toolbar positions are now saved on exit
+ * Absolute addressing with mouse changed to <Shift> + <Ctrl>
+ * Relative addressing with mouse changed to <Alt> + <Ctrl>
