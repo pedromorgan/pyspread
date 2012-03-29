@@ -1270,9 +1270,9 @@ class GPGParamsDialog(wx.Dialog):
 
         label = wx.StaticText(self, -1, "Store passphrase")
         sizer.Add(label)
-        store_passwd_checkbox = wx.CheckBox(self, True, "")
-        store_passwd_checkbox.SetValue(True)
-        sizer.Add(store_passwd_checkbox)
+        self.store_passwd_checkbox = wx.CheckBox(self, True, "")
+        self.store_passwd_checkbox.SetValue(True)
+        sizer.Add(self.store_passwd_checkbox)
 
         ok_button = wx.Button(self, wx.ID_OK)
         ok_button.SetToolTipString("Starts key generation.")

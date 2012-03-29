@@ -8,7 +8,6 @@ pyspread/__init__.py
 pyspread/faq
 pyspread/pyspread
 pyspread/thanks
-pyspread/doc/help/First steps in pyspread.html
 pyspread/doc/help/faq.html
 pyspread/doc/help/manual.html
 pyspread/doc/help/tutorial.html
@@ -28,6 +27,7 @@ pyspread/examples/test2.pys
 pyspread/examples/test2.pys.sig
 pyspread/examples/wagner whitin.pys
 pyspread/examples/wagner whitin.pys.sig
+pyspread/examples/xls_import.py
 pyspread/share/icons/pyspread.png
 pyspread/share/icons/Tango/24x24/actions/edit-copy-results.png
 pyspread/share/icons/Tango/24x24/actions/format-justify-center.png
