@@ -160,7 +160,7 @@ class Config(object):
             username = self['gpg_key_uid']
             passwd = keyring.get_password("pyspread", username)
             if passwd:
-                setattr(self.data, key, repr(passwd))
+                setattr(self.data, key, passwd)
 
     def save(self):
         """Saves configuration file"""
