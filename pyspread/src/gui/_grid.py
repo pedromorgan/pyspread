@@ -365,7 +365,7 @@ class GridCellEventHandlers(object):
             elif event.weight == "wxBOLD":
                 weight = wx.BOLD
             else:
-                raise ValueError, "Weight " + str(event.weight) + "unknown"
+                raise ValueError(_("Weight {} unknown").format(event.weight))
 
             self.grid.actions.set_attr("fontweight", weight)
 
@@ -385,7 +385,7 @@ class GridCellEventHandlers(object):
             elif event.style == "wxITALIC":
                 style = wx.ITALIC
             else:
-                raise ValueError, "Style " + str(event.style) + "unknown"
+                raise ValueError(_("Style {} unknown").format(event.style))
 
             self.grid.actions.set_attr("fontstyle", style)
 
@@ -567,7 +567,6 @@ class GridEventHandlers(object):
 
             self.grid.main_window.entry_line.SetFocus()
             self.grid.main_window.entry_line.SetInsertionPointEnd()
-
 
         elif event.ControlDown() and event.ShiftDown() and not event.AltDown():
             # Add click position as absolute reference
@@ -892,7 +891,7 @@ class GridEventHandlers(object):
 
         self.grid.GetTable().ResetView()
 
-        statustext = _(u"Grid dimensions changed to {}.").format(new_shape)
+        statustext = _("Grid dimensions changed to {}.").format(new_shape)
         post_command_event(self.grid.main_window, StatusBarMsg,
                            text=statustext)
 

@@ -250,7 +250,8 @@ class ModalDialogInterfaceMixin(object):
 
         return dialect, has_header, digest_types
 
-    def get_int_from_user(self, title="Enter integer value", cond_func=lambda i: i is not None):
+    def get_int_from_user(self, title="Enter integer value",
+                          cond_func=lambda i: i is not None):
         """Opens an integer entry dialog and returns integer
 
         Parameters
@@ -265,7 +266,7 @@ class ModalDialogInterfaceMixin(object):
 
         is_integer = False
 
-        while not is_integer :
+        while not is_integer:
             dlg = wx.TextEntryDialog(None, title, title)
 
             if dlg.ShowModal() == wx.ID_OK:
@@ -285,6 +286,7 @@ class ModalDialogInterfaceMixin(object):
                 pass
 
         return integer
+
 
 class DialogInterfaceMixin(object):
     """Main window interfaces to dialogs that are not modal"""
@@ -316,6 +318,7 @@ class GuiInterfaces(DialogInterfaceMixin, ModalDialogInterfaceMixin):
 
     def __init__(self, main_window):
         self.main_window = main_window
+
 
 def get_key_params_from_user():
     """Displays parameter entry dialog and returns parameter string"""
@@ -382,11 +385,11 @@ def get_gpg_passwd_from_user(stored=True):
     """
 
     dlg_msg = _("Please enter your GPG key passphrase.{}")
-    
+
     if stored:
         dlg_msg += _('\nThe password will be stored in your keyring')
-        
-    dlg = wx.TextEntryDialog(None, dlg_msg, _('GPG key passphrase'), '', 
+
+    dlg = wx.TextEntryDialog(None, dlg_msg, _('GPG key passphrase'), '',
                              style=wx.TE_PASSWORD | wx.OK)
 
     if dlg.ShowModal() == wx.ID_OK:

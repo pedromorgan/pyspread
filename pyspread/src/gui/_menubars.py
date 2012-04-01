@@ -130,7 +130,7 @@ class _filledMenu(wx.Menu):
                 parent.AppendSeparator()
 
             else:
-                raise TypeError, _("Menu item unknown")
+                raise TypeError(_("Menu item unknown"))
 
     def OnMenu(self, event):
         """Menu event handler"""

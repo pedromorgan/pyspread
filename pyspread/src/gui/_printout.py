@@ -27,7 +27,11 @@ Printout handling module
 
 """
 
+import gettext
+
 import wx
+
+_ = gettext.gettext
 
 
 class PrintCanvas(wx.ScrolledWindow):
@@ -191,8 +195,6 @@ class Printout(wx.Printout):
         #-------------------------------------------
 
         self.canvas.DoDrawing(dc)
-        dc.DrawText("Page: %d" % page, marginX/2, maxY-marginY)
+        dc.DrawText(_("Page: {}").format(page), marginX/2, maxY-marginY)
 
         return True
-
-

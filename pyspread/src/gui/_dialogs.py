@@ -376,7 +376,7 @@ class CsvParameterWidgets(object):
                 choice = self.choices['quoting'][widget.GetSelection()]
                 parameters[pname] = getattr(csv, choice)
             else:
-                raise TypeError, ptype + "unknown"
+                raise TypeError(_("{} unknown.").format(ptype))
 
         has_header = parameters.pop("self.has_header")
 
@@ -389,7 +389,7 @@ class CsvParameterWidgets(object):
             dlg = wx.MessageDialog(self.parent, msg, style=wx.ID_CANCEL)
             dlg.ShowModal()
             dlg.Destroy()
-            raise TypeError, err
+            raise TypeError(err)
 
         return csv.get_dialect('user'), has_header
 

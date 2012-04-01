@@ -32,6 +32,9 @@ Provides:
   3. AttributesToolbar: Toolbar for editing cell attributes
 
 """
+
+import gettext
+
 import wx
 import wx.lib.colourselect as csel
 
@@ -43,46 +46,47 @@ from icons import icons
 
 import _widgets
 
+_ = gettext.gettext
+
+
 class MainToolbar(wx.ToolBar):
     """Main application toolbar, built from attribute toolbardata
 
     toolbardata has the following structure:
-    [[toolobject, "Methodname", "Label",
-                  "Iconname", "Tooltip", "Help string"] , \
+    [["Methodname", "Label", "Iconname", "Tooltip", "Help string"] , \
     ...
-    ["Separator"] ,\
+    [] ,\  # Separator
     ...
     ]
 
     """
 
-    tool = wx.ITEM_NORMAL
-
     toolbardata = [
-    [tool, NewMsg, "New", "FileNew", "New spreadsheet",
-        "Create a new, empty spreadsheet"], \
-    [tool, OpenMsg, "Open", "FileOpen", "Open spreadsheet",
-        "Open spreadsheet from file"], \
-    [tool, SaveMsg, "Save", "FileSave", "Save spreadsheet",
-        "Save spreadsheet to file"], \
-    ["Separator"] , \
-    [tool, UndoMsg, "Undo", "Undo", "Undo", "Undo last operation"], \
-    [tool, RedoMsg, "Redo", "Redo", "Redo", "Redo next operation"], \
-    ["Separator"] , \
-    [tool, FindFocusMsg, "Find", "Find", "Find", "Find cell by content"], \
-    [tool, ReplaceMsg, "Replace", "FindReplace", "Replace",
-        "Replace strings in cells"], \
-    ["Separator"] , \
-    [tool, CutMsg, "Cut", "EditCut", "Cut", "Cut cells to clipboard"], \
-    [tool, CopyMsg, "Copy", "EditCopy", "Copy",
-        "Copy the input strings of the cells to clipboard"], \
-    [tool, CopyResultMsg, "Copy Results", "EditCopyRes", "Copy Results",
-        "Copy the result strings of the cells to the clipboard"], \
-    [tool, PasteMsg, "Paste", "EditPaste", "Paste",
-        "Paste cell from clipboard"], \
-    ["Separator"] , \
-    [tool, PrintMsg, "Print", "FilePrint", "Print current spreadsheet",
-        "Print current spreadsheet"], \
+        [NewMsg, _("New"), "FileNew", _("New spreadsheet"),
+            _("Create a new, empty spreadsheet")], \
+        [OpenMsg, _("Open"), "FileOpen", _("Open spreadsheet"),
+            _("Open spreadsheet from file")], \
+        [SaveMsg, _("Save"), "FileSave", _("Save spreadsheet"),
+            _("Save spreadsheet to file")], \
+        [], \
+        [UndoMsg, _("Undo"), "Undo", _("Undo"), _("Undo last operation")], \
+        [RedoMsg, _("Redo"), "Redo", _("Redo"), _("Redo next operation")], \
+        [], \
+        [FindFocusMsg, _("Find"), "Find", _("Find"),
+            _("Find cell by content")], \
+        [ReplaceMsg, _("Replace"), "FindReplace", _("Replace"),
+            _("Replace strings in cells")], \
+        [], \
+        [CutMsg, _("Cut"), "EditCut", _("Cut"), _("Cut cells to clipboard")], \
+        [CopyMsg, _("Copy"), "EditCopy", _("Copy"),
+            _("Copy the input strings of the cells to clipboard")], \
+        [CopyResultMsg, _("Copy Results"), "EditCopyRes", _("Copy Results"),
+            _("Copy the result strings of the cells to the clipboard")], \
+        [PasteMsg, _("Paste"), "EditPaste", _("Paste"),
+            _("Paste cell from clipboard")], \
+        [], \
+        [PrintMsg, _("Print"), "FilePrint", _("Print current spreadsheet"),
+            _("Print current spreadsheet")], \
     ]
 
     def __init__(self, *args, **kwargs):
@@ -99,25 +103,19 @@ class MainToolbar(wx.ToolBar):
         """Adds tools from self.toolbardata to self"""
 
         for tool in self.toolbardata:
-            obj = tool[0]
-            if obj == "Separator":
-                self.AddSeparator()
-            elif obj == self.tool:
-                msgtype = tool[1]
-                label = tool[2]
-                icon = icons[tool[3]]
-                icon2 = wx.NullBitmap
-                tooltip = tool[4]
-                helpstring = tool[5]
+            if tool:
+                msgtype, label, icon_name, tooltip, helpstring = tool
+                icon = icons[icon_name]
                 toolid = wx.NewId()
-                self.AddLabelTool(toolid, label, icon, icon2, obj,
-                                  tooltip, helpstring)\
+                self.AddLabelTool(toolid, label, icon, wx.NullBitmap,
+                                  wx.ITEM_NORMAL, tooltip, helpstring)
 
                 self.ids_msgs[toolid] = msgtype
 
                 self.parent.Bind(wx.EVT_TOOL, self.OnTool, id=toolid)
+
             else:
-                raise TypeError, "Toolbar item unknown"
+                self.AddSeparator()
 
     def OnTool(self, event):
         """Toolbar event handler"""
@@ -136,22 +134,22 @@ class FindToolbar(wx.ToolBar):
       "matchcase_tb": { \
         "ID": wx.NewId(),
         "iconname": "SearchCaseSensitive",
-        "shorthelp": "Case sensitive",
-        "longhelp": "Case sensitive search",
+        "shorthelp": _("Case sensitive"),
+        "longhelp": _("Case sensitive search"),
         "flag": "MATCH_CASE",
       },
       "regexp_tb": {
         "ID": wx.NewId(),
         "iconname": "SearchRegexp",
-        "shorthelp": "Regular expression",
-        "longhelp": "Treat search string as regular expression",
+        "shorthelp": _("Regular expression"),
+        "longhelp": _("Treat search string as regular expression"),
         "flag": "REG_EXP",
       },
       "wholeword_tb": { \
         "ID": wx.NewId(),
         "iconname": "SearchWholeword",
-        "shorthelp": "Whole word",
-        "longhelp": "Search string is surronted by whitespace characters",
+        "shorthelp": _("Whole word"),
+        "longhelp": _("Search string is surronted by whitespace characters"),
         "flag": "WHOLE_WORD",
       },
     }
@@ -168,8 +166,8 @@ class FindToolbar(wx.ToolBar):
         self.search_history = []
         self.search = wx.SearchCtrl(self, size=(150, -1), \
                         style=wx.TE_PROCESS_ENTER | wx.NO_BORDER)
-        self.search.SetToolTip(wx.ToolTip("Enter search string for " + \
-                                "searching in the grid cell source code"))
+        tip_msg = _("Searches in grid cell source code and grid cell results.")
+        self.search.SetToolTip(wx.ToolTip(tip_msg))
         self.menu = self.make_menu()
         self.search.SetMenu(self.menu)
         self.AddControl(self.search)
@@ -207,10 +205,8 @@ class FindToolbar(wx.ToolBar):
         self.search_direction_tb = _widgets.BitmapToggleButton(self, bmplist)
 
         self.search_direction_tb.SetInitialSize()
-        self.search_direction_tb.SetToolTip( \
-            wx.ToolTip("Search direction"))
+        self.search_direction_tb.SetToolTip(wx.ToolTip(_("Search direction")))
         self.AddControl(self.search_direction_tb)
-
 
     def make_menu(self):
         """Creates the search menu"""
@@ -265,7 +261,8 @@ class FindToolbar(wx.ToolBar):
             flag_index = self.search_options.index("UP")
             self.search_options[flag_index] = "DOWN"
         else:
-            raise AttributeError, "Neither UP nor DOWN in search_flags"
+            raise AttributeError(_("Neither UP nor DOWN in search_flags"))
+
         event.Skip()
 
     def OnSearchFlag(self, event):
@@ -308,14 +305,14 @@ class AttributesToolbar(wx.ToolBar):
     ]
 
     bordermap = { \
-        "AllBorders":      ("top", "bottom", "left", "right", "inner"),
-        "LeftBorders":     ("left"),
-        "RightBorders":    ("right"),
-        "TopBorders":      ("top"),
-        "BottomBorders":   ("bottom"),
-        ##"InsideBorders":   ("inner"),
-        "OutsideBorders":  ("top", "bottom", "left", "right"),
-        "TopBottomBorders":("top", "bottom"),
+        "AllBorders":       ("top", "bottom", "left", "right", "inner"),
+        "LeftBorders":      ("left"),
+        "RightBorders":     ("right"),
+        "TopBorders":       ("top"),
+        "BottomBorders":    ("bottom"),
+        ##"InsideBorders":    ("inner"),
+        "OutsideBorders":   ("top", "bottom", "left", "right"),
+        "TopBottomBorders": ("top", "bottom"),
     }
 
     def __init__(self, parent, *args, **kwargs):
@@ -369,14 +366,15 @@ class AttributesToolbar(wx.ToolBar):
         """Creates font face buttons"""
 
         font_face_buttons = [
-            (wx.FONTFLAG_BOLD, "OnBold", "FormatTextBold", "Bold"),
-            (wx.FONTFLAG_ITALIC, "OnItalics", "FormatTextItalic", "Italics"),
+            (wx.FONTFLAG_BOLD, "OnBold", "FormatTextBold", _("Bold")),
+            (wx.FONTFLAG_ITALIC, "OnItalics", "FormatTextItalic",
+                 _("Italics")),
             (wx.FONTFLAG_UNDERLINED, "OnUnderline", "FormatTextUnderline",
-                "Underline"),
+                _("Underline")),
             (wx.FONTFLAG_STRIKETHROUGH, "OnStrikethrough",
-                "FormatTextStrikethrough", "Strikethrough"),
-            (wx.FONTFLAG_MASK, "OnFreeze", "Freeze", "Freeze"),
-            ]
+                "FormatTextStrikethrough", _("Strikethrough")),
+            (wx.FONTFLAG_MASK, "OnFreeze", "Freeze", _("Freeze")),
+        ]
 
         for __id, method, iconname, helpstring in font_face_buttons:
             bmp = icons[iconname]
@@ -405,27 +403,28 @@ class AttributesToolbar(wx.ToolBar):
     def _create_borderchoice_combo(self):
         """Create border choice combo box"""
 
+        choices = [c[0] for c in self.border_toggles]
         self.borderchoice_combo = _widgets.BorderEditChoice(self,
-                                choices=[c[0] for c in self.border_toggles], \
-                                style=wx.CB_READONLY, size=(50, -1))
+                 choices=choices, style=wx.CB_READONLY, size=(50, -1))
 
         self.borderstate = self.border_toggles[0][0]
 
         self.AddControl(self.borderchoice_combo)
 
-        self.Bind(wx.EVT_COMBOBOX, self.OnBorderChoice, self.borderchoice_combo)
+        self.Bind(wx.EVT_COMBOBOX, self.OnBorderChoice,
+                  self.borderchoice_combo)
 
         self.borderchoice_combo.SetValue("AllBorders")
 
     def _create_penwidth_combo(self):
         """Create pen width combo box"""
 
+        choices = map(unicode, xrange(12))
         self.pen_width_combo = _widgets.PenWidthComboBox(self,
-                                choices=map(unicode, xrange(12)), \
-                                style=wx.CB_READONLY, size=(50, -1))
+                choices=choices, style=wx.CB_READONLY, size=(50, -1))
+
         self.AddControl(self.pen_width_combo)
         self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.pen_width_combo)
-
 
     def _create_color_buttons(self):
         """Create color choice buttons"""
@@ -655,7 +654,6 @@ class AttributesToolbar(wx.ToolBar):
 
         self.pen_width_combo.SetSelection(borderwidth)
 
-
     # Attributes toolbar event handlers
     # ---------------------------------
 
@@ -681,7 +679,6 @@ class AttributesToolbar(wx.ToolBar):
         self._update_bordercolor(attributes["bordercolor_bottom"])
         self._update_borderwidth(attributes["borderwidth_bottom"])
 
-
     def OnBorderChoice(self, event):
         """Change the borders that are affected by color and width changes"""
 
@@ -701,7 +698,7 @@ class AttributesToolbar(wx.ToolBar):
 
         linewidth_combobox = event.GetEventObject()
         idx = event.GetInt()
-        width  = int(linewidth_combobox.GetString(idx))
+        width = int(linewidth_combobox.GetString(idx))
         borders = self.bordermap[self.borderstate]
 
         post_command_event(self, BorderWidthMsg, width=width, borders=borders)

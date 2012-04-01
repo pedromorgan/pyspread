@@ -133,7 +133,7 @@ class CellAttributes(list):
             if cache_len == len(self):
                 return cache_dict
 
-        row, col, tab  = key
+        row, col, tab = key
 
         result_dict = copy(self.default_cell_attributes)
 

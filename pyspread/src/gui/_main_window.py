@@ -557,8 +557,7 @@ class MainWindowEventHandlers(object):
         self.main_window.grid.ForceRefresh()
 
         # Display grid creation in status bar
-        statustext = _("New grid with dimensions {shape} created.").format( \
-                            shape = str(shape))
+        statustext = _("New grid with dimensions {} created.").format(shape)
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         self.main_window.grid.ForceRefresh()
@@ -650,8 +649,8 @@ class MainWindowEventHandlers(object):
                 statustext = _("Directory present. Save aborted.")
                 post_command_event(self.main_window, StatusBarMsg,
                                    text=statustext)
-                return 0        
-                
+                return 0
+
             # There is a file with the same path
             message = _("The file {filepath} is already present.\nOverwrite?")\
                                   .format(filepath=filepath)
@@ -664,23 +663,18 @@ class MainWindowEventHandlers(object):
                                text=statustext)
                 return 0
 
-
         # Put pys suffix if wildcard choice is 0
-
         if filterindex == 0 and filepath[-4:] != ".pys":
             filepath += ".pys"
 
         # Set the filepath state
-
         self.main_window.filepath = filepath
 
         # Set Window title to new filepath
-
         title_text = filepath.split("/")[-1] + " - pyspread"
         post_command_event(self.main_window, TitleMsg, text=title_text)
 
         # Now jump to save
-
         post_command_event(self.main_window, SaveMsg)
 
     def OnImport(self, event):
@@ -885,7 +879,7 @@ class MainWindowEventHandlers(object):
         # Get current font data from current cell
         cursor = self.main_window.grid.actions.cursor
         attr = self.main_window.grid.code_array.cell_attributes[cursor]
-        
+
         size, style, weight, font = [attr[name] for name in \
             ["pointsize", "fontstyle", "fontweight", "textfont"]]
         current_font = wx.Font(int(size), -1, style, weight, 0, font)

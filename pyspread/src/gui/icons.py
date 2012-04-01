@@ -25,34 +25,34 @@ icons
 
 Provides:
 ---------
-  1) ArtProvider: Provides stock and custom icons
+  1) _ArtProvider: Provides stock and custom icons
+  2) Icons: Provides pyspread's icons
 
 """
-
-import types
 
 import wx
 
 from src.sysvars import get_program_path
 
+
 class _ArtProvider(wx.ArtProvider):
     """Provides extra icons in addition to the standard ones
-    
+
     Used only by Icons class
-    
+
     """
-    
+
     def __init__(self, theme, icon_size):
-        
+
         wx.ArtProvider.__init__(self)
-        
+
         _size_str = "x".join(map(str, icon_size))
-        
-        _theme_path = get_program_path() + "share/icons/" 
+
+        _theme_path = get_program_path() + "share/icons/"
         _icon_path = _theme_path + theme + "/" + _size_str + "/"
         _action_path = _icon_path + "actions/"
         _toggle_path = _icon_path + "toggles/"
-    
+
         self.extra_icons = { \
             "PyspreadLogo": _theme_path + "pyspread.png",
             "EditCopyRes": _action_path + "edit-copy-results.png",
@@ -66,8 +66,8 @@ class _ArtProvider(wx.ArtProvider):
             "JustifyCenter": _action_path + "format-justify-center.png",
             "JustifyLeft": _action_path + "format-justify-left.png",
             "AlignTop": _action_path + "format-text-aligntop.png",
-            "AlignCenter": _action_path + "format-text-aligncenter.png", 
-            "AlignBottom": _action_path + "format-text-alignbottom.png", 
+            "AlignCenter": _action_path + "format-text-aligncenter.png",
+            "AlignBottom": _action_path + "format-text-alignbottom.png",
             "Freeze": _action_path + "frozen_small.png",
             "AllBorders": _toggle_path + "border_all.xpm",
             "LeftBorders": _toggle_path + "border_left.xpm",
@@ -81,32 +81,31 @@ class _ArtProvider(wx.ArtProvider):
             "SearchRegexp": _toggle_path + "regex.png",
             "SearchWholeword": _toggle_path + "wholeword.png",
             }
-            
-    
+
     def CreateBitmap(self, artid, client, size):
         """Adds custom images to Artprovider"""
-        
+
         if artid in self.extra_icons:
             return wx.Bitmap(self.extra_icons[artid], wx.BITMAP_TYPE_ANY)
-            
+
         else:
             return wx.ArtProvider.GetBitmap(artid, client, size)
-        
+
 
 class Icons(object):
     """Provides icons for pyspread"""
-        
+
     theme = "Tango"
-    
+
     icon_size = (24, 24)
     icon_set = wx.ART_OTHER
-    
+
     icons = { \
-        "FileNew": wx.ART_NEW, 
-        "FileOpen": wx.ART_FILE_OPEN, 
-        "FileSave": wx.ART_FILE_SAVE, 
-        "FilePrint": wx.ART_PRINT, 
-        "EditCut": wx.ART_CUT, 
+        "FileNew": wx.ART_NEW,
+        "FileOpen": wx.ART_FILE_OPEN,
+        "FileSave": wx.ART_FILE_SAVE,
+        "FilePrint": wx.ART_PRINT,
+        "EditCut": wx.ART_CUT,
         "EditCopy": wx.ART_COPY,
         "EditPaste": wx.ART_PASTE,
         "Undo": wx.ART_UNDO,
@@ -116,26 +115,24 @@ class Icons(object):
         "SearchDirectionUp": wx.ART_GO_UP,
         "SearchDirectionDown": wx.ART_GO_DOWN,
         }
-    
+
     def __init__(self):
         wx.ArtProvider.Push(_ArtProvider(self.theme, self.icon_size))
-                 
-    
+
     def __getitem__(self, icon_name):
         """Returns by bitmap
-        
+
         Parameters
         ----------
         icon_name: String
         \tString identifier of the icon.
-        
+
         """
-        
+
         if icon_name in self.icons:
             icon_name = self.icons[icon_name]
-        
-        bmp = wx.ArtProvider.GetBitmap(icon_name, self.icon_set, self.icon_size)
-        
-        return bmp
-        
+
+        return wx.ArtProvider.GetBitmap(icon_name, self.icon_set,
+                                       self.icon_size)
+
 icons = Icons()

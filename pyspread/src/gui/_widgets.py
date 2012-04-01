@@ -25,20 +25,19 @@ _widgets
 
 Provides:
 ---------
-  1. CollapsiblePane: Collapsible pane with basic toggle mechanism
-  2. PythonSTC: Syntax highlighting editor
-  3. ImageComboBox: Base class for image combo boxes
-  4. PenStyleComboBox: ComboBox for border pen style selection
-  5. PenWidthComboBox: ComboBox for border pen width selection
-  5. FontChoiceCombobox: ComboBox for font selection
-  6. BorderEditChoice: ComboBox for border selection
-  7. BitmapToggleButton: Button that toggles through a list of bitmaps
-  8. EntryLine: The line for entering cell code
-  9. StatusBar: Main window statusbar
-  10. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
+  1. PythonSTC: Syntax highlighting editor
+  2. ImageComboBox: Base class for image combo boxes
+  3. PenWidthComboBox: ComboBox for border pen width selection
+  4. FontChoiceCombobox: ComboBox for font selection
+  5. BorderEditChoice: ComboBox for border selection
+  6. BitmapToggleButton: Button that toggles through a list of bitmaps
+  7. EntryLine: The line for entering cell code
+  8. StatusBar: Main window statusbar
+  9. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
 
 """
 
+import gettext
 import keyword
 
 import wx
@@ -51,41 +50,7 @@ from _events import *
 
 from icons import icons
 
-class CollapsiblePane(wx.CollapsiblePane):
-    """Collapsible pane with basic toggle mechanism
-
-    Parameters:
-    -----------
-    panename: string
-    \tLabel for the collapsible pane
-
-    """
-
-    def __init__(self, *args, **kwds):
-        self.label_show = "Show "
-        self.label_hide = "Hide "
-        panename = kwds.pop('panename')
-        self.__dict__['label'] = panename
-        wx.CollapsiblePane.__init__(self, *args, **kwds)
-        self.SetLabel(self.label_show + panename)
-        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.restore_pane, self)
-
-    def OnToggle(self, event):
-        """"Toggle event handler"""
-
-        self.Collapse(self.IsExpanded())
-        self.restore_pane()
-
-    def restore_pane(self, event=None):
-        """Restores the layout of the content and changes teh labels"""
-        self.GetParent().Layout()
-        # and also change the labels
-        if self.IsExpanded():
-            self.SetLabel(self.label_hide + self.__dict__['label'])
-        else:
-            self.SetLabel(self.label_show + self.__dict__['label'])
-
-# end of class CollapsiblePane
+_ = gettext.gettext
 
 
 class PythonSTC(stc.StyledTextCtrl):
@@ -221,7 +186,8 @@ class PythonSTC(stc.StyledTextCtrl):
                                                             white, gray2),
             (stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_BOXMINUSCONNECTED,
                                                             white, gray2),
-            (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNER, white, gray2),
+            (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNER,
+                                                            white, gray2),
           ] \
         }
 
@@ -232,55 +198,54 @@ class PythonSTC(stc.StyledTextCtrl):
         -----------
 
         The lexer defines what each style is used for, we just have to define
-        what each style looks like.  The Python style set is adapted from Scintilla
-        sample property files.
+        what each style looks like.  The Python style set is adapted from
+        Scintilla sample property files.
 
         """
 
-
         self.text_styles = [ \
-          (stc.STC_STYLE_DEFAULT, "face:%(helv)s,size:%(size)d" % self.faces), \
+          (stc.STC_STYLE_DEFAULT, "face:%(helv)s,size:%(size)d" % self.faces),
           (stc.STC_STYLE_LINENUMBER, "back:#C0C0C0,face:%(helv)s,"
-                                     "size:%(size2)d" % self.faces), \
-          (stc.STC_STYLE_CONTROLCHAR, "face:%(other)s" % self.faces), \
-          (stc.STC_STYLE_BRACELIGHT, "fore:#FFFFFF,back:#0000FF,bold"), \
-          (stc.STC_STYLE_BRACEBAD, "fore:#000000,back:#FF0000,bold"), \
+                                     "size:%(size2)d" % self.faces),
+          (stc.STC_STYLE_CONTROLCHAR, "face:%(other)s" % self.faces),
+          (stc.STC_STYLE_BRACELIGHT, "fore:#FFFFFF,back:#0000FF,bold"),
+          (stc.STC_STYLE_BRACEBAD, "fore:#000000,back:#FF0000,bold"),
           # Python styles
           # Default
           (stc.STC_P_DEFAULT, "fore:#000000,face:%(helv)s,size:%(size)d" % \
                                                                 self.faces), \
           # Comments
           (stc.STC_P_COMMENTLINE, "fore:#007F00,face:%(other)s,"
-                                  "size:%(size)d" % self.faces), \
+                                  "size:%(size)d" % self.faces),
           # Number
-          (stc.STC_P_NUMBER, "fore:#007F7F,size:%(size)d" % self.faces), \
+          (stc.STC_P_NUMBER, "fore:#007F7F,size:%(size)d" % self.faces),
           # String
           (stc.STC_P_STRING, "fore:#7F007F,face:%(helv)s,size:%(size)d" % \
-                                                                self.faces), \
+                                                                self.faces),
           # Single quoted string
           (stc.STC_P_CHARACTER, "fore:#7F007F,face:%(helv)s,size:%(size)d" % \
-                                                                self.faces), \
+                                                                self.faces),
           # Keyword
-          (stc.STC_P_WORD, "fore:#00007F,bold,size:%(size)d" % self.faces), \
+          (stc.STC_P_WORD, "fore:#00007F,bold,size:%(size)d" % self.faces),
           # Triple quotes
-          (stc.STC_P_TRIPLE, "fore:#7F0000,size:%(size)d" % self.faces), \
+          (stc.STC_P_TRIPLE, "fore:#7F0000,size:%(size)d" % self.faces),
           # Triple double quotes
-          (stc.STC_P_TRIPLEDOUBLE, "fore:#7F0000,size:%(size)d" % self.faces), \
+          (stc.STC_P_TRIPLEDOUBLE, "fore:#7F0000,size:%(size)d" % self.faces),
           # Class name definition
           (stc.STC_P_CLASSNAME, "fore:#0000FF,bold,underline,size:%(size)d" % \
-                                                                self.faces), \
+                                                                self.faces),
           # Function or method name definition
-          (stc.STC_P_DEFNAME, "fore:#007F7F,bold,size:%(size)d" % self.faces), \
+          (stc.STC_P_DEFNAME, "fore:#007F7F,bold,size:%(size)d" % self.faces),
           # Operators
-          (stc.STC_P_OPERATOR, "bold,size:%(size)d" % self.faces), \
+          (stc.STC_P_OPERATOR, "bold,size:%(size)d" % self.faces),
           # Identifiers
           (stc.STC_P_IDENTIFIER, "fore:#000000,face:%(helv)s,size:%(size)d" % \
-                                                                self.faces), \
+                                                                self.faces),
           # Comment-blocks
-          (stc.STC_P_COMMENTBLOCK, "fore:#7F7F7F,size:%(size)d" % self.faces), \
+          (stc.STC_P_COMMENTBLOCK, "fore:#7F7F7F,size:%(size)d" % self.faces),
           # End of line where string is not closed
           (stc.STC_P_STRINGEOL, "fore:#000000,face:%(mono)s,"
-                                "back:#E0C0E0,eol,size:%(size)d" % self.faces), \
+                                "back:#E0C0E0,eol,size:%(size)d" % self.faces),
         ]
 
     def OnUpdateUI(self, evt):
@@ -370,7 +335,7 @@ class PythonSTC(stc.StyledTextCtrl):
                     self.SetFoldExpanded(line_num, False)
 
                     if last_child > line_num:
-                        self.HideLines(line_num+1, last_child)
+                        self.HideLines(line_num + 1, last_child)
 
             line_num = line_num + 1
 
@@ -395,11 +360,11 @@ class PythonSTC(stc.StyledTextCtrl):
             if level & stc.STC_FOLDLEVELHEADERFLAG:
                 if force:
                     self.SetFoldExpanded(line, vislevels - 1)
-                    line = self.expand(line, do_expand, force, vislevels-1)
+                    line = self.expand(line, do_expand, force, vislevels - 1)
 
                 else:
                     expandsub = do_expand and self.GetFoldExpanded(line)
-                    line = self.expand(line, expandsub, force, vislevels-1)
+                    line = self.expand(line, expandsub, force, vislevels - 1)
             else:
                 line += 1
 
@@ -440,70 +405,6 @@ class ImageComboBox(wx.combo.OwnerDrawnComboBox):
         dc.SetPen(wx.Pen(bg_color))
         dc.DrawRectangleRect(rect)
 
-class PenStyleComboBox(ImageComboBox):
-    """Combo box for choosing line styles for cell borders
-
-    Stolen from demo.py
-
-    """
-
-    pen_styles = [wx.SOLID, wx.TRANSPARENT, wx.DOT, wx.LONG_DASH, wx.SHORT_DASH,
-                  wx.DOT_DASH, wx.BDIAGONAL_HATCH, wx.CROSSDIAG_HATCH,
-                  wx.FDIAGONAL_HATCH, wx.CROSS_HATCH, wx.HORIZONTAL_HATCH,
-                  wx.VERTICAL_HATCH]
-
-    def OnDrawItem(self, dc, rect, item, flags):
-
-        if item == wx.NOT_FOUND:
-            return
-
-        r = wx.Rect(*rect)  # make a copy
-        r.Deflate(3, 5)
-
-        if not 0 < item < 12:
-            item = 0
-
-        pen_style = self.pen_styles[item]
-
-        pen = wx.Pen(dc.GetTextForeground(), 3, pen_style)
-        dc.SetPen(pen)
-
-        if flags & wx.combo.ODCB_PAINTING_CONTROL:
-            # for painting the control itself
-            dc.DrawLine(r.x+5, r.y+r.height/2,
-                        r.x+r.width - 5, r.y+r.height/2)
-
-        else:
-            # for painting the items in the popup
-            dc.DrawText(self.GetString(item),
-                        r.x + 3,
-                        (r.y + 0) + ((r.height/2) - dc.GetCharHeight())/2)
-            dc.DrawLine(r.x+5, r.y+((r.height/4)*3)+1,
-                        r.x+r.width - 5, r.y+((r.height/4)*3)+1)
-
-    def OnMeasureItem(self, item):
-        """should return the height needed to display an item in the popup,
-        or -1 for default
-
-        Overridden from OwnerDrawnComboBox
-
-        """
-
-        # Simply demonstrate the ability to have variable-height items
-        if item & 1:
-            return 36
-        else:
-            return 24
-
-    def OnMeasureItemWidth(self, item):
-        """Callback for item width, or -1 for default/undetermined
-
-        Overridden from OwnerDrawnComboBox
-
-        """
-        return -1 # default - will be measured from text width
-
-# end of class PenStyleComboBox
 
 class PenWidthComboBox(ImageComboBox):
     """Combo box for choosing line width for cell borders"""
@@ -524,21 +425,15 @@ class PenWidthComboBox(ImageComboBox):
 
         dc.SetPen(pen)
 
-        if flags & wx.combo.ODCB_PAINTING_CONTROL:
-            # for painting the control itself
-            dc.DrawLine(r.x+5, r.y+r.height/2,
-                        r.x+r.width - 5, r.y+r.height/2)
-
-        else:
-            # for painting the items in the popup
-            dc.DrawLine(r.x + 5, r.y + r.height / 2,
-                        r.x + r.width - 5, r.y + r.height / 2)
+        # Draw the example line in the combobox
+        dc.DrawLine(r.x + 5, r.y + r.height / 2,
+                    r.x + r.width - 5, r.y + r.height / 2)
 
 # end of class PenWidthComboBox
 
+
 class FontChoiceCombobox(ImageComboBox):
     """Combo box for choosing fonts"""
-
 
     def OnDrawItem(self, dc, rect, item, flags):
 
@@ -551,11 +446,13 @@ class FontChoiceCombobox(ImageComboBox):
         font_string = self.GetString(item)
         font = wx.Font(wx.DEFAULT, wx.DEFAULT, wx.NORMAL, wx.NORMAL, \
                        False, font_string)
-        font.SetPointSize(font.GetPointSize()-2)
+        font.SetPointSize(font.GetPointSize() - 2)
         dc.SetFont(font)
         text_width, text_height = dc.GetTextExtent(font_string)
         text_x = __rect.x
         text_y = __rect.y + int((__rect.height - text_height) / 2.0)
+
+        # Draw the example text in the combobox
         dc.DrawText(font_string, text_x, text_y)
 
 
@@ -577,6 +474,7 @@ class BorderEditChoice(ImageComboBox):
         icon = wx.EmptyIcon()
         icon.CopyFromBitmap(bmp)
 
+        # Draw the border icon in the combobox
         dc.DrawIcon(icon, r.x, r.y)
 
     def OnMeasureItem(self, item):
@@ -592,6 +490,7 @@ class BorderEditChoice(ImageComboBox):
         return icons[item_name].GetWidth()
 
 # end of class BorderEditChoice
+
 
 class BitmapToggleButton(wx.BitmapButton):
     """Toggle button that goes through a list of bitmaps
@@ -738,8 +637,9 @@ class TableChoiceIntCtrl(IntCtrl):
         self.SetMin(0)
         self.SetMax(no_tabs - 1)
 
-        self.SetToolTip(wx.ToolTip( \
-            "Enter grid table number or use mouse wheel to change tables."))
+        tipmsg = _("For switching tables enter the table number or "
+                   "use the mouse wheel.")
+        self.SetToolTip(wx.ToolTip(tipmsg))
 
         # State for preventing to post GridActionTableSwitchMsg
         self.switching = False
@@ -759,19 +659,19 @@ class TableChoiceIntCtrl(IntCtrl):
         \tNumber of tables for choice
 
         """
-        
+
         self.no_tabs = no_tabs
-        
+
         if self.GetValue() >= no_tabs:
             self.SetValue(no_tabs - 1)
-        
+
         self.SetMax(no_tabs - 1)
 
     # Event handlers
 
     def OnResizeGrid(self, event):
         """Event handler for grid resizing"""
-        
+
         self.change_max(event.shape[2])
 
     def OnInt(self, event):
@@ -782,7 +682,7 @@ class TableChoiceIntCtrl(IntCtrl):
             print event.GetValue(), self.GetMax()
             self.SetValue(self.GetMax())
             return
-            
+
         if not self.switching:
             self.switching = True
             post_command_event(self, GridActionTableSwitchMsg,
@@ -794,7 +694,7 @@ class TableChoiceIntCtrl(IntCtrl):
         """Mouse wheel event handler"""
 
         self.SetMax(self.no_tabs - 1)
-        
+
         if event.GetWheelRotation() > 0:
             new_table = self.GetValue() + 1
         else:
@@ -809,6 +709,5 @@ class TableChoiceIntCtrl(IntCtrl):
         self.change_max(event.shape[2])
 
         event.Skip()
-
 
 # end of class TableChoiceIntCtrl
