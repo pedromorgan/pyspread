@@ -30,6 +30,8 @@ Provides
 
 """
 
+import gettext
+
 import wx.grid
 
 from _events import *
@@ -43,6 +45,8 @@ import src.lib.xrect as xrect
 from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
+
+_ = gettext.gettext
 
 
 class Grid(wx.grid.Grid):
@@ -476,7 +480,7 @@ class GridCellEventHandlers(object):
 
         cond_func = lambda i: 0 <= i <= 359
         angle = self.grid.interfaces.get_int_from_user( \
-            "Enter text angle in degrees.", cond_func)
+            _("Enter text angle in degrees."), cond_func)
 
         if angle is not None:
             post_command_event(self.grid.main_window, TextRotationMsg,
@@ -609,7 +613,6 @@ class GridEventHandlers(object):
                 self.grid.actions.delete_selection()
 
                 # Update grid
-
                 self.grid.ForceRefresh()
 
                 # Do not enter cell
@@ -709,15 +712,14 @@ class GridEventHandlers(object):
         if findpos is None:
             # If nothing is found mention it in the statusbar and return
 
-            statustext = "'" + text + "' not found."
+            statustext = _("'{}' not found.").format(text)
 
         else:
             # Otherwise select cell with next occurrence if successful
             self.grid.actions.cursor = findpos
 
             # Update statusbar
-            statustext = "Found '" + text + "' in cell " + \
-                         unicode(list(findpos)) + "."
+            statustext = _(u"Found '{}' in cell {}.").format(text, findpos)
 
         post_command_event(self.grid.main_window, StatusBarMsg,
                            text=statustext)
@@ -857,7 +859,7 @@ class GridEventHandlers(object):
         event.Skip()
 
     def OnDeleteCols(self, event):
-        """Deletes columnss from all tables of the grid"""
+        """Deletes columns from all tables of the grid"""
 
         _, no_cols = self._get_no_rowscols(self.grid.selection.get_bbox())
 
@@ -890,7 +892,7 @@ class GridEventHandlers(object):
 
         self.grid.GetTable().ResetView()
 
-        statustext = "Grid dimensions changed to " + str(new_shape) + "."
+        statustext = _(u"Grid dimensions changed to {}.").format(new_shape)
         post_command_event(self.grid.main_window, StatusBarMsg,
                            text=statustext)
 
