@@ -978,7 +978,7 @@ class CellEntryDialog(wx.Dialog):
 
         fgs = wx.FlexGridSizer(0, 2)
 
-        fgs.Add(wx.StaticText(self, -1, _("Goto cell:"))
+        fgs.Add(wx.StaticText(self, -1, _("Goto cell:")))
         fgs.Add((1, 1))
         fgs.Add((1, VSPACE))
         fgs.Add((1, VSPACE))
@@ -1256,7 +1256,7 @@ class GPGParamsDialog(wx.Dialog):
 
         self.textctrls = []
 
-        for labeltext, _, pwd in params:
+        for labeltext, __, pwd in params:
             label = wx.StaticText(self, -1, labeltext)
             sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
 

@@ -36,7 +36,7 @@ import types
 
 import wx.grid
 
-import src.lib.xrect as xrect
+from src.lib import xrect
 
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 
@@ -99,8 +99,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
     
     def get_text_rotorect(self, text_pos, text_extent):
         """Returns a RotoRect for given cell text"""
-        
-        import src.lib.xrect as xrect
         
         pt_ll = self.get_textbox_edges(text_pos, text_extent)[1]
         
@@ -574,7 +572,6 @@ class Background(object):
         """Draws lines"""
         
         x, y, w, h  = 0, 0, self.rect.width - 1, self.rect.height - 1
-        grid = self.grid
         row, col, tab = key = self.key
         
         # Get borderpens and bgbrushes for rects        

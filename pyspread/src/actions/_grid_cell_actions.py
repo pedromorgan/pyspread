@@ -216,6 +216,9 @@ class CellActions(Actions):
         """
 
         selection = self.grid.selection
+        if not selection:
+            selection.cells.append(self.grid.actions.cursor[:2])
+        
         # determine selection for core cells and selection for border cells
         # Then apply according to inner and outer
         # A cell is inner iif it is not at the edge of the selection bbox
@@ -237,6 +240,7 @@ class CellActions(Actions):
 
         else:
             # Adjust selection so that only bounding box edge is in selection
+            print selection
             bbox_tl, bbox_lr = selection.get_bbox()
             if "top" in borders:
                 adj_selection = Selection([bbox_tl], [(bbox_tl[0], bbox_lr[1])],

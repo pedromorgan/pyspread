@@ -21,6 +21,7 @@
 
 """
 
+========
 pyspread
 ========
 
@@ -40,20 +41,19 @@ Provides
 # If wx exists in sys,modules, we dont need to import wx version.
 # wx is already imported if the PyScripter wx engine is used.
 
-from sys import path, modules
+import gettext
+import sys
 from sysvars import get_program_path
-
 import optparse
 
-path.insert(0, get_program_path())
+_ = gettext.gettext
+
+sys.path.insert(0, get_program_path())
 
 try:
-    modules['wx']
+    sys.modules['wx']
 except KeyError:
-    # End of patch
-
     # Select wx version 2.8 if possible
-
     try:
         import wxversion
         wxversion.select(['2.8', '2.9'])
@@ -83,8 +83,8 @@ class Commandlineparser(object):
 
     def __init__(self):
         from src.config import config
-        usage = "usage: %prog [options] [filename]"
-        version = "%prog " + unicode(config["version"])
+        usage = _("usage: %prog [options] [filename]")
+        version = _("%prog {}").format(config["version"])
         self.parser = optparse.OptionParser(usage=usage, version=version)
 
         grid_shape = ( \
@@ -95,8 +95,8 @@ class Commandlineparser(object):
 
         self.parser.add_option("-d", "--dimensions", type="int", nargs=3,
             dest="dimensions", default=grid_shape, \
-            help="Dimensions of empty grid (works only without filename) "
-                 "rows, cols, tables [default: %default]")
+            help=_("Dimensions of empty grid (works only without filename) "
+                   "rows, cols, tables [default: %default]"))
 
     def parse(self):
         """
@@ -109,16 +109,20 @@ class Commandlineparser(object):
         """
         options, args = self.parser.parse_args()
 
+        # If one dimension is 0 then the grid has no cells
         if min(options.dimensions) < 1:
-            raise ValueError, "The number of cells in each dimension " + \
-                              "has to be greater than 0"
+            print _("Cell dimension must be > 0.")
+            sys.exit()
 
+        # No MDI yet, pyspread can be started several times though
         if len(args) > 1:
-            raise ValueError, "Only one file may be opened at a time"
-        elif len(args) == 1:
+            print _("Only one file may be opened at a time.")
+            sys.exit()
+        
+        filename = None
+        if len(args) == 1:
+            # A filename is provided and hence opened
             filename = args[0]
-        else:
-            filename = None
 
         return options, filename
 
