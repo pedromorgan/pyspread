@@ -90,7 +90,7 @@ class MainWindow(wx.Frame):
         statusbar = StatusBar(self)
         self.SetStatusBar(statusbar)
 
-        welcome_text = "Welcome to pyspread."
+        welcome_text = _("Welcome to pyspread.")
         post_command_event(self, StatusBarMsg, text=welcome_text)
 
         # Toolbars
