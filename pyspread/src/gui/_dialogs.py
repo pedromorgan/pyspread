@@ -1176,7 +1176,7 @@ class PreferencesDialog(wx.Dialog):
             "prepocessor": unicode,
         }),
         ("gpg_key_passphrase_isstored", { \
-            "label": u"Store passphrase in config file",
+            "label": u"Store passphrase in keyring",
             "tooltip": u"If False then the passprase is not stored on exit",
             "widget": CheckBoxCtrl,
             "widget_params": {},
@@ -1268,7 +1268,7 @@ class GPGParamsDialog(wx.Dialog):
 
             sizer.Add(textctrl, 1, wx.ALIGN_CENTRE | wx.ALL, 5)
 
-        label = wx.StaticText(self, -1, "Store passphrase")
+        label = wx.StaticText(self, -1, "Store passphrase in keyring")
         sizer.Add(label)
         self.store_passwd_checkbox = wx.CheckBox(self, True, "")
         self.store_passwd_checkbox.SetValue(True)

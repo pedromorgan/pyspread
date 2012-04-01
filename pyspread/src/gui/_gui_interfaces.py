@@ -380,7 +380,7 @@ def get_gpg_passwd_from_user(stored=True):
 
     if stored:
         stored_msg = \
-            '\nNote that it will be stored as clear text in .pyspreadrc'
+            '\nNote that the password will be stored in your keyring'
     else:
         stored_msg = ''
 
