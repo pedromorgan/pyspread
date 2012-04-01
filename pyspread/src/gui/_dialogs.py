@@ -42,6 +42,7 @@ Provides:
 
 import cStringIO
 import csv
+import gettext
 import os
 import types
 
@@ -57,6 +58,8 @@ from src.gui._widgets import PythonSTC
 from src.gui._events import *
 from src.lib.__csv import Digest, sniff, get_first_line
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
+
+_ = gettext.gettext
 
 
 class IntValidator(wx.PyValidator):
@@ -163,38 +166,38 @@ class CsvParameterWidgets(object):
     """
 
     csv_params = \
-        [["dialects", types.TupleType, "Dialect", \
-            "To make it easier to specify the format of input and output " \
+        [["dialects", types.TupleType, _("Dialect"), \
+          _("To make it easier to specify the format of input and output " \
             "records, specific formatting parameters are grouped together " \
             "into dialects.\n'excel': Defines the usual properties of an " \
             "Excel-generated CSV file.\n'sniffer': Deduces the format of a " \
             "CSV file\n'excel-tab': Defines the usual " \
-            "properties of an Excel-generated TAB-delimited file."], \
-         ["delimiter", types.StringType, "Delimiter", \
-            "A one-character string used to separate fields."], \
-         ["doublequote", types.BooleanType, "Doublequote", \
-            "Controls how instances of quotechar appearing inside a " \
+            "properties of an Excel-generated TAB-delimited file.")], \
+         ["delimiter", types.StringType, _("Delimiter"), \
+          _("A one-character string used to separate fields.")], \
+         ["doublequote", types.BooleanType, _("Doublequote"), \
+          _("Controls how instances of quotechar appearing inside a " \
             "field should be themselves be quoted. When True, the character " \
             "is doubled. When False, the escapechar is used as a prefix to " \
-            "the quotechar."], \
-         ["escapechar", types.StringType, "Escape character", \
-            "A one-character string used by " \
+            "the quotechar.")], \
+         ["escapechar", types.StringType, _("Escape character"), \
+          _("A one-character string used by " \
             "the writer to escape the delimiter if quoting is set to " \
             "QUOTE_NONE and the quotechar if doublequote is False. On " \
             "reading, the escapechar removes any special meaning from the " \
-            "following character."], \
-         ["quotechar", types.StringType, "Quote character", \
-            "A one-character string used to quote fields containing special " \
+            "following character.")], \
+         ["quotechar", types.StringType, _("Quote character"), \
+          _("A one-character string used to quote fields containing special " \
             "characters, such as the delimiter or quotechar, or which " \
-            "contain new-line characters."], \
-         ["quoting", types.TupleType, "Quoting style", \
-            "Controls when quotes should be recognised."], \
-         ["self.has_header", types.BooleanType, "Header present", \
-            "Analyze the CSV file and treat the first row as strings if it " \
-            "appears to be a series of column headers."], \
-         ["skipinitialspace", types.BooleanType, "Skip initial space", \
-            "When True, whitespace immediately following the delimiter is " \
-            "ignored."], \
+            "contain new-line characters.")], \
+         ["quoting", types.TupleType, _("Quoting style"), \
+          _("Controls when quotes should be recognised.")], \
+         ["self.has_header", types.BooleanType, _("Header present"), \
+          _("Analyze the CSV file and treat the first row as strings if it " \
+            "appears to be a series of column headers.")], \
+         ["skipinitialspace", types.BooleanType, _("Skip initial space"), \
+          _("When True, whitespace immediately following the delimiter is " \
+            "ignored.")], \
         ]
 
     type2widget = { \
@@ -381,7 +384,8 @@ class CsvParameterWidgets(object):
             csv.register_dialect('user', **parameters)
 
         except TypeError, err:
-            msg = 'The dialect is invalid. \n \nError message:\n' + str(err)
+            msg = _("The dialect is invalid. \n "
+                    "\nError message:\n{}").format(err)
             dlg = wx.MessageDialog(self.parent, msg, style=wx.ID_CANCEL)
             dlg.ShowModal()
             dlg.Destroy()
@@ -602,14 +606,14 @@ class CsvImportDialog(wx.Dialog):
     def _set_properties(self):
         """Sets dialog title and size limitations of the widgets"""
 
-        self.SetTitle(" ".join(["CSV Import:", self.csvfilename]))
+        self.SetTitle(_("CSV Import: {}").format(self.csvfilename))
         self.SetSize((600, 600))
 
         for button in [self.button_cancel, self.button_ok]:
             button.SetMinSize((80, 28))
 
     def _do_layout(self):
-        """Sizer hell"""
+        """Set sizers"""
 
         sizer_dialog = wx.FlexGridSizer(3, 1, 0, 0)
 
@@ -689,7 +693,7 @@ class CsvExportDialog(wx.Dialog):
             button.SetMinSize((80, 28))
 
     def _do_layout(self):
-        """Sizer hell"""
+        """Set sizers"""
 
         sizer_dialog = wx.FlexGridSizer(3, 1, 0, 0)
 
@@ -808,12 +812,12 @@ class MacroDialog(wx.Frame):
     def _set_properties(self):
         """Setup title, size and tooltips"""
 
-        self.SetTitle("Macro list")
+        self.SetTitle(_("Macro list"))
         self.SetSize((800, 600))
-        self.codetext_ctrl.SetToolTipString("Enter python code here.")
-        self.ok_button.SetToolTipString("Accept all changes")
-        self.apply_button.SetToolTipString("Apply changes to current macro")
-        self.cancel_button.SetToolTipString("Remove current macro")
+        self.codetext_ctrl.SetToolTipString(_("Enter python code here."))
+        self.ok_button.SetToolTipString(_("Accept all changes"))
+        self.apply_button.SetToolTipString(_("Apply changes to current macro"))
+        self.cancel_button.SetToolTipString(_("Remove current macro"))
         self.splitter.SetBackgroundStyle(wx.BG_STYLE_COLOUR)
         self.result_ctrl.SetMinSize((10, 10))
 
@@ -854,13 +858,13 @@ class DimensionsEntryDialog(wx.Dialog):
             wx.DEFAULT_DIALOG_STYLE | wx.MINIMIZE_BOX | wx.STAY_ON_TOP
         wx.Dialog.__init__(self, parent, *args, **kwds)
 
-        self.Rows_Label = wx.StaticText(self, -1, "Rows",
+        self.Rows_Label = wx.StaticText(self, -1, _("Rows"),
                                         style=wx.ALIGN_CENTRE)
         self.X_DimensionsEntry = wx.TextCtrl(self, -1, "")
-        self.Columns_Label = wx.StaticText(self, -1, "Columns", \
+        self.Columns_Label = wx.StaticText(self, -1, _("Columns"), \
                                            style=wx.ALIGN_CENTRE)
         self.Y_DimensionsEntry = wx.TextCtrl(self, -1, "")
-        self.Tabs_Label = wx.StaticText(self, -1, "Tables",
+        self.Tabs_Label = wx.StaticText(self, -1, _("Tables"),
                                         style=wx.ALIGN_CENTRE)
         self.Z_DimensionsEntry = wx.TextCtrl(self, -1, "")
 
@@ -974,12 +978,12 @@ class CellEntryDialog(wx.Dialog):
 
         fgs = wx.FlexGridSizer(0, 2)
 
-        fgs.Add(wx.StaticText(self, -1, "Goto cell:"))
+        fgs.Add(wx.StaticText(self, -1, _("Goto cell:"))
         fgs.Add((1, 1))
         fgs.Add((1, VSPACE))
         fgs.Add((1, VSPACE))
 
-        label = wx.StaticText(self, -1, "Row: ")
+        label = wx.StaticText(self, -1, _("Row: "))
         fgs.Add(label, 0, wx.ALIGN_RIGHT | wx.CENTER)
         self.row_textctrl = \
             wx.TextCtrl(self, -1, "", validator=IntValidator())
@@ -988,7 +992,7 @@ class CellEntryDialog(wx.Dialog):
         fgs.Add((1, VSPACE))
         fgs.Add((1, VSPACE))
 
-        label = wx.StaticText(self, -1, "Column: ")
+        label = wx.StaticText(self, -1, _("Column: "))
         fgs.Add(label, 0, wx.ALIGN_RIGHT | wx.CENTER)
         self.col_textctrl = \
             wx.TextCtrl(self, -1, "", validator=IntValidator())
@@ -996,7 +1000,7 @@ class CellEntryDialog(wx.Dialog):
         fgs.Add(self.col_textctrl)
         fgs.Add((1, VSPACE))
         fgs.Add((1, VSPACE))
-        label = wx.StaticText(self, -1, "Table: ")
+        label = wx.StaticText(self, -1, _("Table: "))
         fgs.Add(label, 0, wx.ALIGN_RIGHT | wx.CENTER)
         self.tab_textctrl = \
             wx.TextCtrl(self, -1, "", validator=IntValidator())
@@ -1004,10 +1008,10 @@ class CellEntryDialog(wx.Dialog):
         fgs.Add(self.tab_textctrl)
 
         buttons = wx.StdDialogButtonSizer()  # wx.BoxSizer(wx.HORIZONTAL)
-        b = wx.Button(self, wx.ID_OK, "OK")
+        b = wx.Button(self, wx.ID_OK, _("OK"))
         b.SetDefault()
         buttons.AddButton(b)
-        buttons.AddButton(wx.Button(self, wx.ID_CANCEL, "Cancel"))
+        buttons.AddButton(wx.Button(self, wx.ID_CANCEL, _("Cancel")))
         buttons.Realize()
 
         border = wx.BoxSizer(wx.VERTICAL)
@@ -1051,13 +1055,13 @@ class AboutDialog(object):
         info = wx.AboutDialogInfo()
         info.Name = "pyspread"
         info.Version = config["version"]
-        info.Copyright = "(C) Martin Manns 2008-2012"
+        info.Copyright = "(C) Martin Manns"
         info.Description = wordwrap(
-            "A non-traditional Python spreadsheet application.\nPyspread is "
-            "based on and written in the programming language Python.",
+          _("A non-traditional Python spreadsheet application.\nPyspread is "
+            "based on and written in the programming language Python."),
             350, wx.ClientDC(parent))
-        info.WebSite = ("http://pyspread.sourceforge.net",
-                        "Pyspread Web site")
+        info.WebSite = ("http://manns.github.com/pyspread/",
+                        _("Pyspread Web site"))
         info.Developers = ["Martin Manns"]
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]
 
@@ -1076,7 +1080,7 @@ class AboutDialog(object):
         self.SetTitle("About pyspread")
 
         self.about_label.SetLabel("pyspread " + VERSION + \
-                                  "\nCopyright Martin Manns 2008-2012")
+                                  "\nCopyright Martin Manns")
 
     def _do_layout(self):
         """Layout sizers"""
@@ -1125,59 +1129,57 @@ class PreferencesDialog(wx.Dialog):
 
     parameters = ( \
         ("max_unredo", { \
-            "label": u"Max. undo steps",
-            "tooltip": u"Maximum number of undo steps",
+            "label": _(u"Max. undo steps"),
+            "tooltip": _(u"Maximum number of undo steps"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_rows", { \
-            "label": u"Grid rows",
-            "tooltip": u"Initial number of grid rows when starting pyspread",
+            "label": _(u"Grid rows"),
+            "tooltip": _(u"Number of grid rows when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_columns", { \
-            "label": u"Grid columns",
-            "tooltip": u"Initial number of grid columns when starting " \
-                       u"pyspread",
+            "label": _(u"Grid columns"),
+            "tooltip": _(u"Number of grid columns when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_tables", { \
-            "label": u"Grid tables",
-            "tooltip": u"Initial number of grid tables when starting pyspread",
+            "label": _(u"Grid tables"),
+            "tooltip": _(u"Number of grid tables when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("max_result_length", { \
-            "label": u"Max. result length",
-            "tooltip": u"Maximum length of cell result string",
+            "label": _(u"Max. result length"),
+            "tooltip": _(u"Maximum length of cell result string"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("gpg_key_uid", { \
-            "label": u"GPG key name",
-            "tooltip": u"Name of the GPG key that is used for signing files",
+            "label": _(u"GPG key name"),
+            "tooltip": _(u"Name of the GPG key for signing files"),
             "widget": wx.TextCtrl,
             "widget_params": {},
             "prepocessor": unicode,
         }),
         ("gpg_key_passphrase", { \
-            "label": u"GPG key passphrase",
-            "tooltip": \
-                u"Passphrase of the GPG key that is used for signing files",
+            "label": _(u"GPG key passphrase"),
+            "tooltip": _(u"Passphrase of the GPG key for signing files"),
             "widget": wx.TextCtrl,
             "widget_params": {"style": wx.TE_PASSWORD | wx.OK},
             "prepocessor": unicode,
         }),
         ("gpg_key_passphrase_isstored", { \
-            "label": u"Store passphrase in keyring",
-            "tooltip": u"If False then the passprase is not stored on exit",
+            "label": _(u"Store passphrase in keyring"),
+            "tooltip": _(u"If False then the passprase is not stored on exit"),
             "widget": CheckBoxCtrl,
             "widget_params": {},
             "prepocessor": bool,
@@ -1185,7 +1187,7 @@ class PreferencesDialog(wx.Dialog):
     )
 
     def __init__(self, *args, **kwargs):
-        kwargs["title"] = u"Preferences"
+        kwargs["title"] = _(u"Preferences")
         kwargs["style"] = \
             wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
         wx.Dialog.__init__(self, *args, **kwargs)
@@ -1248,7 +1250,7 @@ class GPGParamsDialog(wx.Dialog):
 
         sizer = wx.FlexGridSizer(len(params), 2, 5, 5)
 
-        label = wx.StaticText(self, -1, "GPG key data")
+        label = wx.StaticText(self, -1, _("GPG key data"))
         sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
         sizer.Add(wx.Panel(self, -1), 0, wx.ALIGN_CENTRE | wx.ALL, 5)
 
@@ -1268,19 +1270,19 @@ class GPGParamsDialog(wx.Dialog):
 
             sizer.Add(textctrl, 1, wx.ALIGN_CENTRE | wx.ALL, 5)
 
-        label = wx.StaticText(self, -1, "Store passphrase in keyring")
+        label = wx.StaticText(self, -1, _("Store passphrase in keyring"))
         sizer.Add(label)
         self.store_passwd_checkbox = wx.CheckBox(self, True, "")
         self.store_passwd_checkbox.SetValue(True)
         sizer.Add(self.store_passwd_checkbox)
 
         ok_button = wx.Button(self, wx.ID_OK)
-        ok_button.SetToolTipString("Starts key generation.")
+        ok_button.SetToolTipString(_("Starts key generation."))
         ok_button.SetDefault()
         sizer.Add(ok_button)
 
         cancel_button = wx.Button(self, wx.ID_CANCEL)
-        cancel_button.SetToolTipString("Exits pyspread.")
+        cancel_button.SetToolTipString(_("Exits pyspread."))
         sizer.Add(cancel_button)
 
         self.SetSizer(sizer)
