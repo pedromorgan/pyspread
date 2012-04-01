@@ -557,7 +557,8 @@ class MainWindowEventHandlers(object):
         self.main_window.grid.ForceRefresh()
 
         # Display grid creation in status bar
-        statustext = "New grid with dimensions " + str(shape) + " created."
+        statustext = _("New grid with dimensions {shape} created.").format( \
+                            shape = str(shape))
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         self.main_window.grid.ForceRefresh()
@@ -580,13 +581,11 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = "Pyspread file (*.pys)|*.pys|" \
-                   "All files (*.*)|*.*"
-        message = "Choose pyspread file to open."
+        wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
+        message = _("Choose pyspread file to open.")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = \
-            self.interfaces.get_filepath_findex_from_user(wildcard,
-                                                          message, style)
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
+                                    wildcard, message, style)
 
         if filepath is None:
             return
@@ -635,62 +634,62 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = "Pyspread file (*.pys)|*.pys|" \
-                   "All files (*.*)|*.*"
-        message = "Choose filename for saving."
+        wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
+        message = _("Choose filename for saving.")
         style = wx.SAVE | wx.CHANGE_DIR
         filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
                                     wildcard, message, style)
 
-        if filepath is not None:
+        if filepath is None:
+            return 0
 
-            # Look if path is already present
-            if os.path.exists(filepath):
-                if os.path.isfile(filepath):
-                    # There is a file with the same path
-                    message = "The file " + filepath + \
-                              " is already present.\nOverwrite?"
-                    short_message = "File collison"
-                    if not self.main_window.interfaces.get_warning_choice( \
-                                message, short_message):
+        # Look if path is already present
+        if os.path.exists(filepath):
+            if not os.path.isfile(filepath):
+                # There is a directory with the same path
+                statustext = _("Directory present. Save aborted.")
+                post_command_event(self.main_window, StatusBarMsg,
+                                   text=statustext)
+                return 0        
+                
+            # There is a file with the same path
+            message = _("The file {filepath} is already present.\nOverwrite?")\
+                                  .format(filepath=filepath)
+            short_message = _("File collison")
+            if not self.main_window.interfaces.get_warning_choice( \
+                        message, short_message):
 
-                        statustext = "File present. Save aborted by user."
-                        post_command_event(self.main_window, StatusBarMsg,
-                                       text=statustext)
-                        return 0
-                else:
-                    # There is a directory with the same path
-                    statustext = "Directory present. Save aborted."
-                    post_command_event(self.main_window, StatusBarMsg,
-                                       text=statustext)
-                    return 0
+                statustext = _("File present. Save aborted by user.")
+                post_command_event(self.main_window, StatusBarMsg,
+                               text=statustext)
+                return 0
 
-            # Put pys suffix if wildcard choice is 0
 
-            if filterindex == 0 and filepath[-4:] != ".pys":
-                filepath += ".pys"
+        # Put pys suffix if wildcard choice is 0
 
-            # Set the filepath state
+        if filterindex == 0 and filepath[-4:] != ".pys":
+            filepath += ".pys"
 
-            self.main_window.filepath = filepath
+        # Set the filepath state
 
-            # Set Window title to new filepath
+        self.main_window.filepath = filepath
 
-            title_text = filepath.split("/")[-1] + " - pyspread"
-            post_command_event(self.main_window, TitleMsg, text=title_text)
+        # Set Window title to new filepath
 
-            # Now jump to save
+        title_text = filepath.split("/")[-1] + " - pyspread"
+        post_command_event(self.main_window, TitleMsg, text=title_text)
 
-            post_command_event(self.main_window, SaveMsg)
+        # Now jump to save
+
+        post_command_event(self.main_window, SaveMsg)
 
     def OnImport(self, event):
         """File import event handler"""
 
         # Get filepath from user
 
-        wildcard = wildcard="Csv file (*.*)|*.*|" \
-                            "Tab delimited text file (*.*)|*.*"
-        message = "Choose file to import."
+        wildcard = _("Csv file (*.*)|*.*|Tab delimited text file (*.*)|*.*")
+        message = _("Choose file to import.")
         style = wx.OPEN | wx.CHANGE_DIR
         filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
                                     wildcard, message, style)
@@ -742,8 +741,8 @@ class MainWindowEventHandlers(object):
 
         # Get target filepath from user
 
-        wildcard = wildcard = " CSV file (*.*)|*.*"
-        message = "Choose filename for export."
+        wildcard = _("CSV file (*.*)|*.*")
+        message = _("Choose filename for export.")
         style = wx.OPEN | wx.CHANGE_DIR
         path, filterindex = self.interfaces.get_filepath_findex_from_user( \
                                     wildcard, message, style)
@@ -759,18 +758,18 @@ class MainWindowEventHandlers(object):
         if not self.main_window.safe_mode:
             return
 
-        msg = u"You are going to approve and trust a file that\n" + \
-              u"you have received from an untrusted source.\n" + \
-              u"After proceeding, the file is executed.\n" + \
-              u"It can harm your system as any program can.\n" + \
-              u"Unless you took precautions, it can delete your\n" + \
-              u"files or send them away over the Internet.\n" + \
-              u"CHECK EACH CELL BEFORE PROCEEDING.\n \n" + \
-              u"Do not forget cells outside the visible range.\n" + \
-              u"You have been warned.\n \n" + \
-              u"Proceed and sign this file as trusted?"
+        msg = _(u"You are going to approve and trust a file that\n" + \
+                u"you have received from an untrusted source.\n" + \
+                u"After proceeding, the file is executed.\n" + \
+                u"It can harm your system as any program can.\n" + \
+                u"Unless you took precautions, it can delete your\n" + \
+                u"files or send them away over the Internet.\n" + \
+                u"CHECK EACH CELL BEFORE PROCEEDING.\n \n" + \
+                u"Do not forget cells outside the visible range.\n" + \
+                u"You have been warned.\n \n" + \
+                u"Proceed and sign this file as trusted?")
 
-        short_msg = "Security warning"
+        short_msg = _("Security warning")
 
         if self.main_window.interfaces.get_warning_choice(msg, short_msg):
             # Leave safe mode
@@ -778,7 +777,7 @@ class MainWindowEventHandlers(object):
 
             # Display safe mode end in status bar
 
-            statustext = "Safe mode deactivated."
+            statustext = _("Safe mode deactivated.")
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
     # Print events
@@ -886,10 +885,10 @@ class MainWindowEventHandlers(object):
         # Get current font data from current cell
         cursor = self.main_window.grid.actions.cursor
         attr = self.main_window.grid.code_array.cell_attributes[cursor]
-
-        current_font = wx.Font( \
-            int(attr["pointsize"]), -1,
-            attr["fontstyle"], attr["fontweight"], 0, attr["textfont"])
+        
+        size, style, weight, font = [attr[name] for name in \
+            ["pointsize", "fontstyle", "fontweight", "textfont"]]
+        current_font = wx.Font(int(size), -1, style, weight, 0, font)
 
         # Get Font from dialog
 
@@ -975,9 +974,8 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = "Macro file (*.py)|*.py|" \
-                   "All files (*.*)|*.*"
-        message = "Choose macro file."
+        wildcard = _("Macro file (*.py)|*.py|All files (*.*)|*.*")
+        message = _("Choose macro file.")
 
         style = wx.OPEN | wx.CHANGE_DIR
         filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
@@ -1001,9 +999,8 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = "Macro file (*.py)|*.py|" \
-                   "All files (*.*)|*.*"
-        message = "Choose macro file."
+        wildcard = _("Macro file (*.py)|*.py|All files (*.*)|*.*")
+        message = _("Choose macro file.")
 
         style = wx.SAVE | wx.CHANGE_DIR
         filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
