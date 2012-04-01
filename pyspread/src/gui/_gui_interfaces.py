@@ -30,6 +30,7 @@ Provides:
 """
 
 import csv
+import gettext
 import os
 import sys
 import types
@@ -42,6 +43,8 @@ from config import config
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from _dialogs import PreferencesDialog, GPGParamsDialog
+
+_ = gettext.gettext
 
 
 class ModalDialogInterfaceMixin(object):
@@ -60,8 +63,8 @@ class ModalDialogInterfaceMixin(object):
         # Grid dimension dialog
 
         if no_dim != 3:
-            raise NotImplementedError, \
-                  "Currently, only 3D grids are supported."
+            raise NotImplementedError( \
+                _("Currently, only 3D grids are supported."))
 
         dim_dialog = DimensionsEntryDialog(self.main_window)
 
@@ -94,10 +97,10 @@ class ModalDialogInterfaceMixin(object):
     def get_save_request_from_user(self):
         """Queries user if grid should be saved"""
 
-        msg = "There are unsaved changes.\nDo you want to save?"
+        msg = _("There are unsaved changes.\nDo you want to save?")
 
         dlg = GMD.GenericMessageDialog(self.main_window, msg,
-            "Unsaved changes", wx.YES_NO | wx.ICON_QUESTION | wx.CANCEL)
+            _("Unsaved changes"), wx.YES_NO | wx.ICON_QUESTION | wx.CANCEL)
 
         save_choice = dlg.ShowModal()
 
@@ -196,9 +199,9 @@ class ModalDialogInterfaceMixin(object):
         except csv.Error, err:
             # Display modal warning dialog
 
-            msg = csvfilename + '" does not seem to be a valid CSV file.' + \
-                '\n \nOpening it yielded the error:\n' + str(err)
-            short_msg = 'Error reading CSV file'
+            msg = _("'{}' does not seem to be a valid CSV file.\n " + \
+                "\nOpening it yielded the error:\n{}").format(csvfilename, err)
+            short_msg = _('Error reading CSV file')
 
             self.display_warning(msg, short_msg)
 
@@ -305,7 +308,7 @@ class DialogInterfaceMixin(object):
     def display_about(self, parent):
         """Displays About dialog"""
 
-        about_dialog = AboutDialog(parent)
+        AboutDialog(parent)
 
 
 class GuiInterfaces(DialogInterfaceMixin, ModalDialogInterfaceMixin):
@@ -329,10 +332,10 @@ def get_key_params_from_user():
     NO_PASSWD = False
 
     params = [ \
-        ['Real name', 'Name-Real', NO_PASSWD],
-        ['Passphrase', 'Passphrase', PASSWD],
-        ['E-mail', 'Name-Email', NO_PASSWD],
-        ['Comment', 'Name-Comment', NO_PASSWD],
+        [_('Real name'), 'Name-Real', NO_PASSWD],
+        [_('Passphrase'), 'Passphrase', PASSWD],
+        [_('E-mail'), 'Name-Email', NO_PASSWD],
+        [_('Comment'), 'Name-Comment', NO_PASSWD],
     ]
 
     vals = [""] * len(params)
@@ -356,12 +359,12 @@ def get_key_params_from_user():
         if "" in vals:
             msg = "Please enter a value in each field."
 
-            dlg = GMD.GenericMessageDialog(None, msg, "Missing value",
+            dlg = GMD.GenericMessageDialog(None, msg, _("Missing value"),
                                            wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
 
-    for (_, key, _), val in zip(params, vals):
+    for (__, key, __), val in zip(params, vals):
         gpg_key_parameters.insert(-2, (key, val))
 
     return gpg_key_parameters
@@ -378,14 +381,13 @@ def get_gpg_passwd_from_user(stored=True):
 
     """
 
+    dlg_msg = _("Please enter your GPG key passphrase.{}")
+    
     if stored:
-        stored_msg = \
-            '\nNote that the password will be stored in your keyring'
-    else:
-        stored_msg = ''
-
-    dlg = wx.TextEntryDialog(None, 'Please enter your GPG key passphrase.' + \
-            stored_msg, 'GPG key passphrase', '', style=wx.TE_PASSWORD | wx.OK)
+        dlg_msg += _('\nThe password will be stored in your keyring')
+        
+    dlg = wx.TextEntryDialog(None, dlg_msg, _('GPG key passphrase'), '', 
+                             style=wx.TE_PASSWORD | wx.OK)
 
     if dlg.ShowModal() == wx.ID_OK:
         dlg.Destroy()
