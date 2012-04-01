@@ -46,6 +46,7 @@ Provides:
 """
 
 import bz2
+import gettext
 import os
 
 import wx
@@ -67,6 +68,8 @@ from src.gui._events import EVT_COMMAND_GRID_ACTION_SAVE
 from src.gui._events import post_command_event, SafeModeEntryMsg
 from src.gui._events import SafeModeExitMsg, StatusBarMsg, ContentChangedMsg
 from src.gui._events import ResizeGridMsg, GridActionTableSwitchMsg
+
+_ = gettext.gettext
 
 
 class FileActions(Actions):
@@ -97,17 +100,16 @@ class FileActions(Actions):
 
         """
 
+        if total_elements is None:
+            statustext += _("{nele} elements processed. Press <Esc> to abort.")
+        else:
+            statustext += _("{nele} of {totalele} elements processed. "
+                            "Press <Esc> to abort.")
+
         # Show progress in statusbar each freq (1000) cells
         if cycle % freq == 0:
-            # See if we know how much data comes along
-            if total_elements is None:
-                total_elements_str = ""
-            else:
-                total_elements_str = " of " + str(total_elements)
-
-            statustext = statustext + str(cycle) + total_elements_str + \
-                        " elements processed. Press <Esc> to abort."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, StatusBarMsg,
+                text=statustext.format(nele=cycle, totalele=total_elements))
 
             # Now wait for the statusbar update to be written on screen
             wx.Yield()
@@ -154,15 +156,15 @@ class FileActions(Actions):
             self.leave_safe_mode()
             post_command_event(self.main_window, SafeModeExitMsg)
 
-            statustext = "Valid signature found. File is trusted."
+            statustext = _("Valid signature found. File is trusted.")
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         else:
             self.enter_safe_mode()
             post_command_event(self.main_window, SafeModeEntryMsg)
 
-            statustext = "File is not properly signed. Safe mode " + \
-                         "activated. Select File -> Approve to leave safe mode."
+            statustext = _("File is not properly signed. Safe mode "
+                "activated. Select File -> Approve to leave safe mode.")
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
     def _get_file_version(self, infile):
@@ -171,7 +173,7 @@ class FileActions(Actions):
         # Determine file version
         for line1 in infile:
             if line1.strip() != "[Pyspread save file version]":
-                raise ValueError, "File format unsupported."
+                raise ValueError(_("File format unsupported."))
             break
 
         for line2 in infile:
@@ -180,7 +182,7 @@ class FileActions(Actions):
     def _abort_open(self, filepath, infile):
         """Aborts file open"""
 
-        statustext = "File loading aborted."
+        statustext = _("File loading aborted.")
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         infile.close()
@@ -242,7 +244,7 @@ class FileActions(Actions):
             infile = bz2.BZ2File(filepath, "r")
 
         except IOError:
-            statustext = "Error opening file " + filepath + "."
+            statustext = _("Error opening file {}.").format(filepath)
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
             return False
@@ -254,8 +256,8 @@ class FileActions(Actions):
         try:
             version = self._get_file_version(infile)
             if version != "0.1":
-                statustext = "File version " + version + \
-                             "unsupported (not 0.1)."
+                statustext = \
+                    _("File version {} unsupported (not 0.1).").format(version)
                 post_command_event(self.main_window, StatusBarMsg,
                                    text=statustext)
                 return False
@@ -268,7 +270,7 @@ class FileActions(Actions):
         def parser(*args):
             """Dummy parser. Raises ValueError"""
 
-            raise ValueError, "No section parser present."
+            raise ValueError(_("No section parser present."))
 
         section_readers = { \
             "[shape]": self.code_array.dict_grid.parse_to_shape,
@@ -307,7 +309,7 @@ class FileActions(Actions):
                     return False
 
         except IOError:
-            statustext = "Error opening file " + filepath + "."
+            statustext = _("Error opening file {}.").format(filepath)
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
             return False
@@ -333,7 +335,7 @@ class FileActions(Actions):
 
         signature = sign(filepath)
         if signature is None:
-            statustext = 'Error signing file. File is not signed.'
+            statustext = _('Error signing file. File is not signed.')
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
             return
 
@@ -344,16 +346,16 @@ class FileActions(Actions):
         # Statustext differs if a save has occurred
 
         if self.code_array.safe_mode:
-            statustext = 'File saved and signed'
+            statustext = _('File saved and signed')
         else:
-            statustext = 'File signed'
+            statustext = _('File signed')
 
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
     def _abort_save(self, filepath, outfile):
         """Aborts file save"""
 
-        statustext = "Save aborted."
+        statustext = _("Save aborted.")
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         outfile.close()
@@ -379,12 +381,14 @@ class FileActions(Actions):
         self.saving = True
         self.need_abort = False
 
+        io_error_text = _("Error writing to file {}.").format(filepath)
+
         # Save file is compressed
         try:
             outfile = bz2.BZ2File(filepath, "wb")
 
         except IOError:
-            statustext = "Error opening file " + filepath + "."
+            statustext = _("Error opening file {}.").format(filepath)
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
             return False
 
@@ -394,8 +398,8 @@ class FileActions(Actions):
             outfile.write("0.1\n")
 
         except IOError:
-            statustext = "Error writing to file " + filepath + "."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, StatusBarMsg,
+                               text=io_error_text)
             return False
 
         # The output generators yield the lines for the outfile
@@ -429,9 +433,8 @@ class FileActions(Actions):
                     outfile.write(line.encode("utf-8"))
 
                 except IOError:
-                    statustext = "Error writing to file " + filepath + "."
                     post_command_event(self.main_window, StatusBarMsg,
-                                       text=statustext)
+                                       text=io_error_text)
                     return False
 
                 # Enable abort during long saves
@@ -586,7 +589,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
     def _abort_paste(self):
         """Aborts import"""
 
-        statustext = "Paste aborted."
+        statustext = _("Paste aborted.")
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         self.pasting = False
@@ -596,17 +599,17 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         """Displays overflow message after import in statusbar"""
 
         if row_overflow and col_overflow:
-            overflow_cause = "rows and columns"
+            overflow_cause = _("rows and columns")
         elif row_overflow:
-            overflow_cause = "rows"
+            overflow_cause = _("rows")
         elif col_overflow:
-            overflow_cause = "columns"
+            overflow_cause = _("columns")
         else:
-            raise AssertionError, "Import cell overflow missing"
+            raise AssertionError(_("Import cell overflow missing"))
 
-        statustext = "The imported data did not fit into the grid " + \
-                     overflow_cause + ". It has been truncated. " + \
-                     "Use a larger grid for full import."
+        statustext = _("The imported data did not fit into the grid {cause}. "
+            "It has been truncated. Use a larger grid for full import.").\
+                format(cause=overflow_cause)
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
     def paste(self, tl_key, data):
@@ -627,7 +630,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         self.pasting = True
 
-        grid_rows, grid_cols, _ = self.grid.code_array.shape
+        grid_rows, grid_cols, __ = self.grid.code_array.shape
 
         self.need_abort = False
 
@@ -646,7 +649,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         for src_row, col_data in enumerate(data):
             target_row = tl_row + src_row
 
-            if self.grid.actions._is_aborted(src_row, "Pasting cells... "):
+            if self.grid.actions._is_aborted(src_row, _("Pasting cells... ")):
                 self._abort_paste()
                 return False
 
@@ -678,8 +681,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
             plural = "s" if no_pasted_cells == 1 else ""
 
-            statustext = str(no_pasted_cells) + " cell" + plural + \
-                         " pasted at cell " + str(tl_key)
+            statustext = _("{ncells} cell{plural} pasted at cell {topleft}").\
+                format(ncells=no_pasted_cells, plural=plural, topleft=tl_key)
 
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
@@ -799,7 +802,7 @@ class GridActions(Actions):
         self.grid.ForceRefresh()
 
         if status:
-            statustext = u"Zoomed to {0:.2f}.".format(zoom)
+            statustext = _(u"Zoomed to {0:.2f}.").format(zoom)
 
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
@@ -881,17 +884,17 @@ class GridActions(Actions):
         newtable = event.newtable
 
         no_tabs = self.grid.code_array.shape[2] - 1
-        
+
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
-            self.main_window.table_choice.SetMax(newtable+1)
+            self.main_window.table_choice.SetMax(newtable + 1)
             self.main_window.table_choice.SetValue(newtable)
 
             # Reset row heights and column widths by zooming
 
             self.zoom()
 
-            statustext = u"Switched to table " + str(newtable)
+            statustext = _("Switched to table {}.").format(newtable)
 
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
@@ -979,7 +982,7 @@ class SelectionActions(Actions):
         elif row_slc.stop is None and col_slc.stop is None:
             # A block is selected:
             self.grid.SelectBlock(row_slc.start, col_slc.start,
-                                  row_slc.stop-1, col_slc.stop-1)
+                                  row_slc.stop - 1, col_slc.stop - 1)
         else:
             for row in xrange(row_slc.start, row_slc.stop, row_slc.step):
                 for col in xrange(col_slc.start, col_slc.stop, col_slc.step):
@@ -1068,8 +1071,8 @@ class FindActions(Actions):
         self.grid.code_array[findpos] = new_code
         self.grid.actions.cursor = findpos
 
-        statustext = "Replaced '" + old_code + "' with '" + new_code + \
-                     "' in cell " + unicode(list(findpos)) + "."
+        statustext = _("Replaced {} with {} in cell {}.").format(\
+                        old_code, new_code, findpos)
 
         post_command_event(self.main_window, StatusBarMsg, text=statustext)
 

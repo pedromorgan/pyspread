@@ -29,7 +29,6 @@ Helper functions for unit tests
 
 from src.gui._main_window import MainWindow
 
-   
 # Class attributes for main_window and grid
 
 main_window = MainWindow(None, -1)
@@ -51,43 +50,48 @@ grid_values = { \
 
 # Helper methods for efficient testing
 
+
 def _fill_grid(values):
     """Fills grid with values (use e. g. grid_values)"""
-    
+
     for key in values:
         code_array[key] = values[key]
 
+
 def restore_basic_grid():
     """Restores basic, filled grid"""
-    
+
     default_test_shape = (1000, 100, 3)
-    
+
     grid.actions.clear(default_test_shape)
     _fill_grid(grid_values)
-    
+
+
 def basic_setup_test(func, test_key, test_val, *args, **kwargs):
     """Sets up basic test env, runs func and tests test_key in grid"""
-    
+
     restore_basic_grid()
-    
+
     func(*args, **kwargs)
-    
-    assert grid.code_array(test_key) == test_val 
+
+    assert grid.code_array(test_key) == test_val
+
 
 def params(funcarglist):
     """Test function parameter decorator
-    
+
     Provides arguments based on the dict funcarglist.
-    
+
     """
-    
+
     def wrapper(function):
         function.funcarglist = funcarglist
         return function
     return wrapper
 
+
 def pytest_generate_tests(metafunc):
     """Enables params to work in py.test environment"""
-    
+
     for funcargs in getattr(metafunc.function, 'funcarglist', ()):
         metafunc.addcall(funcargs=funcargs)

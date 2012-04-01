@@ -19,14 +19,17 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import gettext
+
 import wx
 
 from src.lib.selection import Selection
-
 from src.actions._main_window_actions import Actions
-
 from src.gui._events import post_command_event, EntryLineMsg, ContentChangedMsg
 from src.gui._events import StatusBarMsg
+
+_ = gettext.gettext
+
 
 """
 _grid_cell_actions.py
@@ -111,12 +114,14 @@ class CellActions(Actions):
                 return u"+" + str(diff_key_ele)
 
             else:
-                raise ValueError, str(diff_key_ele) + "seems to be no Integer"
+                errmsg = _("{} seems to be no Integer").format(diff_key_ele)
+                raise ValueError(errmsg)
 
         key_strings = []
 
         for magic, cursor_ele, ref_key_ele in zip(magics, cursor, ref_key):
-            key_strings.append(magic + get_rel_key_ele(cursor_ele, ref_key_ele))
+            key_strings.append(magic + \
+                               get_rel_key_ele(cursor_ele, ref_key_ele))
 
         key_string = u", ".join(key_strings)
 
@@ -145,7 +150,7 @@ class CellActions(Actions):
             code = self._get_relative_reference(key, ref_key)
 
         else:
-            raise ValueError, 'ref_type has to be "absolute" or "relative".'
+            raise ValueError(_('ref_type has to be "absolute" or "relative".'))
 
         old_code = self.grid.code_array(key)
 
@@ -153,7 +158,7 @@ class CellActions(Actions):
             old_code = u""
 
         if "S" in old_code and old_code[-1] == "]":
-            old_code_left, _ = old_code.rsplit("S", 1)
+            old_code_left, __ = old_code.rsplit("S", 1)
             new_code = old_code_left + code
         else:
             new_code = old_code + code
@@ -218,7 +223,7 @@ class CellActions(Actions):
         selection = self.grid.selection
         if not selection:
             selection.cells.append(self.grid.actions.cursor[:2])
-        
+
         # determine selection for core cells and selection for border cells
         # Then apply according to inner and outer
         # A cell is inner iif it is not at the edge of the selection bbox
@@ -243,26 +248,26 @@ class CellActions(Actions):
             print selection
             bbox_tl, bbox_lr = selection.get_bbox()
             if "top" in borders:
-                adj_selection = Selection([bbox_tl], [(bbox_tl[0], bbox_lr[1])],
+                adj_selection = Selection([bbox_tl], 
+                                          [(bbox_tl[0], bbox_lr[1])],
                                           [], [], []) + (-1, 0)
                 self.set_attr(attr + "_bottom", value, adj_selection)
 
             if "bottom" in borders:
-                adj_selection = Selection([(bbox_lr[0], bbox_tl[1])], [bbox_lr],
-                                          [], [], [])
+                adj_selection = Selection([(bbox_lr[0], bbox_tl[1])], 
+                                          [bbox_lr], [], [], [])
                 self.set_attr(attr + "_bottom", value, adj_selection)
 
             if "left" in borders:
-                adj_selection = Selection([bbox_tl], [(bbox_lr[0], bbox_tl[1])],
+                adj_selection = Selection([bbox_tl], 
+                                          [(bbox_lr[0], bbox_tl[1])],
                                           [], [], []) + (0, -1)
                 self.set_attr(attr + "_right", value, adj_selection)
 
             if "right" in borders:
-                adj_selection = Selection([(bbox_tl[0], bbox_lr[1])], [bbox_lr],
-                                          [], [], [])
+                adj_selection = Selection([(bbox_tl[0], bbox_lr[1])], 
+                                          [bbox_lr], [], [], [])
                 self.set_attr(attr + "_right", value, adj_selection)
-
-
 
     def toggle_attr(self, attr):
         """Toggles an attribute attr for current selection"""
@@ -290,7 +295,7 @@ class CellActions(Actions):
         # Selections are not supported
 
         if self.grid.selection:
-            statustext = "Freezing selections is not supported."
+            statustext = _("Freezing selections is not supported.")
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
         cursor = self.grid.actions.cursor

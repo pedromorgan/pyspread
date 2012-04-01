@@ -40,6 +40,7 @@ Provides:
 
 """
 
+import gettext
 import os
 
 import wx
@@ -53,6 +54,8 @@ from src.gui._printout import PrintCanvas, Printout
 
 from src.gui._events import post_command_event, SafeModeEntryMsg
 from src.gui._events import StatusBarMsg, ContentChangedMsg
+
+_ = gettext.gettext
 
 
 class Actions(object):
@@ -80,7 +83,7 @@ class ExchangeActions(Actions):
             return
 
         except IOError:
-            statustext = "Error opening file " + path + "."
+            statustext = _("Error opening file {}.").format(path)
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
             return
 
@@ -115,8 +118,8 @@ class ExchangeActions(Actions):
             # TXT import option choice
             return self._import_txt(filepath)
         else:
-            msg = "Unknown import choice" + str(filterindex)
-            short_msg = 'Error reading CSV file'
+            msg = _("Unknown import choice {}.").format(filterindex)
+            short_msg = _('Error reading CSV file')
 
             self.main_window.interfaces.display_warning(msg, short_msg)
 
@@ -144,9 +147,9 @@ class ExchangeActions(Actions):
             csv_interface.write(data)
 
         except IOError, err:
-            msg = 'The file "' + filepath + '" could not be fully written ' + \
-                  '\n \nError message:\n' + str(err)
-            short_msg = 'Error writing CSV file'
+            msg = _("The file {} could not be fully written\n \n"
+                    "Error message:\n{}").format(filepath, err)
+            short_msg = _('Error writing CSV file')
             self.main_window.interfaces.display_warning(msg, short_msg)
 
     def export_file(self, filepath, filterindex, data):
@@ -170,10 +173,10 @@ class PrintActions(Actions):
         preview = wx.PrintPreview(printout, printout2, print_data)
 
         if not preview.Ok():
-            print "Houston, we have a problem...\n"
+            print "Printout preview failed.\n"
             return
 
-        pfrm = wx.PreviewFrame(preview, self.main_window, "Print preview")
+        pfrm = wx.PreviewFrame(preview, self.main_window, _("Print preview"))
 
         pfrm.Initialize()
         pfrm.SetPosition(self.main_window.GetPosition())
@@ -376,7 +379,7 @@ class MacroActions(Actions):
             macro_infile = open(filepath, "r")
 
         except IOError:
-            statustext = "Error opening file " + filepath + "."
+            statustext = _("Error opening file {}.").format(filepath)
             post_command_event(self.main_window, StatusBarMsg, text=statustext)
 
             return False

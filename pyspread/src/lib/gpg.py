@@ -36,6 +36,7 @@ Provides
 
 """
 
+import gettext
 import sys
 
 import wx
@@ -46,6 +47,8 @@ from src.gui._gui_interfaces import get_gpg_passwd_from_user
 
 from pyme import core, pygpgme, errors
 import pyme.errors
+
+_ = gettext.gettext
 
 
 def _passphrase_callback(hint='', desc='', prev_bad=''):
@@ -81,14 +84,14 @@ def choose_uid(context):
 
     dlg = wx.SingleChoiceDialog(
             None,
-            'Choose a GPG key that you own for signing pyspread save files.\n'
-            'Pressing Cancel creates a new key.',
-            'Choose key',
+          _('Choose a GPG key that you own for signing pyspread save files.\n'
+            'Pressing Cancel creates a new key.'),
+          _('Choose key'),
             uid_strings, wx.CHOICEDLG_STYLE,
             )
 
     sizer = dlg.GetSizer()
-    store_passwd_checkbox = wx.CheckBox(dlg, True, "   Store passphrase",
+    store_passwd_checkbox = wx.CheckBox(dlg, True, _("   Store passphrase"),
                                         style=wx.ALIGN_RIGHT)
     store_passwd_checkbox.SetValue(True)
 
@@ -163,10 +166,9 @@ def genkey():
 
         # Show progress dialog
 
-        dlg = wx.ProgressDialog("GPG key generation",
-                               "Generating new GPG key " + keyname + \
-                               ".\nThis may take some time.\n \n" + \
-                               "Progress bar may stall. Please wait.",
+        dlg_msg = _("Generating new GPG key {}.\nThis may take some time.\n \n"
+                    "Progress bar may stall. Please wait.").format(keyname)
+        dlg = wx.ProgressDialog(_("GPG key generation"), dlg_msg,
                                maximum=200,
                                parent=None,
                                style=wx.PD_ELAPSED_TIME)

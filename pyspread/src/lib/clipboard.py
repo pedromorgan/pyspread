@@ -30,7 +30,12 @@ Provides
 
 """
 
+import gettext
+
 import wx
+
+_ = gettext.gettext
+
 
 class Clipboard(object):
     """Clipboard access
@@ -73,7 +78,7 @@ class Clipboard(object):
             self.clipboard.GetData(textdata)
             self.clipboard.Close()
         else:
-            wx.MessageBox("Can't open the clipboard", "Error")
+            wx.MessageBox(_("Can't open the clipboard"), _("Error"))
         return textdata.GetText()
 
     def set_clipboard(self, data):
@@ -90,7 +95,7 @@ class Clipboard(object):
             self.clipboard.SetData(textdata)
             self.clipboard.Close()
         else:
-            wx.MessageBox("Can't open the clipboard", "Error")
+            wx.MessageBox(_("Can't open the clipboard"), _("Error"))
         return error_log
 
 # end of class Clipboard

@@ -25,7 +25,7 @@ parsers
 
 Provides
 --------
- 
+
  * get_font_from_data
  * get_pen_from_data
 
@@ -35,17 +35,19 @@ import wx
 
 from src.sysvars import get_default_font
 
+
 def get_font_from_data(fontdata):
     """Returns wx.Font from fontdata string"""
-    
+
     textfont = get_default_font()
-    
+
     if fontdata != "":
         nativefontinfo = wx.NativeFontInfo()
         nativefontinfo.FromString(fontdata)
         textfont.SetNativeFontInfo(nativefontinfo)
-    
+
     return textfont
+
 
 def get_pen_from_data(pendata):
     """Returns wx.Pen from pendata attribute list"""
@@ -54,7 +56,7 @@ def get_pen_from_data(pendata):
     pen_color.SetRGB(pendata[0])
     pen = wx.Pen(pen_color, *pendata[1:])
     pen.SetJoin(wx.JOIN_MITER)
-    
+
     return pen
 
 

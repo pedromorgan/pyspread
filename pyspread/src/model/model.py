@@ -53,6 +53,7 @@ from src.lib.selection import Selection
 
 from unredo import UnRedo
 
+
 class KeyValueStore(dict):
     """Key-Value store in memory. Currently a dict with default value None.
 
@@ -67,7 +68,8 @@ class KeyValueStore(dict):
 
 # End of class KeyValueStore
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 class CellAttributes(list):
     """Stores cell formatting attributes in a list of 3 - tuples
@@ -148,6 +150,7 @@ class CellAttributes(list):
 
 # End of class CellAttributes
 
+
 class ParserMixin(object):
     """Provides parser methods for DictGrid"""
 
@@ -197,9 +200,7 @@ class ParserMixin(object):
                 # Even cols are values
                 attrs[key] = ast.literal_eval(ele)
 
-
         self.cell_attributes.append((selection, tab, attrs))
-
 
     def parse_to_height(self, line):
         """Parses line and inserts row hight"""
@@ -209,7 +210,6 @@ class ParserMixin(object):
         key = self._get_key(row, tab)
 
         self.row_heights[key] = float(height)
-
 
     def parse_to_width(self, line):
         """Parses line and inserts column width"""
@@ -256,8 +256,6 @@ class StringGeneratorMixin(object):
 
             yield key_str + u"\t" + code_str + u"\n"
 
-
-
     def attributes_to_strings(self):
         """Yields a string that represents the cell attributes for saving
 
@@ -287,7 +285,6 @@ class StringGeneratorMixin(object):
 
             yield u"\t".join(line_list) + u"\n"
 
-
     def heights_to_strings(self):
         """Yields a string that represents the row heights for saving
 
@@ -303,9 +300,9 @@ class StringGeneratorMixin(object):
         yield u"[row_heights]\n"
 
         for row, tab in self.row_heights:
-            height_strings = map(repr, [row, tab, self.row_heights[(row, tab)]])
+            height = self.row_heights[(row, tab)]
+            height_strings = map(repr, [row, tab, height])
             yield u"\t".join(height_strings) + u"\n"
-
 
     def widths_to_strings(self):
         """Yields a string that represents the column widths for saving
@@ -322,7 +319,8 @@ class StringGeneratorMixin(object):
         yield u"[col_widths]\n"
 
         for col, tab in self.col_widths:
-            width_strings = map(repr, [col, tab, self.col_widths[(col, tab)]])
+            width = self.col_widths[(col, tab)]
+            width_strings = map(repr, [col, tab, width])
             yield u"\t".join(width_strings) + u"\n"
 
     def macros_to_strings(self):
@@ -371,7 +369,7 @@ class DictGrid(KeyValueStore, ParserMixin, StringGeneratorMixin):
 
         self.macros = u""
 
-        self.row_heights = {} # Keys have the format (row, table)
+        self.row_heights = {}  # Keys have the format (row, table)
         self.col_widths = {}  # Keys have the format (col, table)
 
     def __getitem__(self, key):
@@ -380,14 +378,15 @@ class DictGrid(KeyValueStore, ParserMixin, StringGeneratorMixin):
 
         for axis, key_ele in enumerate(key):
             if shape[axis] <= key_ele or key_ele < -shape[axis]:
-                raise IndexError, "Grid index " + \
-                      str(key) + " outside grid shape " + str(shape)
+                msg = "Grid index {} outside grid shape {}.".format(key, shape)
+                raise IndexError(msg)
 
         return KeyValueStore.__getitem__(self, key)
 
 # End of class DictGrid
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 class DataArray(object):
     """DataArray provides enhanced grid read/write access.
@@ -559,9 +558,8 @@ class DataArray(object):
 
             elif is_string_like(key_ele):
                 # We have something string-like here
-
-                raise NotImplementedError, \
-                      "Cell string based access not implemented"
+                msg = "Cell string based access not implemented"
+                raise NotImplementedError(msg)
 
         # key_ele should be a single cell
 
@@ -685,9 +683,6 @@ class DataArray(object):
 
         assert axis in [0, 1, 2]
 
-        # Save cell_attributes for undo
-        old_cell_attributes = copy(self.cell_attributes)
-
         if axis < 2:
             # Adjust selections
             for selection, _, _ in self.cell_attributes:
@@ -702,7 +697,8 @@ class DataArray(object):
 
             for pos, tab in cell_sizes:
                 if pos > insertion_point:
-                    new_sizes[(pos+no_to_insert, tab)] = cell_sizes[(pos, tab)]
+                    new_sizes[(pos + no_to_insert, tab)] = \
+                        cell_sizes[(pos, tab)]
                     cell_sizes[(pos, tab)] = None
                 else:
                     new_sizes[(pos, tab)] = cell_sizes[(pos, tab)]
@@ -722,7 +718,7 @@ class DataArray(object):
             self.cell_attributes._attr_cache.clear()
 
         else:
-            raise ValueError, "axis must be in [0, 1, 2]"
+            raise ValueError("Axis must be in [0, 1, 2]")
 
         # Make undoable
 
@@ -749,11 +745,11 @@ class DataArray(object):
         """
 
         if not 0 <= axis <= len(self.shape):
-            raise ValueError, "Axis not in grid dimensions"
+            raise ValueError("Axis not in grid dimensions")
 
         if insertion_point > self.shape[axis] or \
            insertion_point <= -self.shape[axis]:
-            raise IndexError, "Insertion point not in grid"
+            raise IndexError("Insertion point not in grid")
 
         new_keys = {}
 
@@ -771,23 +767,22 @@ class DataArray(object):
 
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis)
 
-
     def delete(self, deletion_point, no_to_delete, axis):
-        """Deletes no_to_delete rows/cols/tabs/... starting with deletion_point
+        """Deletes no_to_delete rows/cols/... starting with deletion_point
 
         Axis specifies number of dimension, i.e. 0 == row, 1 == col, ...
 
         """
 
         if no_to_delete < 0:
-            raise ValueError, "Cannot delete negative number of rows/cols/..."
+            raise ValueError("Cannot delete negative number of rows/cols/...")
 
         if not 0 <= axis <= len(self.shape):
-            raise ValueError, "Axis not in grid dimensions"
+            raise ValueError("Axis not in grid dimensions")
 
         if deletion_point > self.shape[axis] or \
            deletion_point <= -self.shape[axis]:
-            raise IndexError, "Deletion point not in grid"
+            raise IndexError("Deletion point not in grid")
 
         # Store all keys that are moved here because dict iteration is unsorted
         new_key_values = {}
@@ -862,7 +857,8 @@ class DataArray(object):
 
 # End of class DataArray
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 class CodeArray(DataArray):
     """CodeArray provides objects when accessing cells via __getitem__
@@ -959,32 +955,31 @@ class CodeArray(DataArray):
 
     def _get_updated_environment(self, env_dict=None):
         """Returns globals environment with 'magic' variable
-        
+
         Parameters
         ----------
         env_dict: Dict, defaults to {'S': self}
         \tDict that maps global variable name to value
-        
+
         """
-        
+
         if env_dict is None:
             env_dict = {'S': self}
-        
+
         env = globals().copy()
         env.update(env_dict)
-        
+
         return env
 
     def _eval_cell(self, key):
         """Evaluates one cell"""
 
         # Set up environment for evaluation
-        
+
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2],
-                    'R': key[0], 'C': key[1], 'T': key[2],
-                    'S': self }
+                    'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
-        
+
         code = self(key)
 
         # Return cell value if in safe mode
@@ -1042,7 +1037,7 @@ class CodeArray(DataArray):
 
         # Windows exec does not like Windows newline
         self.macros = self.macros.replace('\r\n', '\n')
-        
+
         # Set up environment for evaluation
         globals().update(self._get_updated_environment())
 
@@ -1111,7 +1106,7 @@ class CodeArray(DataArray):
 
         """
 
-        if type(datastring) is IntType: # Empty cell
+        if type(datastring) is IntType:  # Empty cell
             return None
 
         if flags is None:
@@ -1133,7 +1128,7 @@ class CodeArray(DataArray):
                 matchstring = r'\b' + findstring + r'+\b'
                 for match in re.finditer(matchstring, datastring):
                     pos = match.start()
-                    break # find 1st occurrance
+                    break  # find 1st occurrance
             else:
                 pos = datastring.find(findstring)
 
@@ -1172,5 +1167,3 @@ class CodeArray(DataArray):
                 return key
 
 # End of class CodeArray
-
-

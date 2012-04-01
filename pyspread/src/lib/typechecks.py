@@ -32,15 +32,17 @@ i. e. existence of typical attributes of a type for objects.
 
 def is_slice_like(obj):
     """Returns True if obj is slice like, i.e. has attribute indices"""
-    
+
     return hasattr(obj, "indices")
-    
+
+
 def is_string_like(obj):
     """Returns True if obj is string like, i.e. has method split"""
-    
+
     return hasattr(obj, "split")
+
 
 def is_generator_like(obj):
     """Returns True if obj is string like, i.e. has method next"""
-    
+
     return hasattr(obj, "next")
