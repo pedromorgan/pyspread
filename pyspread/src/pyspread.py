@@ -41,12 +41,13 @@ Provides
 # If wx exists in sys,modules, we dont need to import wx version.
 # wx is already imported if the PyScripter wx engine is used.
 
-import gettext
+import i18n
 import sys
 from sysvars import get_program_path
 import optparse
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 sys.path.insert(0, get_program_path())
 
@@ -118,7 +119,7 @@ class Commandlineparser(object):
         if len(args) > 1:
             print _("Only one file may be opened at a time.")
             sys.exit()
-        
+
         filename = None
         if len(args) == 1:
             # A filename is provided and hence opened

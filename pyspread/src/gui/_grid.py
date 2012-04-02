@@ -30,7 +30,7 @@ Provides
 
 """
 
-import gettext
+import i18n
 
 import wx.grid
 
@@ -46,7 +46,8 @@ from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class Grid(wx.grid.Grid):

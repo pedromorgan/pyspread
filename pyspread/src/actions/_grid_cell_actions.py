@@ -19,7 +19,7 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-import gettext
+import i18n
 
 import wx
 
@@ -28,7 +28,8 @@ from src.actions._main_window_actions import Actions
 from src.gui._events import post_command_event, EntryLineMsg, ContentChangedMsg
 from src.gui._events import StatusBarMsg
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 """
@@ -248,24 +249,24 @@ class CellActions(Actions):
             print selection
             bbox_tl, bbox_lr = selection.get_bbox()
             if "top" in borders:
-                adj_selection = Selection([bbox_tl], 
+                adj_selection = Selection([bbox_tl],
                                           [(bbox_tl[0], bbox_lr[1])],
                                           [], [], []) + (-1, 0)
                 self.set_attr(attr + "_bottom", value, adj_selection)
 
             if "bottom" in borders:
-                adj_selection = Selection([(bbox_lr[0], bbox_tl[1])], 
+                adj_selection = Selection([(bbox_lr[0], bbox_tl[1])],
                                           [bbox_lr], [], [], [])
                 self.set_attr(attr + "_bottom", value, adj_selection)
 
             if "left" in borders:
-                adj_selection = Selection([bbox_tl], 
+                adj_selection = Selection([bbox_tl],
                                           [(bbox_lr[0], bbox_tl[1])],
                                           [], [], []) + (0, -1)
                 self.set_attr(attr + "_right", value, adj_selection)
 
             if "right" in borders:
-                adj_selection = Selection([(bbox_tl[0], bbox_lr[1])], 
+                adj_selection = Selection([(bbox_tl[0], bbox_lr[1])],
                                           [bbox_lr], [], [], [])
                 self.set_attr(attr + "_right", value, adj_selection)
 

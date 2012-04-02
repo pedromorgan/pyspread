@@ -32,13 +32,14 @@ Provides:
 
 """
 
-import gettext
+import i18n
 
 import wx
 
 from _events import *
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class _filledMenu(wx.Menu):

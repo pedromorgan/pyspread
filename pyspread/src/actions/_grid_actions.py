@@ -46,7 +46,7 @@ Provides:
 """
 
 import bz2
-import gettext
+import i18n
 import os
 
 import wx
@@ -69,7 +69,8 @@ from src.gui._events import post_command_event, SafeModeEntryMsg
 from src.gui._events import SafeModeExitMsg, StatusBarMsg, ContentChangedMsg
 from src.gui._events import ResizeGridMsg, GridActionTableSwitchMsg
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class FileActions(Actions):

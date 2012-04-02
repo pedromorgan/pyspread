@@ -32,7 +32,7 @@ Provides
 """
 
 from math import pi, sin, cos
-import gettext
+import i18n
 import types
 
 import wx.grid
@@ -41,7 +41,8 @@ from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class GridRenderer(wx.grid.PyGridCellRenderer):

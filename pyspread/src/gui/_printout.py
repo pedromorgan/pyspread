@@ -27,11 +27,12 @@ Printout handling module
 
 """
 
-import gettext
+import i18n
 
 import wx
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class PrintCanvas(wx.ScrolledWindow):

@@ -37,7 +37,7 @@ Provides:
 
 """
 
-import gettext
+import i18n
 import keyword
 
 import wx
@@ -50,7 +50,8 @@ from _events import *
 
 from icons import icons
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class PythonSTC(stc.StyledTextCtrl):

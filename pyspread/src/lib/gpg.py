@@ -36,7 +36,7 @@ Provides
 
 """
 
-import gettext
+import i18n
 import sys
 
 import wx
@@ -48,7 +48,8 @@ from src.gui._gui_interfaces import get_gpg_passwd_from_user
 from pyme import core, pygpgme, errors
 import pyme.errors
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 def _passphrase_callback(hint='', desc='', prev_bad=''):

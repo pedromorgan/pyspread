@@ -42,7 +42,7 @@ Provides:
 
 import cStringIO
 import csv
-import gettext
+import i18n
 import os
 import types
 
@@ -59,7 +59,8 @@ from src.gui._events import *
 from src.lib.__csv import Digest, sniff, get_first_line
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class IntValidator(wx.PyValidator):

@@ -30,7 +30,7 @@ Provides:
 """
 
 import csv
-import gettext
+import i18n
 import os
 import sys
 import types
@@ -44,7 +44,8 @@ from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from _dialogs import PreferencesDialog, GPGParamsDialog
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class ModalDialogInterfaceMixin(object):
@@ -199,8 +200,8 @@ class ModalDialogInterfaceMixin(object):
         except csv.Error, err:
             # Display modal warning dialog
 
-            msg = _("'{}' does not seem to be a valid CSV file.\n " + \
-                "\nOpening it yielded the error:\n{}").format(csvfilename, err)
+            msg = _("'{}' does not seem to be a valid CSV file.\n \nOpening it"
+                    " yielded the error:\n{}").format(csvfilename, err)
             short_msg = _('Error reading CSV file')
 
             self.display_warning(msg, short_msg)

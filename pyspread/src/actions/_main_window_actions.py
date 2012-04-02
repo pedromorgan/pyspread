@@ -40,7 +40,7 @@ Provides:
 
 """
 
-import gettext
+import i18n
 import os
 
 import wx
@@ -55,7 +55,8 @@ from src.gui._printout import PrintCanvas, Printout
 from src.gui._events import post_command_event, SafeModeEntryMsg
 from src.gui._events import StatusBarMsg, ContentChangedMsg
 
-_ = gettext.gettext
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class Actions(object):
