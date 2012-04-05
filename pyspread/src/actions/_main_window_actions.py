@@ -52,14 +52,13 @@ from src.config import config
 from src.lib.__csv import CsvInterface, TxtGenerator
 from src.gui._printout import PrintCanvas, Printout
 
-from src.gui._events import post_command_event, SafeModeEntryMsg
-from src.gui._events import StatusBarMsg, ContentChangedMsg
+from src.gui._events import post_command_event, EventMixin
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
-class Actions(object):
+class Actions(EventMixin):
     """Actions base class"""
 
     def __init__(self, grid):
@@ -85,7 +84,8 @@ class ExchangeActions(Actions):
 
         except IOError:
             statustext = _("Error opening file {}.").format(path)
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
             return
 
         return CsvInterface(self.main_window,
@@ -110,7 +110,8 @@ class ExchangeActions(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         if filterindex == 0:
             # CSV import option choice
@@ -362,7 +363,8 @@ class MacroActions(Actions):
         """Executes macros and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.grid.code_array.execute_macros()
 
@@ -381,12 +383,14 @@ class MacroActions(Actions):
 
         except IOError:
             statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
             return False
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         macrocode = macro_infile.read()
         macro_infile.close()
@@ -394,7 +398,7 @@ class MacroActions(Actions):
         self.grid.code_array.macros += "\n" + macrocode.strip("\n")
 
         self.main_window.grid.actions.enter_safe_mode()
-        post_command_event(self.main_window, SafeModeEntryMsg)
+        post_command_event(self.main_window, self.SafeModeEntryMsg)
 
     def save_macros(self, filepath, macros):
         """Saves macros to file
@@ -483,4 +487,3 @@ class AllMainWindowActions(ExchangeActions, PrintActions,
     """All main window actions as a bundle"""
 
     pass
-

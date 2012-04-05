@@ -38,7 +38,7 @@ import i18n
 import wx
 import wx.lib.colourselect as csel
 
-from _events import *
+from _events import post_command_event, EventMixin
 
 from src.config import config
 from src.sysvars import get_default_font, get_font_list
@@ -50,7 +50,7 @@ import _widgets
 _ = i18n.language.ugettext
 
 
-class MainToolbar(wx.ToolBar):
+class MainToolbar(wx.ToolBar, EventMixin):
     """Main application toolbar, built from attribute toolbardata
 
     toolbardata has the following structure:
@@ -62,36 +62,41 @@ class MainToolbar(wx.ToolBar):
 
     """
 
-    toolbardata = [
-        [NewMsg, _("New"), "FileNew", _("New spreadsheet"),
-            _("Create a new, empty spreadsheet")], \
-        [OpenMsg, _("Open"), "FileOpen", _("Open spreadsheet"),
-            _("Open spreadsheet from file")], \
-        [SaveMsg, _("Save"), "FileSave", _("Save spreadsheet"),
-            _("Save spreadsheet to file")], \
-        [], \
-        [UndoMsg, _("Undo"), "Undo", _("Undo"), _("Undo last operation")], \
-        [RedoMsg, _("Redo"), "Redo", _("Redo"), _("Redo next operation")], \
-        [], \
-        [FindFocusMsg, _("Find"), "Find", _("Find"),
-            _("Find cell by content")], \
-        [ReplaceMsg, _("Replace"), "FindReplace", _("Replace"),
-            _("Replace strings in cells")], \
-        [], \
-        [CutMsg, _("Cut"), "EditCut", _("Cut"), _("Cut cells to clipboard")], \
-        [CopyMsg, _("Copy"), "EditCopy", _("Copy"),
-            _("Copy the input strings of the cells to clipboard")], \
-        [CopyResultMsg, _("Copy Results"), "EditCopyRes", _("Copy Results"),
-            _("Copy the result strings of the cells to the clipboard")], \
-        [PasteMsg, _("Paste"), "EditPaste", _("Paste"),
-            _("Paste cell from clipboard")], \
-        [], \
-        [PrintMsg, _("Print"), "FilePrint", _("Print current spreadsheet"),
-            _("Print current spreadsheet")], \
-    ]
-
     def __init__(self, *args, **kwargs):
         wx.ToolBar.__init__(self, *args, **kwargs)
+
+        self.toolbardata = [
+            [self.NewMsg, _("New"), "FileNew", _("New spreadsheet"),
+                _("Create a new, empty spreadsheet")], \
+            [self.OpenMsg, _("Open"), "FileOpen", _("Open spreadsheet"),
+                _("Open spreadsheet from file")], \
+            [self.SaveMsg, _("Save"), "FileSave", _("Save spreadsheet"),
+                _("Save spreadsheet to file")], \
+            [], \
+            [self.UndoMsg, _("Undo"), "Undo", _("Undo"),
+                 _("Undo last operation")], \
+            [self.RedoMsg, _("Redo"), "Redo", _("Redo"),
+                 _("Redo next operation")], \
+            [], \
+            [self.FindFocusMsg, _("Find"), "Find", _("Find"),
+                _("Find cell by content")], \
+            [self.ReplaceMsg, _("Replace"), "FindReplace", _("Replace"),
+                _("Replace strings in cells")], \
+            [], \
+            [self.CutMsg, _("Cut"), "EditCut", _("Cut"),
+                 _("Cut cells to clipboard")], \
+            [self.CopyMsg, _("Copy"), "EditCopy", _("Copy"),
+                _("Copy the input strings of the cells to clipboard")], \
+            [self.CopyResultMsg, _("Copy Results"), "EditCopyRes",
+                 _("Copy Results"),
+                _("Copy the result strings of the cells to the clipboard")], \
+            [self.PasteMsg, _("Paste"), "EditPaste", _("Paste"),
+                _("Paste cell from clipboard")], \
+            [], \
+            [self.PrintMsg, _("Print"), "FilePrint",
+                 _("Print current spreadsheet"),
+                 _("Print current spreadsheet")],
+        ]
 
         self.SetToolBitmapSize(icons.icon_size)
 
@@ -127,7 +132,7 @@ class MainToolbar(wx.ToolBar):
 # end of class MainToolbar
 
 
-class FindToolbar(wx.ToolBar):
+class FindToolbar(wx.ToolBar, EventMixin):
     """Toolbar for find operations (replaces wxFindReplaceDialog)"""
 
     # Search flag buttons
@@ -247,8 +252,8 @@ class FindToolbar(wx.ToolBar):
 
         search_flags = self.search_options + ["FIND_NEXT"]
 
-        post_command_event(self, FindMsg, text=search_string,
-                                          flags=search_flags)
+        post_command_event(self, self.FindMsg, text=search_string,
+                           flags=search_flags)
 
         self.search.SetFocus()
 
@@ -282,7 +287,7 @@ class FindToolbar(wx.ToolBar):
 # end of class FindToolbar
 
 
-class AttributesToolbar(wx.ToolBar):
+class AttributesToolbar(wx.ToolBar, EventMixin):
     """Toolbar for editing cell attributes
 
     Class attributes
@@ -349,7 +354,7 @@ class AttributesToolbar(wx.ToolBar):
         self.AddControl(self.font_choice_combo)
 
         self.Bind(wx.EVT_COMBOBOX, self.OnTextFont, self.font_choice_combo)
-        self.parent.Bind(EVT_COMMAND_TOOLBAR_UPDATE, self.OnUpdate)
+        self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
 
     def _create_font_size_combo(self):
         """Creates font size combo box"""
@@ -692,7 +697,8 @@ class AttributesToolbar(wx.ToolBar):
         color = event.GetValue().GetRGB()
         borders = self.bordermap[self.borderstate]
 
-        post_command_event(self, BorderColorMsg, color=color, borders=borders)
+        post_command_event(self, self.BorderColorMsg, color=color,
+                           borders=borders)
 
     def OnLineWidth(self, event):
         """Line width choice event handler"""
@@ -702,21 +708,22 @@ class AttributesToolbar(wx.ToolBar):
         width = int(linewidth_combobox.GetString(idx))
         borders = self.bordermap[self.borderstate]
 
-        post_command_event(self, BorderWidthMsg, width=width, borders=borders)
+        post_command_event(self, self.BorderWidthMsg, width=width,
+                           borders=borders)
 
     def OnBGColor(self, event):
         """Background color choice event handler"""
 
         color = event.GetValue().GetRGB()
 
-        post_command_event(self, BackgroundColorMsg, color=color)
+        post_command_event(self, self.BackgroundColorMsg, color=color)
 
     def OnTextColor(self, event):
         """Text color choice event handler"""
 
         color = event.GetValue().GetRGB()
 
-        post_command_event(self, TextColorMsg, color=color)
+        post_command_event(self, self.TextColorMsg, color=color)
 
     def OnTextFont(self, event):
         """Text font choice event handler"""
@@ -725,11 +732,11 @@ class AttributesToolbar(wx.ToolBar):
         idx = event.GetInt()
 
         try:
-            font_string  = fontchoice_combobox.GetString(idx)
+            font_string = fontchoice_combobox.GetString(idx)
         except AttributeError:
             font_string = event.GetString()
 
-        post_command_event(self, FontMsg, font=font_string)
+        post_command_event(self, self.FontMsg, font=font_string)
 
     def OnTextSize(self, event):
         """Text size combo text event handler"""
@@ -740,48 +747,48 @@ class AttributesToolbar(wx.ToolBar):
         except Exception:
             size = get_default_font().GetPointSize()
 
-        post_command_event(self, FontSizeMsg, size=size)
+        post_command_event(self, self.FontSizeMsg, size=size)
 
     def OnBold(self, event):
         """Bold toggle button event handler"""
 
-        post_command_event(self, FontBoldMsg)
+        post_command_event(self, self.FontBoldMsg)
 
     def OnItalics(self, event):
         """Bold toggle button event handler"""
 
-        post_command_event(self, FontItalicsMsg)
+        post_command_event(self, self.FontItalicsMsg)
 
     def OnUnderline(self, event):
         """Bold toggle button event handler"""
 
-        post_command_event(self, FontUnderlineMsg)
+        post_command_event(self, self.FontUnderlineMsg)
 
     def OnStrikethrough(self, event):
         """Bold toggle button event handler"""
 
-        post_command_event(self, FontStrikethroughMsg)
+        post_command_event(self, self.FontStrikethroughMsg)
 
     def OnFreeze(self, event):
         """Bold toggle button event handler"""
 
-        post_command_event(self, FrozenMsg)
+        post_command_event(self, self.FrozenMsg)
 
     def OnJustification(self, event):
         """Justification toggle button event handler"""
 
-        post_command_event(self, JustificationMsg)
+        post_command_event(self, self.JustificationMsg)
 
     def OnAlignment(self, event):
         """Alignment toggle button event handler"""
 
-        post_command_event(self, AlignmentMsg)
+        post_command_event(self, self.AlignmentMsg)
 
     def OnRotate(self, event):
         """Rotation spin control event handler"""
 
         angle = self.rotation_spinctrl.GetValue()
 
-        post_command_event(self, TextRotationMsg, angle=angle)
+        post_command_event(self, self.TextRotationMsg, angle=angle)
 
 # end of class AttributesToolbar

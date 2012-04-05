@@ -46,7 +46,8 @@ import wx.combo
 import wx.stc  as  stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
 
-from _events import *
+from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
+from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
 
 from icons import icons
 
@@ -128,11 +129,11 @@ class PythonSTC(stc.StyledTextCtrl):
         """
 
         self.faces = {'times': 'Times',
-                      'mono' : 'Courier',
-                      'helv' : wx.SystemSettings.GetFont( \
+                      'mono': 'Courier',
+                      'helv': wx.SystemSettings.GetFont( \
                                wx.SYS_DEFAULT_GUI_FONT).GetFaceName(),
                       'other': 'new century schoolbook',
-                      'size' : 10,
+                      'size': 10,
                       'size2': 8,
                      }
 
@@ -544,7 +545,7 @@ class BitmapToggleButton(wx.BitmapButton):
 # end of class BitmapToggleButton
 
 
-class EntryLine(wx.TextCtrl):
+class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
     """"The line for entering cell code"""
 
     def __init__(self, parent, id=-1, *args, **kwargs):
@@ -553,7 +554,7 @@ class EntryLine(wx.TextCtrl):
         self.parent = parent
         self.ignore_changes = False
 
-        parent.Bind(EVT_ENTRYLINE_MSG, self.OnContentChange)
+        parent.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
         ##parent.Bind(EVT_ENTRYLINE_SELECTION_MSG, self.OnSelectionMsg)
 
         self.SetToolTip(wx.ToolTip("Enter Python expression here."))
@@ -580,7 +581,7 @@ class EntryLine(wx.TextCtrl):
         if self.ignore_changes:
             return
 
-        post_command_event(self, CodeEntryMsg, code=event.GetString())
+        post_command_event(self, self.CodeEntryMsg, code=event.GetString())
 
         event.Skip()
 
@@ -608,7 +609,7 @@ class EntryLine(wx.TextCtrl):
 # end of class EntryLine
 
 
-class StatusBar(wx.StatusBar):
+class StatusBar(wx.StatusBar, StatusBarEventMixin):
     """Main window statusbar"""
 
     def __init__(self, parent):
@@ -616,7 +617,7 @@ class StatusBar(wx.StatusBar):
 
         self.SetToolTip(wx.ToolTip("Watch the status bar."))
 
-        parent.Bind(EVT_STATUSBAR_MSG, self.OnMessage)
+        parent.Bind(self.EVT_STATUSBAR_MSG, self.OnMessage)
 
     def OnMessage(self, event):
         """Statusbar message event handler"""
@@ -626,7 +627,7 @@ class StatusBar(wx.StatusBar):
 # end of class StatusBar
 
 
-class TableChoiceIntCtrl(IntCtrl):
+class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     """ComboBox for choosing the current grid table"""
 
     def __init__(self, parent, no_tabs):
@@ -647,7 +648,7 @@ class TableChoiceIntCtrl(IntCtrl):
 
         self.Bind(EVT_INT, self.OnInt)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
-        self.parent.Bind(EVT_COMMAND_RESIZE_GRID, self.OnResizeGrid)
+        self.parent.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
 
     def change_max(self, no_tabs):
         """Updates to a new number of tables
@@ -686,7 +687,7 @@ class TableChoiceIntCtrl(IntCtrl):
 
         if not self.switching:
             self.switching = True
-            post_command_event(self, GridActionTableSwitchMsg,
+            post_command_event(self, self.GridActionTableSwitchMsg,
                                newtable=event.GetValue())
             wx.Yield()
             self.switching = False

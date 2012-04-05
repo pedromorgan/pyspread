@@ -27,8 +27,6 @@ pyspread config file
 
 from ast import literal_eval
 
-import keyring
-
 import wx
 
 from sysvars import get_color, get_font_string
@@ -155,23 +153,11 @@ class Config(object):
             if self.cfg_file.Exists(key):
                 setattr(self.data, key, self.cfg_file.Read(key))
 
-        if self["gpg_key_uid"] and self["gpg_key_passphrase_isstored"]:
-            key = "gpg_key_passphrase"
-            username = self['gpg_key_uid']
-            passwd = keyring.get_password("pyspread", username)
-            if passwd:
-                setattr(self.data, key, passwd)
-
     def save(self):
         """Saves configuration file"""
 
         for key in self.defaults.__dict__:
             data = getattr(self.data, key)
-            if key == "gpg_key_passphrase":
-                if self["gpg_key_passphrase_isstored"] and data:
-                    username = self['gpg_key_uid']
-                    keyring.set_password("pyspread", username, data)
-            else:
-                self.cfg_file.Write(key, data)
+            self.cfg_file.Write(key, data)
 
 config = Config()

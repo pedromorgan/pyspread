@@ -34,7 +34,7 @@ import i18n
 
 import wx.grid
 
-from _events import *
+from _events import post_command_event, EventMixin
 
 from _grid_table import GridTable
 from _grid_renderer import GridRenderer
@@ -50,7 +50,7 @@ from src.actions._grid_actions import AllGridActions
 _ = i18n.language.ugettext
 
 
-class Grid(wx.grid.Grid):
+class Grid(wx.grid.Grid, EventMixin):
     """Pyspread's main grid"""
 
     def __init__(self, main_window, *args, **kwargs):
@@ -66,7 +66,7 @@ class Grid(wx.grid.Grid):
 
         # Create new grid
         self.code_array = CodeArray(dimensions)
-        post_command_event(self, GridActionNewMsg, shape=dimensions)
+        post_command_event(self, self.GridActionNewMsg, shape=dimensions)
 
         _grid_table = GridTable(self, self.code_array)
         self.SetTable(_grid_table, True)
@@ -146,30 +146,33 @@ class Grid(wx.grid.Grid):
 
         # Cell code events
 
-        main_window.Bind(EVT_COMMAND_CODE_ENTRY, c_handlers.OnCellText)
+        main_window.Bind(self.EVT_CMD_CODE_ENTRY, c_handlers.OnCellText)
 
         # Cell attribute events
 
-        main_window.Bind(EVT_COMMAND_FONT, c_handlers.OnCellFont)
-        main_window.Bind(EVT_COMMAND_FONTSIZE, c_handlers.OnCellFontSize)
-        main_window.Bind(EVT_COMMAND_FONTBOLD, c_handlers.OnCellFontBold)
-        main_window.Bind(EVT_COMMAND_FONTITALICS, c_handlers.OnCellFontItalics)
-        main_window.Bind(EVT_COMMAND_FONTUNDERLINE,
+        main_window.Bind(self.EVT_CMD_FONT, c_handlers.OnCellFont)
+        main_window.Bind(self.EVT_CMD_FONTSIZE, c_handlers.OnCellFontSize)
+        main_window.Bind(self.EVT_CMD_FONTBOLD, c_handlers.OnCellFontBold)
+        main_window.Bind(self.EVT_CMD_FONTITALICS,
+                    c_handlers.OnCellFontItalics)
+        main_window.Bind(self.EVT_CMD_FONTUNDERLINE,
                     c_handlers.OnCellFontUnderline)
-        main_window.Bind(EVT_COMMAND_FONTSTRIKETHROUGH,
+        main_window.Bind(self.EVT_CMD_FONTSTRIKETHROUGH,
                     c_handlers.OnCellFontStrikethrough)
-        main_window.Bind(EVT_COMMAND_FROZEN, c_handlers.OnCellFrozen)
-        main_window.Bind(EVT_COMMAND_JUSTIFICATION,
+        main_window.Bind(self.EVT_CMD_FROZEN, c_handlers.OnCellFrozen)
+        main_window.Bind(self.EVT_CMD_JUSTIFICATION,
                     c_handlers.OnCellJustification)
-        main_window.Bind(EVT_COMMAND_ALIGNMENT, c_handlers.OnCellAlignment)
-        main_window.Bind(EVT_COMMAND_BORDERWIDTH, c_handlers.OnCellBorderWidth)
-        main_window.Bind(EVT_COMMAND_BORDERCOLOR, c_handlers.OnCellBorderColor)
-        main_window.Bind(EVT_COMMAND_BACKGROUNDCOLOR,
+        main_window.Bind(self.EVT_CMD_ALIGNMENT, c_handlers.OnCellAlignment)
+        main_window.Bind(self.EVT_CMD_BORDERWIDTH,
+                    c_handlers.OnCellBorderWidth)
+        main_window.Bind(self.EVT_CMD_BORDERCOLOR,
+                    c_handlers.OnCellBorderColor)
+        main_window.Bind(self.EVT_CMD_BACKGROUNDCOLOR,
                     c_handlers.OnCellBackgroundColor)
-        main_window.Bind(EVT_COMMAND_TEXTCOLOR, c_handlers.OnCellTextColor)
-        main_window.Bind(EVT_COMMAND_ROTATIONDIALOG,
+        main_window.Bind(self.EVT_CMD_TEXTCOLOR, c_handlers.OnCellTextColor)
+        main_window.Bind(self.EVT_CMD_ROTATIONDIALOG,
                     c_handlers.OnTextRotationDialog)
-        main_window.Bind(EVT_COMMAND_TEXTROTATATION,
+        main_window.Bind(self.EVT_CMD_TEXTROTATATION,
                     c_handlers.OnCellTextRotation)
 
         # Cell selection events
@@ -178,18 +181,18 @@ class Grid(wx.grid.Grid):
 
         # Grid view events
 
-        main_window.Bind(EVT_COMMAND_REFRESH_SELECTION,
+        main_window.Bind(self.EVT_CMD_REFRESH_SELECTION,
                     handlers.OnRefreshSelectedCells)
-        main_window.Bind(EVT_COMMAND_DISPLAY_GOTO_CELL_DIALOG,
+        main_window.Bind(self.EVT_CMD_DISPLAY_GOTO_CELL_DIALOG,
                     handlers.OnDisplayGoToCellDialog)
-        main_window.Bind(EVT_COMMAND_GOTO_CELL, handlers.OnGoToCell)
-        main_window.Bind(EVT_COMMAND_ZOOM_IN, handlers.OnZoomIn)
-        main_window.Bind(EVT_COMMAND_ZOOM_OUT, handlers.OnZoomOut)
-        main_window.Bind(EVT_COMMAND_ZOOM_STANDARD, handlers.OnZoomStandard)
+        main_window.Bind(self.EVT_CMD_GOTO_CELL, handlers.OnGoToCell)
+        main_window.Bind(self.EVT_CMD_ZOOM_IN, handlers.OnZoomIn)
+        main_window.Bind(self.EVT_CMD_ZOOM_OUT, handlers.OnZoomOut)
+        main_window.Bind(self.EVT_CMD_ZOOM_STANDARD, handlers.OnZoomStandard)
 
         # Find events
-        main_window.Bind(EVT_COMMAND_FIND, handlers.OnFind)
-        main_window.Bind(EVT_COMMAND_REPLACE, handlers.OnShowFindReplace)
+        main_window.Bind(self.EVT_CMD_FIND, handlers.OnFind)
+        main_window.Bind(self.EVT_CMD_REPLACE, handlers.OnShowFindReplace)
         main_window.Bind(wx.EVT_FIND, handlers.OnReplaceFind)
         main_window.Bind(wx.EVT_FIND_NEXT, handlers.OnReplaceFind)
         main_window.Bind(wx.EVT_FIND_REPLACE, handlers.OnReplace)
@@ -198,15 +201,15 @@ class Grid(wx.grid.Grid):
 
         # Grid change events
 
-        main_window.Bind(EVT_COMMAND_INSERT_ROWS, handlers.OnInsertRows)
-        main_window.Bind(EVT_COMMAND_INSERT_COLS, handlers.OnInsertCols)
-        main_window.Bind(EVT_COMMAND_INSERT_TABS, handlers.OnInsertTabs)
+        main_window.Bind(self.EVT_CMD_INSERT_ROWS, handlers.OnInsertRows)
+        main_window.Bind(self.EVT_CMD_INSERT_COLS, handlers.OnInsertCols)
+        main_window.Bind(self.EVT_CMD_INSERT_TABS, handlers.OnInsertTabs)
 
-        main_window.Bind(EVT_COMMAND_DELETE_ROWS, handlers.OnDeleteRows)
-        main_window.Bind(EVT_COMMAND_DELETE_COLS, handlers.OnDeleteCols)
-        main_window.Bind(EVT_COMMAND_DELETE_TABS, handlers.OnDeleteTabs)
+        main_window.Bind(self.EVT_CMD_DELETE_ROWS, handlers.OnDeleteRows)
+        main_window.Bind(self.EVT_CMD_DELETE_COLS, handlers.OnDeleteCols)
+        main_window.Bind(self.EVT_CMD_DELETE_TABS, handlers.OnDeleteTabs)
 
-        main_window.Bind(EVT_COMMAND_SHOW_RESIZE_GRID_DIALOG,
+        main_window.Bind(self.EVT_CMD_SHOW_RESIZE_GRID_DIALOG,
                                                   handlers.OnResizeGridDialog)
 
         main_window.Bind(wx.grid.EVT_GRID_ROW_SIZE, handlers.OnRowSize)
@@ -214,8 +217,8 @@ class Grid(wx.grid.Grid):
 
         # Undo/Redo events
 
-        main_window.Bind(EVT_COMMAND_UNDO, handlers.OnUndo)
-        main_window.Bind(EVT_COMMAND_REDO, handlers.OnRedo)
+        main_window.Bind(self.EVT_CMD_UNDO, handlers.OnUndo)
+        main_window.Bind(self.EVT_CMD_REDO, handlers.OnRedo)
 
     _get_selection = lambda self: self.actions.get_selection()
     selection = property(_get_selection, doc="Grid selection")
@@ -484,8 +487,8 @@ class GridCellEventHandlers(object):
             _("Enter text angle in degrees."), cond_func)
 
         if angle is not None:
-            post_command_event(self.grid.main_window, TextRotationMsg,
-                                angle=angle)
+            post_command_event(self.grid.main_window,
+                               self.grid.TextRotationMsg, angle=angle)
 
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
@@ -500,12 +503,12 @@ class GridCellEventHandlers(object):
         """Updates the entry line"""
 
         cell_code = self.grid.code_array(key)
-        post_command_event(self.grid, EntryLineMsg, text=cell_code)
+        post_command_event(self.grid, self.grid.EntryLineMsg, text=cell_code)
 
     def _update_attribute_toolbar(self, key):
         """Updates the attribute toolbar"""
 
-        post_command_event(self.grid, ToolbarUpdateMsg, key=key,
+        post_command_event(self.grid, self.grid.ToolbarUpdateMsg, key=key,
                            attr=self.grid.code_array.cell_attributes[key])
 
     # Cell selection event handlers
@@ -593,11 +596,11 @@ class GridEventHandlers(object):
         if event.ControlDown():
             if keycode == 388:
                 # Ctrl + + pressed
-                post_command_event(self.grid, ZoomInMsg)
+                post_command_event(self.grid, self.grid.ZoomInMsg)
 
             elif keycode == 390:
                 # Ctrl + - pressed
-                post_command_event(self.grid, ZoomOutMsg)
+                post_command_event(self.grid, self.grid.ZoomOutMsg)
 
         else:
             # No Ctrl pressed
@@ -693,9 +696,9 @@ class GridEventHandlers(object):
 
         if event.ControlDown():
             if event.WheelRotation > 0:
-                post_command_event(self.grid, ZoomInMsg)
+                post_command_event(self.grid, self.grid.ZoomInMsg)
             else:
-                post_command_event(self.grid, ZoomOutMsg)
+                post_command_event(self.grid, self.grid.ZoomOutMsg)
         else:
             event.Skip()
 
@@ -721,7 +724,7 @@ class GridEventHandlers(object):
             # Update statusbar
             statustext = _(u"Found '{}' in cell {}.").format(text, findpos)
 
-        post_command_event(self.grid.main_window, StatusBarMsg,
+        post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
                            text=statustext)
 
         event.Skip()
@@ -893,7 +896,7 @@ class GridEventHandlers(object):
         self.grid.GetTable().ResetView()
 
         statustext = _("Grid dimensions changed to {}.").format(new_shape)
-        post_command_event(self.grid.main_window, StatusBarMsg,
+        post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
                            text=statustext)
 
         event.Skip()

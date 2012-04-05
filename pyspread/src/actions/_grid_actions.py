@@ -61,13 +61,7 @@ from src.lib.selection import Selection
 from src.actions._main_window_actions import Actions
 from src.actions._grid_cell_actions import CellActions
 
-from src.gui._events import EVT_COMMAND_GRID_ACTION_NEW
-from src.gui._events import EVT_COMMAND_GRID_ACTION_TABLE_SWITCH
-from src.gui._events import EVT_COMMAND_GRID_ACTION_OPEN
-from src.gui._events import EVT_COMMAND_GRID_ACTION_SAVE
-from src.gui._events import post_command_event, SafeModeEntryMsg
-from src.gui._events import SafeModeExitMsg, StatusBarMsg, ContentChangedMsg
-from src.gui._events import ResizeGridMsg, GridActionTableSwitchMsg
+from src.gui._events import post_command_event
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -81,8 +75,8 @@ class FileActions(Actions):
 
         self.saving = False
 
-        self.main_window.Bind(EVT_COMMAND_GRID_ACTION_OPEN, self.open)
-        self.main_window.Bind(EVT_COMMAND_GRID_ACTION_SAVE, self.save)
+        self.main_window.Bind(self.EVT_CMD_GRID_ACTION_OPEN, self.open)
+        self.main_window.Bind(self.EVT_CMD_GRID_ACTION_SAVE, self.save)
 
     def _is_aborted(self, cycle, statustext, total_elements=None, freq=1000):
         """Displays progress and returns True if abort
@@ -109,7 +103,7 @@ class FileActions(Actions):
 
         # Show progress in statusbar each freq (1000) cells
         if cycle % freq == 0:
-            post_command_event(self.main_window, StatusBarMsg,
+            post_command_event(self.main_window, self.StatusBarMsg,
                 text=statustext.format(nele=cycle, totalele=total_elements))
 
             # Now wait for the statusbar update to be written on screen
@@ -148,25 +142,27 @@ class FileActions(Actions):
 
         self.code_array.safe_mode = False
         self.code_array.result_cache.clear()
-        post_command_event(self.main_window, SafeModeExitMsg)
+        post_command_event(self.main_window, self.SafeModeExitMsg)
 
     def approve(self, filepath):
         """Sets safe mode if signature missing of invalid"""
 
         if self.validate_signature(filepath):
             self.leave_safe_mode()
-            post_command_event(self.main_window, SafeModeExitMsg)
+            post_command_event(self.main_window, self.SafeModeExitMsg)
 
             statustext = _("Valid signature found. File is trusted.")
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
         else:
             self.enter_safe_mode()
-            post_command_event(self.main_window, SafeModeEntryMsg)
+            post_command_event(self.main_window, self.SafeModeEntryMsg)
 
             statustext = _("File is not properly signed. Safe mode "
                 "activated. Select File -> Approve to leave safe mode.")
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
     def _get_file_version(self, infile):
         """Returns infile version string."""
@@ -184,7 +180,8 @@ class FileActions(Actions):
         """Aborts file open"""
 
         statustext = _("File loading aborted.")
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
 
         infile.close()
 
@@ -246,7 +243,8 @@ class FileActions(Actions):
 
         except IOError:
             statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
             return False
 
@@ -259,12 +257,13 @@ class FileActions(Actions):
             if version != "0.1":
                 statustext = \
                     _("File version {} unsupported (not 0.1).").format(version)
-                post_command_event(self.main_window, StatusBarMsg,
+                post_command_event(self.main_window, self.StatusBarMsg,
                                    text=statustext)
                 return False
 
         except (IOError, ValueError), errortext:
-            post_command_event(self.main_window, StatusBarMsg, text=errortext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=errortext)
 
         # Parse content
 
@@ -311,7 +310,8 @@ class FileActions(Actions):
 
         except IOError:
             statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
             return False
 
@@ -337,7 +337,8 @@ class FileActions(Actions):
         signature = sign(filepath)
         if signature is None:
             statustext = _('Error signing file. File is not signed.')
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
             return
 
         signfile = open(filepath + '.sig', 'wb')
@@ -351,13 +352,15 @@ class FileActions(Actions):
         else:
             statustext = _('File signed')
 
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
 
     def _abort_save(self, filepath, outfile):
         """Aborts file save"""
 
         statustext = _("Save aborted.")
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
 
         outfile.close()
         os.remove(filepath)
@@ -390,7 +393,8 @@ class FileActions(Actions):
 
         except IOError:
             statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
             return False
 
         # Header
@@ -399,7 +403,7 @@ class FileActions(Actions):
             outfile.write("0.1\n")
 
         except IOError:
-            post_command_event(self.main_window, StatusBarMsg,
+            post_command_event(self.main_window, self.StatusBarMsg,
                                text=io_error_text)
             return False
 
@@ -434,7 +438,7 @@ class FileActions(Actions):
                     outfile.write(line.encode("utf-8"))
 
                 except IOError:
-                    post_command_event(self.main_window, StatusBarMsg,
+                    post_command_event(self.main_window, self.StatusBarMsg,
                                        text=io_error_text)
                     return False
 
@@ -450,7 +454,8 @@ class FileActions(Actions):
         self.saving = False
 
         # Mark content as unchanged
-        post_command_event(self.main_window, ContentChangedMsg, changed=False)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=False)
 
         # Sign so that the new file may be retrieved without safe mode
 
@@ -464,7 +469,8 @@ class TableRowActionsMixin(Actions):
         """Sets row height and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         tab = self.grid.current_table
 
@@ -479,7 +485,8 @@ class TableRowActionsMixin(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.code_array.insert(row, no_rows, axis=0)
 
@@ -487,7 +494,8 @@ class TableRowActionsMixin(Actions):
         """Deletes no_rows rows and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.code_array.delete(row, no_rows, axis=0)
 
@@ -499,7 +507,8 @@ class TableColumnActionsMixin(Actions):
         """Sets column width and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         tab = self.grid.current_table
 
@@ -514,7 +523,8 @@ class TableColumnActionsMixin(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.code_array.insert(col, no_cols, axis=1)
 
@@ -522,7 +532,8 @@ class TableColumnActionsMixin(Actions):
         """Deletes no_cols column and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.code_array.delete(col, no_cols, axis=1)
 
@@ -538,25 +549,27 @@ class TableTabActionsMixin(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.code_array.insert(tab, no_tabs, axis=2)
 
         # Update TableChoiceIntCtrl
         shape = self.grid.code_array.shape
-        post_command_event(self.main_window, ResizeGridMsg, shape=shape)
+        post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
 
     def delete_tabs(self, tab, no_tabs=1):
         """Deletes no_tabs tabs and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.code_array.delete(tab, no_tabs, axis=2)
 
         # Update TableChoiceIntCtrl
         shape = self.grid.code_array.shape
-        post_command_event(self.main_window, ResizeGridMsg, shape=shape)
+        post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
 
 
 class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
@@ -591,7 +604,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         """Aborts import"""
 
         statustext = _("Paste aborted.")
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
 
         self.pasting = False
         self.need_abort = False
@@ -611,7 +625,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         statustext = _("The imported data did not fit into the grid {cause}. "
             "It has been truncated. Use a larger grid for full import.").\
                 format(cause=overflow_cause)
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
 
     def paste(self, tl_key, data):
         """Pastes data into grid from top left cell tl_key, marks grid changed
@@ -627,7 +642,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.pasting = True
 
@@ -685,7 +701,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             statustext = _("{ncells} cell{plural} pasted at cell {topleft}").\
                 format(ncells=no_pasted_cells, plural=plural, topleft=tl_key)
 
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
         self.pasting = False
 
@@ -693,12 +710,13 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         """Grid shape change event handler, marks content as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.grid.code_array.shape = shape
 
         # Update TableChoiceIntCtrl
-        post_command_event(self.main_window, ResizeGridMsg, shape=shape)
+        post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
 
 
 class UnRedoActions(Actions):
@@ -708,7 +726,8 @@ class UnRedoActions(Actions):
         """Calls undo in model.code_array.unredo, marks content as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.grid.code_array.unredo.undo()
 
@@ -716,7 +735,8 @@ class UnRedoActions(Actions):
         """Calls redo in model.code_array.unredo, marks content as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         self.grid.code_array.unredo.redo()
 
@@ -731,8 +751,8 @@ class GridActions(Actions):
 
         self.prev_rowcol = []  # Last mouse over cell
 
-        self.main_window.Bind(EVT_COMMAND_GRID_ACTION_NEW, self.new)
-        self.main_window.Bind(EVT_COMMAND_GRID_ACTION_TABLE_SWITCH,
+        self.main_window.Bind(self.EVT_CMD_GRID_ACTION_NEW, self.new)
+        self.main_window.Bind(self.EVT_CMD_GRID_ACTION_TABLE_SWITCH,
                               self.switch_to_table)
 
     def new(self, event):
@@ -805,7 +825,8 @@ class GridActions(Actions):
         if status:
             statustext = _(u"Zoomed to {0:.2f}.").format(zoom)
 
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
     def zoom_in(self):
         """Zooms in by zoom factor"""
@@ -840,7 +861,8 @@ class GridActions(Actions):
             if hinttext is None:
                 hinttext = ''
 
-            post_command_event(self.main_window, StatusBarMsg, text=hinttext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=hinttext)
 
     def get_visible_area(self):
         """Returns visible area
@@ -897,7 +919,8 @@ class GridActions(Actions):
 
             statustext = _("Switched to table {}.").format(newtable)
 
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
     def get_cursor(self):
         """Returns current grid cursor cell (row, col, tab)"""
@@ -920,8 +943,8 @@ class GridActions(Actions):
             row, col, tab = value
 
             if tab != self.cursor[2]:
-                post_command_event(self.main_window, GridActionTableSwitchMsg,
-                                   newtable=tab)
+                post_command_event(self.main_window,
+                                   self.GridActionTableSwitchMsg, newtable=tab)
         else:
             row, col = value
 
@@ -993,7 +1016,8 @@ class SelectionActions(Actions):
         """Deletes selected cells, marks content as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         selection = self.get_selection()
 
@@ -1064,7 +1088,8 @@ class FindActions(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         old_code = self.grid.code_array(findpos)
         new_code = old_code.replace(find_string, replace_string)
@@ -1075,7 +1100,8 @@ class FindActions(Actions):
         statustext = _("Replaced {} with {} in cell {}.").format(\
                         old_code, new_code, findpos)
 
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
 
 
 class AllGridActions(FileActions, TableActions, UnRedoActions,

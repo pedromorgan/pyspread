@@ -43,7 +43,7 @@ import types
 
 from src.config import config
 
-from src.gui._events import post_command_event, StatusBarMsg
+from src.gui._events import post_command_event, StatusBarEventMixin
 
 
 def sniff(filepath):
@@ -292,7 +292,7 @@ class Digest(object):
 # end of class Digest
 
 
-class CsvInterface(object):
+class CsvInterface(StatusBarEventMixin):
     """CSV interface class
 
     Provides
@@ -322,7 +322,8 @@ class CsvInterface(object):
 
         except IOError, err:
             statustext = "Error opening file " + self.path + "."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
             csv_file = []
 
@@ -341,7 +342,8 @@ class CsvInterface(object):
 
         finally:
             statustext = "File " + self.csvfilename + " imported successfully."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
         csv_file.close()
 
@@ -388,7 +390,7 @@ class CsvInterface(object):
         csvfile.close()
 
 
-class TxtGenerator(object):
+class TxtGenerator(StatusBarEventMixin):
     """Generator of generators of Whitespace separated txt file cell content"""
 
     def __init__(self, main_window, path):
@@ -398,7 +400,8 @@ class TxtGenerator(object):
 
         except IOError:
             statustext = "Error opening file " + path + "."
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
             self.infile = None
 
     def __iter__(self):

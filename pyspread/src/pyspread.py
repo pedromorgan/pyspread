@@ -66,7 +66,7 @@ from wx import App
 from wx import InitAllImageHandlers
 
 
-from src.gui._events import post_command_event, GridActionOpenMsg
+from src.gui._events import post_command_event, GridActionEventMixin
 
 DEBUG = False
 
@@ -130,7 +130,7 @@ class Commandlineparser(object):
 # end of class Commandlineparser
 
 
-class MainApplication(App):
+class MainApplication(App, GridActionEventMixin):
     """Main application class for pyspread."""
 
     dimensions = (1, 1, 1)  # Will be overridden anyways
@@ -167,7 +167,7 @@ class MainApplication(App):
 
         # Load filename if provided
         if self.filepath is not None:
-            post_command_event(self.main_window, GridActionOpenMsg,
+            post_command_event(self.main_window, self.GridActionOpenMsg,
                                attr={"filepath": self.filepath})
             self.main_window.filepath = self.filepath
 

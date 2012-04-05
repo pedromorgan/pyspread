@@ -388,7 +388,7 @@ def get_gpg_passwd_from_user(stored=True):
     dlg_msg = _("Please enter your GPG key passphrase.{}")
 
     if stored:
-        dlg_msg += _('\nThe password will be stored in your keyring')
+        dlg_msg += _('\nThe password will be stored in your config file.')
 
     dlg = wx.TextEntryDialog(None, dlg_msg, _('GPG key passphrase'), '',
                              style=wx.TE_PASSWORD | wx.OK)

@@ -36,7 +36,7 @@ import i18n
 
 import wx
 
-from _events import *
+from _events import post_command_event, EventMixin
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -142,180 +142,204 @@ class _filledMenu(wx.Menu):
 # end of class _filledMenu
 
 
-class ContextMenu(_filledMenu):
+class ContextMenu(_filledMenu, EventMixin):
     """Context menu for grid operations"""
 
-    item = wx.MenuItem
-    menudata = [ \
-    [item, [CutMsg, _("Cu&t\tCtrl+x"), _("Cut cell to clipboard")]], \
-    [item, [CopyMsg, _("&Copy\tCtrl+c"),
-            _("Copy input strings to clipboard")]], \
-    [item, [PasteMsg, _("&Paste\tCtrl+v"), _("Paste cell from clipboard")]], \
-    [item, [InsertRowsMsg, _("Insert &rows\tShift+Ctrl+i"),
-            _("Insert rows at cursor")]], \
-    [item, [InsertColsMsg, _("&Insert columns\tCtrl+i"),
-            _("Insert columns at cursor")]], \
-    [item, [DeleteRowsMsg, _("Delete rows\tShift+Ctrl+d"), _("Delete rows")]],
-    [item, [DeleteColsMsg, _("Delete columns\tCtrl+Alt+d"),
-            _("Delete columns")]],
-    ]
+    def __init__(self, *args, **kwargs):
 
+        item = wx.MenuItem
+
+        self.menudata = [ \
+        [item, [self.CutMsg, _("Cu&t\tCtrl+x"), _("Cut cell to clipboard")]],
+        [item, [self.CopyMsg, _("&Copy\tCtrl+c"),
+                _("Copy input strings to clipboard")]],
+        [item, [self.PasteMsg, _("&Paste\tCtrl+v"),
+                _("Paste cell from clipboard")]],
+        [item, [self.InsertRowsMsg, _("Insert &rows\tShift+Ctrl+i"),
+                _("Insert rows at cursor")]],
+        [item, [self.InsertColsMsg, _("&Insert columns\tCtrl+i"),
+                _("Insert columns at cursor")]],
+        [item, [self.DeleteRowsMsg, _("Delete rows\tShift+Ctrl+d"),
+                _("Delete rows")]],
+        [item, [self.DeleteColsMsg, _("Delete columns\tCtrl+Alt+d"),
+                _("Delete columns")]],
+        ]
+
+        _filledMenu.__init__(self, *args, **kwargs)
 
 # end of class ContextMenu
 
 
-class MainMenu(_filledMenu):
+class MainMenu(_filledMenu, EventMixin):
     """Main application menu"""
-    item = wx.MenuItem
-    menudata = [ \
-        [wx.Menu, _("&File"), [\
-            [item, [NewMsg, _("&New\tCtrl+n"),
-                _("Create a new, empty spreadsheet"), wx.ID_NEW]], \
-            [item, [OpenMsg, _("&Open"),
-                _("Open spreadsheet from file"), wx.ID_OPEN]], \
-            ["Separator"], \
-            [item, [SaveMsg, _("&Save\tCtrl+s"),
-                    _("Save spreadsheet"), wx.ID_SAVE]], \
-            [item, [SaveAsMsg, _("Save &As\tShift+Ctrl+s"),
-                _("Save spreadsheet to a new file")], wx.ID_SAVEAS], \
-            ["Separator"], \
-            [item, [ImportMsg, _("&Import"),
-                _("Import a file and paste it into current grid")]], \
-            [item, [ExportMsg, _("&Export"),
-                _("Export selection to file (Supported formats: CSV)")]], \
-            ["Separator"], \
-            [item, [ApproveMsg, _("&Approve file"),
-                _("Approve, unfreeze and sign the current file")]], \
-            ["Separator"], \
-            [item, [PageSetupMsg, _("Page setup"),
-                _("Setup printer page")]], \
-            [item, [PrintPreviewMsg, _("Print preview\tShift+Ctrl+p"),
-                _("Print preview"), wx.ID_PREVIEW]], \
-            [item, [PrintMsg, _("&Print\tCtrl+p"),
-                _("Print current spreadsheet"), wx.ID_PRINT]], \
-            ["Separator"], \
-            [item, [PreferencesMsg, _("Preferences..."),
-                _("Change preferences of pyspread"), wx.ID_PREFERENCES]], \
-            ["Separator"], \
-            [item, [CloseMsg, _("&Quit\tCtrl+q"), _("Quit pyspread"),
-                    wx.ID_EXIT]]] \
-        ], \
-        [wx.Menu, _("&Edit"), [\
-            [item, [UndoMsg, _("&Undo\tCtrl+z"), _("Undo last step"),
-                    wx.ID_UNDO]], \
-            [item, [RedoMsg, _("&Redo\tShift+Ctrl+z"),
-                _("Redo last undone step"), wx.ID_REDO]], \
-            ["Separator"], \
-            [item, [CutMsg, _("Cu&t\tCtrl+x"), _("Cut cell to clipboard")]], \
-            [item, [CopyMsg, _("&Copy\tCtrl+c"),
-                _("Copy the input strings of the cells to clipboard")]], \
-            [item, [CopyResultMsg, _("Copy &Results\tShift+Ctrl+c"),
-                _("Copy the result strings of the cells to the clipboard")]], \
-            [item, [PasteMsg, _("&Paste\tCtrl+v"),
-                _("Paste cells from clipboard"), wx.ID_PASTE]], \
-            ["Separator"], \
-            [item, [FindFocusMsg, _("&Find\tCtrl+f"),
-                    _("Find cell by content")]], \
-            [item, [ReplaceMsg, _("Replace...\tCtrl+Shift+f"),
-                _("Replace strings in cells")]], \
-            ["Separator"], \
-            [item, [InsertRowsMsg, _("Insert &rows"),
-                _("Insert rows at cursor")]], \
-            [item, [InsertColsMsg, _("&Insert columns"),
-                _("Insert columns at cursor")]], \
-            [item, [InsertTabsMsg, _("Insert &table"),
-                _("Insert table before current table")]], \
-            ["Separator"], \
-            [item, [DeleteRowsMsg, _("Delete rows"),
-                _("Delete rows")]], \
-            [item, [DeleteColsMsg, _("Delete columns"),
-                _("Delete columns")]], \
-            [item, [DeleteTabsMsg, _("Delete table"),
-                _("Delete current table")]], \
-            ["Separator"], \
-            [item, [ShowResizeGridDialogMsg, _("Resize grid"),
-                    _("Resize grid")]]] \
-        ], \
-        [wx.Menu, _("&View"), [ \
-            [wx.Menu, _("Toolbars"), [ \
-                [item, [MainToolbarToggleMsg, _("Main toolbar"),
-                    _("Shows and hides the main toolbar.")], wx.ITEM_CHECK],
-                [item, [AttributesToolbarToggleMsg, _("Format toolbar"),
-                    _("Shows and hides the format toolbar.")], wx.ITEM_CHECK],
-                [item, [FindToolbarToggleMsg, _("Find toolbar"),
-                    _("Shows and hides the find toolbar.")], wx.ITEM_CHECK],
-                ],
-            ],
-            [item, [EntryLineToggleMsg, _("Entry line"),
-                    _("Shows and hides the entry line.")], wx.ITEM_CHECK],
-            [item, [TableChoiceToggleMsg, _("Table choice"),
-                    _("Shows and hides the table choice.")], wx.ITEM_CHECK],
-            ["Separator"], \
-            [item, [DisplayGotoCellDialogMsg, _("Go to cell\tCtrl+G"),
-                        _("Moves the grid to a cell.")]],
-            ["Separator"], \
-            [item, [ZoomInMsg, _("Zoom in\tCtrl++"),
-                        _("Zoom in grid.")]],
-            [item, [ZoomOutMsg, _("Zoom out\tCtrl+-"),
-                        _("Zoom out grid.")]],
-            [item, [ZoomStandardMsg, _("Normal size\tCtrl+0"),
-                        _("Show grid in standard zoom.")]],
-            ["Separator"], \
-            [item, [RefreshSelectionMsg, _("Refresh selected cells\tF5"),
-                        _("Refresh selected cells even when frozen")]],
+
+    def __init__(self, *args, **kwargs):
+
+        item = wx.MenuItem
+
+        self.menudata = [ \
+            [wx.Menu, _("&File"), [\
+                [item, [self.NewMsg, _("&New\tCtrl+n"),
+                    _("Create a new, empty spreadsheet"), wx.ID_NEW]], \
+                [item, [self.OpenMsg, _("&Open"),
+                    _("Open spreadsheet from file"), wx.ID_OPEN]], \
+                ["Separator"], \
+                [item, [self.SaveMsg, _("&Save\tCtrl+s"),
+                        _("Save spreadsheet"), wx.ID_SAVE]], \
+                [item, [self.SaveAsMsg, _("Save &As\tShift+Ctrl+s"),
+                    _("Save spreadsheet to a new file")], wx.ID_SAVEAS], \
+                ["Separator"], \
+                [item, [self.ImportMsg, _("&Import"),
+                    _("Import a file and paste it into current grid")]], \
+                [item, [self.ExportMsg, _("&Export"),
+                    _("Export selection to file (Supported formats: CSV)")]], \
+                ["Separator"], \
+                [item, [self.ApproveMsg, _("&Approve file"),
+                    _("Approve, unfreeze and sign the current file")]], \
+                ["Separator"], \
+                [item, [self.PageSetupMsg, _("Page setup"),
+                    _("Setup printer page")]], \
+                [item, [self.PrintPreviewMsg, _("Print preview\tShift+Ctrl+p"),
+                    _("Print preview"), wx.ID_PREVIEW]], \
+                [item, [self.PrintMsg, _("&Print\tCtrl+p"),
+                    _("Print current spreadsheet"), wx.ID_PRINT]], \
+                ["Separator"], \
+                [item, [self.PreferencesMsg, _("Preferences..."),
+                    _("Change preferences of pyspread"), wx.ID_PREFERENCES]], \
+                ["Separator"], \
+                [item, [self.CloseMsg, _("&Quit\tCtrl+q"), _("Quit pyspread"),
+                        wx.ID_EXIT]]] \
             ], \
-        ], \
-        [wx.Menu, _("F&ormat"), [ \
-            [item, [FontDialogMsg, _("Font..."),
-                        _("Launch font dialog.")]],
-            [item, [FontUnderlineMsg, _("Underline"),
-                        _("Toggles underline."), wx.ID_UNDERLINE]],
-            [item, [FontStrikethroughMsg, _("Strikethrough"),
-                        _("Toggles strikethrough.")]],
-            ["Separator"], \
-            [item, [FrozenMsg, _("Frozen"),
-                     _("Toggles frozen state of cell. ") + \
-                     _("Frozen cells are updated only when F5 is pressed.")]],
-            ["Separator"], \
-            [wx.Menu, _("Justification"), [ \
-                [item, [JustificationMsg, justification, justification] \
-                ] for justification in [_("Left"), _("Center"), _("Right")]]
+            [wx.Menu, _("&Edit"), [\
+                [item, [self.UndoMsg, _("&Undo\tCtrl+z"), _("Undo last step"),
+                        wx.ID_UNDO]], \
+                [item, [self.RedoMsg, _("&Redo\tShift+Ctrl+z"),
+                    _("Redo last undone step"), wx.ID_REDO]], \
+                ["Separator"], \
+                [item, [self.CutMsg, _("Cu&t\tCtrl+x"),
+                        _("Cut cell to clipboard")]], \
+                [item, [self.CopyMsg, _("&Copy\tCtrl+c"),
+                    _("Copy the input strings of the cells to clipboard")]], \
+                [item, [self.CopyResultMsg, _("Copy &Results\tShift+Ctrl+c"),
+                  _("Copy the result strings of the cells to the clipboard")]],
+                [item, [self.PasteMsg, _("&Paste\tCtrl+v"),
+                    _("Paste cells from clipboard"), wx.ID_PASTE]], \
+                ["Separator"], \
+                [item, [self.FindFocusMsg, _("&Find\tCtrl+f"),
+                        _("Find cell by content")]], \
+                [item, [self.ReplaceMsg, _("Replace...\tCtrl+Shift+f"),
+                    _("Replace strings in cells")]], \
+                ["Separator"], \
+                [item, [self.InsertRowsMsg, _("Insert &rows"),
+                    _("Insert rows at cursor")]], \
+                [item, [self.InsertColsMsg, _("&Insert columns"),
+                    _("Insert columns at cursor")]], \
+                [item, [self.InsertTabsMsg, _("Insert &table"),
+                    _("Insert table before current table")]], \
+                ["Separator"], \
+                [item, [self.DeleteRowsMsg, _("Delete rows"),
+                    _("Delete rows")]], \
+                [item, [self.DeleteColsMsg, _("Delete columns"),
+                    _("Delete columns")]], \
+                [item, [self.DeleteTabsMsg, _("Delete table"),
+                    _("Delete current table")]], \
+                ["Separator"], \
+                [item, [self.ShowResizeGridDialogMsg, _("Resize grid"),
+                        _("Resize grid")]]] \
+            ], \
+            [wx.Menu, _("&View"), [ \
+                [wx.Menu, _("Toolbars"), [ \
+                    [item, [self.MainToolbarToggleMsg, _("Main toolbar"),
+                            _("Shows and hides the main toolbar.")],
+                        wx.ITEM_CHECK],
+                    [item, [self.AttributesToolbarToggleMsg,
+                            _("Format toolbar"),
+                            _("Shows and hides the format toolbar.")],
+                        wx.ITEM_CHECK],
+                    [item, [self.FindToolbarToggleMsg, _("Find toolbar"),
+                        _("Shows and hides the find toolbar.")],
+                        wx.ITEM_CHECK],
+                    ],
+                ],
+                [item, [self.EntryLineToggleMsg, _("Entry line"),
+                        _("Shows and hides the entry line.")], wx.ITEM_CHECK],
+                [item, [self.TableChoiceToggleMsg, _("Table choice"),
+                        _("Shows and hides the table choice.")],
+                    wx.ITEM_CHECK],
+                ["Separator"], \
+                [item, [self.DisplayGotoCellDialogMsg, _("Go to cell\tCtrl+G"),
+                            _("Moves the grid to a cell.")]],
+                ["Separator"], \
+                [item, [self.ZoomInMsg, _("Zoom in\tCtrl++"),
+                            _("Zoom in grid.")]],
+                [item, [self.ZoomOutMsg, _("Zoom out\tCtrl+-"),
+                            _("Zoom out grid.")]],
+                [item, [self.ZoomStandardMsg, _("Normal size\tCtrl+0"),
+                            _("Show grid in standard zoom.")]],
+                ["Separator"], \
+                [item, [self.RefreshSelectionMsg,
+                        _("Refresh selected cells\tF5"),
+                        _("Refresh selected cells even when frozen")]],
                 ], \
-            [wx.Menu, _("Alignment"), [ \
-                [item, [AlignmentMsg, alignment, alignment] \
-                ] for alignment in [_("Top"), _("Center"), _("Bottom")]]
+            ], \
+            [wx.Menu, _("F&ormat"), [ \
+                [item, [self.FontDialogMsg, _("Font..."),
+                            _("Launch font dialog.")]],
+                [item, [self.FontUnderlineMsg, _("Underline"),
+                            _("Toggles underline."), wx.ID_UNDERLINE]],
+                [item, [self.FontStrikethroughMsg, _("Strikethrough"),
+                            _("Toggles strikethrough.")]],
+                ["Separator"], \
+                [item, [self.FrozenMsg, _("Frozen"),
+                      _("Toggles frozen state of cell. ") + \
+                      _("Frozen cells are updated only when F5 is pressed.")]],
+                ["Separator"], \
+                [wx.Menu, _("Justification"), [ \
+                    [item, [self.JustificationMsg, justification,
+                            justification] \
+                    ] \
+                    for justification in [_("Left"), _("Center"), _("Right")]]
                 ], \
-            ["Separator"], \
-            [item, [TextColorDialogMsg, _("Text color..."),
-                    _("Launch color dialog to specify text color.")]],
-            [item, [BgColorDialogMsg, _("Background color..."),
+                [wx.Menu, _("Alignment"), [ \
+                    [item, [self.AlignmentMsg, alignment, alignment] \
+                    ] for alignment in [_("Top"), _("Center"), _("Bottom")]]
+                ], \
+                ["Separator"], \
+                [item, [self.TextColorDialogMsg, _("Text color..."),
+                        _("Launch color dialog to specify text color.")]],
+                [item, [self.BgColorDialogMsg, _("Background color..."),
                     _("Launch color dialog to specify background color.")]],
-            ["Separator"], \
-            [item, [RotationDialogMsg, _("Rotation..."),
-                    _("Set text rotation.")]
-                ]
-            ],
-        ], \
-        [wx.Menu, _("&Macro"), [\
-            [item, [MacroListMsg, _("&Macro list\tCtrl+m"),
-                        _("Choose, fill in, manage, and create macros")]], \
-            [item, [MacroLoadMsg, _("&Load macro list"),
-                        _("Load macro list")]], \
-            [item, [MacroSaveMsg, _("&Save macro list"),
-                        _("Save macro list")]]]], \
-        [wx.Menu, _("&Help"), [\
-            [item, [ManualMsg, _("First &Steps"),
-                _("Launch First Steps in pyspread")]],
-            [item, [TutorialMsg, _("&Tutorial"), _("Launch tutorial")]],
-            [item, [FaqMsg, _("&FAQ"), _("Frequently asked questions")]],
-            ["Separator"], \
-            [item, [PythonTutorialMsg, _("&Python tutorial"),
-                _("Python tutorial for coding information (online)")]],
-            ["Separator"], \
-            [item, [AboutMsg, _("&About"), _("About pyspread"), wx.ID_ABOUT]],
+                ["Separator"], \
+                [item, [self.RotationDialogMsg, _("Rotation..."),
+                        _("Set text rotation.")]
+                    ]
+                ],
+            ], \
+            [wx.Menu, _("&Macro"), [\
+                [item, [self.MacroListMsg, _("&Macro list\tCtrl+m"),
+                            _("Choose, fill in, manage, and create macros")]],
+                [item, [self.MacroLoadMsg, _("&Load macro list"),
+                            _("Load macro list")]], \
+                [item, [self.MacroSaveMsg, _("&Save macro list"),
+                            _("Save macro list")]]]], \
+            [wx.Menu, _("&Help"), [\
+                [item, [self.ManualMsg, _("First &Steps"),
+                    _("Launch First Steps in pyspread")]],
+                [item, [self.TutorialMsg, _("&Tutorial"),
+                        _("Launch tutorial")]],
+                [item, [self.FaqMsg, _("&FAQ"),
+                        _("Frequently asked questions")]],
+                ["Separator"], \
+                [item, [self.PythonTutorialMsg, _("&Python tutorial"),
+                    _("Python tutorial for coding information (online)")]],
+                ["Separator"], \
+                [item, [self.AboutMsg, _("&About"), _("About pyspread"),
+                        wx.ID_ABOUT]],
+                ] \
             ] \
-        ] \
-    ]
+        ]
+
+        _filledMenu.__init__(self, *args, **kwargs)
 
     def enable_file_approve(self, enable=True):
         """Enables or disables menu item (for entering/leaving save mode)"""

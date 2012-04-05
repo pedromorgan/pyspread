@@ -49,7 +49,7 @@ from src.gui.icons import icons
 
 from _grid import Grid
 
-from _events import *
+from _events import post_command_event, EventMixin
 
 from src.actions._main_window_actions import AllMainWindowActions
 
@@ -57,7 +57,7 @@ from src.actions._main_window_actions import AllMainWindowActions
 _ = i18n.language.ugettext
 
 
-class MainWindow(wx.Frame):
+class MainWindow(wx.Frame, EventMixin):
     """Main window of pyspread"""
 
     def __init__(self, parent, *args, **kwargs):
@@ -85,14 +85,14 @@ class MainWindow(wx.Frame):
         self.SetMenuBar(self.menubar)
 
         # Disable menu item for leaving safe mode
-        post_command_event(self, SafeModeExitMsg)
+        post_command_event(self, self.SafeModeExitMsg)
 
         # Status bar
         statusbar = StatusBar(self)
         self.SetStatusBar(statusbar)
 
         welcome_text = _("Welcome to pyspread.")
-        post_command_event(self, StatusBarMsg, text=welcome_text)
+        post_command_event(self, self.StatusBarMsg, text=welcome_text)
 
         # Toolbars
         self.main_toolbar = MainToolbar(self, -1)
@@ -154,7 +154,7 @@ class MainWindow(wx.Frame):
         self.SetMinSize((2, 2))
 
         # Leave save mode
-        post_command_event(self, SafeModeExitMsg)
+        post_command_event(self, self.SafeModeExitMsg)
 
     def _set_menu_toggles(self):
         """Enable menu bar view item checkmarks"""
@@ -173,7 +173,7 @@ class MainWindow(wx.Frame):
             pane = self._mgr.GetPane(pane_name)
 
             # Get menu item to toggle
-            toggle_id = self.menubar.FindMenuItem("View", toggle_label)
+            toggle_id = self.menubar.FindMenuItem(_("View"), toggle_label)
             toggle_item = self.menubar.FindItemById(toggle_id)
 
             # Adjust toggle to pane visibility
@@ -234,77 +234,77 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_SIZE, handlers.OnSize)
 
         # Content changed event, adjusts title bar with star
-        self.Bind(EVT_CONTENT_CHANGED, handlers.OnContentChanged)
+        self.Bind(self.EVT_CONTENT_CHANGED, handlers.OnContentChanged)
 
         # Program state events
 
-        self.Bind(EVT_COMMAND_TITLE, handlers.OnTitle)
-        self.Bind(EVT_COMMAND_SAFE_MODE_ENTRY, handlers.OnSafeModeEntry)
-        self.Bind(EVT_COMMAND_SAFE_MODE_EXIT, handlers.OnSafeModeExit)
+        self.Bind(self.EVT_CMD_TITLE, handlers.OnTitle)
+        self.Bind(self.EVT_CMD_SAFE_MODE_ENTRY, handlers.OnSafeModeEntry)
+        self.Bind(self.EVT_CMD_SAFE_MODE_EXIT, handlers.OnSafeModeExit)
         self.Bind(wx.EVT_CLOSE, handlers.OnClose)
-        self.Bind(EVT_COMMAND_CLOSE, handlers.OnClose)
+        self.Bind(self.EVT_CMD_CLOSE, handlers.OnClose)
 
         # Preferences events
 
-        self.Bind(EVT_COMMAND_PREFERENCES, handlers.OnPreferences)
+        self.Bind(self.EVT_CMD_PREFERENCES, handlers.OnPreferences)
 
         # Toolbar toggle events
 
-        self.Bind(EVT_COMMAND_MAINTOOLBAR_TOGGLE,
+        self.Bind(self.EVT_CMD_MAINTOOLBAR_TOGGLE,
                   handlers.OnMainToolbarToggle)
-        self.Bind(EVT_COMMAND_ATTRIBUTESTOOLBAR_TOGGLE,
+        self.Bind(self.EVT_CMD_ATTRIBUTESTOOLBAR_TOGGLE,
                   handlers.OnAttributesToolbarToggle)
-        self.Bind(EVT_COMMAND_FIND_TOOLBAR_TOGGLE,
+        self.Bind(self.EVT_CMD_FIND_TOOLBAR_TOGGLE,
                   handlers.OnFindToolbarToggle)
-        self.Bind(EVT_COMMAND_ENTRYLINE_TOGGLE,
+        self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
-        self.Bind(EVT_COMMAND_TABLECHOICE_TOGGLE,
+        self.Bind(self.EVT_CMD_TABLECHOICE_TOGGLE,
                   handlers.OnTableChoiceToggle)
 
         # File events
 
-        self.Bind(EVT_COMMAND_NEW, handlers.OnNew)
-        self.Bind(EVT_COMMAND_OPEN, handlers.OnOpen)
-        self.Bind(EVT_COMMAND_SAVE, handlers.OnSave)
-        self.Bind(EVT_COMMAND_SAVEAS, handlers.OnSaveAs)
-        self.Bind(EVT_COMMAND_IMPORT, handlers.OnImport)
-        self.Bind(EVT_COMMAND_EXPORT, handlers.OnExport)
-        self.Bind(EVT_COMMAND_APPROVE, handlers.OnApprove)
+        self.Bind(self.EVT_CMD_NEW, handlers.OnNew)
+        self.Bind(self.EVT_CMD_OPEN, handlers.OnOpen)
+        self.Bind(self.EVT_CMD_SAVE, handlers.OnSave)
+        self.Bind(self.EVT_CMD_SAVEAS, handlers.OnSaveAs)
+        self.Bind(self.EVT_CMD_IMPORT, handlers.OnImport)
+        self.Bind(self.EVT_CMD_EXPORT, handlers.OnExport)
+        self.Bind(self.EVT_CMD_APPROVE, handlers.OnApprove)
 
         # Find events
-        self.Bind(EVT_COMMAND_FOCUSFIND, handlers.OnFocusFind)
+        self.Bind(self.EVT_CMD_FOCUSFIND, handlers.OnFocusFind)
 
         # Format events
-        self.Bind(EVT_COMMAND_FONTDIALOG, handlers.OnFontDialog)
-        self.Bind(EVT_COMMAND_TEXTCOLORDIALOG, handlers.OnTextColorDialog)
-        self.Bind(EVT_COMMAND_BGCOLORDIALOG, handlers.OnBgColorDialog)
+        self.Bind(self.EVT_CMD_FONTDIALOG, handlers.OnFontDialog)
+        self.Bind(self.EVT_CMD_TEXTCOLORDIALOG, handlers.OnTextColorDialog)
+        self.Bind(self.EVT_CMD_BGCOLORDIALOG, handlers.OnBgColorDialog)
 
         # Print events
 
-        self.Bind(EVT_COMMAND_PAGE_SETUP, handlers.OnPageSetup)
-        self.Bind(EVT_COMMAND_PRINT_PREVIEW, handlers.OnPrintPreview)
-        self.Bind(EVT_COMMAND_PRINT, handlers.OnPrint)
+        self.Bind(self.EVT_CMD_PAGE_SETUP, handlers.OnPageSetup)
+        self.Bind(self.EVT_CMD_PRINT_PREVIEW, handlers.OnPrintPreview)
+        self.Bind(self.EVT_CMD_PRINT, handlers.OnPrint)
 
         # Clipboard events
 
-        self.Bind(EVT_COMMAND_CUT, handlers.OnCut)
-        self.Bind(EVT_COMMAND_COPY, handlers.OnCopy)
-        self.Bind(EVT_COMMAND_COPY_RESULT, handlers.OnCopyResult)
-        self.Bind(EVT_COMMAND_PASTE, handlers.OnPaste)
+        self.Bind(self.EVT_CMD_CUT, handlers.OnCut)
+        self.Bind(self.EVT_CMD_COPY, handlers.OnCopy)
+        self.Bind(self.EVT_CMD_COPY_RESULT, handlers.OnCopyResult)
+        self.Bind(self.EVT_CMD_PASTE, handlers.OnPaste)
 
         # Help events
 
-        self.Bind(EVT_COMMAND_MANUAL, handlers.OnManual)
-        self.Bind(EVT_COMMAND_TUTORIAL, handlers.OnTutorial)
-        self.Bind(EVT_COMMAND_FAQ, handlers.OnFaq)
-        self.Bind(EVT_COMMAND_PYTHON_TURORIAL, handlers.OnPythonTutorial)
-        self.Bind(EVT_COMMAND_ABOUT, handlers.OnAbout)
+        self.Bind(self.EVT_CMD_MANUAL, handlers.OnManual)
+        self.Bind(self.EVT_CMD_TUTORIAL, handlers.OnTutorial)
+        self.Bind(self.EVT_CMD_FAQ, handlers.OnFaq)
+        self.Bind(self.EVT_CMD_PYTHON_TURORIAL, handlers.OnPythonTutorial)
+        self.Bind(self.EVT_CMD_ABOUT, handlers.OnAbout)
 
-        self.Bind(EVT_COMMAND_MACROLIST, handlers.OnMacroList)
-        self.Bind(EVT_COMMAND_MACROREPLACE, handlers.OnMacroReplace)
-        self.Bind(EVT_COMMAND_MACROEXECUTE, handlers.OnMacroExecute)
-        self.Bind(EVT_COMMAND_MACROLOAD, handlers.OnMacroListLoad)
-        self.Bind(EVT_COMMAND_MACROSAVE, handlers.OnMacroListSave)
+        self.Bind(self.EVT_CMD_MACROLIST, handlers.OnMacroList)
+        self.Bind(self.EVT_CMD_MACROREPLACE, handlers.OnMacroReplace)
+        self.Bind(self.EVT_CMD_MACROEXECUTE, handlers.OnMacroExecute)
+        self.Bind(self.EVT_CMD_MACROLOAD, handlers.OnMacroListLoad)
+        self.Bind(self.EVT_CMD_MACROSAVE, handlers.OnMacroListSave)
 
     def set_icon(self, bmp):
         """Sets main window icon to given wx.Bitmap"""
@@ -361,12 +361,14 @@ class MainWindowEventHandlers(object):
             # Put * in front of title
             if title[:2] != "* ":
                 new_title = "* " + title
-                post_command_event(self.main_window, TitleMsg, text=new_title)
+                post_command_event(self.main_window, self.main_window.TitleMsg,
+                                   text=new_title)
 
         elif title[:2] == "* ":
             # Remove * in front of title
             new_title = title[2:]
-            post_command_event(self.main_window, TitleMsg, text=new_title)
+            post_command_event(self.main_window, self.main_window.TitleMsg,
+                               text=new_title)
 
     def OnTitle(self, event):
         """Title change event handler"""
@@ -409,7 +411,7 @@ class MainWindowEventHandlers(object):
 
             elif save_choice:
                 # User wants to save content
-                post_command_event(self.main_window, SaveMsg)
+                post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Save the AUI state
 
@@ -532,7 +534,7 @@ class MainWindowEventHandlers(object):
 
             elif save_choice:
                 # User wants to save content
-                post_command_event(self.main_window, SaveMsg)
+                post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get grid dimensions
 
@@ -546,20 +548,24 @@ class MainWindowEventHandlers(object):
         # Set new filepath and post it to the title bar
 
         self.main_window.filepath = None
-        post_command_event(self.main_window, TitleMsg, text="pyspread")
+        post_command_event(self.main_window, self.main_window.TitleMsg,
+                           text="pyspread")
 
         # Create new grid
-        post_command_event(self.main_window, GridActionNewMsg, shape=shape)
+        post_command_event(self.main_window, self.main_window.GridActionNewMsg,
+                           shape=shape)
 
         # Update TableChoiceIntCtrl
-        post_command_event(self.main_window, ResizeGridMsg, shape=shape)
+        post_command_event(self.main_window, self.main_window.ResizeGridMsg,
+                           shape=shape)
 
         self.main_window.grid.GetTable().ResetView()
         self.main_window.grid.ForceRefresh()
 
         # Display grid creation in status bar
         statustext = _("New grid with dimensions {} created.").format(shape)
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window, self.main_window.StatusBarMsg,
+                           text=statustext)
 
         self.main_window.grid.ForceRefresh()
 
@@ -577,7 +583,7 @@ class MainWindowEventHandlers(object):
 
             elif save_choice:
                 # User wants to save content
-                post_command_event(self.main_window, SaveMsg)
+                post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get filepath from user
 
@@ -595,18 +601,15 @@ class MainWindowEventHandlers(object):
         self.main_window.filepath = filepath
 
         # Load file into grid
-        post_command_event(self.main_window, GridActionOpenMsg,
+        post_command_event(self.main_window,
+                           self.main_window.GridActionOpenMsg,
                            attr={"filepath": filepath})
 
         # Set Window title to new filepath
 
         title_text = filepath.split("/")[-1] + " - pyspread"
-        post_command_event(self.main_window, TitleMsg, text=title_text)
-
-        # Display file load in status bar
-
-        #statustext = "File " + filepath + " loaded."
-        #post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window,
+                           self.main_window.TitleMsg, text=title_text)
 
         self.main_window.grid.ForceRefresh()
 
@@ -616,18 +619,22 @@ class MainWindowEventHandlers(object):
         # If there is no filepath then jump to save as
 
         if self.main_window.filepath is None:
-            post_command_event(self.main_window, SaveAsMsg)
+            post_command_event(self.main_window,
+                               self.main_window.SaveAsMsg)
             return
 
         # Save the grid
 
-        post_command_event(self.main_window, GridActionSaveMsg,
+        post_command_event(self.main_window,
+                           self.main_window.GridActionSaveMsg,
                            attr={"filepath": self.main_window.filepath})
 
         # Display file save in status bar
 
         statustext = self.main_window.filepath.split("/")[-1] + " saved."
-        post_command_event(self.main_window, StatusBarMsg, text=statustext)
+        post_command_event(self.main_window,
+                           self.main_window.StatusBarMsg,
+                           text=statustext)
 
     def OnSaveAs(self, event):
         """File save as event handler"""
@@ -648,7 +655,8 @@ class MainWindowEventHandlers(object):
             if not os.path.isfile(filepath):
                 # There is a directory with the same path
                 statustext = _("Directory present. Save aborted.")
-                post_command_event(self.main_window, StatusBarMsg,
+                post_command_event(self.main_window,
+                                   self.main_window.StatusBarMsg,
                                    text=statustext)
                 return 0
 
@@ -660,8 +668,9 @@ class MainWindowEventHandlers(object):
                         message, short_message):
 
                 statustext = _("File present. Save aborted by user.")
-                post_command_event(self.main_window, StatusBarMsg,
-                               text=statustext)
+                post_command_event(self.main_window,
+                                   self.main_window.StatusBarMsg,
+                                   text=statustext)
                 return 0
 
         # Put pys suffix if wildcard choice is 0
@@ -673,10 +682,11 @@ class MainWindowEventHandlers(object):
 
         # Set Window title to new filepath
         title_text = filepath.split("/")[-1] + " - pyspread"
-        post_command_event(self.main_window, TitleMsg, text=title_text)
+        post_command_event(self.main_window, self.main_window.TitleMsg,
+                           text=title_text)
 
         # Now jump to save
-        post_command_event(self.main_window, SaveMsg)
+        post_command_event(self.main_window, self.main_window.SaveMsg)
 
     def OnImport(self, event):
         """File import event handler"""
@@ -773,7 +783,8 @@ class MainWindowEventHandlers(object):
             # Display safe mode end in status bar
 
             statustext = _("Safe mode deactivated.")
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.main_window.StatusBarMsg,
+                               text=statustext)
 
     # Print events
 
@@ -897,13 +908,15 @@ class MainWindowEventHandlers(object):
             fontdata = dlg.GetFontData()
             font = fontdata.GetChosenFont()
 
-            post_command_event(self.main_window, FontMsg, font=font.FaceName)
-            post_command_event(self.main_window, FontSizeMsg,
+            post_command_event(self.main_window, self.main_window.FontMsg,
+                               font=font.FaceName)
+            post_command_event(self.main_window, self.main_window.FontSizeMsg,
                                size=font.GetPointSize())
 
-            post_command_event(self.main_window, FontBoldMsg,
+            post_command_event(self.main_window, self.main_window.FontBoldMsg,
                                weight=font.GetWeightString())
-            post_command_event(self.main_window, FontItalicsMsg,
+            post_command_event(self.main_window,
+                               self.main_window.FontItalicsMsg,
                                style=font.GetStyleString())
 
     def OnTextColorDialog(self, event):
@@ -921,7 +934,8 @@ class MainWindowEventHandlers(object):
             data = dlg.GetColourData()
             color = data.GetColour().GetRGB()
 
-            post_command_event(self.main_window, TextColorMsg, color=color)
+            post_command_event(self.main_window, self.main_window.TextColorMsg,
+                               color=color)
 
         dlg.Destroy()
 
@@ -940,7 +954,8 @@ class MainWindowEventHandlers(object):
             data = dlg.GetColourData()
             color = data.GetColour().GetRGB()
 
-            post_command_event(self.main_window, BackgroundColorMsg,
+            post_command_event(self.main_window,
+                               self.main_window.BackgroundColorMsg,
                                color=color)
 
         dlg.Destroy()
@@ -981,7 +996,7 @@ class MainWindowEventHandlers(object):
 
         # Enter safe mode because macro file could be harmful
 
-        post_command_event(self.main_window, SafeModeEntryMsg)
+        post_command_event(self.main_window, self.main_window.SafeModeEntryMsg)
 
         # Load macros from file
 

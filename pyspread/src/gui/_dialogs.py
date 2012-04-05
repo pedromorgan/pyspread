@@ -44,6 +44,7 @@ import cStringIO
 import csv
 import i18n
 import os
+import string
 import types
 
 import wx
@@ -52,10 +53,11 @@ from wx.lib.wordwrap import wordwrap
 import wx.lib.masked
 import wx.stc as stc
 
-from src.config import config
+from src.config import config, VERSION
 from src.sysvars import get_program_path
 from src.gui._widgets import PythonSTC
-from src.gui._events import *
+from src.gui._events import post_command_event
+from src.gui._events import MainWindowEventMixin, GridEventMixin
 from src.lib.__csv import Digest, sniff, get_first_line
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
 
@@ -739,7 +741,7 @@ class CsvExportDialog(wx.Dialog):
 # end of class CsvImportDialog
 
 
-class MacroDialog(wx.Frame):
+class MacroDialog(wx.Frame, MainWindowEventMixin):
     """Macro management dialog"""
 
     def __init__(self, parent, macros, *args, **kwds):
@@ -837,8 +839,9 @@ class MacroDialog(wx.Frame):
     def OnApply(self, event):
         """Event handler for Apply button"""
 
-        post_command_event(self.parent, MacroReplaceMsg, macros=self.macros)
-        post_command_event(self.parent, MacroExecuteMsg)
+        post_command_event(self.parent, self.MacroReplaceMsg,
+                           macros=self.macros)
+        post_command_event(self.parent, self.MacroExecuteMsg)
 
         event.Skip()
 
@@ -966,7 +969,7 @@ class DimensionsEntryDialog(wx.Dialog):
 # end of class DimensionsEntryDialog
 
 
-class CellEntryDialog(wx.Dialog):
+class CellEntryDialog(wx.Dialog, GridEventMixin):
     """Allows entring three digits"""
 
     def __init__(self, parent):
@@ -1043,7 +1046,7 @@ class CellEntryDialog(wx.Dialog):
 
         # Post event
 
-        post_command_event(self.parent, GotoCellMsg, key=tuple(key))
+        post_command_event(self.parent, self.GotoCellMsg, key=tuple(key))
 
 
 class AboutDialog(object):

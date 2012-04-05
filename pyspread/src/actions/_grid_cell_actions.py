@@ -25,8 +25,7 @@ import wx
 
 from src.lib.selection import Selection
 from src.actions._main_window_actions import Actions
-from src.gui._events import post_command_event, EntryLineMsg, ContentChangedMsg
-from src.gui._events import StatusBarMsg
+from src.gui._events import post_command_event
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -61,7 +60,7 @@ class CellActions(Actions):
 
         if not (old_code is None and not code) and code != old_code:
             # Mark content as changed
-            post_command_event(self.main_window, ContentChangedMsg,
+            post_command_event(self.main_window, self.ContentChangedMsg,
                                changed=True)
 
         # Set cell code
@@ -164,7 +163,8 @@ class CellActions(Actions):
         else:
             new_code = old_code + code
 
-        post_command_event(self.grid.main_window, EntryLineMsg, text=new_code)
+        post_command_event(self.grid.main_window, self.EntryLineMsg,
+                           text=new_code)
 
     def _set_cell_attr(self, selection, table, attr):
         """Sets cell attr for key cell and mark grid content as changed
@@ -184,7 +184,8 @@ class CellActions(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, ContentChangedMsg, changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
 
         if selection is not None:
             self.code_array.cell_attributes.undoable_append( \
@@ -246,7 +247,6 @@ class CellActions(Actions):
 
         else:
             # Adjust selection so that only bounding box edge is in selection
-            print selection
             bbox_tl, bbox_lr = selection.get_bbox()
             if "top" in borders:
                 adj_selection = Selection([bbox_tl],
@@ -297,7 +297,8 @@ class CellActions(Actions):
 
         if self.grid.selection:
             statustext = _("Freezing selections is not supported.")
-            post_command_event(self.main_window, StatusBarMsg, text=statustext)
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
 
         cursor = self.grid.actions.cursor
 
