@@ -150,11 +150,12 @@ class ContextMenu(_filledMenu, EventMixin):
         item = wx.MenuItem
 
         self.menudata = [ \
-        [item, [self.CutMsg, _("Cu&t\tCtrl+x"), _("Cut cell to clipboard")]],
+        [item, [self.CutMsg, _("Cu&t\tCtrl+x"), _("Cut cell to clipboard"),
+                wx.ID_CUT]],
         [item, [self.CopyMsg, _("&Copy\tCtrl+c"),
-                _("Copy input strings to clipboard")]],
+                _("Copy input strings to clipboard"), wx.ID_COPY]],
         [item, [self.PasteMsg, _("&Paste\tCtrl+v"),
-                _("Paste cell from clipboard")]],
+                _("Paste cells from clipboard"), wx.ID_PASTE]],
         [item, [self.InsertRowsMsg, _("Insert &rows\tShift+Ctrl+i"),
                 _("Insert rows at cursor")]],
         [item, [self.InsertColsMsg, _("&Insert columns\tCtrl+i"),
@@ -198,7 +199,7 @@ class MainMenu(_filledMenu, EventMixin):
                     _("Approve, unfreeze and sign the current file")]], \
                 ["Separator"], \
                 [item, [self.PageSetupMsg, _("Page setup"),
-                    _("Setup printer page")]], \
+                    _("Setup printer page"), wx.ID_PAGE_SETUP]], \
                 [item, [self.PrintPreviewMsg, _("Print preview\tShift+Ctrl+p"),
                     _("Print preview"), wx.ID_PREVIEW]], \
                 [item, [self.PrintMsg, _("&Print\tCtrl+p"),
@@ -217,18 +218,19 @@ class MainMenu(_filledMenu, EventMixin):
                     _("Redo last undone step"), wx.ID_REDO]], \
                 ["Separator"], \
                 [item, [self.CutMsg, _("Cu&t\tCtrl+x"),
-                        _("Cut cell to clipboard")]], \
+                        _("Cut cell to clipboard"), wx.ID_CUT]], \
                 [item, [self.CopyMsg, _("&Copy\tCtrl+c"),
-                    _("Copy the input strings of the cells to clipboard")]], \
+                    _("Copy the input strings of the cells to clipboard"),
+                    wx.ID_COPY]],
                 [item, [self.CopyResultMsg, _("Copy &Results\tShift+Ctrl+c"),
                   _("Copy the result strings of the cells to the clipboard")]],
                 [item, [self.PasteMsg, _("&Paste\tCtrl+v"),
                     _("Paste cells from clipboard"), wx.ID_PASTE]], \
                 ["Separator"], \
                 [item, [self.FindFocusMsg, _("&Find\tCtrl+f"),
-                        _("Find cell by content")]], \
+                        _("Find cell by content"), wx.ID_FIND]], \
                 [item, [self.ReplaceMsg, _("Replace...\tCtrl+Shift+f"),
-                    _("Replace strings in cells")]], \
+                    _("Replace strings in cells"), wx.ID_REPLACE]], \
                 ["Separator"], \
                 [item, [self.InsertRowsMsg, _("Insert &rows"),
                     _("Insert rows at cursor")]], \
@@ -271,15 +273,16 @@ class MainMenu(_filledMenu, EventMixin):
                             _("Moves the grid to a cell.")]],
                 ["Separator"], \
                 [item, [self.ZoomInMsg, _("Zoom in\tCtrl++"),
-                            _("Zoom in grid.")]],
+                            _("Zoom in grid."), wx.ID_ZOOM_IN]],
                 [item, [self.ZoomOutMsg, _("Zoom out\tCtrl+-"),
-                            _("Zoom out grid.")]],
+                            _("Zoom out grid."), wx.ID_ZOOM_OUT]],
                 [item, [self.ZoomStandardMsg, _("Normal size\tCtrl+0"),
-                            _("Show grid in standard zoom.")]],
+                            _("Show grid in standard zoom."), wx.ID_ZOOM_100]],
                 ["Separator"], \
                 [item, [self.RefreshSelectionMsg,
                         _("Refresh selected cells\tF5"),
-                        _("Refresh selected cells even when frozen")]],
+                        _("Refresh selected cells even when frozen"),
+                        wx.ID_REFRESH]],
                 ], \
             ], \
             [wx.Menu, _("F&ormat"), [ \
@@ -295,11 +298,13 @@ class MainMenu(_filledMenu, EventMixin):
                       _("Frozen cells are updated only when F5 is pressed.")]],
                 ["Separator"], \
                 [wx.Menu, _("Justification"), [ \
-                    [item, [self.JustificationMsg, justification,
-                            justification] \
-                    ] \
-                    for justification in [_("Left"), _("Center"), _("Right")]]
-                ], \
+                    [item, [self.JustificationMsg, _("Left"), _("Left"),
+                            wx.ID_JUSTIFY_LEFT]],
+                    [item, [self.JustificationMsg, _("Center"), _("Center"),
+                            wx.ID_JUSTIFY_CENTER]],
+                    [item, [self.JustificationMsg, _("Right"), _("Right"),
+                            wx.ID_JUSTIFY_RIGHT]],
+                ]], \
                 [wx.Menu, _("Alignment"), [ \
                     [item, [self.AlignmentMsg, alignment, alignment] \
                     ] for alignment in [_("Top"), _("Center"), _("Bottom")]]
@@ -324,7 +329,7 @@ class MainMenu(_filledMenu, EventMixin):
                             _("Save macro list")]]]], \
             [wx.Menu, _("&Help"), [\
                 [item, [self.ManualMsg, _("First &Steps"),
-                    _("Launch First Steps in pyspread")]],
+                    _("Launch First Steps in pyspread"), wx.ID_HELP]],
                 [item, [self.TutorialMsg, _("&Tutorial"),
                         _("Launch tutorial")]],
                 [item, [self.FaqMsg, _("&FAQ"),
