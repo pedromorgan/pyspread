@@ -1182,7 +1182,7 @@ class PreferencesDialog(wx.Dialog):
             "prepocessor": unicode,
         }),
         ("gpg_key_passphrase_isstored", { \
-            "label": _(u"Store passphrase in keyring"),
+            "label": _(u"Store passphrase in config file"),
             "tooltip": _(u"If False then the passprase is not stored on exit"),
             "widget": CheckBoxCtrl,
             "widget_params": {},

@@ -52,7 +52,7 @@ setup(name='pyspread',
          'pyspread/po/*',
          'pyspread/examples/*',
          'pyspread/COPYING', 'pyspread/thanks', 'pyspread/faq',
-         'authors', 'pyspread.pth']},
+         'pyspread/authors', 'pyspread.pth', 'README', 'changelog']},
       classifiers=[ \
         'Development Status :: 4 - Beta',
         'Environment :: X11 Applications :: GTK',
