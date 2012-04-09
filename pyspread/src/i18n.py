@@ -1,23 +1,50 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# Copyright 2012 Martin Manns
+# Distributed under the terms of the GNU General Public License
+
+# --------------------------------------------------------------------
+# pyspread is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# pyspread is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
+
+"""
+i18n
+====
+
+This module handles internationalization
+
+"""
 
 import os
 import locale
 import gettext
 import sys
 
-#  The translation files will be under
+#  Translation files are located in
 #  @LOCALE_DIR@/@LANGUAGE@/LC_MESSAGES/@APP_NAME@.mo
 APP_NAME = "pyspread"
 
-# This is ok for maemo. Not sure in a regular desktop:
 APP_DIR = os.path.join(sys.prefix, 'share')
 
-# .mo files will then be located in APP_Dir/i18n/LANGUAGECODE/LC_MESSAGES/
+# .mo files  are located in APP_Dir/i18n/LANGUAGECODE/LC_MESSAGES/
 LOCALE_DIR = os.path.join(APP_DIR, 'i18n')
 
 
-# Now we need to choose the language. We will provide a list, and gettext
-# will use the first translation available in the list
+# Choose the language
+# -------------------
+# A list is provided,gettext uses the first translation available in the list
 DEFAULT_LANGUAGES = os.environ.get('LANGUAGES', '').split(':')
 DEFAULT_LANGUAGES += ['en_US']
 
@@ -25,12 +52,14 @@ lc, encoding = locale.getdefaultlocale()
 if lc:
     languages = [lc]
 
-# Concat all languages (env + default locale),
-#  and here we have the languages and location of the translations
+# Languages and locations of translations are in env + default locale
+
 languages += DEFAULT_LANGUAGES
 mo_location = LOCALE_DIR
 
-# Lets tell those details to gettext
+# gettext initialization
+# ----------------------
+
 gettext.install(True, localedir=None, unicode=1)
 
 gettext.find(APP_NAME, mo_location)
