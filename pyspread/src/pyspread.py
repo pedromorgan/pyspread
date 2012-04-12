@@ -84,6 +84,8 @@ class Commandlineparser(object):
 
     def __init__(self):
         from src.config import config
+        self.config = config
+
         usage = _("usage: %prog [options] [filename]")
         version = _("%prog {}").format(config["version"])
         self.parser = optparse.OptionParser(usage=usage, version=version)
@@ -192,7 +194,10 @@ class MainApplication(App, GridActionEventMixin):
         self.options, self.filepath = cmdp.parse()
 
         if self.filename is None:
-            self.dimensions = self.options.dimensions
+            rows, columns, tables = self.options.dimensions
+            cmdp.config["grid_rows"] = str(rows)
+            cmdp.config["grid_columns"] = str(columns)
+            cmdp.config["grid_tables"] = str(tables)
 
 
 def __main__():
