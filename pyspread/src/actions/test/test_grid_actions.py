@@ -29,10 +29,17 @@ Unit tests for _grid_actions.py
 """
 
 import os
+import sys
 
 import bz2
 import wx
 app = wx.App()
+
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+print sys.path
 
 from src.lib.selection import Selection
 
@@ -53,30 +60,30 @@ class TestFileActions(object):
         # ---------
 
         # File with valid signature
-        self.filename_valid_sig = "test1.pys"
+        self.filename_valid_sig = TESTPATH + "test1.pys"
         sign(self.filename_valid_sig)
 
         # File without signature
-        self.filename_no_sig = "test2.pys"
+        self.filename_no_sig = TESTPATH + "test2.pys"
 
         # File with invalid signature
-        self.filename_invalid_sig = "test3.pys"
+        self.filename_invalid_sig = TESTPATH + "test3.pys"
 
         # File for grid size test
-        self.filename_gridsize = "test4.pys"
+        self.filename_gridsize = TESTPATH + "test4.pys"
         sign(self.filename_gridsize)
 
         # Empty file
-        self.filename_empty = "test5.pys"
+        self.filename_empty = TESTPATH + "test5.pys"
 
         # File name that cannot be accessed
-        self.filename_not_permitted = "test6.pys"
+        self.filename_not_permitted = TESTPATH + "test6.pys"
 
         # File name without file
-        self.filename_wrong = "test-1.pys"
+        self.filename_wrong = TESTPATH + "test-1.pys"
 
         # File for testing save
-        self.filename_save = "test_save.pys"
+        self.filename_save = TESTPATH + "test_save.pys"
 
     def test_validate_signature(self):
         """Tests signature validation"""
