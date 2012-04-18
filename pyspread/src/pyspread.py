@@ -41,10 +41,11 @@ Provides
 # If wx exists in sys,modules, we dont need to import wx version.
 # wx is already imported if the PyScripter wx engine is used.
 
-import i18n
 import sys
 from sysvars import get_program_path
 import optparse
+
+import lib.i18n as i18n
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext

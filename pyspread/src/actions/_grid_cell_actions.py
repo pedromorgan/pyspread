@@ -19,10 +19,9 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-import i18n
-
 import wx
 
+import src.lib.i18n as i18n
 from src.lib.selection import Selection
 from src.actions._main_window_actions import Actions
 from src.gui._events import post_command_event

@@ -27,14 +27,6 @@ Helper functions for unit tests
 
 """
 
-from src.gui._main_window import MainWindow
-
-# Class attributes for main_window and grid
-
-main_window = MainWindow(None, -1)
-grid = main_window.grid
-code_array = grid.code_array
-
 # Standard grid values for initial filling
 
 grid_values = { \
@@ -51,26 +43,26 @@ grid_values = { \
 # Helper methods for efficient testing
 
 
-def _fill_grid(values):
+def _fill_grid(grid, values):
     """Fills grid with values (use e. g. grid_values)"""
 
     for key in values:
-        code_array[key] = values[key]
+        grid.code_array[key] = values[key]
 
 
-def restore_basic_grid():
+def restore_basic_grid(grid):
     """Restores basic, filled grid"""
 
     default_test_shape = (1000, 100, 3)
 
     grid.actions.clear(default_test_shape)
-    _fill_grid(grid_values)
+    _fill_grid(grid, grid_values)
 
 
-def basic_setup_test(func, test_key, test_val, *args, **kwargs):
+def basic_setup_test(grid, func, test_key, test_val, *args, **kwargs):
     """Sets up basic test env, runs func and tests test_key in grid"""
 
-    restore_basic_grid()
+    restore_basic_grid(grid)
 
     func(*args, **kwargs)
 

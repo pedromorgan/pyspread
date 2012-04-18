@@ -31,11 +31,11 @@ Provides:
 
 import ast
 import os
-import i18n
 
 import wx
 import wx.aui
 
+import src.lib.i18n as i18n
 from src.config import config
 
 from _menubars import MainMenu

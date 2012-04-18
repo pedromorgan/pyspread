@@ -20,24 +20,30 @@
 # --------------------------------------------------------------------
 
 """
-test_main_window_actions.py
+test_self.main_window_actions.py
 ===========================
 
-Unit tests for _main_window_actions.py
+Unit tests for _self.main_window_actions.py
 
 """
 
-import os
 import csv
+import os
+import sys
 
 import wx
 app = wx.App()
+
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
 
 from src.gui._main_window import MainWindow
 from src.gui._grid import Grid
 from src.model.model import DataArray
 from src.lib.selection import Selection
-from src.lib.testlib import main_window, code_array, grid_values, restore_basic_grid
+from src.lib.testlib import grid_values, restore_basic_grid
 from src.lib.testlib import params, pytest_generate_tests, basic_setup_test
 
 from src.actions._main_window_actions import CsvInterface, TxtGenerator
@@ -45,10 +51,13 @@ from src.actions._main_window_actions import CsvInterface, TxtGenerator
 
 class TestCsvInterface(object):
     def setup_method(self, method):
-        self.test_filename = "test.csv"
-        self.test_filename2 = "test_one_col.csv"
-        self.test_filename3 = "test_write.csv"
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
+        self.test_filename = TESTPATH + "test.csv"
+        self.test_filename2 = TESTPATH + "test_one_col.csv"
+        self.test_filename3 = TESTPATH + "test_write.csv"
 
     def _get_csv_gen(self, filename, digest_types=None):
         test_file = open(filename)
@@ -60,7 +69,7 @@ class TestCsvInterface(object):
 
         has_header = False
 
-        return CsvInterface(main_window, filename,
+        return CsvInterface(self.main_window, filename,
                             dialect, digest_types, has_header)
 
     def test_get_csv_cells_gen(self):
@@ -112,12 +121,14 @@ class TestTxtGenerator(object):
     """Tests generating txt files"""
 
     def setup_method(self, method):
-        main_window = MainWindow(None, -1)
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
-        self.test_filename = "test.csv"
-        self.test_filename_single_col = "large.txt"
-        self.test_filename_notthere = "notthere.txt"
-        self.test_filename_bin = "test1.pys"
+        self.test_filename = TESTPATH + "test.csv"
+        self.test_filename_single_col = TESTPATH + "large.txt"
+        self.test_filename_notthere = TESTPATH + "notthere.txt"
+        self.test_filename_bin = TESTPATH + "test1.pys"
 
 
     def test_iter(self):
@@ -125,14 +136,14 @@ class TestTxtGenerator(object):
 
         # Correct file with 2 columns
 
-        txt_gen = TxtGenerator(main_window, self.test_filename)
+        txt_gen = TxtGenerator(self.main_window, self.test_filename)
 
         assert list(list(line_gen) for line_gen in txt_gen) == \
                 [['1', '2'], ['3', '4']]
 
         # Correct file with 1 column
 
-        txt_gen = TxtGenerator(main_window, self.test_filename_single_col)
+        txt_gen = TxtGenerator(self.main_window, self.test_filename_single_col)
 
         txt_list = []
         for i, line_gen in enumerate(txt_gen):
@@ -144,12 +155,12 @@ class TestTxtGenerator(object):
 
         # Missing file
 
-        txt_gen = TxtGenerator(main_window, self.test_filename_notthere)
+        txt_gen = TxtGenerator(self.main_window, self.test_filename_notthere)
         assert list(txt_gen) == []
 
         # Binary file
 
-        txt_gen = TxtGenerator(main_window, self.test_filename_bin)
+        txt_gen = TxtGenerator(self.main_window, self.test_filename_bin)
 
         has_value_error = False
 
@@ -168,13 +179,20 @@ class TestExchangeActions(object):
 
     pass
 
+
 class TestPrintActions(object):
     """Does nothing because of User interaction in this method"""
 
     pass
 
+
 class TestClipboardActions(object):
     """Clipboard actions test class. Does not use actual clipboard."""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
     param_copy = [ \
       {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "'Test'"},
@@ -192,9 +210,9 @@ class TestClipboardActions(object):
     def test_cut(self, selection, result):
         """Test cut, i. e. copy and deletion"""
 
-        restore_basic_grid()
+        restore_basic_grid(self.grid)
 
-        assert main_window.actions.cut(selection) == result
+        assert self.main_window.actions.cut(selection) == result
 
         (top, left), (bottom, right) = selection.get_bbox()
 
@@ -202,16 +220,16 @@ class TestClipboardActions(object):
             for col in xrange(left, right + 1):
                 if (row, col) in selection:
                     key = row, col, 0
-                    assert code_array[key] is None
-                    code_array[key] = grid_values[key]
+                    assert self.code_array[key] is None
+                    self.code_array[key] = grid_values[key]
 
     @params(param_copy)
     def test_copy(self, selection, result):
         """Test copy of single values, lists and matrices"""
 
-        restore_basic_grid()
+        restore_basic_grid(self.grid)
 
-        assert main_window.actions.copy(selection) == result
+        assert self.main_window.actions.copy(selection) == result
 
     param_copy_result = [ \
         {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "Test"},
@@ -224,9 +242,9 @@ class TestClipboardActions(object):
     def test_copy_result(self, selection, result):
         """Test copy results of single values, lists and matrices"""
 
-        restore_basic_grid()
+        restore_basic_grid(self.grid)
 
-        assert main_window.actions.copy_result(selection) == result
+        assert self.main_window.actions.copy_result(selection) == result
 
 
 ## TODO: Test hangs when doing py.test for all tests in directory
@@ -253,21 +271,25 @@ class TestClipboardActions(object):
     def test_paste(self, target, data, test_key, test_val):
         """Test paste of single values, lists and matrices"""
 
-        restore_basic_grid()
+        basic_setup_test(self.grid, self.main_window.actions.paste,
+                         test_key, test_val, target, data)
 
-        basic_setup_test(main_window.actions.paste, test_key, test_val,
-                         target, data)
 
 class TestMacroActions(object):
     """Unit tests for macro actions"""
 
     macros = "def f(x): return x * x"
 
-    def test_replace_macros(self):
-        main_window.actions.replace_macros(self.macros)
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
-        assert main_window.grid.code_array.macros == self.macros
-        main_window.actions.replace_macros("")
+    def test_replace_macros(self):
+        self.main_window.actions.replace_macros(self.macros)
+
+        assert self.main_window.grid.code_array.macros == self.macros
+        self.main_window.actions.replace_macros("")
 
     def test_execute_macros(self):
 
@@ -276,7 +298,7 @@ class TestMacroActions(object):
         pass
 
     param_open_macros = [ \
-        {'filename': "macrotest2.py"},
+        {'filename': TESTPATH + "macrotest2.py"},
     ]
 
     @params(param_open_macros)
@@ -286,19 +308,19 @@ class TestMacroActions(object):
         testmacro_string = "\n" + testmacro_infile.read()
         testmacro_infile.close()
 
-        main_window.actions.open_macros(filename)
+        self.main_window.actions.open_macros(filename)
 
-        macros = main_window.grid.code_array.macros
+        macros = self.main_window.grid.code_array.macros
 
         assert testmacro_string == macros
 
     def test_save_macros(self):
-        # TODO: Save macros is pretty direct so that the necessary file
+        # Save macros is pretty direct so that the necessary file
         # protection actions are not yet implemented --> No tests yet
         pass
+
 
 class TestHelpActions(object):
     """Does nothing because of User interaction in this method"""
 
     pass
-

@@ -37,7 +37,6 @@ Provides:
 
 """
 
-import i18n
 import keyword
 
 import wx
@@ -45,6 +44,8 @@ import wx.grid
 import wx.combo
 import wx.stc  as  stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
+
+import src.lib.i18n as i18n
 
 from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
 from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin

@@ -42,7 +42,6 @@ Provides:
 
 import cStringIO
 import csv
-import i18n
 import os
 import string
 import types
@@ -53,6 +52,7 @@ from wx.lib.wordwrap import wordwrap
 import wx.lib.masked
 import wx.stc as stc
 
+import src.lib.i18n as i18n
 from src.config import config, VERSION
 from src.sysvars import get_program_path
 from src.gui._widgets import PythonSTC

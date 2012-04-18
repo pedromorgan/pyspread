@@ -30,8 +30,6 @@ Provides
 
 """
 
-import i18n
-
 import wx.grid
 
 from _events import post_command_event, EventMixin
@@ -40,6 +38,8 @@ from _grid_table import GridTable
 from _grid_renderer import GridRenderer
 from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
+
+import src.lib.i18n as i18n
 
 import src.lib.xrect as xrect
 from src.model.model import CodeArray

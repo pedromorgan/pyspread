@@ -36,11 +36,11 @@ Provides
 
 """
 
-import i18n
 import sys
 
 import wx
 
+import src.lib.i18n as i18n
 from src.config import config
 from src.gui._gui_interfaces import get_key_params_from_user
 from src.gui._gui_interfaces import get_gpg_passwd_from_user

@@ -32,10 +32,11 @@ Provides
 """
 
 from math import pi, sin, cos
-import i18n
 import types
 
 import wx.grid
+
+import src.lib.i18n as i18n
 
 from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data

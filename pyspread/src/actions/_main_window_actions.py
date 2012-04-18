@@ -40,12 +40,12 @@ Provides:
 
 """
 
-import i18n
 import os
 
 import wx
 import wx.html
 
+import lib.i18n as i18n
 from src.sysvars import get_help_path
 
 from src.config import config

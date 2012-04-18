@@ -30,13 +30,14 @@ Provides:
 """
 
 import csv
-import i18n
 import os
 import sys
 import types
 
 import wx
 import wx.lib.agw.genericmessagedialog as GMD
+
+import src.lib.i18n as i18n
 
 from config import config
 

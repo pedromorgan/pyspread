@@ -46,7 +46,7 @@ Provides:
 """
 
 import bz2
-import i18n
+import src.lib.i18n as i18n
 import os
 
 import wx

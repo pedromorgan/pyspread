@@ -24,24 +24,34 @@
 test_grid_cell_actions
 ======================
 
-Unit tests for _grid_sell_actions.py
+Unit tests for _grid_cell_actions.py
 
 """
 
 import os
+import sys
 
 import wx
 app = wx.App()
 
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+
+from src.gui._main_window import MainWindow
 from src.lib.selection import Selection
 
-from src.lib.testlib import main_window, grid, code_array
 from src.lib.testlib import params, pytest_generate_tests
-from src.lib.testlib import basic_setup_test, restore_basic_grid
+
 
 class TestCellActions(object):
     """Cell actions test class"""
 
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
     param_set_code = [ \
        {'key': (0, 0, 0), 'code': "'Test'", 'result': "'Test'"},
@@ -54,28 +64,27 @@ class TestCellActions(object):
     def test_set_code(self, key, code, result):
         """Unit test for set_code"""
 
-        main_window.changed_since_save = False
+        self.main_window.changed_since_save = False
 
-        grid.actions.set_code(key, code)
+        self.grid.actions.set_code(key, code)
 
-        assert grid.code_array(key) == result
+        assert self.grid.code_array(key) == result
 
         wx.Yield()
 
         if code is None or not code:
-            assert not main_window.changed_since_save
+            assert not self.main_window.changed_since_save
         else:
-            assert main_window.changed_since_save
-
+            assert self.main_window.changed_since_save
 
     @params(param_set_code)
     def test_delete_cell(self, key, code, result):
         """Unit test for delete_cell"""
 
-        grid.actions.set_code(key, code)
-        grid.actions.delete_cell(key)
+        self.grid.actions.set_code(key, code)
+        self.grid.actions.delete_cell(key)
 
-        assert grid.code_array(key) is None
+        assert self.grid.code_array(key) is None
 
     param_get_reference = [ \
        {'cursor': (0, 0, 0), 'ref_key': (0, 0, 0), 'abs_ref': "S[0, 0, 0]",
@@ -94,7 +103,7 @@ class TestCellActions(object):
     def test_get_absolute_reference(self, cursor, ref_key, abs_ref, rel_ref):
         """Unit test for _get_absolute_reference"""
 
-        reference = grid.actions._get_absolute_reference(ref_key)
+        reference = self.grid.actions._get_absolute_reference(ref_key)
 
         assert reference == abs_ref
 
@@ -102,7 +111,7 @@ class TestCellActions(object):
     def test_get_relative_reference(self, cursor, ref_key, abs_ref, rel_ref):
         """Unit test for _get_relative_reference"""
 
-        reference = grid.actions._get_relative_reference(cursor, ref_key)
+        reference = self.grid.actions._get_relative_reference(cursor, ref_key)
 
         assert reference == rel_ref
 
@@ -113,16 +122,16 @@ class TestCellActions(object):
         params = [
             # Normal initial code, absolute reference
             {'initial_code': "3 + ", 'ref_type': "absolute",
-             "res": grid.actions._get_absolute_reference(ref_key)},
+             "res": self.grid.actions._get_absolute_reference(ref_key)},
             # Normal initial code, relative reference
             {'initial_code': "3 + ", 'ref_type': "relative",
-             "res": grid.actions._get_relative_reference(cursor, ref_key)},
+             "res": self.grid.actions._get_relative_reference(cursor, ref_key)},
             # Initial code with reference, absolute reference
             {'initial_code': "3 + S[2, 3, 1]", 'ref_type': "absolute",
-             "res": grid.actions._get_absolute_reference(ref_key)},
+             "res": self.grid.actions._get_absolute_reference(ref_key)},
             # Initial code with reference, relative reference
             {'initial_code': "3 + S[2, 3, 1]", 'ref_type': "relative",
-             "res": grid.actions._get_relative_reference(cursor, ref_key)},
+             "res": self.grid.actions._get_relative_reference(cursor, ref_key)},
         ]
 
         for param in params:
@@ -130,13 +139,13 @@ class TestCellActions(object):
             ref_type = param['ref_type']
             res = param['res']
 
-            grid.actions.set_code(cursor, initial_code)
+            self.grid.actions.set_code(cursor, initial_code)
 
-            grid.actions.append_reference_code(cursor, ref_key, ref_type)
+            self.grid.actions.append_reference_code(cursor, ref_key, ref_type)
 
             wx.Yield()
 
-            result_code = main_window.entry_line.GetValue()
+            result_code = self.main_window.entry_line.GetValue()
 
             if "S[" in initial_code:
                 assert result_code == initial_code[:4] + res
@@ -161,23 +170,23 @@ class TestCellActions(object):
     def test_set_cell_attr(self, selection, tab, attr, testcell):
         """Unit test for _set_cell_attr"""
 
-        main_window.changed_since_save = False
+        self.main_window.changed_since_save = False
 
         attr = {attr[0]: attr[1]}
 
-        grid.actions._set_cell_attr(selection, tab, attr)
+        self.grid.actions._set_cell_attr(selection, tab, attr)
 
-        color = grid.code_array.cell_attributes[testcell][attr.keys()[0]]
+        color = self.grid.code_array.cell_attributes[testcell][attr.keys()[0]]
 
         assert color == attr[attr.keys()[0]]
 
         wx.Yield()
-        assert main_window.changed_since_save
+        assert self.main_window.changed_since_save
 
     def test_set_border_attr(self):
         """Unit test for set_border_attr"""
 
-        grid.SelectBlock(10, 10, 20, 20)
+        self.grid.SelectBlock(10, 10, 20, 20)
 
         attr = "borderwidth"
         value = 5
@@ -187,25 +196,25 @@ class TestCellActions(object):
             (53, 14, 0): 1,
         }
 
-        grid.actions.set_border_attr(attr, value, borders)
+        self.grid.actions.set_border_attr(attr, value, borders)
+        cell_attributes = self.grid.code_array.cell_attributes
 
         for cell in tests:
-            res = grid.code_array.cell_attributes[cell]["borderwidth_bottom"]
+            res = cell_attributes[cell]["borderwidth_bottom"]
             assert res == tests[cell]
 
     def test_toggle_attr(self):
         """Unit test for toggle_attr"""
 
-        grid.SelectBlock(10, 10, 20, 20)
+        self.grid.SelectBlock(10, 10, 20, 20)
 
-        grid.actions.toggle_attr("underline")
+        self.grid.actions.toggle_attr("underline")
 
         tests = {(13, 14, 0): True, (53, 14, 0): False}
 
         for cell in tests:
-            res = grid.code_array.cell_attributes[cell]["underline"]
+            res = self.grid.code_array.cell_attributes[cell]["underline"]
             assert res == tests[cell]
-
 
     param_change_frozen_attr = [ \
         {'cell': (0, 0, 0), 'code': None, 'result': None},
@@ -218,30 +227,27 @@ class TestCellActions(object):
     def test_change_frozen_attr(self, cell, code, result):
         """Unit test for change_frozen_attr"""
 
-        grid.actions.cursor = cell
-        grid.current_table = cell[2]
-        grid.code_array[cell] = code
+        self.grid.actions.cursor = cell
+        self.grid.current_table = cell[2]
+        self.grid.code_array[cell] = code
 
-        grid.actions.change_frozen_attr()
+        self.grid.actions.change_frozen_attr()
 
-        res = grid.code_array.frozen_cache[repr(cell)]
+        res = self.grid.code_array.frozen_cache[repr(cell)]
 
         assert res == result
 
-        grid.actions.change_frozen_attr()
+        self.grid.actions.change_frozen_attr()
 
-        res2 = grid.code_array.cell_attributes[cell]["frozen"]
+        res2 = self.grid.code_array.cell_attributes[cell]["frozen"]
 
         assert res2 == False
-
 
     param_get_new_cell_attr_state = [ \
         {'cell': (0, 0, 0), 'attr': "fontweight",
          'before': wx.NORMAL, 'next': wx.BOLD},
         {'cell': (2, 1, 3), 'attr': "fontweight",
          'before': wx.NORMAL, 'next': wx.BOLD},
-        {'cell': (2, 1, 3), 'attr': "fontweight",
-         'before': wx.BOLD, 'next': wx.NORMAL},
         {'cell': (2, 1, 3), 'attr': "vertical_align",
          'before': "top", 'next': "middle"},
     ]
@@ -250,13 +256,13 @@ class TestCellActions(object):
     def test_get_new_cell_attr_state(self, cell, attr, before, next):
         """Unit test for get_new_cell_attr_state"""
 
-        grid.actions.cursor = cell
-        grid.current_table = cell[2]
+        self.grid.actions.cursor = cell
+        self.grid.current_table = cell[2]
 
         selection = Selection([], [], [], [], [cell[:2]])
-        grid.actions.set_attr(attr, before, selection)
+        self.grid.actions.set_attr(attr, before, selection)
 
-        res = grid.actions.get_new_cell_attr_state(cell, attr)
+        res = self.grid.actions.get_new_cell_attr_state(cell, attr)
 
         assert res == next
 
@@ -279,12 +285,12 @@ class TestCellActions(object):
                                           before, next):
         """Unit test for get_new_selection_attr_state"""
 
-        grid.actions.cursor = cell
-        grid.current_table = cell[2]
+        self.grid.actions.cursor = cell
+        self.grid.current_table = cell[2]
 
-        grid.actions.set_attr(attr, before, selection)
+        self.grid.actions.set_attr(attr, before, selection)
 
-        res = grid.actions.get_new_selection_attr_state(selection, attr)
+        res = self.grid.actions.get_new_selection_attr_state(selection, attr)
 
         assert res == next
 
@@ -296,26 +302,26 @@ class TestCellActions(object):
         code1 = "1"
         code2 = "2"
 
-        grid.actions.cursor = cell
+        self.grid.actions.cursor = cell
 
         # Fill cell
-        grid.code_array[cell] = code1
+        self.grid.code_array[cell] = code1
 
-        assert grid.code_array[cell] == 1
+        assert self.grid.code_array[cell] == 1
 
         # Freeze cell
-        grid.actions.cursor = cell
-        grid.current_table = cell[2]
-        grid.actions.change_frozen_attr()
+        self.grid.actions.cursor = cell
+        self.grid.current_table = cell[2]
+        self.grid.actions.change_frozen_attr()
 
-        res = grid.code_array.frozen_cache[repr(cell)]
+        res = self.grid.code_array.frozen_cache[repr(cell)]
         assert res == eval(code1)
 
         # Change cell code
-        grid.code_array[cell] = code2
-        assert grid.code_array[cell] == 1
+        self.grid.code_array[cell] = code2
+        assert self.grid.code_array[cell] == 1
 
         # Refresh cell
         selection = Selection([], [], [], [], [cell[:2]])
-        grid.actions.refresh_selected_frozen_cells(selection=selection)
-        assert grid.code_array[cell] == 2
+        self.grid.actions.refresh_selected_frozen_cells(selection=selection)
+        assert self.grid.code_array[cell] == 2

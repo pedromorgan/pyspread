@@ -39,11 +39,10 @@ TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
 sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + "/../../..")
 sys.path.insert(0, TESTPATH + "/../..")
-print sys.path
 
+from src.gui._main_window import MainWindow
 from src.lib.selection import Selection
 
-from src.lib.testlib import main_window, grid, code_array
 from src.lib.testlib import params, pytest_generate_tests
 from src.lib.testlib import basic_setup_test, restore_basic_grid
 
@@ -51,10 +50,14 @@ from src.lib.gpg import sign
 
 from src.gui._events import *
 
+
 class TestFileActions(object):
     """File actions test class"""
 
     def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
         # Filenames
         # ---------
@@ -69,7 +72,7 @@ class TestFileActions(object):
         # File with invalid signature
         self.filename_invalid_sig = TESTPATH + "test3.pys"
 
-        # File for grid size test
+        # File for self.grid size test
         self.filename_gridsize = TESTPATH + "test4.pys"
         sign(self.filename_gridsize)
 
@@ -89,55 +92,55 @@ class TestFileActions(object):
         """Tests signature validation"""
 
         # Test missing sig file
-        assert not grid.actions.validate_signature(self.filename_no_sig)
+        assert not self.grid.actions.validate_signature(self.filename_no_sig)
 
         # Test valid sig file
-        assert grid.actions.validate_signature(self.filename_valid_sig)
+        assert self.grid.actions.validate_signature(self.filename_valid_sig)
 
         # Test invalid sig file
         assert not \
-            grid.actions.validate_signature(self.filename_invalid_sig)
+            self.grid.actions.validate_signature(self.filename_invalid_sig)
 
     def test_enter_safe_mode(self):
         """Tests safe mode entry"""
 
-        grid.actions.leave_safe_mode()
-        grid.actions.enter_safe_mode()
-        assert grid.code_array.safe_mode
+        self.grid.actions.leave_safe_mode()
+        self.grid.actions.enter_safe_mode()
+        assert self.grid.code_array.safe_mode
 
     def test_leave_safe_mode(self):
         """Tests save mode exit"""
 
-        grid.actions.enter_safe_mode()
-        grid.actions.leave_safe_mode()
-        assert not grid.code_array.safe_mode
+        self.grid.actions.enter_safe_mode()
+        self.grid.actions.leave_safe_mode()
+        assert not self.grid.code_array.safe_mode
 
     def test_approve(self):
 
         # Test if safe_mode is correctly set for invalid sig
-        grid.actions.approve(self.filename_invalid_sig)
+        self.grid.actions.approve(self.filename_invalid_sig)
 
-        assert grid.GetTable().data_array.safe_mode
+        assert self.grid.GetTable().data_array.safe_mode
 
         # Test if safe_mode is correctly set for valid sig
 
-        grid.actions.approve(self.filename_valid_sig)
+        self.grid.actions.approve(self.filename_valid_sig)
 
-        assert not grid.GetTable().data_array.safe_mode
+        assert not self.grid.GetTable().data_array.safe_mode
 
         # Test if safe_mode is correctly set for missing sig
-        grid.actions.approve(self.filename_no_sig)
+        self.grid.actions.approve(self.filename_no_sig)
 
-        assert grid.GetTable().data_array.safe_mode
+        assert self.grid.GetTable().data_array.safe_mode
 
         # Test if safe_mode is correctly set for io-error sig
 
         os.chmod(self.filename_not_permitted, 0200)
         os.chmod(self.filename_not_permitted + ".sig", 0200)
 
-        grid.actions.approve(self.filename_not_permitted)
+        self.grid.actions.approve(self.filename_not_permitted)
 
-        assert grid.GetTable().data_array.safe_mode
+        assert self.grid.GetTable().data_array.safe_mode
 
         os.chmod(self.filename_not_permitted, 0644)
         os.chmod(self.filename_not_permitted + ".sig", 0644)
@@ -146,62 +149,62 @@ class TestFileActions(object):
         """Tests infile version string."""
 
         infile = bz2.BZ2File(self.filename_valid_sig)
-        version = grid.actions._get_file_version(infile)
+        version = self.grid.actions._get_file_version(infile)
         assert version == "0.1"
         infile.close()
 
     def test_clear(self):
         """Tests empty_grid method"""
 
-        # Set up grid
+        # Set up self.grid
 
-        grid.code_array[(0, 0, 0)] = "'Test1'"
-        grid.code_array[(3, 1, 1)] = "'Test2'"
+        self.grid.code_array[(0, 0, 0)] = "'Test1'"
+        self.grid.code_array[(3, 1, 1)] = "'Test2'"
 
-        grid.actions.set_col_width(1, 23)
-        grid.actions.set_col_width(0, 233)
-        grid.actions.set_row_height(0, 0)
+        self.grid.actions.set_col_width(1, 23)
+        self.grid.actions.set_col_width(0, 233)
+        self.grid.actions.set_row_height(0, 0)
 
         selection = Selection([], [], [], [], [(0, 0)])
-        grid.actions.set_attr("bgcolor", wx.RED, selection)
-        grid.actions.set_attr("frozen", "print 'Testcode'", selection)
+        self.grid.actions.set_attr("bgcolor", wx.RED, selection)
+        self.grid.actions.set_attr("frozen", "print 'Testcode'", selection)
 
-        # Clear grid
+        # Clear self.grid
 
-        grid.actions.clear()
+        self.grid.actions.clear()
 
         # Code content
 
-        assert grid.code_array((0, 0, 0)) is None
-        assert grid.code_array((3, 1, 1)) is None
+        assert self.grid.code_array((0, 0, 0)) is None
+        assert self.grid.code_array((3, 1, 1)) is None
 
-        assert list(grid.code_array[:2, 0, 0]) == [None, None]
+        assert list(self.grid.code_array[:2, 0, 0]) == [None, None]
 
         # Cell attributes
-        cell_attributes = grid.code_array.cell_attributes
+        cell_attributes = self.grid.code_array.cell_attributes
         assert cell_attributes == []
 
         # Row heights and column widths
 
-        row_heights = grid.code_array.row_heights
+        row_heights = self.grid.code_array.row_heights
         assert len(row_heights) == 0
 
-        col_widths = grid.code_array.col_widths
+        col_widths = self.grid.code_array.col_widths
         assert len(col_widths) == 0
 
         # Undo and redo
-        undolist = grid.code_array.unredo.undolist
-        redolist = grid.code_array.unredo.redolist
+        undolist = self.grid.code_array.unredo.undolist
+        redolist = self.grid.code_array.unredo.redolist
         assert undolist == []
         assert redolist == []
 
         # Caches
 
-        # Clear grid again because lookup is added in resultcache
+        # Clear self.grid again because lookup is added in resultcache
 
-        grid.actions.clear()
+        self.grid.actions.clear()
 
-        result_cache = grid.code_array.result_cache
+        result_cache = self.grid.code_array.result_cache
         assert len(result_cache) == 0
 
     def test_open(self):
@@ -214,49 +217,49 @@ class TestFileActions(object):
         # Test missing file
         event.attr["filepath"] = self.filename_wrong
 
-        assert not grid.actions.open(event)
+        assert not self.grid.actions.open(event)
 
         # Test unaccessible file
         os.chmod(self.filename_not_permitted, 0200)
         event.attr["filepath"] = self.filename_not_permitted
-        assert not grid.actions.open(event)
+        assert not self.grid.actions.open(event)
 
         os.chmod(self.filename_not_permitted, 0644)
 
         # Test empty file
         event.attr["filepath"] = self.filename_empty
-        assert not grid.actions.open(event)
+        assert not self.grid.actions.open(event)
 
-        assert grid.GetTable().data_array.safe_mode  # sig is also empty
+        assert self.grid.GetTable().data_array.safe_mode  # sig is also empty
 
         # Test invalid sig files
         event.attr["filepath"] = self.filename_invalid_sig
-        grid.actions.open(event)
+        self.grid.actions.open(event)
 
-        assert grid.GetTable().data_array.safe_mode
+        assert self.grid.GetTable().data_array.safe_mode
 
         # Test file with sig
         event.attr["filepath"] = self.filename_valid_sig
-        grid.actions.open(event)
+        self.grid.actions.open(event)
 
-        assert not grid.GetTable().data_array.safe_mode
+        assert not self.grid.GetTable().data_array.safe_mode
 
         # Test file without sig
         event.attr["filepath"] = self.filename_no_sig
-        grid.actions.open(event)
+        self.grid.actions.open(event)
 
-        assert grid.GetTable().data_array.safe_mode
+        assert self.grid.GetTable().data_array.safe_mode
 
-        # Test grid size for valid file
+        # Test self.grid size for valid file
         event.attr["filepath"] = self.filename_gridsize
-        grid.actions.open(event)
+        self.grid.actions.open(event)
 
-        new_shape = grid.GetTable().data_array.shape
+        new_shape = self.grid.GetTable().data_array.shape
         assert new_shape == (1000, 100, 10)
 
-        # Test grid content for valid file
+        # Test self.grid content for valid file
 
-        assert grid.GetTable().data_array[0, 0, 0] == "test4"
+        assert self.grid.GetTable().data_array[0, 0, 0] == "test4"
 
     def test_save(self):
         """Tests save functionality"""
@@ -268,7 +271,7 @@ class TestFileActions(object):
         # Test normal save
         event.attr["filepath"] = self.filename_save
 
-        grid.actions.save(event)
+        self.grid.actions.save(event)
 
         savefile = open(self.filename_save)
 
@@ -277,13 +280,13 @@ class TestFileActions(object):
 
         # Test double filename
 
-        grid.actions.save(event)
+        self.grid.actions.save(event)
 
         # Test io error
 
         os.chmod(self.filename_save, 0200)
         try:
-            grid.actions.save(event)
+            self.grid.actions.save(event)
             raise IOError("No error raised even though target not writable")
         except IOError:
             pass
@@ -293,7 +296,7 @@ class TestFileActions(object):
 
         event.attr["filepath"] = None
         try:
-            grid.actions.save(event)
+            self.grid.actions.save(event)
             raise TypeError("None accepted as filename")
         except TypeError:
             pass
@@ -310,8 +313,11 @@ class TestFileActions(object):
     def test_sign_file(self):
         """Tests signing functionality"""
 
-        os.remove(self.filename_valid_sig + ".sig")
-        grid.actions.sign_file(self.filename_valid_sig)
+        try:
+            os.remove(self.filename_valid_sig + ".sig")
+        except OSError:
+            pass
+        self.grid.actions.sign_file(self.filename_valid_sig)
         dirlist = os.listdir(TESTPATH)
 
         filepath = self.filename_valid_sig + ".sig"
@@ -323,6 +329,11 @@ class TestFileActions(object):
 class TestTableRowActionsMixins(object):
     """Unit test class for TableRowActionsMixins"""
 
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
+
     param_set_row_height = [ \
         {'row': 0, 'tab': 0, 'height': 0},
         {'row': 0, 'tab': 1, 'height': 0},
@@ -332,9 +343,9 @@ class TestTableRowActionsMixins(object):
 
     @params(param_set_row_height)
     def test_set_row_height(self, row, tab, height):
-        grid.current_table = tab
-        grid.actions.set_row_height(row, height)
-        row_heights = grid.code_array.row_heights
+        self.grid.current_table = tab
+        self.grid.actions.set_row_height(row, height)
+        row_heights = self.grid.code_array.row_heights
         assert row_heights[row, tab] == height
 
     param_insert_rows = [ \
@@ -352,8 +363,8 @@ class TestTableRowActionsMixins(object):
     def test_insert_rows(self, row, no_rows, test_key, test_val):
         """Tests insertion action for rows"""
 
-        basic_setup_test(grid.actions.insert_rows, test_key, test_val,
-                         row, no_rows=no_rows)
+        basic_setup_test(self.grid, self.grid.actions.insert_rows, test_key,
+                         test_val, row, no_rows=no_rows)
 
     param_delete_rows = [ \
        {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -369,12 +380,17 @@ class TestTableRowActionsMixins(object):
     def test_delete_rows(self, row, no_rows, test_key, test_val):
         """Tests deletion action for rows"""
 
-        basic_setup_test(grid.actions.delete_rows, test_key, test_val,
-                         row, no_rows=no_rows)
+        basic_setup_test(self.grid, self.grid.actions.delete_rows, test_key,
+                         test_val, row, no_rows=no_rows)
 
 
 class TestTableColumnActionsMixin(object):
     """Unit test class for TableColumnActionsMixin"""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
     param_set_col_width = [ \
         {'col': 0, 'tab': 0, 'width': 0},
@@ -385,9 +401,9 @@ class TestTableColumnActionsMixin(object):
 
     @params(param_set_col_width)
     def test_set_col_width(self, col, tab, width):
-        grid.current_table = tab
-        grid.actions.set_col_width(col, width)
-        col_widths = grid.code_array.col_widths
+        self.grid.current_table = tab
+        self.grid.actions.set_col_width(col, width)
+        col_widths = self.grid.code_array.col_widths
         assert col_widths[col, tab] == width
 
     param_insert_cols = [ \
@@ -405,9 +421,8 @@ class TestTableColumnActionsMixin(object):
     def test_insert_cols(self, col, no_cols, test_key, test_val):
         """Tests insertion action for columns"""
 
-        basic_setup_test(grid.actions.insert_cols, test_key, test_val,
-                         col, no_cols=no_cols)
-
+        basic_setup_test(self.grid, self.grid.actions.insert_cols, test_key,
+                         test_val, col, no_cols=no_cols)
 
     param_delete_cols = [ \
        {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -423,12 +438,17 @@ class TestTableColumnActionsMixin(object):
     def test_delete_cols(self, col, no_cols, test_key, test_val):
         """Tests deletion action for columns"""
 
-        basic_setup_test(grid.actions.delete_cols, test_key, test_val,
-                         col, no_cols=no_cols)
+        basic_setup_test(self.grid, self.grid.actions.delete_cols, test_key,
+                         test_val, col, no_cols=no_cols)
 
 
 class TestTableTabActionsMixin(object):
     """Unit test class for TableTabActionsMixin"""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
     param_insert_tabs = [ \
         {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -445,8 +465,8 @@ class TestTableTabActionsMixin(object):
     def test_insert_tabs(self, tab, no_tabs, test_key, test_val):
         """Tests insertion action for tabs"""
 
-        basic_setup_test(grid.actions.insert_tabs, test_key, test_val,
-                         tab, no_tabs=no_tabs)
+        basic_setup_test(self.grid, self.grid.actions.insert_tabs, test_key,
+                         test_val, tab, no_tabs=no_tabs)
 
     param_delete_tabs = [ \
        {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -461,11 +481,17 @@ class TestTableTabActionsMixin(object):
     def test_delete_tabs(self, tab, no_tabs, test_key, test_val):
         """Tests deletion action for tabs"""
 
-        basic_setup_test(grid.actions.delete_tabs, test_key, test_val,
-                         tab, no_tabs=no_tabs)
+        basic_setup_test(self.grid, self.grid.actions.delete_tabs, test_key,
+                         test_val, tab, no_tabs=no_tabs)
+
 
 class TestTableActions(object):
     """Unit test class for TableActions"""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
     param_paste = [ \
        {'tl_cell': (0, 0, 0), 'data': [["78"]],
@@ -479,19 +505,19 @@ class TestTableActions(object):
        {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
         'test_key': (1, 1, 1), 'test_val': None},
        {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        'test_key': (0, 0, 0), 'test_val': None},
        {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
         'test_key': (1, 0, 0), 'test_val': "1"},
        {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
         'test_key': (0, 1, 0), 'test_val': "1"},
        {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        'test_key': (0, 0, 0), 'test_val': None},
        {'tl_cell': (123, 5, 0), 'data': [["1", "2"], ["3", "4"]],
         'test_key': (123, 6, 0), 'test_val': "2"},
        {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
         'test_key': (1, 1, 2), 'test_val': "1"},
        {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (1, 1, 0), 'test_val': "3"},
+        'test_key': (2, 1, 2), 'test_val': "3"},
        {'tl_cell': (999, 0, 0), 'data': [["1", "2"], ["3", "4"]],
         'test_key': (999, 0, 0), 'test_val': "1"},
        {'tl_cell': (999, 99, 2), 'data': [["1", "2"], ["3", "4"]],
@@ -502,9 +528,10 @@ class TestTableActions(object):
 
     @params(param_paste)
     def test_paste(self, tl_cell, data, test_key, test_val):
-        """Tests paste into grid"""
+        """Tests paste into self.grid"""
 
-        basic_setup_test(grid.actions.paste, test_key, test_val, tl_cell, data)
+        basic_setup_test(self.grid, self.grid.actions.paste, test_key,
+                         test_val, tl_cell, data)
 
     param_change_grid_shape = [ \
        {'shape': (1, 1, 1)},
@@ -516,45 +543,55 @@ class TestTableActions(object):
 
     @params(param_change_grid_shape)
     def test_change_grid_shape(self, shape):
-        """Tests action for changing the grid shape"""
+        """Tests action for changing the self.grid shape"""
 
-        grid.actions.clear()
+        self.grid.actions.clear()
 
-        grid.actions.change_grid_shape(shape)
+        self.grid.actions.change_grid_shape(shape)
 
-        res_shape = grid.code_array.shape
+        res_shape = self.grid.code_array.shape
         assert res_shape == shape
 
         br_key = tuple(dim - 1 for dim in shape)
-        assert grid.code_array(br_key) is None
+        assert self.grid.code_array(br_key) is None
 
 
 class TestUnRedoActions(object):
     """Unit test class for undo and redo actions"""
 
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
+
     def test_undo(self):
         """Tests undo action"""
 
-        restore_basic_grid()
-        grid.actions.clear()
+        restore_basic_grid(self.grid)
+        self.grid.actions.clear()
 
-        grid.code_array[(0, 0, 0)] = "Test"
+        self.grid.code_array[(0, 0, 0)] = "Test"
 
-        grid.actions.undo()
+        self.grid.actions.undo()
 
-        assert grid.code_array((0, 0, 0)) is None
+        assert self.grid.code_array((0, 0, 0)) is None
 
     def test_redo(self):
         """Tests redo action"""
 
         self.test_undo()
-        grid.actions.redo()
+        self.grid.actions.redo()
 
-        assert grid.code_array((0, 0, 0)) == "Test"
+        assert self.grid.code_array((0, 0, 0)) == "Test"
 
 
-class TestGridActions(object):
-    """Grid level grid actions test class"""
+class TestgridActions(object):
+    """self.grid level self.grid actions test class"""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
     class Event(object):
         pass
@@ -568,8 +605,8 @@ class TestGridActions(object):
         for dim in dims:
             event = self.Event()
             event.shape = dim
-            grid.actions.new(event)
-            new_shape = grid.GetTable().data_array.shape
+            self.grid.actions.new(event)
+            new_shape = self.grid.GetTable().data_array.shape
             assert new_shape == dim
 
     param_switch_to_table = [ \
@@ -581,8 +618,8 @@ class TestGridActions(object):
     def test_switch_to_table(self, tab):
         event = self.Event()
         event.newtable = tab
-        grid.actions.switch_to_table(event)
-        assert grid.current_table == tab
+        self.grid.actions.switch_to_table(event)
+        assert self.grid.current_table == tab
 
     param_cursor = [ \
        {'key': (0, 0, 0)},
@@ -592,8 +629,8 @@ class TestGridActions(object):
 
     @params(param_cursor)
     def test_cursor(self, key):
-        grid.cursor = key
-        assert grid.cursor == key
+        self.grid.cursor = key
+        assert self.grid.cursor == key
 
 
 class TestSelectionActions(object):

@@ -27,9 +27,9 @@ Printout handling module
 
 """
 
-import i18n
-
 import wx
+
+import src.lib.i18n as i18n
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext

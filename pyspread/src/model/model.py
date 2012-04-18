@@ -122,6 +122,7 @@ class CellAttributes(list):
         self.unredo.mark()
 
         self.append(value)
+        self._attr_cache.clear()
 
     def __getitem__(self, key):
         """Returns attribute dict for a single key"""

@@ -33,12 +33,12 @@ Provides:
 
 """
 
-import i18n
-
 import wx
 import wx.lib.colourselect as csel
 
 from _events import post_command_event, EventMixin
+
+import src.lib.i18n as i18n
 
 from src.config import config
 from src.sysvars import get_default_font, get_font_list
