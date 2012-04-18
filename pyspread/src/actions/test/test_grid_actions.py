@@ -162,7 +162,7 @@ class TestFileActions(object):
         grid.actions.set_col_width(0, 233)
         grid.actions.set_row_height(0, 0)
 
-        selection = Selection([],[],[],[],[(0, 0)])
+        selection = Selection([], [], [], [], [(0, 0)])
         grid.actions.set_attr("bgcolor", wx.RED, selection)
         grid.actions.set_attr("frozen", "print 'Testcode'", selection)
 
@@ -227,7 +227,7 @@ class TestFileActions(object):
         event.attr["filepath"] = self.filename_empty
         assert not grid.actions.open(event)
 
-        assert grid.GetTable().data_array.safe_mode # sig is also empty
+        assert grid.GetTable().data_array.safe_mode  # sig is also empty
 
         # Test invalid sig files
         event.attr["filepath"] = self.filename_invalid_sig
@@ -284,7 +284,7 @@ class TestFileActions(object):
         os.chmod(self.filename_save, 0200)
         try:
             grid.actions.save(event)
-            raise IOError, "No error raised even though target not writable"
+            raise IOError("No error raised even though target not writable")
         except IOError:
             pass
         os.chmod(self.filename_save, 0644)
@@ -294,7 +294,7 @@ class TestFileActions(object):
         event.attr["filepath"] = None
         try:
             grid.actions.save(event)
-            raise TypeError, "None accepted as filename"
+            raise TypeError("None accepted as filename")
         except TypeError:
             pass
 
@@ -312,8 +312,13 @@ class TestFileActions(object):
 
         os.remove(self.filename_valid_sig + ".sig")
         grid.actions.sign_file(self.filename_valid_sig)
-        dirlist = os.listdir(".")
-        assert self.filename_valid_sig + ".sig" in dirlist
+        dirlist = os.listdir(TESTPATH)
+
+        filepath = self.filename_valid_sig + ".sig"
+        filename = filepath[len(TESTPATH):]
+
+        assert filename in dirlist
+
 
 class TestTableRowActionsMixins(object):
     """Unit test class for TableRowActionsMixins"""

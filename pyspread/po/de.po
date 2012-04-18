@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 0.2.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-02 22:23+0200\n"
-"PO-Revision-Date: 2012-04-02 22:26+0200\n"
-"Last-Translator: M <mmanns@gmx.net>\n"
+"PO-Revision-Date: 2012-04-12 23:09+0200\n"
+"Last-Translator: Martin Manns <mmanns@gmx.net>\n"
 "Language-Team: German\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -19,25 +19,27 @@ msgstr ""
 
 #: src/lib/clipboard.py:82 src/lib/clipboard.py:99
 msgid "Can't open the clipboard"
-msgstr ""
+msgstr "Zwischenablage kann nicht geöffnet werden"
 
 #: src/lib/clipboard.py:82 src/lib/clipboard.py:99
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #: src/lib/gpg.py:88
 msgid ""
 "Choose a GPG key that you own for signing pyspread save files.\n"
 "Pressing Cancel creates a new key."
 msgstr ""
+"Eigenen GPG-Schlüssel zum signieren der Pyspread Dateien auswählen.\n"
+"Abbrechen erzeugt einen neuen Schlüssel."
 
 #: src/lib/gpg.py:90
 msgid "Choose key"
-msgstr ""
+msgstr "Wähle Schlüssel"
 
 #: src/lib/gpg.py:95
 msgid "   Store passphrase"
-msgstr ""
+msgstr "Passwort speichern"
 
 #: src/lib/gpg.py:170
 msgid ""
@@ -46,18 +48,22 @@ msgid ""
 " \n"
 "Progress bar may stall. Please wait."
 msgstr ""
+"Erzeuge GPG-Schlüssel {}.\n"
+"Dieser kann eine Weile dauern.\n"
+"\n"
+"Der Fortschrittsbalken kann stehen bleiben. Bitte warten."
 
 #: src/lib/gpg.py:172
 msgid "GPG key generation"
-msgstr ""
+msgstr "GPG-Schlüsselerzeugung"
 
 #: src/pyspread.py:87
 msgid "usage: %prog [options] [filename]"
-msgstr ""
+msgstr "Verwendung: %prog [Optionen][Dateiname]"
 
 #: src/pyspread.py:88
 msgid "%prog {}"
-msgstr ""
+msgstr "%prog {}"
 
 #: src/pyspread.py:99
 #, python-format
