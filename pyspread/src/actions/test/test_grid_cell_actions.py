@@ -141,11 +141,8 @@ class TestCellActions(object):
 
             self.grid.actions.set_code(cursor, initial_code)
 
-            self.grid.actions.append_reference_code(cursor, ref_key, ref_type)
-
-            wx.Yield()
-
-            result_code = self.main_window.entry_line.GetValue()
+            result_code = self.grid.actions.append_reference_code(cursor,
+                                                          ref_key, ref_type)
 
             if "S[" in initial_code:
                 assert result_code == initial_code[:4] + res

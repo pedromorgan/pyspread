@@ -165,6 +165,8 @@ class CellActions(Actions):
         post_command_event(self.grid.main_window, self.EntryLineMsg,
                            text=new_code)
 
+        return new_code  # For unit tests
+
     def _set_cell_attr(self, selection, table, attr):
         """Sets cell attr for key cell and mark grid content as changed
 
