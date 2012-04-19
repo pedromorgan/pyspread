@@ -1,7 +1,7 @@
 Installation of pyspread
 ========================
 
-1) If you upgrade to v 0.2.1: 
+1) If you upgrade: 
    $ rm ~/.pyspreadrc
 2) $ tar xzvf pyspread???.tar.gz
 3) $ cd pyspread???
