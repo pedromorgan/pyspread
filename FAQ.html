@@ -1,14 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-  <title>Pyspread - Docs</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="Author" content="Martin Manns">
-  <meta name="description"
- content="Pyspread is a cross-platform Python spreadsheet.">
-  <meta name="keywords"
- content="pyspread, spreadsheet, python, python spreadsheet, numpy, wxpython, csv, data mining">
-  <style type="text/css">
+  <head>
+    <title>Pyspread - Docs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="Author" content="Martin Manns">
+    <meta name="description" content="Pyspread is a cross-platform
+      Python spreadsheet.">
+    <meta name="keywords" content="pyspread, spreadsheet, python, python
+      spreadsheet, numpy, wxpython, csv, data mining">
+    <style type="text/css">
 <!--
 body
 {
@@ -64,8 +64,8 @@ color:#000000;
 }
 
 //--></style><!-- SF Logo -->
-  <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-  <style type="text/css">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <style type="text/css">
 th {
   font-size: large;
   font-weight: bold;
@@ -100,130 +100,137 @@ h3 {
 }
 
   </style>
-</head>
-<body>
-<div style="float: right;">
-<a href="http://sourceforge.net/projects/pyspread"><br>
-</a></div>
-<!-- Title -->
-<div style="float: left; width: 80px; height: 80px;"><img
- src="images/pyspread.png"
- style="margin-left: 15px; margin-right: 30px; margin-top: 10px;"
- alt="Logo" height="57" width="44"></div>
-<div style="width: 400px; height: 80px;">
-<h1 id="title">pyspread</h1>
-<h3>Python power for your tables</h3>
-</div>
-<!-- Menu -->
-<div id="menu"><a class="menu" href="index.html">home</a>&nbsp;
-|&nbsp;&nbsp; <a class="menu" href="news.html"></a><a class="menu"
- href="download.html">download</a>&nbsp;
-|&nbsp;&nbsp; <a style="text-decoration: overline; color: black;"
- class="menu" href="docs.html">docs</a>&nbsp;
-|&nbsp;&nbsp; <a class="menu" href="contribute.html">contribute</a>&nbsp;
-|&nbsp;&nbsp;
-<a class="menu" href="https://github.com/manns/pyspread/issues"
- target="_blank">bugs</a><a class="menu"
- href="http://pyspread.wiki.sourceforge.net/" target="_blank"></a>
-</div>
-<p>
-</p>
-<div style="text-align: left;">
-<style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }</style></div>
-<h1>
-<p
- style="margin-top: 0.17in; page-break-after: avoid; text-align: left;"><font
- face="Liberation Sans"><font size="5"><b>pyspread FAQ</b></font></font><br>
-</p>
-</h1>
-<table
- style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;"
- cellpadding="15" cellspacing="0" border="0">
-  <tbody>
-    <tr>
-      <th
- style="vertical-align: top; background-color: white; width: 102px;">What
-kind of expressions can a cell contain?<br>
-      </th>
-      <td style="vertical-align: top;">A cell can contain any normal
-Python expression such as a
-list comprehension or a generator expression. However, it cannot
-contain statements such as
-      <pre>for i in xrange(10): pass<br></pre>
-      <p>
-If you want to program more complex algorithms then use the macro
-editor.<br>
-There, you can define functions that use arbitrary Python code and is
-callable from any cell.
+  </head>
+  <body>
+    <div style="float: right;">
+      <a href="http://sourceforge.net/projects/pyspread"><br>
+      </a></div>
+    <!-- Title -->
+    <div style="float: left; width: 80px; height: 80px;"><img
+        src="images/pyspread.png" style="margin-left: 15px;
+        margin-right: 30px; margin-top: 10px;" alt="Logo" height="57"
+        width="44"></div>
+    <div style="width: 400px; height: 80px;">
+      <h1 id="title">pyspread</h1>
+      <h3>Python power for your tables</h3>
+    </div>
+    <!-- Menu -->
+    <div id="menu"><a class="menu" href="index.html">home</a>&nbsp;
+      |&nbsp;&nbsp; <a class="menu" href="news.html"></a><a
+        class="menu" href="download.html">download</a>&nbsp;
+      |&nbsp;&nbsp; <a style="text-decoration: overline; color: black;"
+        class="menu" href="docs.html">docs</a>&nbsp;
+      |&nbsp;&nbsp; <a class="menu" href="contribute.html">contribute</a>&nbsp;
+      |&nbsp;&nbsp;
+      <a class="menu" href="https://github.com/manns/pyspread/issues"
+        target="_blank">bugs</a><a class="menu"
+        href="http://pyspread.wiki.sourceforge.net/" target="_blank"></a>
+    </div>
+    <p>
+    </p>
+    <div style="text-align: left;">
+      <style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }</style></div>
+    <h1>
+      <p style="margin-top: 0.17in; page-break-after: avoid; text-align:
+        left;"><font face="Liberation Sans"><font size="5"><b>pyspread
+              FAQ</b></font></font><br>
       </p>
-      <p><b>Example:</b><br>
-Type in the macro editor:
-      </p>
-      <pre>def factorize(number):<br>    """Silly factorizing algorithm for demonstration purposes only"""<br>    counter = 1<br>    result = []<br>    while counter &lt;= number:<br>        if number&nbsp;% counter == 0:<br>            result.append(counter)<br>        counter += 1<br>    return result</pre>
-      <p>And in the cell:
-      </p>
-      <pre> factorize(25)</pre>
-      <p>Result is:
-      </p>
-      <pre> [1 5 25]</pre>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="width: 211px;"><br>
-      </td>
-    </tr>
-    <tr>
-      <th style="vertical-align: top;">What are the boundaries for the
-number of
-rows/columns/sheets? </th>
-      <td style="vertical-align: top;">These are limited by your memory
-(and maybe your stack
-restriction
-if any). However, the grid is restricted to a number that changes with
-row size.
-For standard size (GTK), 80 000 000 rows can be displayed. </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-    </tr>
-    <tr>
-      <th style="vertical-align: top;">Is the new file-format
-considered stable, or will it
-change again? </th>
-      <td style="vertical-align: top;">The new file format is stable.
-This means that future
-versions of Pyspread will be able to read the old format.</td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-    </tr>
-    <tr>
-      <th style="vertical-align: top;">Can pyspread still read the old
-format? </th>
-      <td style="vertical-align: top;">
-      <style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }h2 { margin-top: 0.07in; margin-bottom: 0.07in; text-decoration: underline; }h2.western { font-family: "Liberation Sans"; font-size: 12pt; font-style: normal; }h2.cjk { font-size: 14pt; font-style: italic; font-weight: normal; }h2.ctl { font-family: "FreeSans"; font-size: 14pt; font-style: italic; }a:link {  }</style>Unfortunately
-not. If you have old pys files, install both
-versions of pyspread and copy the cell contents via the Clipboard from
-the old to the new version. However, cell formatting cannot be
-preserved this way.</td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<p><span style="font-style: italic;"><small>C<font size="-1">opyright
-2008-2012 Martin
-Manns</font></small><font size="-1"><br>
-Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br
- style="font-style: italic;">
-</font>
-</span><font size="-1"><span style="font-style: italic;">Last changed:
-02. February 2012
-</span></font></p>
-<p><span style="font-style: italic;"><small></small></span></p>
-</body>
+    </h1>
+    <table style="text-align: left; width: 100%; margin-left: auto;
+      margin-right: auto;" border="0" cellpadding="15" cellspacing="0">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top; background-color: white;
+            width: 102px;">What
+            kind of expressions can a cell contain?<br>
+          </th>
+          <td style="vertical-align: top;">A cell can contain any normal
+            Python expression such as a
+            list comprehension or a generator expression. However, it
+            cannot
+            contain statements such as
+            <pre>for i in xrange(10): pass<br></pre>
+            <p>
+              If you want to program more complex algorithms then use
+              the macro
+              editor.<br>
+              There, you can define functions that use arbitrary Python
+              code and is
+              callable from any cell. </p>
+            <p><b>Example:</b><br>
+              Type in the macro editor: </p>
+            <pre>def factorize(number):<br>    """Silly factorizing algorithm for demonstration purposes only"""<br>    counter = 1<br>    result = []<br>    while counter &lt;= number:<br>        if number&nbsp;% counter == 0:<br>            result.append(counter)<br>        counter += 1<br>    return result</pre>
+            <p>And in the cell: </p>
+            <pre> factorize(25)</pre>
+            <p>Result is: </p>
+            <pre> [1 5 25]</pre>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="width: 211px;"><br>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align: top;">What are the boundaries for
+            the
+            number of
+            rows/columns/sheets? </th>
+          <td style="vertical-align: top;">These are limited by your
+            memory
+            (and maybe your stack
+            restriction
+            if any). However, the grid is restricted to a number that
+            changes with
+            row size.
+            For standard size (GTK), 80 000 000 rows can be displayed. </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align: top;">Is the new file-format
+            considered stable, or will it
+            change again? </th>
+          <td style="vertical-align: top;">The new file format is
+            stable.
+            This means that future
+            versions of Pyspread will be able to read the old format.</td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align: top;">Can pyspread still read the
+            old
+            format? </th>
+          <td style="vertical-align: top;">
+            <style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }h2 { margin-top: 0.07in; margin-bottom: 0.07in; text-decoration: underline; }h2.western { font-family: "Liberation Sans"; font-size: 12pt; font-style: normal; }h2.cjk { font-size: 14pt; font-style: italic; font-weight: normal; }h2.ctl { font-family: "FreeSans"; font-size: 14pt; font-style: italic; }a:link {  }</style>Unfortunately
+not.
+            If you have old pys files, install both
+            versions of pyspread and copy the cell contents via the
+            Clipboard from
+            the old to the new version. However, cell formatting cannot
+            be
+            preserved this way.</td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><span style="font-style: italic;"><small>C<font size="-1">opyright
+2008-2012
+            Martin
+            Manns</font></small><font size="-1"><br>
+          Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br
+            style="font-style: italic;">
+        </font>
+      </span><font size="-1"><span style="font-style: italic;">Last
+          changed: 19. April 2012
+        </span></font></p>
+    <p><span style="font-style: italic;"><small></small></span></p>
+  </body>
 </html>
