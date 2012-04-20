@@ -27,6 +27,8 @@ pyspread/doc/help/images/pyspread-new.png
 pyspread/examples/big.csv
 pyspread/examples/macro_chart.py
 pyspread/examples/macrotest2.py
+pyspread/examples/pivot.pys
+pyspread/examples/pivot.pys.sig
 pyspread/examples/test2.pys
 pyspread/examples/test2.pys.sig
 pyspread/examples/test_write.csv
@@ -62,7 +64,6 @@ pyspread/share/icons/Tango/24x24/toggles/regex.png
 pyspread/share/icons/Tango/24x24/toggles/wholeword.png
 pyspread/src/__init__.py
 pyspread/src/config.py
-pyspread/src/i18n.py
 pyspread/src/pyspread.py
 pyspread/src/run_tests.py
 pyspread/src/sysvars.py
@@ -107,6 +108,7 @@ pyspread/src/lib/__csv.py
 pyspread/src/lib/__init__.py
 pyspread/src/lib/clipboard.py
 pyspread/src/lib/gpg.py
+pyspread/src/lib/i18n.py
 pyspread/src/lib/parsers.py
 pyspread/src/lib/selection.py
 pyspread/src/lib/testlib.py

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -22,7 +22,7 @@
 from distutils.core import setup
 
 setup(name='pyspread',
-      version='0.2.2',
+      version='0.2.3',
       description='Python Spreadsheet',
       license='GPL v3 :: GNU General Public License',
       keywords=['spreadsheet', 'pyspread'],
