@@ -18,19 +18,26 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import os
+import sys
+
 import py.test as pytest
-
 import gmpy
-
 import numpy
 
 import wx
 app = wx.App()
 
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+
 from src.model.model import KeyValueStore, CellAttributes, DictGrid
 from src.model.model import DataArray, CodeArray
 
 from src.lib.selection import Selection
+
 
 class TestKeyValueStore(object):
     """Unit tests for KeyValueStore"""
@@ -43,11 +50,13 @@ class TestKeyValueStore(object):
     def test_missing(self):
         """Test if missing value returns None"""
 
-        assert self.k_v_store[(1,2,3)] is None
+        key = (1, 2, 3)
+        assert self.k_v_store[key] is None
 
-        self.k_v_store[(1,2,3)] = 7
+        self.k_v_store[key] = 7
 
-        assert self.k_v_store[(1,2,3)] == 7
+        assert self.k_v_store[key] == 7
+
 
 class TestCellAttributes(object):
     """Unit tests for CellAttributes"""
@@ -74,6 +83,7 @@ class TestCellAttributes(object):
         assert self.cell_attr[32, 53, 0]["testattr"] == 2
         assert self.cell_attr[2, 2, 0]["testattr"] == 3
 
+
 class TestParserMixin(object):
     """Unit tests for ParserMixin"""
 
@@ -91,7 +101,6 @@ class TestParserMixin(object):
 
         assert self.dict_grid.shape == (12, 12, 32)
 
-
     def test_parse_to_grid(self):
         """Unit test for parse_to_grid"""
 
@@ -108,8 +117,8 @@ class TestParserMixin(object):
 
         self.dict_grid.parse_to_attribute(line)
 
-        assert self.dict_grid.cell_attributes[(3, 4, 0)]['borderwidth_bottom'] == 42
-
+        assert self.dict_grid.cell_attributes[(3, 4, 0)]\
+                                ['borderwidth_bottom'] == 42
 
     def test_parse_to_height(self):
         """Unit test for parse_to_height"""
@@ -153,7 +162,7 @@ class TestStringGeneratorMixin(object):
         self.dict_grid[(3, 2, 1)] = "42"
         grid_string_list = list(self.dict_grid.grid_to_strings())
 
-        expected_res =  [ \
+        expected_res = [ \
         "[shape]\n",
         "100\t100\t100\n",
         "[grid]\n",
@@ -169,7 +178,7 @@ class TestStringGeneratorMixin(object):
 
         attr_string_list = list(self.dict_grid.attributes_to_strings())
 
-        expected_res =  [ \
+        expected_res = [ \
         "[attributes]\n",
         "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
         ]
@@ -181,7 +190,7 @@ class TestStringGeneratorMixin(object):
 
         self.dict_grid.row_heights[(2, 0)] = 77
 
-        expected_res =  [ \
+        expected_res = [ \
         "[row_heights]\n",
         "2\t0\t77\n",
         ]
@@ -190,13 +199,12 @@ class TestStringGeneratorMixin(object):
 
         assert height_string_list == expected_res
 
-
     def test_widths_to_strings(self):
         """Unit test for widths_to_strings"""
 
         self.dict_grid.col_widths[(2, 0)] = 77
 
-        expected_res =  [ \
+        expected_res = [ \
         "[col_widths]\n",
         "2\t0\t77\n",
         ]
@@ -210,7 +218,7 @@ class TestStringGeneratorMixin(object):
 
         self.dict_grid.macros = "Test"
 
-        expected_res =  [ \
+        expected_res = [ \
         "[macros]\n",
         "Test\n",
         ]
@@ -236,6 +244,7 @@ class TestDictGrid(object):
 
         self.dict_grid[(2, 4, 5)] = "Test"
         assert self.dict_grid[(2, 4, 5)] == "Test"
+
 
 class TestDataArray(object):
     """Unit tests for DataArray"""
@@ -320,7 +329,8 @@ class TestDataArray(object):
 
         cell_array = self.data_array[:5, :5, :5]
 
-        assert [[list(e) for e in c] for c in cell_array] == [[[None] * 5] * 5] * 5
+        assert [[list(e) for e in c] for c in cell_array] == \
+                                            [[[None] * 5] * 5] * 5
 
     def test_adjust_shape(self):
         """Unit test for _adjust_shape"""
@@ -416,10 +426,10 @@ class TestCodeArray(object):
                 filled_grid[0, 0, 0]
                 filled_grid[1, 0, 0] = "math = __import__('math')"
                 filled_grid[1, 0, 0]
-                filled_grid[j, 3, 0] = funcname +' (' + str(i) + ')'
+                filled_grid[j, 3, 0] = funcname + ' (' + str(i) + ')'
 
-                res = eval(funcname +"("+"i"+")")
-                assert filled_grid[j, 3, 0] == eval(funcname +"("+"i"+")")
+                res = eval(funcname + "(" + "i" + ")")
+                assert filled_grid[j, 3, 0] == eval(funcname + "(" + "i" + ")")
         #Test X, Y, Z
         for i in xrange(10):
             self.code_array[i, 0, 0] = str(i)
@@ -478,7 +488,7 @@ class TestCodeArray(object):
         code_array = self.code_array
 
         test_strings = ["", "Hello", " Hello", "Hello ", " Hello ", "Hello\n",
-                        "THelloT", " HelloT", "THello ", "hello", "HELLO", "sd"]
+            "THelloT", " HelloT", "THello ", "hello", "HELLO", "sd"]
 
         search_string = "Hello"
 

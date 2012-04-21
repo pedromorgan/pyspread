@@ -18,12 +18,19 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-import py.test as pytest
+import os
+import sys
 
 import wx
 app = wx.App()
 
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+
 from src.model.unredo import UnRedo
+
 
 class TestUnRedo(object):
     """Unit test for UnRedo"""
@@ -38,7 +45,7 @@ class TestUnRedo(object):
         """Test for marking step delimiters"""
 
         self.unredo.mark()
-        assert self.unredo.undolist == [] # Empty undolist needs no marking
+        assert self.unredo.undolist == []  # Empty undolist needs no marking
 
         self.unredo.undolist = [self.step]
         self.unredo.mark()
