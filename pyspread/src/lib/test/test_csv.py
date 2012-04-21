@@ -39,31 +39,52 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + "/../../..")
 sys.path.insert(0, TESTPATH + "/../..")
 
+from src.lib.testlib import params, pytest_generate_tests
 import src.lib.__csv as __csv
 
+param_sniff = [ \
+    {'filepath': TESTPATH + 'test1.csv', 'header': True, 'delimiter': ',',
+     'doublequote': 0, 'quoting': 0, 'quotechar': '"',
+     'lineterminator': "\r\n", 'skipinitialspace': 0},
+]
 
-def test_sniff():
+
+@params(param_sniff)
+def test_sniff(filepath, header, delimiter, doublequote, quoting, quotechar,
+               lineterminator, skipinitialspace):
     """Unit test for sniff"""
 
-    pass
-#    dialect, header = __csv.sniff("BUG2037662.csv")
-#    assert not header
-#    assert dialect.delimiter == ','
-#    assert dialect.doublequote == 0
-#    assert dialect.quoting == 0
-#    assert dialect.quotechar == '"'
-#    assert dialect.lineterminator == "\r\n"
-#    assert dialect.skipinitialspace == 0
+    dialect, __header = __csv.sniff(filepath)
+    assert __header == header
+    assert dialect.delimiter == delimiter
+    assert dialect.doublequote == doublequote
+    assert dialect.quoting == quoting
+    assert dialect.quotechar == quotechar
+    assert dialect.lineterminator == lineterminator
+    assert dialect.skipinitialspace == skipinitialspace
 
-def test_get_first_line():
+
+param_first_line = [ \
+    {'filepath': TESTPATH + 'test1.csv',
+     'first_line': ["Text", "Number", "Float", "Date"]},
+]
+
+
+@params(param_first_line)
+def test_get_first_line(filepath, first_line):
     """Unit test for get_first_line"""
 
-    pass
+    dialect, __header = __csv.sniff(filepath)
+    __first_line = __csv.get_first_line(filepath, dialect)
+
+    assert __first_line == first_line
+
 
 def test_csv_digest_gen():
     """Unit test for csv_digest_gen"""
 
     pass
+
 
 def test_cell_key_val_gen():
     """Unit test for cell_key_val_gen"""
