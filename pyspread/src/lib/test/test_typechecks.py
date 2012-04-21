@@ -18,9 +18,16 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import os
+import sys
 
 import wx
 app = wx.App()
+
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
 
 from src.lib.testlib import params, pytest_generate_tests
 
@@ -35,6 +42,7 @@ param_slc = [ \
     {"slc": {}, "res": False},
     {"slc": None, "res": False},
 ]
+
 
 @params(param_slc)
 def test_is_slice_like(slc, res):
@@ -53,6 +61,7 @@ param_str = [ \
     {"string": None, "res": False},
 ]
 
+
 @params(param_str)
 def test_is_string_like(string, res):
     """Unit test for is_string_like"""
@@ -69,6 +78,7 @@ param_gen = [ \
     {"gen": {None: '3'}, "res": False},
     {"gen": None, "res": False},
 ]
+
 
 @params(param_gen)
 def test_is_generator_like(gen, res):

@@ -28,11 +28,19 @@ Unit tests for __csv.py
 
 """
 
+import os
+import sys
 
 import wx
 app = wx.App()
 
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+
 import src.lib.__csv as __csv
+
 
 def test_sniff():
     """Unit test for sniff"""
@@ -125,6 +133,7 @@ class TestCsvInterface(object):
 
         pass
 
+
 class TestTxtGenerator(object):
     """Unit tests for TxtGenerator"""
 
@@ -132,4 +141,3 @@ class TestTxtGenerator(object):
         """Unit test for __iter__"""
 
         pass
-

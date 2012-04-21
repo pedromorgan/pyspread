@@ -18,15 +18,16 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-
-import types
-
-import gmpy
-import numpy
+import os
+import sys
 
 import wx
+app = wx.App()
 
-app= wx.App()
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
 
 from src.lib.testlib import params, pytest_generate_tests
 
@@ -36,6 +37,7 @@ param_font = [ \
     {"fontdata": "Sans 13", "face": "Sans", "size": 13},
     {"fontdata": "Serif 43", "face": "Serif", "size": 43},
 ]
+
 
 @params(param_font)
 def test_get_font_from_data(fontdata, face, size):
@@ -47,10 +49,14 @@ def test_get_font_from_data(fontdata, face, size):
     assert font.GetPointSize() == size
 
 param_pen = [ \
-    {"pendata": [wx.RED.GetRGB(), 4], "width": 4, "color": wx.Colour(255, 0, 0, 255)},
-    {"pendata": [wx.BLUE.GetRGB(), 1], "width": 1, "color": wx.Colour(0, 0, 255, 255)},
-    {"pendata": [wx.GREEN.GetRGB(), 0], "width": 0, "color": wx.Colour(0, 255, 0, 255)},
+    {"pendata": [wx.RED.GetRGB(), 4], "width": 4,
+     "color": wx.Colour(255, 0, 0, 255)},
+    {"pendata": [wx.BLUE.GetRGB(), 1], "width": 1,
+     "color": wx.Colour(0, 0, 255, 255)},
+    {"pendata": [wx.GREEN.GetRGB(), 0], "width": 0,
+     "color": wx.Colour(0, 255, 0, 255)},
 ]
+
 
 @params(param_pen)
 def test_get_pen_from_data(pendata, width, color):
@@ -60,4 +66,3 @@ def test_get_pen_from_data(pendata, width, color):
 
     assert pen.GetColour() == color
     assert pen.GetWidth() == width
-

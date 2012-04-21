@@ -19,9 +19,19 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+from math import sin, cos, pi
+import os
+import sys
 
 import numpy
+
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+
 import src.lib.xrect as xrect
+
 
 # test support code
 def params(funcarglist):
@@ -30,13 +40,17 @@ def params(funcarglist):
         return function
     return wrapper
 
+
 def pytest_generate_tests(metafunc):
     for funcargs in getattr(metafunc.function, 'funcarglist', ()):
         metafunc.addcall(funcargs=funcargs)
 
-# actual test code
+# Actual test code
+# ----------------
+
 
 class TestRect(object):
+    """Unit tests for Rect"""
 
     param_comb_get_bbox = [ \
         {'x': 0, 'y': 0, 'w': 1, 'h': 1},
@@ -77,6 +91,7 @@ class TestRect(object):
 
 
 class TestRotoOriginRect(object):
+    """Unit tests for RotoOriginRect"""
 
     param_comb_get_bbox = [ \
         {'w': 1, 'h': 1, 'angle': 0},
@@ -94,12 +109,7 @@ class TestRotoOriginRect(object):
 
     @params(param_comb_get_bbox)
     def test_get_bbox(self, w, h, angle):
-        w = 10
-        h = 10
-        angle  = 247
         rect = xrect.RotoOriginRect(w, h, angle)
-
-        from math import sin, cos, pi
 
         rad_angle = angle / 180.0 * pi
 
@@ -125,7 +135,6 @@ class TestRotoOriginRect(object):
         for b1, b2 in zip(bbox_from_method, bbox_calculated):
             print b1, b2
             assert abs(b1 - b2) < 1.0E-10
-
 
     param_comb_rotoorigin_collide = [ \
         # Identity
@@ -184,7 +193,10 @@ class TestRotoOriginRect(object):
 
         assert base_rect.collides(clash_rect) == res
 
+
 class TestRotoRect(object):
+    """Unit tests for RotoRect"""
+
     param_collides_axisaligned_rect = [ \
         # Identity
         {'x': 0, 'y': 0, 'w': 20, 'h': 10, 'angle': 0,

@@ -18,12 +18,20 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import os
+import sys
 
 import wx
 app = wx.App()
 
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+
 from src.lib.selection import Selection
 import src.actions._grid_actions as grid_actions
+
 
 class TestSelection(object):
     """Unit tests for Selection"""

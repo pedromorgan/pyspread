@@ -28,13 +28,21 @@ Unit tests for clipboard.py
 
 """
 
+import os
+import sys
 
 import wx
 app = wx.App()
 
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
+
 from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.clipboard import Clipboard
+
 
 class TestClipboard(object):
     """Unit tests for Clipboard"""

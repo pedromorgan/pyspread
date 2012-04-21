@@ -28,9 +28,16 @@ Unit tests for gpg.py
 
 """
 
+import os
+import sys
 
 import wx
 app = wx.App()
+
+TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+sys.path.insert(0, TESTPATH)
+sys.path.insert(0, TESTPATH + "/../../..")
+sys.path.insert(0, TESTPATH + "/../..")
 
 import src.lib.gpg as gpg
 from src.lib.testlib import params, pytest_generate_tests
@@ -49,7 +56,7 @@ def _set_sig(filename, sigfilename):
 def test_sign():
     """Unit test for sign"""
 
-    filename = "test1.pys"
+    filename = TESTPATH + "test1.pys"
     sigfilename = filename + ".sig"
 
     _set_sig(filename, sigfilename)
@@ -59,9 +66,12 @@ def test_sign():
     assert valid
 
 param_verify = [ \
-    {'filename': "test1.pys", 'sigfilename': "test1.pys.sig", 'valid': 1},
-    {'filename': "test1.pys", 'sigfilename': "test1.pys.empty", 'valid': 0},
-    {'filename': "test1.pys", 'sigfilename': "test1.pys.nonsense", 'valid': 0},
+    {'filename': TESTPATH + "test1.pys",
+     'sigfilename': TESTPATH + "test1.pys.sig", 'valid': 1},
+    {'filename': TESTPATH + "test1.pys",
+     'sigfilename': TESTPATH + "test1.pys.empty", 'valid': 0},
+    {'filename': TESTPATH + "test1.pys",
+     'sigfilename': TESTPATH + "test1.pys.nonsense", 'valid': 0},
 ]
 
 
