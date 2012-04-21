@@ -22,6 +22,6 @@ Classifier: Environment :: X11 Applications :: GTK
 Classifier: Intended Audience :: End Users/Desktop
 Classifier: License :: OSI Approved :: GNU General Public License (GPL)
 Classifier: Natural Language :: English
-Classifier: Operating System :: OS Independent
+Classifier: Operating System :: POSIX
 Classifier: Programming Language :: Python :: 2.7
 Classifier: Topic :: Office/Business :: Financial :: Spreadsheet
