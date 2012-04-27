@@ -259,7 +259,7 @@ class TestFileActions(object):
 
         # Test self.grid content for valid file
 
-        assert self.grid.GetTable().data_array[0, 0, 0] == '"test4"'
+        assert self.grid.GetTable().data_array[0, 0, 0] == "test4"
 
     def test_save(self):
         """Tests save functionality"""
