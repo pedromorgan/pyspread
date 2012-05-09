@@ -160,6 +160,7 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_FONTSTRIKETHROUGH,
                     c_handlers.OnCellFontStrikethrough)
         main_window.Bind(self.EVT_CMD_FROZEN, c_handlers.OnCellFrozen)
+        main_window.Bind(self.EVT_CMD_MERGE, c_handlers.OnMerge)
         main_window.Bind(self.EVT_CMD_JUSTIFICATION,
                     c_handlers.OnCellJustification)
         main_window.Bind(self.EVT_CMD_ALIGNMENT, c_handlers.OnCellAlignment)
@@ -427,6 +428,13 @@ class GridCellEventHandlers(object):
 
         event.Skip()
 
+    def OnMerge(self, event):
+        """Merge cells event handler"""
+
+        self.grid.actions.merge_selected_cells(self.grid.selection)
+
+        self.grid.ForceRefresh()
+
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
 
@@ -513,10 +521,33 @@ class GridCellEventHandlers(object):
 
     # Cell selection event handlers
 
+    def set_cursor(self, row, col, tab):
+        """Sets grid cursor to key"""
+
+        self.grid.SetGridCursor(row, col)
+        self._last_selected_cell = row, col, tab
+        return
+
     def OnCellSelected(self, event):
         """Cell selection event handler"""
 
-        key = event.Row, event.Col, self.grid.current_table
+        key = row, col, tab = event.Row, event.Col, self.grid.current_table
+
+        # Is the cell merged then go to merging cell
+        merge_area = self.grid.code_array.cell_attributes[key]["merge_area"]
+
+        if merge_area is not None:
+            top, left, bottom, right = merge_area
+            if self._last_selected_cell == (top, left, tab):
+                if row == top + 1:
+                    self.set_cursor(bottom + 1, left, tab)
+                    return
+                elif col == left + 1:
+                    self.set_cursor(top, right + 1, tab)
+                    return
+            elif (row, col) != (top, left):
+                self.set_cursor(top, left, tab)
+                return
 
         # Redraw cursor
         self.grid.ForceRefresh()
@@ -526,6 +557,8 @@ class GridCellEventHandlers(object):
 
         # Update attribute toolbar
         self._update_attribute_toolbar(key)
+
+        self._last_selected_cell = key
 
         event.Skip()
 
@@ -548,6 +581,13 @@ class GridEventHandlers(object):
         row = grid.YToRow(pos_y)
         col = grid.XToCol(pos_x)
         tab = grid.current_table
+
+        key = row, col, tab
+
+        merge_area = self.grid.code_array.cell_attributes[key]["merge_area"]
+        if merge_area is not None:
+            top, left, bottom, right = merge_area
+            row, col = top, left
 
         grid.actions.on_mouse_over((row, col, tab))
 

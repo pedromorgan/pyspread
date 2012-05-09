@@ -114,6 +114,7 @@ class GridCellEventMixin(object):
     FontUnderlineMsg, EVT_CMD_FONTUNDERLINE = new_command_event()
     FontStrikethroughMsg, EVT_CMD_FONTSTRIKETHROUGH = new_command_event()
     FrozenMsg, EVT_CMD_FROZEN = new_command_event()
+    MergeMsg, EVT_CMD_MERGE = new_command_event()
     JustificationMsg, EVT_CMD_JUSTIFICATION = new_command_event()
     AlignmentMsg, EVT_CMD_ALIGNMENT = new_command_event()
     BorderChoiceMsg, EVT_CMD_BORDERCHOICE = new_command_event()

@@ -180,7 +180,7 @@ class CellActions(Actions):
         \t"bgcolor", "textfont",
         \t"pointsize", "fontweight", "fontstyle", "textcolor", "underline",
         \t"strikethrough", "angle", "column-width", "row-height",
-        \t"vertical_align", "justification", "frozen"]
+        \t"vertical_align", "justification", "frozen", "merge_area"]
 
         """
 
@@ -321,6 +321,54 @@ class CellActions(Actions):
         # Set the new frozen state / code
         selection = Selection([], [], [], [], [cursor[:2]])
         self.set_attr("frozen", not frozen, selection=selection)
+
+    def unmerge(self, unmerge_area, tab):
+        """Unmerges all cells in unmerge_area"""
+
+        top, left, bottom, right = unmerge_area
+        selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+        attr = {"merge_area": None}
+
+        self.grid.actions._set_cell_attr(selection, tab, attr)
+
+    def merge(self, merge_area, tab):
+        """Merges top left cell with all cells until bottom_right"""
+
+        top, left, bottom, right = merge_area
+        selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+        attr = {"merge_area": merge_area}
+
+        self.grid.actions._set_cell_attr(selection, tab, attr)
+
+    def merge_selected_cells(self, selection):
+        """Merges or unmerges cells that are in the selection bounding box
+
+        Parameters
+        ----------
+        selection: Selection object
+        \tSelection for which attr toggle shall be returned
+
+        """
+
+        tab = self.grid.current_table
+
+        # Get the selection bounding box
+        bbox = selection.get_bbox()
+        if bbox is None:
+            row, col, tab = self.grid.actions.cursor
+            (bb_top, bb_left), (bb_bottom, bb_right) = (row, col), (row, col)
+        else:
+            (bb_top, bb_left), (bb_bottom, bb_right) = bbox
+        merge_area = bb_top, bb_left, bb_bottom, bb_right
+
+        # Check if top-left cell is already merged
+        cell_attributes = self.grid.code_array.cell_attributes
+        tl_merge_area = cell_attributes[(bb_top, bb_left, tab)]["merge_area"]
+
+        if tl_merge_area is None:
+            self.merge(merge_area, tab)
+        else:
+            self.unmerge(tl_merge_area, tab)
 
     attr_toggle_values = { \
         "fontweight": [wx.NORMAL, wx.BOLD],

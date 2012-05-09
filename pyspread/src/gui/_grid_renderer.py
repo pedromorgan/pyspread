@@ -406,9 +406,15 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
     def _draw_cursor(self, dc, grid, row, col,
                     pen=wx.BLACK_PEN, brush=wx.BLACK_BRUSH):
-        """Draws cursor as Reckangle in lower right corner"""
+        """Draws cursor as Rectangle in lower right corner"""
 
+        key = row, col, grid.current_table
         rect = grid.CellToRect(row, col)
+        rect = self._get_merged_rect(grid, key, rect)
+
+        # Check if cell is invisible
+        if rect is None:
+            return
 
         size = self.get_zoomed_size(1.0)
 
@@ -465,18 +471,55 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                          pen=wx.WHITE_PEN, brush=wx.WHITE_BRUSH)
         self._draw_cursor(dc, grid, row, col)
 
+    def _get_merged_rect(self, grid, key, rect):
+        """Returns cell rect for normal or merged cells and None for merged"""
+
+        row, col, tab = key
+
+        # Check if cell is merged:
+        cell_attributes = grid.code_array.cell_attributes
+        merge_area = cell_attributes[key]["merge_area"]
+
+        if merge_area is None:
+            return rect
+
+        else:
+            # We have a merged cell
+            top, left, bottom, right = merge_area
+
+            # Are we drawing the top left cell?
+            if top == row and left == col:
+                # Set rect to merge area
+                rect = grid.BlockToDeviceRect((row, col), (bottom, right))
+
+                # Adjust rect to grid scroll position
+                yunit, xunit = grid.GetScrollPixelsPerUnit()
+                rect.x += grid.GetScrollPos(wx.HORIZONTAL) * xunit
+                rect.y += grid.GetScrollPos(wx.VERTICAL) * yunit
+
+                # Adjust rect to 1 pixel error
+                rect.width -= 1
+                rect.height -= 1
+
+                return rect
+
     def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False):
         """Draws the cell border and content"""
 
         key = (row, col, grid.current_table)
 
+        rect = self._get_merged_rect(grid, key, rect)
+        if rect is None:
+            # Merged cell --> Draw nothing
+            return
+
         if isSelected:
             grid.selection_present = True
 
-            bg = Background(grid, self.data_array, row, col,
+            bg = Background(grid, rect, self.data_array, row, col,
                             grid.current_table, isSelected)
         else:
-            _, _, width, height = grid.CellToRect(row, col)
+            width, height = rect.width, rect.height
 
             bg_components = ["bgcolor",
                              "borderwidth_bottom", "borderwidth_right",
@@ -496,7 +539,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                     self.backgrounds = {}
 
                 bg = self.backgrounds[bg_key] = \
-                        Background(grid, self.data_array, *key)
+                        Background(grid, rect, self.data_array, *key)
 
         if wx.Platform == "__WXGTK__" and not printing:
             mask_type = wx.AND
@@ -529,15 +572,15 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 class Background(object):
     """Memory DC with background content for given cell"""
 
-    def __init__(self, grid, data_array, row, col, tab, selection=False):
+    def __init__(self, grid, rect, data_array, row, col, tab, selection=False):
         self.grid = grid
         self.data_array = data_array
 
         self.key = row, col, tab
 
         self.dc = wx.MemoryDC()
-        self.rect = grid.CellToRect(row, col)
-        self.bmp = wx.EmptyBitmap(self.rect.width, self.rect.height)
+        self.rect = rect
+        self.bmp = wx.EmptyBitmap(rect.width, rect.height)
 
         self.selection = selection
 

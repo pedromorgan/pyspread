@@ -105,6 +105,7 @@ class CellAttributes(list):
         "vertical_align": "top",
         "justification": "left",
         "frozen": False,
+        "merge_area": None,
     }
 
     # Cache for __getattr__ maps key to tuple of len and attr_dict

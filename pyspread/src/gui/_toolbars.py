@@ -337,6 +337,7 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
         self._create_borderchoice_combo()
         self._create_penwidth_combo()
         self._create_color_buttons()
+        self._create_merge_button()
         self._create_textrotation_spinctrl()
 
         self.Realize()
@@ -462,6 +463,15 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
         self.linecolor_choice.Bind(csel.EVT_COLOURSELECT, self.OnLineColor)
         self.bgcolor_choice.Bind(csel.EVT_COLOURSELECT, self.OnBGColor)
         self.textcolor_choice.Bind(csel.EVT_COLOURSELECT, self.OnTextColor)
+
+    def _create_merge_button(self):
+        """Create merge button"""
+
+        bmp = icons["Merge"]
+        self.mergetool_id = wx.NewId()
+        self.AddCheckLabelTool(self.mergetool_id, "", bmp,
+                               shortHelp=_("Merge cells"))
+        self.Bind(wx.EVT_TOOL, self.OnMerge, id=self.mergetool_id)
 
     def _create_textrotation_spinctrl(self):
         """Create text rotation spin control"""
@@ -634,6 +644,11 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
 
         self.textcolor_choice.SetColour(textcolor)
 
+    def _update_merge(self, merged):
+        """Updates cell merge toggle control"""
+
+        self.ToggleTool(self.mergetool_id, merged)
+
     def _update_textrotation(self, angle):
         """Updates text rotation spin control"""
 
@@ -680,6 +695,7 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
         self._update_justification(attributes["justification"])
         self._update_alignment(attributes["vertical_align"])
         self._update_fontcolor(attributes["textcolor"])
+        self._update_merge(attributes["merge_area"] is not None)
         self._update_textrotation(attributes["angle"])
         self._update_bgbrush(attributes["bgcolor"])
         self._update_bordercolor(attributes["bordercolor_bottom"])
@@ -783,6 +799,11 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
         """Alignment toggle button event handler"""
 
         post_command_event(self, self.AlignmentMsg)
+
+    def OnMerge(self, event):
+        """Merge button event handler"""
+
+        post_command_event(self, self.MergeMsg)
 
     def OnRotate(self, event):
         """Rotation spin control event handler"""

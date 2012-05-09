@@ -1,3 +1,7 @@
+0.2.3
+ * PIP install now works
+ * Cell merging and unmerging added
+
 0.2.2
  * Fixed bug switching tables
  * Menubar icons added

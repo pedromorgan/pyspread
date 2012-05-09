@@ -69,6 +69,7 @@ class _ArtProvider(wx.ArtProvider):
             "AlignCenter": _action_path + "format-text-aligncenter.png",
             "AlignBottom": _action_path + "format-text-alignbottom.png",
             "Freeze": _action_path + "frozen_small.png",
+            "Merge": _action_path + "format-merge-table-cells.png",
             "AllBorders": _toggle_path + "border_all.xpm",
             "LeftBorders": _toggle_path + "border_left.xpm",
             "RightBorders": _toggle_path + "border_right.xpm",

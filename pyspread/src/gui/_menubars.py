@@ -296,6 +296,9 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.FrozenMsg, _("Frozen"),
                       _("Toggles frozen state of cell. ") + \
                       _("Frozen cells are updated only when F5 is pressed.")]],
+                [item, [self.MergeMsg, _("Merge cells"),
+                      _("Merges / unmerges selected cells. ")]],
+
                 ["Separator"], \
                 [wx.Menu, _("Justification"), [ \
                     [item, [self.JustificationMsg, _("Left"), _("Left"),
