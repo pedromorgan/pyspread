@@ -103,8 +103,13 @@ class FileActions(Actions):
 
         # Show progress in statusbar each freq (1000) cells
         if cycle % freq == 0:
-            post_command_event(self.main_window, self.StatusBarMsg,
-                text=statustext.format(nele=cycle, totalele=total_elements))
+            text = statustext.format(nele=cycle, totalele=total_elements)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=text)
+            except TypeError:
+                # The main window does not exist any more
+                pass
 
             # Now wait for the statusbar update to be written on screen
             wx.Yield()
@@ -138,10 +143,16 @@ class FileActions(Actions):
         self.code_array.safe_mode = True
 
     def leave_safe_mode(self):
-        """Leaves save mode"""
+        """Leaves safe mode"""
 
         self.code_array.safe_mode = False
+
+        # Clear result cache
         self.code_array.result_cache.clear()
+
+        # Execute macros
+        self.main_window.actions.execute_macros()
+
         post_command_event(self.main_window, self.SafeModeExitMsg)
 
     def approve(self, filepath):
@@ -322,6 +333,9 @@ class FileActions(Actions):
         infile.close()
         self.opening = False
 
+        # Execute macros
+        self.main_window.actions.execute_macros()
+
         # Enable undo again
         self.grid.code_array.unredo.active = False
 
@@ -337,8 +351,13 @@ class FileActions(Actions):
         signature = sign(filepath)
         if signature is None:
             statustext = _('Error signing file. File is not signed.')
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=statustext)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
             return
 
         signfile = open(filepath + '.sig', 'wb')
@@ -352,15 +371,24 @@ class FileActions(Actions):
         else:
             statustext = _('File signed')
 
-        post_command_event(self.main_window, self.StatusBarMsg,
+        try:
+            post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
+        except TypeError:
+            # The main window does not exist any more
+            pass
 
     def _abort_save(self, filepath, outfile):
         """Aborts file save"""
 
         statustext = _("Save aborted.")
-        post_command_event(self.main_window, self.StatusBarMsg,
-                           text=statustext)
+
+        try:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=statustext)
+        except TypeError:
+            # The main window does not exist any more
+            pass
 
         outfile.close()
         os.remove(filepath)
@@ -393,8 +421,12 @@ class FileActions(Actions):
 
         except IOError:
             statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=statustext)
+            except TypeError:
+                # The main window does not exist any more
+                pass
             return False
 
         # Header
@@ -403,8 +435,13 @@ class FileActions(Actions):
             outfile.write("0.1\n")
 
         except IOError:
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=io_error_text)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=io_error_text)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
             return False
 
         # The output generators yield the lines for the outfile
@@ -438,8 +475,12 @@ class FileActions(Actions):
                     outfile.write(line.encode("utf-8"))
 
                 except IOError:
-                    post_command_event(self.main_window, self.StatusBarMsg,
-                                       text=io_error_text)
+                    try:
+                        post_command_event(self.main_window, self.StatusBarMsg,
+                                           text=io_error_text)
+                    except TypeError:
+                        # The main window does not exist any more
+                        pass
                     return False
 
                 # Enable abort during long saves
@@ -454,8 +495,12 @@ class FileActions(Actions):
         self.saving = False
 
         # Mark content as unchanged
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=False)
+        try:
+            post_command_event(self.main_window, self.ContentChangedMsg,
+                               changed=False)
+        except TypeError:
+            # The main window does not exist any more
+            pass
 
         # Sign so that the new file may be retrieved without safe mode
 

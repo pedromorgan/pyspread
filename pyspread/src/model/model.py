@@ -907,7 +907,14 @@ class CodeArray(DataArray):
         if all(type(k) is not SliceType for k in key):
             frozen_res = self.cell_attributes[key]["frozen"]
             if frozen_res:
-                return self.frozen_cache[repr(key)]
+                if repr(key) in self.frozen_cache:
+                    return self.frozen_cache[repr(key)]
+                else:
+                    # Frozen cache is empty.
+                    # Maybe we have a reload without the frozen cache
+                    result = self._eval_cell(key)
+                    self.frozen_cache[repr(key)] = result
+                    return result
 
         # Normal cell handling
 
@@ -1032,7 +1039,11 @@ class CodeArray(DataArray):
         return result
 
     def execute_macros(self):
-        """Executes all macros and returns result string if not safe_mode"""
+        """Executes all macros and returns result string
+
+        Executes macros only when not in safe_mode
+
+        """
 
         if self.safe_mode:
             return "Safe mode activated. Code not executed."
@@ -1065,6 +1076,12 @@ class CodeArray(DataArray):
 
         code_out.close()
         code_err.close()
+
+        # Reset result cache
+        self.result_cache.clear()
+
+        # Reset frozen cache
+        self.frozen_cache.clear()
 
         return outstring
 
