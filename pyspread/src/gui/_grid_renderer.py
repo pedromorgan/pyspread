@@ -503,6 +503,24 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
                 return rect
 
+    def draw_bitmap(self, dc, bmp, rect, grid, key):
+        """Draws wx.Bitmap bmp on cell
+
+        The bitmap is scaled to match the cell rect
+
+        """
+
+        def scale(bmp, width, height):
+            """Returns a scaled version of the bitmap bmp"""
+
+            img = bmp.ConvertToImage()
+            img = img.Scale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
+            return wx.BitmapFromImage(img)
+
+        scaled_bmp = scale(bmp, rect.width, rect.height)
+
+        dc.DrawBitmap(scaled_bmp, rect.x, rect.y)
+
     def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False):
         """Draws the cell border and content"""
 
@@ -559,6 +577,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 res(grid, attr, dc, rect)
             except TypeError:
                 pass
+
+        elif type(res) is wx._gdi.Bitmap:
+            # A bitmap is returned --> Draw it!
+            self.draw_bitmap(dc, res, rect, grid, key)
 
         elif res is not None:
             self.draw_text_label(dc, res, rect, grid, key)
