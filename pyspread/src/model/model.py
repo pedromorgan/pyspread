@@ -35,6 +35,8 @@ Layer 0: KeyValueStore
 """
 
 import ast
+import base64
+import bz2
 from copy import copy
 import cStringIO
 from itertools import imap, ifilter, product
@@ -986,6 +988,7 @@ class CodeArray(DataArray):
         # Set up environment for evaluation
 
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2],
+                    'bz2': bz2, 'base64': base64,
                     'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
 

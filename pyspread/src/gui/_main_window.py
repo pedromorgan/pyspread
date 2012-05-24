@@ -860,7 +860,7 @@ class MainWindowEventHandlers(object):
         focus = self.main_window.FindFocus()
 
         if isinstance(focus, wx.TextCtrl):
-            pass
+            return
 
         else:  # We got a grid selection
             grid = self.main_window.grid

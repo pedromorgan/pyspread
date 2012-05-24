@@ -72,15 +72,27 @@ class Clipboard(object):
         return data_it
 
     def get_clipboard(self):
-        """Returns the clipboard text content"""
+        """Returns the clipboard content
 
+        If a bitmap is contained then it is returned.
+        Otherwise, the clipboard text is returned.
+
+        """
+
+        bmpdata = wx.BitmapDataObject()
         textdata = wx.TextDataObject()
+
         if self.clipboard.Open():
+            is_bmp_present = self.clipboard.GetData(bmpdata)
             self.clipboard.GetData(textdata)
             self.clipboard.Close()
         else:
             wx.MessageBox(_("Can't open the clipboard"), _("Error"))
-        return textdata.GetText()
+
+        if is_bmp_present:
+            return bmpdata.GetBitmap()
+        else:
+            return textdata.GetText()
 
     def set_clipboard(self, data):
         """Writes data to the clipboard"""

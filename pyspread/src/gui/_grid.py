@@ -511,7 +511,11 @@ class GridCellEventHandlers(object):
         """Updates the entry line"""
 
         cell_code = self.grid.code_array(key)
-        post_command_event(self.grid, self.grid.EntryLineMsg, text=cell_code)
+
+        # wx.TextCtrl can only handle up to 12k characters
+        if cell_code is None or len(cell_code) < 10000:
+            post_command_event(self.grid, self.grid.EntryLineMsg,
+                               text=cell_code)
 
     def _update_attribute_toolbar(self, key):
         """Updates the attribute toolbar"""

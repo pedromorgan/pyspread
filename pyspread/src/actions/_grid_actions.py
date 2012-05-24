@@ -645,6 +645,22 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         event.Skip()
 
+    def _get_full_key(self, key):
+        """Returns full key even if table is omitted"""
+
+        length = len(key)
+
+        if length == 3:
+            return key
+
+        elif length == 2:
+            row, col = key
+            tab = self.grid.current_table
+            return row, col, tab
+
+        else:
+            raise ValueError(_("Key length {}  not in (2, 3)".format(length)))
+
     def _abort_paste(self):
         """Aborts import"""
 
@@ -673,6 +689,17 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
+    def _show_final_paste_message(self, tl_key, no_pasted_cells):
+        """Show actually pasted number of cells"""
+
+        plural = _("") if no_pasted_cells == 1 else _("s")
+
+        statustext = _("{ncells} cell{plural} pasted at cell {topleft}").\
+            format(ncells=no_pasted_cells, plural=plural, topleft=tl_key)
+
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
+
     def paste(self, tl_key, data):
         """Pastes data into grid from top left cell tl_key, marks grid changed
 
@@ -696,12 +723,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         self.need_abort = False
 
-        try:
-            tl_row, tl_col, tl_tab = tl_key
-
-        except ValueError:
-            tl_row, tl_col = tl_key
-            tl_tab = self.grid.current_table
+        tl_row, tl_col, tl_tab = self._get_full_key(tl_key)
 
         row_overflow = False
         col_overflow = False
@@ -739,15 +761,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             self._show_final_overflow_message(row_overflow, col_overflow)
 
         else:
-            # Show actually pasted number of cells
-
-            plural = "s" if no_pasted_cells == 1 else ""
-
-            statustext = _("{ncells} cell{plural} pasted at cell {topleft}").\
-                format(ncells=no_pasted_cells, plural=plural, topleft=tl_key)
-
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            self._show_final_paste_message(tl_key, no_pasted_cells)
 
         self.pasting = False
 
@@ -901,7 +915,9 @@ class GridActions(Actions):
         if (row, col) != self.prev_rowcol and row >= 0 and col >= 0:
             self.prev_rowcol[:] = [row, col]
 
-            hinttext = self.grid.GetTable().GetSource(row, col, tab)
+            max_result_length = int(config["max_result_length"])
+            table = self.grid.GetTable()
+            hinttext = table.GetSource(row, col, tab)[:max_result_length]
 
             if hinttext is None:
                 hinttext = ''

@@ -40,6 +40,8 @@ Provides:
 
 """
 
+import base64
+import bz2
 import os
 
 import wx
@@ -332,6 +334,20 @@ class ClipboardActions(Actions):
 
         return self.copy(selection, getter=getter)
 
+    def bmp2code(self, key, bmp):
+        """Pastes bitmap into single cell"""
+
+        assert type(bmp) is wx._gdi.Bitmap
+
+        img = bmp.ConvertToImage()
+        data = base64.b64encode(bz2.compress(img.GetData(), 8))
+
+        code_str = "wx.BitmapFromImage(wx.ImageFromData(" + \
+            "{width}, {height}, bz2.decompress(base64.b64decode('{data}'))))"\
+            .format(width=img.GetWidth(), height=img.GetHeight(), data=data)
+
+        return code_str
+
     def paste(self, key, data):
         """Pastes data into grid
 
@@ -340,11 +356,16 @@ class ClipboardActions(Actions):
 
         key: 2-Tuple of Integer
         \tTop left cell
-        data: String
+        data: String or wx.Bitmap
         \tTab separated string of paste data
+        \tor paste data image
         """
 
-        data_gen = (line.split("\t") for line in data.split("\n"))
+        if type(data) is wx._gdi.Bitmap:
+            code_str = self.bmp2code(key, data)
+            data_gen = [[code_str]]
+        else:
+            data_gen = (line.split("\t") for line in data.split("\n"))
 
         self.grid.actions.paste(key[:2], data_gen)
 

@@ -550,7 +550,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
     """"The line for entering cell code"""
 
     def __init__(self, parent, id=-1, *args, **kwargs):
-        wx.TextCtrl.__init__(self, parent, id)
+        wx.TextCtrl.__init__(self, parent, id, *args, **kwargs)
 
         self.parent = parent
         self.ignore_changes = False
