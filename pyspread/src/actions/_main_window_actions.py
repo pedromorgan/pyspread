@@ -339,8 +339,16 @@ class ClipboardActions(Actions):
 
         assert type(bmp) is wx._gdi.Bitmap
 
+        row, col, tab = key
+        width = self.grid.GetColSize(col) / self.grid.grid_renderer.zoom
+        height = self.grid.GetRowSize(row) / \
+                    self.grid.grid_renderer.zoom
+
         img = bmp.ConvertToImage()
-        data = base64.b64encode(bz2.compress(img.GetData(), 8))
+
+        img.Rescale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
+
+        data = base64.b64encode(bz2.compress(img.GetData(), 9))
 
         code_str = "wx.BitmapFromImage(wx.ImageFromData(" + \
             "{width}, {height}, bz2.decompress(base64.b64decode('{data}'))))"\
