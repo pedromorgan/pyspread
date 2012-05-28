@@ -344,15 +344,28 @@ class ClipboardActions(Actions):
         height = self.grid.GetRowSize(row) / \
                     self.grid.grid_renderer.zoom
 
-        img = bmp.ConvertToImage()
+        code_str = ""
+        code_template = \
+            "wx.BitmapFromImage(wx.ImageFromData(" + \
+            "{width}, {height}, bz2.decompress(base64.b64decode('{data}'))))"
 
-        img.Rescale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
+        # Fix length limitation of wx.TextCtrl
+        # Therefore scale down image until text length < max_textctrl_length
 
-        data = base64.b64encode(bz2.compress(img.GetData(), 9))
+        while not code_str or \
+              len(code_str) > int(config["max_textctrl_length"]):
 
-        code_str = "wx.BitmapFromImage(wx.ImageFromData(" + \
-            "{width}, {height}, bz2.decompress(base64.b64decode('{data}'))))"\
-            .format(width=img.GetWidth(), height=img.GetHeight(), data=data)
+            img = bmp.ConvertToImage()
+
+            img.Rescale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
+
+            data = base64.b64encode(bz2.compress(img.GetData(), 9))
+
+            code_str = code_template.format(width=img.GetWidth(),
+                                            height=img.GetHeight(), data=data)
+
+            width *= 0.9
+            height *= 0.9
 
         return code_str
 

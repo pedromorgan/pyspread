@@ -39,6 +39,8 @@ from _grid_renderer import GridRenderer
 from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
 
+from src.config import config
+
 import src.lib.i18n as i18n
 
 import src.lib.xrect as xrect
@@ -512,8 +514,13 @@ class GridCellEventHandlers(object):
 
         cell_code = self.grid.code_array(key)
 
-        # wx.TextCtrl can only handle up to 12k characters
-        if cell_code is None or len(cell_code) < 10000:
+        # Do not display anything if there is no cell code, i. e. it is None
+        # Also do not display anything if there is too much code because
+        # wx.TextCtrl can only handle up to max_textctrl_length characters
+
+        if cell_code is None or \
+           len(cell_code) < int(config["max_textctrl_length"]):
+
             post_command_event(self.grid, self.grid.EntryLineMsg,
                                text=cell_code)
 

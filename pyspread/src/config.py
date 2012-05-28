@@ -106,6 +106,9 @@ class DefaultConfig(object):
         # Number of bytes for the sniffer (should be larger than 1st+2nd line)
         self.sniff_size = "65536"
 
+        # Maximum number of characters in wx.TextCtrl
+        self.max_textctrl_length = "65534"
+
 
 class Config(object):
     """Configuration class for the application pyspread"""
