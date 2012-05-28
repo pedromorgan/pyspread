@@ -850,7 +850,16 @@ class MainWindowEventHandlers(object):
 
         data = self.main_window.actions.copy_result( \
                             self.main_window.grid.selection)
-        self.main_window.clipboard.set_clipboard(data)
+
+        # Check if result is a bitmap
+        if type(data) is wx._gdi.Bitmap:
+            # Copy bitmap to clipboard
+            self.main_window.clipboard.set_clipboard(data, datatype="bitmap")
+
+        else:
+            # Copy string representation of result to clipboard
+
+            self.main_window.clipboard.set_clipboard(data, datatype="text")
 
         event.Skip()
 

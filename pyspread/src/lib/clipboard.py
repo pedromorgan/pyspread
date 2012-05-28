@@ -94,21 +94,35 @@ class Clipboard(object):
         else:
             return textdata.GetText()
 
-    def set_clipboard(self, data):
-        """Writes data to the clipboard"""
+    def set_clipboard(self, data, datatype="text"):
+        """Writes data to the clipboard
+
+        Parameters
+        ----------
+        data: Object
+        \tData object for clipboard
+        datatype: String in ["text", "bitmap"]
+        \tIdentifies datatype to be copied to teh clipboard
+
+        """
 
         error_log = []
 
-        textdata = wx.TextDataObject()
-        try:
-            textdata.SetText(data)
-        except UnboundLocalError, err:
-            error_log.append([err, "Error converting to string"])
+        if datatype == "text":
+            data = wx.TextDataObject(text=data)
+
+        elif datatype == "bitmap":
+            data = wx.BitmapDataObject(bitmap=data)
+
+        else:
+            raise ValueError(_("Datatype {} unknown").format(datatype))
+
         if self.clipboard.Open():
-            self.clipboard.SetData(textdata)
+            self.clipboard.SetData(data)
             self.clipboard.Close()
         else:
             wx.MessageBox(_("Can't open the clipboard"), _("Error"))
+
         return error_log
 
 # end of class Clipboard

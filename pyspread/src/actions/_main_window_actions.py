@@ -328,8 +328,36 @@ class ClipboardActions(Actions):
         return unicode(self.grid.code_array[row, col, tab])
 
     def copy_result(self, selection):
-        """Returns result strings from selection in a tab separated string"""
+        """Returns result
 
+        If selection consists of one cell only and result is a bitmap then
+        the bitmap is returned.
+        Otherwise the method returns string representations of the result
+        for the given selection in a tab separated string.
+
+        """
+
+        bbox = selection.get_bbox()
+
+        if not bbox:
+            # There is no selection
+            bb_top, bb_left = self.grid.actions.cursor[:2]
+            bb_bottom, bb_right = bb_top, bb_left
+        else:
+            # Thereis a selection
+            (bb_top, bb_left), (bb_bottom, bb_right) = bbox
+
+        if bb_top == bb_bottom and bb_left == bb_right:
+            # We have  a single selection
+
+            tab = self.grid.current_table
+            result = self.grid.code_array[bb_top, bb_left, tab]
+
+            if type(result) is wx._gdi.Bitmap:
+                # the result is a bitmap
+                return result
+
+        # So we have result strings to be returned
         getter = self._get_result_string
 
         return self.copy(selection, getter=getter)
