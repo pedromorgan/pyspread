@@ -34,40 +34,67 @@ import matplotlib
 import wx
 
 
-def fig2bmp(fig, width, height):
-    """Returns wx.Bitmap from matplotlib chart
-
-    Parameters
-    ----------
-    fig: Object
-    \tMatplotlib figure
-    width: Integer
-    \tImage width in pixels
-    height: Integer
-    \tImage height in pixels
-
-    """
-
-    matplotlib.use('Agg')
-    png_stream = StringIO()
-    fig.savefig(png_stream, format='png')
-
-    return wx.BitmapFromImage(wx.ImageFromStream(png_stream))
-
-
-class Chart(object):
+class ChartBitmap(wx.Bitmap):
     """Chart base class"""
 
-    def __init__(self, x, *ys):
-        self.figure = self._get_figure(x, *ys)
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
 
-    def get_bmp(self, width, height):
+        ## TODO: Gather right h, w values
+        width = 100
+        height = 100
+
+        wx.EmptyBitmap.__init__(width, height)
+
+    def _get_chart_figure(self, x, *ys):
+        """Returns figure of line chart.
+
+        Shall be overloaded from subclasses
+
+        """
+
+        series = ((x, y, "-") for y in ys)
+
+        figure = matplotlib.pyplot.figure()
+        axis = figure.add_subplot(111)
+        args = []
+
+        for line in series:
+            args.append(*line)
+        axis.plot(args)
+
+        return figure
+
+    def chart2bmp(self):
         """Returns wx.Bitmap of chart"""
 
-        return fig2bmp(self.figure, width, height)
+        def fig2bmp(fig, width, height):
+            """Returns wx.Bitmap from matplotlib chart
+
+            Parameters
+            ----------
+            fig: Object
+            \tMatplotlib figure
+            width: Integer
+            \tImage width in pixels
+            height: Integer
+            \tImage height in pixels
+
+            """
+
+            matplotlib.use('Agg')
+            png_stream = StringIO()
+            fig.savefig(png_stream, format='png')
+
+            return wx.BitmapFromImage(wx.ImageFromStream(png_stream))
+
+        figure = self._get_chart_figure(self.args)
+
+        return fig2bmp(figure, self.width, self.height)
 
 
-class LineChart(Chart):
+class LineChart(ChartBitmap):
     """Line chart
 
     Parameters
