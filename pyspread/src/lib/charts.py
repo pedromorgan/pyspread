@@ -31,10 +31,14 @@ Provides different types of data charts
 from cStringIO import StringIO
 
 import matplotlib
+
 import wx
 
+matplotlib.use('Agg')
+import matplotlib.pyplot
 
-class ChartBitmap(wx.Bitmap):
+
+class Chart(object):
     """Chart base class"""
 
     def __init__(self, *args, **kwargs):
@@ -42,10 +46,11 @@ class ChartBitmap(wx.Bitmap):
         self.kwargs = kwargs
 
         ## TODO: Gather right h, w values
-        width = 100
-        height = 100
 
-        wx.EmptyBitmap.__init__(width, height)
+        self.width = 500
+        self.height = 500
+
+        self.bmp = self.chart2bmp()
 
     def _get_chart_figure(self, x, *ys):
         """Returns figure of line chart.
@@ -83,18 +88,19 @@ class ChartBitmap(wx.Bitmap):
 
             """
 
-            matplotlib.use('Agg')
             png_stream = StringIO()
             fig.savefig(png_stream, format='png')
+            png_stream.seek(0)
+            img = wx.ImageFromStream(png_stream, type=wx.BITMAP_TYPE_PNG)
 
-            return wx.BitmapFromImage(wx.ImageFromStream(png_stream))
+            return wx.BitmapFromImage(img)
 
         figure = self._get_chart_figure(self.args)
 
         return fig2bmp(figure, self.width, self.height)
 
 
-class LineChart(ChartBitmap):
+class LineChart(Chart):
     """Line chart
 
     Parameters
@@ -118,3 +124,9 @@ class LineChart(ChartBitmap):
         axis.plot(args)
 
         return figure
+
+
+def chart(*args, **kwargs):
+    """Chart caller"""
+
+    return Chart(*args, **kwargs).bmp

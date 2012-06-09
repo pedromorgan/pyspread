@@ -53,6 +53,8 @@ from src.config import config
 from src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from src.lib.selection import Selection
 
+from src.lib.charts import chart
+
 from unredo import UnRedo
 
 
@@ -988,7 +990,7 @@ class CodeArray(DataArray):
         # Set up environment for evaluation
 
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2],
-                    'bz2': bz2, 'base64': base64,
+                    'bz2': bz2, 'base64': base64, 'chart': chart,
                     'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
 
