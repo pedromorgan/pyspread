@@ -154,8 +154,8 @@ def genkey():
         # A key has been chosen
 
         config["gpg_key_uid"] = repr(uid)
-        passwd = get_gpg_passwd_from_user( \
-            config["gpg_key_passphrase_isstored"])
+        stored = config["gpg_key_passphrase_isstored"]
+        passwd = get_gpg_passwd_from_user(stored=stored, uid=uid)
 
         if passwd is None:
             sys.exit()
@@ -223,16 +223,21 @@ def sign(filename):
     ctx.signers_clear()
     ctx.signers_add(sigkey)
 
-    passwd_is_incorrect = True
+    passwd_is_incorrect = None
 
-    while passwd_is_incorrect:
+    while passwd_is_incorrect is None or passwd_is_incorrect:
         try:
             ctx.op_sign(plaintext, ciphertext, pygpgme.GPGME_SIG_MODE_DETACH)
             passwd_is_incorrect = False
 
         except errors.GPGMEError:
-            passwd = get_gpg_passwd_from_user( \
-                config["gpg_key_passphrase_isstored"])
+            passwd_is_incorrect = True
+
+            uid = config["gpg_key_uid"]
+            stored = config["gpg_key_passphrase_isstored"]
+
+            passwd = get_gpg_passwd_from_user(stored, passwd_is_incorrect, uid)
+
             if passwd is None:
                 return
 

@@ -375,7 +375,7 @@ def get_key_params_from_user():
     return gpg_key_parameters
 
 
-def get_gpg_passwd_from_user(stored=True):
+def get_gpg_passwd_from_user(stored=True, passwd_is_incorrect=False, uid=''):
     """Opens a dialog for a GPG password and returns the password or None
 
     Parameters
@@ -386,13 +386,16 @@ def get_gpg_passwd_from_user(stored=True):
 
     """
 
-    dlg_msg = _("Please enter your GPG key passphrase.{}")
+    dlg_msg = _("Please enter your GPG key passphrase for {}.").format(uid)
 
     if stored:
         dlg_msg += _('\nThe password will be stored in your config file.')
 
+    if passwd_is_incorrect:
+        dlg_msg = _('Wrong password!\n') + dlg_msg
+
     dlg = wx.TextEntryDialog(None, dlg_msg, _('GPG key passphrase'), '',
-                             style=wx.TE_PASSWORD | wx.OK)
+                             style=wx.TE_PASSWORD | wx.OK | wx.CANCEL)
 
     if dlg.ShowModal() == wx.ID_OK:
         dlg.Destroy()
