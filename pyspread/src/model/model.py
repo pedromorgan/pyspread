@@ -1025,12 +1025,13 @@ class CodeArray(DataArray):
             glob_var = None
             expression = code
 
+        result = eval(expression, env, {})
         try:
             result = eval(expression, env, {})
 
         except AttributeError, err:
             # Attribute Error includes RunTimeError
-            result = err
+            result = AttributeError(err)
 
         except Exception, err:
             result = Exception(err)

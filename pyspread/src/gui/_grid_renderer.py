@@ -31,10 +31,16 @@ Provides
 
 """
 
+from cStringIO import StringIO
 from math import pi, sin, cos
 import types
 
 import wx.grid
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 import src.lib.i18n as i18n
 
@@ -503,7 +509,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
                 return rect
 
-    def draw_bitmap(self, dc, bmp, rect, grid, key):
+    def draw_bitmap(self, dc, bmp, rect, grid, key, scale=True):
         """Draws wx.Bitmap bmp on cell
 
         The bitmap is scaled to match the cell rect
@@ -517,9 +523,55 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             img = img.Scale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
             return wx.BitmapFromImage(img)
 
-        scaled_bmp = scale(bmp, rect.width, rect.height)
+        if scale:
+            bmp = scale(bmp, rect.width, rect.height)
 
-        dc.DrawBitmap(scaled_bmp, rect.x, rect.y)
+        dc.DrawBitmap(bmp, rect.x, rect.y)
+
+    def draw_matplotlib_figure(self, dc, figure, rect, grid, key):
+        """Draws a matplotlib.pyplot.Figure on cell
+
+        The figure is converted into a wx.Bitmap,
+        which is then drawn by draw_bitmap.
+
+        """
+
+        def fig2bmp(figure, width, height):
+            """Returns wx.Bitmap from matplotlib chart
+
+            Parameters
+            ----------
+            fig: Object
+            \tMatplotlib figure
+            width: Integer
+            \tImage width in pixels
+            height: Integer
+            \tImage height in pixels
+
+            """
+            dpi = float(wx.ScreenDC().GetPPI()[0]) * self.zoom
+            print dpi, width / dpi, height / dpi
+            figure.set_dpi(dpi)
+            figure.set_figwidth(width / dpi)
+            figure.set_figheight(height / dpi)
+
+            print figure.get_figwidth() * dpi, figure.get_figheight() * dpi
+
+            figure.set_canvas(FigureCanvas(figure))
+            png_stream = StringIO()
+            figure.savefig(png_stream, format='png')
+
+            png_stream.seek(0)
+            img = wx.ImageFromStream(png_stream, type=wx.BITMAP_TYPE_PNG)
+
+            return wx.BitmapFromImage(img)
+
+        width, height = rect.width, rect.height
+        print width, height
+
+        bmp = fig2bmp(figure, width, height)
+
+        self.draw_bitmap(dc, bmp, rect, grid, key, scale=False)
 
     def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False):
         """Draws the cell border and content"""
@@ -578,9 +630,13 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             except TypeError:
                 pass
 
-        elif type(res) is wx._gdi.Bitmap:
+        elif isinstance(res, wx._gdi.Bitmap):
             # A bitmap is returned --> Draw it!
             self.draw_bitmap(dc, res, rect, grid, key)
+
+        elif isinstance(res, matplotlib.pyplot.Figure):
+            # A matplotlib figure is returned --> Draw it!
+            self.draw_matplotlib_figure(dc, res, rect, grid, key)
 
         elif res is not None:
             self.draw_text_label(dc, res, rect, grid, key)

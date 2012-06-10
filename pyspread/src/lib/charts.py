@@ -28,105 +28,39 @@ Provides different types of data charts
 
 """
 
-from cStringIO import StringIO
-
 import matplotlib
-
-import wx
-
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.pyplot
 
 
-class Chart(object):
+class Chart(matplotlib.pyplot.Figure):
     """Chart base class"""
 
     def __init__(self, *args, **kwargs):
+
         self.args = args
         self.kwargs = kwargs
+        matplotlib.pyplot.Figure.__init__(self)
+        self._set_figure()
 
-        ## TODO: Gather right h, w values
-
-        self.width = 500
-        self.height = 500
-
-        self.bmp = self.chart2bmp()
-
-    def _get_chart_figure(self, x, *ys):
+    def _set_figure(self):
         """Returns figure of line chart.
 
         Shall be overloaded from subclasses
 
         """
 
-        series = ((x, y, "-") for y in ys)
+        series = ((x ** 1.5, x ** 2) for x in xrange(100))
 
-        figure = matplotlib.pyplot.figure()
-        axis = figure.add_subplot(111)
+        axis = self.add_subplot(111)
         args = []
 
         for line in series:
-            args.append(*line)
+            args.append(line)
         axis.plot(args)
-
-        return figure
-
-    def chart2bmp(self):
-        """Returns wx.Bitmap of chart"""
-
-        def fig2bmp(fig, width, height):
-            """Returns wx.Bitmap from matplotlib chart
-
-            Parameters
-            ----------
-            fig: Object
-            \tMatplotlib figure
-            width: Integer
-            \tImage width in pixels
-            height: Integer
-            \tImage height in pixels
-
-            """
-
-            png_stream = StringIO()
-            fig.savefig(png_stream, format='png')
-            png_stream.seek(0)
-            img = wx.ImageFromStream(png_stream, type=wx.BITMAP_TYPE_PNG)
-
-            return wx.BitmapFromImage(img)
-
-        figure = self._get_chart_figure(self.args)
-
-        return fig2bmp(figure, self.width, self.height)
-
-
-class LineChart(Chart):
-    """Line chart
-
-    Parameters
-    ----------
-    series: numpy.array
-    \tSeries that are shown in chart
-
-    """
-
-    def _get_figure(self, x, *ys):
-        """Returns figure of line chart"""
-
-        series = ((x, y, "-") for y in ys)
-
-        figure = matplotlib.pyplot.figure()
-        axis = figure.add_subplot(111)
-        args = []
-
-        for line in series:
-            args.append(*line)
-        axis.plot(args)
-
-        return figure
 
 
 def chart(*args, **kwargs):
     """Chart caller"""
 
-    return Chart(*args, **kwargs).bmp
+    return Chart(*args, **kwargs)
