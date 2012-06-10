@@ -161,6 +161,9 @@ class Config(object):
 
         for key in self.defaults.__dict__:
             data = getattr(self.data, key)
-            self.cfg_file.Write(key, data)
+            print key, data
+            if key != "gpg_key_passphrase" or \
+               self["gpg_key_passphrase_isstored"]:
+                self.cfg_file.Write(key, data)
 
 config = Config()
