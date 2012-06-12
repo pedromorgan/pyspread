@@ -886,6 +886,9 @@ class CodeArray(DataArray):
     # Cache for frozen objects
     frozen_cache = {}
 
+    # Added global keys
+    added_global_keys = []
+
     def __setitem__(self, key, value):
         """Sets cell code and resets result cache"""
 
@@ -1025,7 +1028,6 @@ class CodeArray(DataArray):
             glob_var = None
             expression = code
 
-        result = eval(expression, env, {})
         try:
             result = eval(expression, env, {})
 
@@ -1040,9 +1042,20 @@ class CodeArray(DataArray):
         self.dict_grid[key] = code
 
         if glob_var is not None:
+            self.added_global_keys.append(glob_var)
             globals().update({glob_var: result})
 
         return result
+
+    def clear_globals(self):
+        """Clears all newly assigned globals"""
+
+        for key in self.added_global_keys:
+            try:
+                globals().pop(key)
+            except KeyError:
+                pass
+        self.added_global_keys = []
 
     def execute_macros(self):
         """Executes all macros and returns result string

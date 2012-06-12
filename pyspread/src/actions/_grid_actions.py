@@ -203,7 +203,7 @@ class FileActions(Actions):
         """Empties grid and sets shape to shape
 
         Clears all attributes, row heights, column withs and frozen states.
-        Empties undo/redo list and caches.
+        Empties undo/redo list and caches. Empties globals.
 
         Properties
         ----------
@@ -231,6 +231,9 @@ class FileActions(Actions):
         # Clear caches
         self.code_array.unredo.reset()
         self.code_array.result_cache.clear()
+
+        # Clear globals
+        self.code_array.clear_globals()
 
     def open(self, event):
         """Opens a file that is specified in event.attr

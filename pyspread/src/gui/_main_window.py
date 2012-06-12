@@ -551,6 +551,9 @@ class MainWindowEventHandlers(object):
         post_command_event(self.main_window, self.main_window.TitleMsg,
                            text="pyspread")
 
+        # Clear globals
+        self.main_window.grid.code_array.clear_globals()
+
         # Create new grid
         post_command_event(self.main_window, self.main_window.GridActionNewMsg,
                            shape=shape)
