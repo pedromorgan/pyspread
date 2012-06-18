@@ -886,9 +886,6 @@ class CodeArray(DataArray):
     # Cache for frozen objects
     frozen_cache = {}
 
-    # Added global keys
-    added_global_keys = []
-
     def __setitem__(self, key, value):
         """Sets cell code and resets result cache"""
 
@@ -1042,7 +1039,6 @@ class CodeArray(DataArray):
         self.dict_grid[key] = code
 
         if glob_var is not None:
-            self.added_global_keys.append(glob_var)
             globals().update({glob_var: result})
 
         return result
@@ -1050,12 +1046,18 @@ class CodeArray(DataArray):
     def clear_globals(self):
         """Clears all newly assigned globals"""
 
-        for key in self.added_global_keys:
-            try:
+        base_keys = ['cStringIO', 'IntType', 'KeyValueStore', 'UnRedo',
+                     'is_generator_like', 'StringGeneratorMixin',
+                     'is_string_like', 'ParserMixin', 'bz2', 'base64',
+                     '__package__', 're', 'config', '__doc__', 'SliceType',
+                     'CellAttributes', 'product', 'ast', '__builtins__',
+                     '__file__', 'chart', 'sys', 'is_slice_like', '__name__',
+                     'copy', 'imap', 'wx', 'ifilter', 'Selection', 'DictGrid',
+                     'numpy', 'CodeArray', 'DataArray']
+
+        for key in globals().keys():
+            if key not in base_keys:
                 globals().pop(key)
-            except KeyError:
-                pass
-        self.added_global_keys = []
 
     def execute_macros(self):
         """Executes all macros and returns result string
