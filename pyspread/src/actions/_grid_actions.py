@@ -175,6 +175,15 @@ class FileActions(Actions):
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=statustext)
 
+    def clear_globals_reload_modules(self):
+        """Clears globals and reloads modules"""
+        
+        self.code_array.clear_globals()
+        self.code_array.reload_modules()
+        
+        # Clear result cache
+        self.code_array.result_cache.clear()
+
     def _get_file_version(self, infile):
         """Returns infile version string."""
 
@@ -234,6 +243,7 @@ class FileActions(Actions):
 
         # Clear globals
         self.code_array.clear_globals()
+        self.code_array.reload_modules()
 
     def open(self, event):
         """Opens a file that is specified in event.attr

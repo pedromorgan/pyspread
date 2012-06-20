@@ -270,6 +270,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_IMPORT, handlers.OnImport)
         self.Bind(self.EVT_CMD_EXPORT, handlers.OnExport)
         self.Bind(self.EVT_CMD_APPROVE, handlers.OnApprove)
+        self.Bind(self.EVT_CMD_CLEAR_GLOBALS, handlers.OnClearGlobals)
 
         # Find events
         self.Bind(self.EVT_CMD_FOCUSFIND, handlers.OnFocusFind)
@@ -552,7 +553,7 @@ class MainWindowEventHandlers(object):
                            text="pyspread")
 
         # Clear globals
-        self.main_window.grid.code_array.clear_globals()
+        self.main_window.grid.actions.clear_globals_reload_modules()
 
         # Create new grid
         post_command_event(self.main_window, self.main_window.GridActionNewMsg,
@@ -786,6 +787,22 @@ class MainWindowEventHandlers(object):
             # Display safe mode end in status bar
 
             statustext = _("Safe mode deactivated.")
+            post_command_event(self.main_window, self.main_window.StatusBarMsg,
+                               text=statustext)
+
+    def OnClearGlobals(self, event):
+        """Clear globals event handler"""
+        
+        msg = _("Deleting globals and reloading modules cannot be undone."
+                    " Proceed?")
+        short_msg = _("Really delete globals and modules?")
+        
+        choice = self.main_window.interfaces.get_warning_choice(msg, short_msg)
+        
+        if choice:
+            self.main_window.grid.actions.clear_globals_reload_modules()
+        
+            statustext = _("Globals cleared and base modules reloaded.")
             post_command_event(self.main_window, self.main_window.StatusBarMsg,
                                text=statustext)
 

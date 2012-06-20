@@ -53,10 +53,11 @@ from src.config import config
 from src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from src.lib.selection import Selection
 
-from src.lib.charts import chart
+import src.lib.charts as charts
 
 from unredo import UnRedo
 
+chart = charts.chart
 
 class KeyValueStore(dict):
     """Key-Value store in memory. Currently a dict with default value None.
@@ -989,8 +990,8 @@ class CodeArray(DataArray):
 
         # Set up environment for evaluation
 
-        env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2],
-                    'bz2': bz2, 'base64': base64, 'chart': chart,
+        env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2], 'bz2': bz2,
+                    'base64': base64, 'chart': chart,
                     'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
 
@@ -1042,6 +1043,15 @@ class CodeArray(DataArray):
             globals().update({glob_var: result})
 
         return result
+
+    def reload_modules(self):
+        """Reloads modules that are available in cells"""
+        
+        import src.lib.charts as charts
+        modules = [charts, bz2, base64, re, ast, sys, wx, numpy]
+        
+        for module in modules:
+            reload(module)
 
     def clear_globals(self):
         """Clears all newly assigned globals"""

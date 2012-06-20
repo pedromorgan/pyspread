@@ -147,6 +147,7 @@ class GridEventMixin(object):
     ImportMsg, EVT_CMD_IMPORT = new_command_event()
     ExportMsg, EVT_CMD_EXPORT = new_command_event()
     ApproveMsg, EVT_CMD_APPROVE = new_command_event()
+    ClearGobalsMsg, EVT_CMD_CLEAR_GLOBALS = new_command_event()
 
     # Print events
 
