@@ -177,10 +177,10 @@ class FileActions(Actions):
 
     def clear_globals_reload_modules(self):
         """Clears globals and reloads modules"""
-        
+
         self.code_array.clear_globals()
         self.code_array.reload_modules()
-        
+
         # Clear result cache
         self.code_array.result_cache.clear()
 

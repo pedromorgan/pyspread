@@ -536,7 +536,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         """
 
-        def fig2bmp(figure, width, height):
+        def fig2bmp(figure, width, height, dpi, zoom):
             """Returns wx.Bitmap from matplotlib chart
 
             Parameters
@@ -547,19 +547,19 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             \tImage width in pixels
             height: Integer
             \tImage height in pixels
+            dpi = Float
+            \tDC resolution
 
             """
-            dpi = float(wx.ScreenDC().GetPPI()[0]) * self.zoom
-            print dpi, width / dpi, height / dpi
-            figure.set_dpi(dpi)
+            
+            dpi *= float(zoom)
+            
             figure.set_figwidth(width / dpi)
             figure.set_figheight(height / dpi)
 
-            print figure.get_figwidth() * dpi, figure.get_figheight() * dpi
-
             figure.set_canvas(FigureCanvas(figure))
             png_stream = StringIO()
-            figure.savefig(png_stream, format='png')
+            figure.savefig(png_stream, format='png', dpi=(dpi))
 
             png_stream.seek(0)
             img = wx.ImageFromStream(png_stream, type=wx.BITMAP_TYPE_PNG)
@@ -567,9 +567,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             return wx.BitmapFromImage(img)
 
         width, height = rect.width, rect.height
-        print width, height
+        dpi = float(wx.ScreenDC().GetPPI()[0])
 
-        bmp = fig2bmp(figure, width, height)
+        bmp = fig2bmp(figure, width, height, dpi, self.zoom)
 
         self.draw_bitmap(dc, bmp, rect, grid, key, scale=False)
 
@@ -622,7 +622,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         # Check if the dc is drawn manually be a return func
         res = self.data_array[row, col, grid.current_table]
 
-        if type(res) is types.FunctionType:
+        if isinstance(res, types.FunctionType):
             # Add func_dict attribute
             # so that we are sure that it uses a dc
             try:
