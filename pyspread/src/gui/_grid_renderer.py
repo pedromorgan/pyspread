@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -164,8 +164,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         for distance, __row, __col in grid.colliding_cells(row, col, textbox):
             # Draw blocking arrows if locking cell is not empty
 
-            if not( \
-               (blocking_distance is None or distance == blocking_distance) \
+            if not(
+               (blocking_distance is None or distance == blocking_distance)
                and not self.data_array[__row, __col, tab]):
 
                 yield __row, __col, tab
@@ -271,7 +271,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         text_pos = text_x, text_y, angle
 
-        if all(__rect.is_point_in_rect(*textedge) \
+        if all(__rect.is_point_in_rect(*textedge)
           for textedge in self.get_textbox_edges(text_pos, text_extent)):
             clipping = False
         else:
@@ -434,28 +434,28 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         border_upper = rect.y
         border_lower = rect.y + rect.height - size - 1
 
-        points_lr = [ \
+        points_lr = [
             (border_right, border_lower - caret_length),
             (border_right, border_lower),
             (border_right - caret_length, border_lower),
             (border_right, border_lower),
         ]
 
-        points_ur = [ \
+        points_ur = [
             (border_right, border_upper + caret_length),
             (border_right, border_upper),
             (border_right - caret_length, border_upper),
             (border_right, border_upper),
         ]
 
-        points_ul = [ \
+        points_ul = [
             (border_left, border_upper + caret_length),
             (border_left, border_upper),
             (border_left + caret_length, border_upper),
             (border_left, border_upper),
         ]
 
-        points_ll = [ \
+        points_ll = [
             (border_left, border_lower - caret_length),
             (border_left, border_lower),
             (border_left + caret_length, border_lower),
@@ -551,9 +551,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             \tDC resolution
 
             """
-            
+
             dpi *= float(zoom)
-            
+
             figure.set_figwidth(width / dpi)
             figure.set_figheight(height / dpi)
 
@@ -566,12 +566,14 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
             return wx.BitmapFromImage(img)
 
-        width, height = rect.width, rect.height
+        crop_rect = wx.Rect(rect.x, rect.y, rect.width - 1, rect.height - 1)
+
+        width, height = crop_rect.width, crop_rect.height
         dpi = float(wx.ScreenDC().GetPPI()[0])
 
         bmp = fig2bmp(figure, width, height, dpi, self.zoom)
 
-        self.draw_bitmap(dc, bmp, rect, grid, key, scale=False)
+        self.draw_bitmap(dc, bmp, crop_rect, grid, key, scale=False)
 
     def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False):
         """Draws the cell border and content"""
@@ -595,8 +597,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                              "borderwidth_bottom", "borderwidth_right",
                              "bordercolor_bottom", "bordercolor_right"]
 
-            bg_key = tuple([width, height] + \
-                           [self.data_array.cell_attributes[key][bgc] \
+            bg_key = tuple([width, height] +
+                           [self.data_array.cell_attributes[key][bgc]
                                             for bgc in bg_components])
 
             try:

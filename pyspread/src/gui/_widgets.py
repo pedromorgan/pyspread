@@ -602,8 +602,12 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
         keycode = event.GetKeyCode()
 
         if keycode == 13:
-            # <Return> pressed --> Focus on grid
+            # <Enter> pressed --> Focus on grid
             self.parent.grid.SetFocus()
+
+            # Ignore <Ctrl> + <Enter> and Quote content
+            if event.ControlDown():
+                self.SetValue('"' + self.GetValue() + '"')
 
         event.Skip()
 

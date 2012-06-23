@@ -44,11 +44,18 @@ class Chart(matplotlib.pyplot.Figure):
         self._set_figure()
 
     def _set_figure(self):
-        """Returns figure of line chart.
+        """Returns figure of chart.
 
         Shall be overloaded from subclasses
 
         """
+
+        raise NotImplementedError("Use child class.")
+
+
+class Plot(Chart):
+    def _set_figure(self):
+        """Returns figure of line chart."""
 
         series = ((x ** 1.5, x ** 2) for x in xrange(100))
 
@@ -60,7 +67,21 @@ class Chart(matplotlib.pyplot.Figure):
         axis.plot(args)
 
 
-def chart(*args, **kwargs):
+def get_chart_cls(name):
+    """Chart class factory"""
+
+    name2cls = {"plot": Plot}
+    return name2cls[name]
+
+
+def parse_chart_code(code):
+    """Parsed chart code to class and parameters"""
+
+    if code[:6] != "chart(":
+        raise ValueError("No chart code")
+
+
+def chart(chart_type, *args, **kwargs):
     """Chart caller"""
 
-    return Chart(*args, **kwargs)
+    return get_chart_cls(chart_type)(*args, **kwargs)

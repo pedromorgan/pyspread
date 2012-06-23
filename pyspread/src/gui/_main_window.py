@@ -104,7 +104,7 @@ class MainWindow(wx.Frame, EventMixin):
 
         # Main grid
 
-        dimensions = ( \
+        dimensions = (
             config["grid_rows"],
             config["grid_columns"],
             config["grid_tables"],

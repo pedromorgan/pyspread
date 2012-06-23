@@ -88,7 +88,6 @@ class Grid(wx.grid.Grid, EventMixin):
         self.actions = AllGridActions(self)
 
         # Layout and bindings
-
         self._layout()
         self._bind()
 
@@ -493,8 +492,8 @@ class GridCellEventHandlers(object):
         """Text rotation dialog event handler"""
 
         cond_func = lambda i: 0 <= i <= 359
-        angle = self.grid.interfaces.get_int_from_user( \
-            _("Enter text angle in degrees."), cond_func)
+        get_int = self.grid.interfaces.get_int_from_user
+        angle = get_int(_("Enter text angle in degrees."), cond_func)
 
         if angle is not None:
             post_command_event(self.grid.main_window,
@@ -652,6 +651,21 @@ class GridEventHandlers(object):
             elif keycode == 390:
                 # Ctrl + - pressed
                 post_command_event(self.grid, self.grid.ZoomOutMsg)
+
+            elif keycode == 13:
+            # <Ctrl> + <Enter>
+                grid = self.grid
+                grid.DisableCellEditControl()
+
+                row = self.grid.GetGridCursorRow()
+                col = self.grid.GetGridCursorCol()
+                tab = grid.current_table
+                key = row, col, tab
+
+                val = grid.code_array(key)
+                grid.actions.set_code(key, '"' + val + '"')
+
+                grid.MoveCursorDown(False)
 
         else:
             # No Ctrl pressed

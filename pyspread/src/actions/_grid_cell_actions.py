@@ -119,7 +119,7 @@ class CellActions(Actions):
         key_strings = []
 
         for magic, cursor_ele, ref_key_ele in zip(magics, cursor, ref_key):
-            key_strings.append(magic + \
+            key_strings.append(magic +
                                get_rel_key_ele(cursor_ele, ref_key_ele))
 
         key_string = u", ".join(key_strings)
@@ -189,7 +189,7 @@ class CellActions(Actions):
                            changed=True)
 
         if selection is not None:
-            self.code_array.cell_attributes.undoable_append( \
+            self.code_array.cell_attributes.undoable_append(
                                             (selection, table, attr))
 
     def set_attr(self, attr, value, selection=None):
@@ -370,7 +370,7 @@ class CellActions(Actions):
         else:
             self.unmerge(tl_merge_area, tab)
 
-    attr_toggle_values = { \
+    attr_toggle_values = {
         "fontweight": [wx.NORMAL, wx.BOLD],
         "fontstyle": [wx.NORMAL, wx.ITALIC],
         "underline": [False, True],
