@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -148,8 +148,8 @@ class ChoiceRenderer(wx.grid.PyGridCellRenderer):
         button_y = rect.y
         button_width = self.iconwidth
         button_height = rect.height
-        render.DrawComboBoxDropButton(grid, dc, \
-            (button_x, button_y, button_width, button_height), \
+        render.DrawComboBoxDropButton(grid, dc,
+            (button_x, button_y, button_width, button_height),
             wx.CONTROL_CURRENT)
 
 
@@ -169,62 +169,62 @@ class CsvParameterWidgets(object):
     """
 
     csv_params = \
-        [["dialects", types.TupleType, _("Dialect"), \
-          _("To make it easier to specify the format of input and output " \
-            "records, specific formatting parameters are grouped together " \
-            "into dialects.\n'excel': Defines the usual properties of an " \
-            "Excel-generated CSV file.\n'sniffer': Deduces the format of a " \
-            "CSV file\n'excel-tab': Defines the usual " \
-            "properties of an Excel-generated TAB-delimited file.")], \
-         ["delimiter", types.StringType, _("Delimiter"), \
-          _("A one-character string used to separate fields.")], \
-         ["doublequote", types.BooleanType, _("Doublequote"), \
-          _("Controls how instances of quotechar appearing inside a " \
-            "field should be themselves be quoted. When True, the character " \
-            "is doubled. When False, the escapechar is used as a prefix to " \
-            "the quotechar.")], \
-         ["escapechar", types.StringType, _("Escape character"), \
-          _("A one-character string used by " \
-            "the writer to escape the delimiter if quoting is set to " \
-            "QUOTE_NONE and the quotechar if doublequote is False. On " \
-            "reading, the escapechar removes any special meaning from the " \
-            "following character.")], \
-         ["quotechar", types.StringType, _("Quote character"), \
-          _("A one-character string used to quote fields containing special " \
-            "characters, such as the delimiter or quotechar, or which " \
-            "contain new-line characters.")], \
-         ["quoting", types.TupleType, _("Quoting style"), \
-          _("Controls when quotes should be recognised.")], \
-         ["self.has_header", types.BooleanType, _("Header present"), \
-          _("Analyze the CSV file and treat the first row as strings if it " \
-            "appears to be a series of column headers.")], \
-         ["skipinitialspace", types.BooleanType, _("Skip initial space"), \
-          _("When True, whitespace immediately following the delimiter is " \
-            "ignored.")], \
+        [["dialects", types.TupleType, _("Dialect"),
+          _("To make it easier to specify the format of input and output "
+            "records, specific formatting parameters are grouped together "
+            "into dialects.\n'excel': Defines the usual properties of an "
+            "Excel-generated CSV file.\n'sniffer': Deduces the format of a "
+            "CSV file\n'excel-tab': Defines the usual "
+            "properties of an Excel-generated TAB-delimited file.")],
+         ["delimiter", types.StringType, _("Delimiter"),
+          _("A one-character string used to separate fields.")],
+         ["doublequote", types.BooleanType, _("Doublequote"),
+          _("Controls how instances of quotechar appearing inside a "
+            "field should be themselves be quoted. When True, the character "
+            "is doubled. When False, the escapechar is used as a prefix to "
+            "the quotechar.")],
+         ["escapechar", types.StringType, _("Escape character"),
+          _("A one-character string used by "
+            "the writer to escape the delimiter if quoting is set to "
+            "QUOTE_NONE and the quotechar if doublequote is False. On "
+            "reading, the escapechar removes any special meaning from the "
+            "following character.")],
+         ["quotechar", types.StringType, _("Quote character"),
+          _("A one-character string used to quote fields containing special "
+            "characters, such as the delimiter or quotechar, or which "
+            "contain new-line characters.")],
+         ["quoting", types.TupleType, _("Quoting style"),
+          _("Controls when quotes should be recognised.")],
+         ["self.has_header", types.BooleanType, _("Header present"),
+          _("Analyze the CSV file and treat the first row as strings if it "
+            "appears to be a series of column headers.")],
+         ["skipinitialspace", types.BooleanType, _("Skip initial space"),
+          _("When True, whitespace immediately following the delimiter is "
+            "ignored.")],
         ]
 
-    type2widget = { \
-        types.StringType: wx.TextCtrl, \
-        types.BooleanType: wx.CheckBox, \
-        types.TupleType: wx.Choice, \
+    type2widget = {
+        types.StringType: wx.TextCtrl,
+        types.BooleanType: wx.CheckBox,
+        types.TupleType: wx.Choice,
     }
 
     # All tuple types from csv_params have choice boxes
-    choices = { \
-        'dialects': tuple(["sniffer"] + csv.list_dialects() + ["user"]), \
-        'quoting': ("QUOTE_ALL", "QUOTE_MINIMAL", \
-                    "QUOTE_NONNUMERIC", "QUOTE_NONE"), \
+    choices = {
+        'dialects': tuple(["sniffer"] + csv.list_dialects() + ["user"]),
+        'quoting': ("QUOTE_ALL", "QUOTE_MINIMAL",
+                    "QUOTE_NONNUMERIC", "QUOTE_NONE"),
     }
 
-    widget_handlers = { \
-        'dialects': "OnDialectChoice", \
-        'quoting': "OnWidget", \
-        'delimiter': "OnWidget", \
-        'escapechar': "OnWidget", \
-        'quotechar': "OnWidget", \
-        'doublequote': "OnWidget", \
-        'self.has_header': "OnWidget", \
-        'skipinitialspace': "OnWidget", \
+    widget_handlers = {
+        'dialects': "OnDialectChoice",
+        'quoting': "OnWidget",
+        'delimiter': "OnWidget",
+        'escapechar': "OnWidget",
+        'quotechar': "OnWidget",
+        'doublequote': "OnWidget",
+        'self.has_header': "OnWidget",
+        'skipinitialspace': "OnWidget",
     }
 
     def __init__(self, parent, csvfilepath):
@@ -261,11 +261,11 @@ class CsvParameterWidgets(object):
                 widget.SetValue = widget.Select
 
             # Bind event handler to widget
-            if ptype is types.StringType:
+            if isinstance(ptype, types.StringType):
                 event_type = wx.EVT_TEXT
-            elif ptype is types.BooleanType:
+            elif isinstance(ptype, types.BooleanType):
                 event_type = wx.EVT_CHECKBOX
-            elif ptype is types.TupleType:
+            elif isinstance(ptype, types.TupleType):
                 event_type = wx.EVT_CHOICE
             handler = getattr(self, self.widget_handlers[pname])
             self.parent.Bind(event_type, handler, widget)
@@ -316,7 +316,7 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if ptype is types.TupleType:
+            if isinstance(ptype, types.TupleType):
                 ptype = types.ObjectType
 
             digest = Digest(acceptable_types=[ptype])
@@ -371,9 +371,9 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if ptype is types.StringType:
+            if isinstance(ptype, types.StringType):
                 parameters[pname] = str(widget.GetValue())
-            elif ptype is types.BooleanType:
+            elif isinstance(ptype, types.BooleanType):
                 parameters[pname] = widget.GetValue()
             elif pname == 'quoting':
                 choice = self.choices['quoting'][widget.GetSelection()]
@@ -402,13 +402,13 @@ class CSVPreviewGrid(wx.grid.Grid):
 
     shape = [10, 10]
 
-    digest_types = { \
-        'String': types.StringType, \
-        'Unicode': types.UnicodeType, \
-        'Integer': types.IntType, \
-        'Float': types.FloatType, \
-        'Boolean': types.BooleanType, \
-        'Object': types.ObjectType, \
+    digest_types = {
+        'String': types.StringType,
+        'Unicode': types.UnicodeType,
+        'Integer': types.IntType,
+        'Float': types.FloatType,
+        'Boolean': types.BooleanType,
+        'Object': types.ObjectType,
     }
 
     # Only add date and time if dateutil is installed
@@ -501,7 +501,7 @@ class CSVPreviewGrid(wx.grid.Grid):
         # Add Choices
         for col in xrange(self.shape[1]):
             choice_renderer = ChoiceRenderer(self)
-            choice_editor = wx.grid.GridCellChoiceEditor( \
+            choice_editor = wx.grid.GridCellChoiceEditor(
                                 self.digest_types.keys(), False)
             self.SetCellRenderer(has_header, col, choice_renderer)
             self.SetCellEditor(has_header, col, choice_editor)
@@ -537,7 +537,7 @@ class CSVPreviewGrid(wx.grid.Grid):
     def get_digest_types(self):
         """Returns a list of the target types"""
 
-        return [self.digest_types[digest_key] \
+        return [self.digest_types[digest_key]
                     for digest_key in self.get_digest_keys()]
 
 
@@ -594,8 +594,8 @@ class CsvImportDialog(wx.Dialog):
         self.csvwidgets = CsvParameterWidgets(self, self.csvfilepath)
         dialect, self.has_header = sniff(self.csvfilepath)
 
-        self.grid = CSVPreviewGrid(self, -1, \
-                                   has_header=self.has_header, \
+        self.grid = CSVPreviewGrid(self, -1,
+                                   has_header=self.has_header,
                                    csvfilepath=self.csvfilepath)
 
         self.button_cancel = wx.Button(self, wx.ID_CANCEL, "")
@@ -632,7 +632,7 @@ class CsvImportDialog(wx.Dialog):
             sizer_buttons.AddGrowableCol(col)
 
         # Adding main components
-        sizer_dialog.Add(self.csvwidgets.sizer_csvoptions,  \
+        sizer_dialog.Add(self.csvwidgets.sizer_csvoptions,
                          0, wx.ALL | wx.EXPAND, 5)
         sizer_dialog.Add(self.grid,  1, wx.ALL | wx.EXPAND, 0)
         sizer_dialog.Add(sizer_buttons,  0, wx.ALL | wx.EXPAND, 5)
@@ -672,7 +672,7 @@ class CsvExportDialog(wx.Dialog):
         dialect = csv.get_dialect(csv.list_dialects()[0])
         self.has_header = False
 
-        self.preview_textctrl = CSVPreviewTextCtrl(self, -1, \
+        self.preview_textctrl = CSVPreviewTextCtrl(self, -1,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
         self.button_cancel = wx.Button(self, wx.ID_CANCEL, "")
@@ -712,7 +712,7 @@ class CsvExportDialog(wx.Dialog):
             sizer_buttons.AddGrowableCol(col)
 
         # Adding main components
-        sizer_dialog.Add(self.csvwidgets.sizer_csvoptions,  \
+        sizer_dialog.Add(self.csvwidgets.sizer_csvoptions,
                          0, wx.ALL | wx.EXPAND, 5)
         sizer_dialog.Add(self.preview_textctrl,  1, wx.ALL | wx.EXPAND, 0)
         sizer_dialog.Add(sizer_buttons,  0, wx.ALL | wx.EXPAND, 5)
@@ -761,11 +761,8 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.upper_panel = wx.Panel(self.splitter, -1)
         self.lower_panel = wx.Panel(self.splitter, -1)
 
-        self.codetext_ctrl = PythonSTC(self.upper_panel, -1,
-                                       style=wx.TE_PROCESS_ENTER | \
-                                       wx.TE_PROCESS_TAB | \
-                                       wx.TE_MULTILINE | \
-                                       wx.EXPAND)
+        self.codetext_ctrl = PythonSTC(self.upper_panel, -1, style=wx.EXPAND |
+            wx.TE_PROCESS_ENTER | wx.TE_PROCESS_TAB | wx.TE_MULTILINE)
 
         self.result_ctrl = wx.TextCtrl(self.lower_panel, -1,
           style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -865,7 +862,7 @@ class DimensionsEntryDialog(wx.Dialog):
         self.Rows_Label = wx.StaticText(self, -1, _("Rows"),
                                         style=wx.ALIGN_CENTRE)
         self.X_DimensionsEntry = wx.TextCtrl(self, -1, "")
-        self.Columns_Label = wx.StaticText(self, -1, _("Columns"), \
+        self.Columns_Label = wx.StaticText(self, -1, _("Columns"),
                                            style=wx.ALIGN_CENTRE)
         self.Y_DimensionsEntry = wx.TextCtrl(self, -1, "")
         self.Tabs_Label = wx.StaticText(self, -1, _("Tables"),
@@ -898,21 +895,21 @@ class DimensionsEntryDialog(wx.Dialog):
         """Layout sizers"""
 
         grid_sizer_1 = wx.GridSizer(4, 2, 3, 3)
-        grid_sizer_1.Add(self.Rows_Label, 0, \
+        grid_sizer_1.Add(self.Rows_Label, 0,
                          wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_1.Add(self.X_DimensionsEntry, 0, wx.EXPAND, 0)
-        grid_sizer_1.Add(self.Columns_Label, 0, \
+        grid_sizer_1.Add(self.Columns_Label, 0,
                          wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_1.Add(self.Y_DimensionsEntry, 0, wx.EXPAND, 0)
-        grid_sizer_1.Add(self.Tabs_Label, 0, \
+        grid_sizer_1.Add(self.Tabs_Label, 0,
                          wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_1.Add(self.Z_DimensionsEntry, 0, wx.EXPAND, 0)
-        grid_sizer_1.Add(self.ok_button, 0, \
-                        wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | \
-                        wx.ALIGN_CENTER_VERTICAL | wx.FIXED_MINSIZE, 3)
-        grid_sizer_1.Add(self.cancel_button, 0, \
-                        wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | \
-                        wx.ALIGN_CENTER_VERTICAL | wx.FIXED_MINSIZE, 3)
+        grid_sizer_1.Add(self.ok_button, 0, wx.ALL | wx.EXPAND |
+            wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL |
+            wx.FIXED_MINSIZE, 3)
+        grid_sizer_1.Add(self.cancel_button, 0, wx.ALL | wx.EXPAND |
+            wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL |
+            wx.FIXED_MINSIZE, 3)
         self.SetSizer(grid_sizer_1)
         grid_sizer_1.Fit(self)
         self.Layout()
@@ -1081,23 +1078,24 @@ class AboutDialog(object):
     def _set_properties(self):
         """Setup title and label"""
 
-        self.SetTitle("About pyspread")
+        self.SetTitle(_("About pyspread"))
 
-        self.about_label.SetLabel("pyspread " + VERSION + \
-                                  "\nCopyright Martin Manns")
+        label = _("pyspread {}\nCopyright Martin Manns").format(VERSION)
+
+        self.about_label.SetLabel(label)
 
     def _do_layout(self):
         """Layout sizers"""
 
         sizer_v = wx.BoxSizer(wx.VERTICAL)
         sizer_h = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_h.Add(self.logo_pyspread, 0, \
+        sizer_h.Add(self.logo_pyspread, 0,
             wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 10)
-        sizer_h.Add(self.about_label, 0, \
+        sizer_h.Add(self.about_label, 0,
             wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 10)
         sizer_v.Add(sizer_h)
         self.SetSizer(sizer_v)
-        sizer_v.Add(self.button_close, 0, \
+        sizer_v.Add(self.button_close, 0,
             wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 10)
         sizer_v.Fit(self)
         self.Layout()

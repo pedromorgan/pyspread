@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -38,6 +38,7 @@ from _grid_table import GridTable
 from _grid_renderer import GridRenderer
 from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
+from _chart_dialog import ChartDialog
 
 from src.config import config
 
@@ -148,6 +149,8 @@ class Grid(wx.grid.Grid, EventMixin):
         # Cell code events
 
         main_window.Bind(self.EVT_CMD_CODE_ENTRY, c_handlers.OnCellText)
+        main_window.Bind(self.EVT_CMD_INSERT_CHART,
+                         c_handlers.OnInsertChartDialog)
 
         # Cell attribute events
 
@@ -241,7 +244,7 @@ class Grid(wx.grid.Grid, EventMixin):
         while self.IsVisible(topleft[0], col, wholeCellVisible=False):
             col += 1
         lowerright = (row, col)  # This cell is *not* visible
-        return (slice(topleft[0], lowerright[0]), \
+        return (slice(topleft[0], lowerright[0]),
                 slice(topleft[1], lowerright[1]),
                 slice(self.current_table, self.current_table + 1))
 
@@ -341,6 +344,12 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_code(key, event.code)
 
         event.Skip()
+
+    def OnInsertChartDialog(self, event):
+        """Chart dialog event handler"""
+
+        chart_dialog = ChartDialog(self.grid, figure="plot")
+        chart_dialog.Show()
 
     # Cell attribute events
 
@@ -808,7 +817,7 @@ class GridEventHandlers(object):
     def _wxflag2flag(self, wxflag):
         """Converts wxPython integer flag to pyspread flag list"""
 
-        wx_flags = { \
+        wx_flags = {
             0: ["UP", ],
             1: ["DOWN"],
             2: ["UP", "WHOLE_WORD"],

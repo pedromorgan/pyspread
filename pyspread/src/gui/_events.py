@@ -189,6 +189,8 @@ class GridEventMixin(object):
 
     ShowResizeGridDialogMsg, EVT_CMD_SHOW_RESIZE_GRID_DIALOG = \
                                                     new_command_event()
+    
+    InsertChartMsg , EVT_CMD_INSERT_CHART = new_command_event()
     ResizeGridMsg, EVT_CMD_RESIZE_GRID = new_command_event()
 
     # Grid attribute events

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -249,6 +249,9 @@ class MainMenu(_filledMenu, EventMixin):
                     _("Delete columns")]], \
                 [item, [self.DeleteTabsMsg, _("Delete table"),
                     _("Delete current table")]], \
+                ["Separator"], \
+                [item, [self.InsertChartMsg, _("Insert chart..."),
+                    _("Insert chart into cell")]], \
                 ["Separator"], \
                 [item, [self.ShowResizeGridDialogMsg, _("Resize grid"),
                         _("Resize grid")]]] \

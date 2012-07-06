@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -1042,7 +1042,7 @@ class MainWindowEventHandlers(object):
         message = _("Choose macro file.")
 
         style = wx.SAVE | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
                                     wildcard, message, style)
 
         # Save macros to file
