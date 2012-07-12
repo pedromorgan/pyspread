@@ -50,6 +50,9 @@ class AxisDataPanel(wx.Panel):
     """
 
     def __init__(self, *args, **kwargs):
+        # Initial datasets are created immediately
+        # Non-initial datasets have to be unveiled by calling add_dataset
+
         try:
             self.no_initial_datasets = kwargs.pop("no_initial_datasets")
         except KeyError:
@@ -65,23 +68,43 @@ class AxisDataPanel(wx.Panel):
 
         wx.Panel.__init__(self, *args, **kwargs)
 
-        self.main_grid_sizer = wx.FlexGridSizer(1, 3, 0, 0)
+        self.plus_button = wx.Button(self, -1, label="+")
+        self.minus_button = wx.Button(self, -1, label="-")
 
         self.labels = []
         self.textctrls = []
 
+        self._bind()
+        self.__do_layout()
+
+    def _bind(self):
+        """Bind events to handlers"""
+
+        self.Bind(wx.EVT_BUTTON, self.OnPlus, self.plus_button)
+        self.Bind(wx.EVT_BUTTON, self.OnMinus, self.minus_button)
+
+    def __do_layout(self):
+        """Initial layout"""
+
+        self.sizer = wx.FlexGridSizer(1, 2, 0, 0)
+        self.datasizer = wx.FlexGridSizer(1, 2, 0, 0)
+        buttonsizer = wx.FlexGridSizer(2, 1, 0, 0)
+
         for setnumber in xrange(self.no_initial_datasets):
             self.add_dataset()
 
-        self.__do_layout()
+        self.sizer.Add(self.datasizer)
+        self.sizer.Add(buttonsizer)
 
-    def __do_layout(self):
-        """Sizer hell"""
+        buttonsizer.Add(self.plus_button)
+        buttonsizer.Add(self.minus_button)
 
-        self.SetSizer(self.main_grid_sizer)
-        self.main_grid_sizer.Fit(self)
-        self.main_grid_sizer.AddGrowableRow(1)
-        self.main_grid_sizer.AddGrowableCol(0)
+        self.SetSizer(self.sizer)
+        self.sizer.Fit(self)
+
+        self.sizer.AddGrowableRow(1)
+        self.sizer.AddGrowableCol(0)
+
         self.Layout()
 
     def add_dataset(self):
@@ -93,18 +116,81 @@ class AxisDataPanel(wx.Panel):
         self.labels.append(label)
         self.textctrls.append(textctrl)
 
-        self.main_grid_sizer.Add(label)
-        self.main_grid_sizer.Add(textctrl)
+        self.datasizer.Add(label)
+        self.datasizer.Add(textctrl)
 
         self.Layout()
 
     def pop_dataset(self):
         """Removes one dataset mask from the panel"""
 
+        if len(self.labels) < 1:
+            return
+
         label = self.labels.pop(-1)
         textctrl = self.textctrls.pop(-1)
 
-        raise NotImplementedError
+        label.Destroy()
+        textctrl.Destroy()
+
+        if len(self.labels) <= 1:
+            self.minus_button.Disable()
+
+        self.Layout()
+
+    # Event handlers
+
+    def OnPlus(self, event):
+        """Handler for plus button"""
+
+        self.add_dataset()
+        self.minus_button.Enable(True)
+
+    def OnMinus(self, event):
+        """Handler for minus button"""
+
+        self.pop_dataset()
+
+
+class ChartDataPanel(wx.Panel):
+    """Panel for entering all chart data
+
+    Parameters
+    ----------
+    axes: Iterable of string
+    \tLabels of axes
+    maxseries: Iterable of Integer
+    \tMaximum number of series per axis must equal axes in length
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        parent = args[0]
+        self.axes = list(kwargs.pop("axes"))
+        self.maxseries = list(kwargs.pop("maxseries"))
+
+        assert len(self.axes) == len(self.maxseries)
+
+        wx.Panel.__init__(self, *args, **kwargs)
+
+        self.axis_data_panels = []
+
+        for axis, maxseries in zip(self.axes, self.maxseries):
+            axis_data_panel = AxisDataPanel(parent, -1,
+                                            no_max_datasets=maxseries)
+            self.axis_data_panels.append(axis_data_panel)
+        self.__do_layout()
+
+    def __do_layout(self):
+        sizer = wx.FlexGridSizer(len(self.axis_data_panels), 1, 0, 0)
+
+        for item in self.axis_data_panels:
+            sizer.Add(item)
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+        sizer.AddGrowableCol(0)
+        self.Layout()
 
 
 class ChartDialog(wx.Dialog):
@@ -122,79 +208,26 @@ class ChartDialog(wx.Dialog):
         kwargs["style"] = wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwargs)
 
-        self.label_1 = wx.StaticText(self, -1, "label_1")
-        self.text_ctrl_1 = wx.TextCtrl(self, -1, "")
-        self.label_2 = wx.StaticText(self, -1, "label_2")
-        self.text_ctrl_2 = wx.TextCtrl(self, -1, "")
-        self.label_3 = wx.StaticText(self, -1, "label_3")
-        self.text_ctrl_3 = wx.TextCtrl(self, -1, "")
-        self.label_4 = wx.StaticText(self, -1, "label_4")
-        self.text_ctrl_4 = wx.TextCtrl(self, -1, "")
-        self.static_line_1 = wx.StaticLine(self, -1)
-        self.static_line_2 = wx.StaticLine(self, -1)
-        self.label_5 = wx.StaticText(self, -1, "label_5")
-        self.text_ctrl_5 = wx.TextCtrl(self, -1, "")
-        self.sizer_2_staticbox = wx.StaticBox(self, -1, "Data series")
-        self.window_1 = wx.SplitterWindow(self, -1, style=wx.SP_3D | wx.SP_BORDER)
-        self.window_1_pane_1 = AxisDataPanel(self.window_1, -1)
-        self.label_6 = wx.StaticText(self.window_1_pane_1, -1, "label_6")
-        self.choice_1 = wx.Choice(self.window_1_pane_1, -1, choices=[])
-        self.label_7 = wx.StaticText(self.window_1_pane_1, -1, "label_7")
-        self.choice_2 = wx.Choice(self.window_1_pane_1, -1, choices=[])
-        self.window_1_pane_2 = wx.Panel(self.window_1, -1)
-        self.button_1 = wx.Button(self, -1, "button_1")
-        self.button_2 = wx.Button(self, -1, "button_2")
-        self.button_3 = wx.Button(self, -1, "button_3")
+        axes = ["x", "y"]
+        maxseries = [1, 3]
+
+        self.chart_data_panel = ChartDataPanel(self, axes=axes,
+                                               maxseries=maxseries)
 
         self.__set_properties()
         self.__do_layout()
-        # end wxGlade
 
     def __set_properties(self):
-        # begin wxGlade: ChartDialog.__set_properties
-        self.SetTitle("dialog_1")
-        # end wxGlade
+        self.SetTitle(_("Insert chart"))
 
     def __do_layout(self):
         # begin wxGlade: ChartDialog.__do_layout
-        sizer_1 = wx.FlexGridSizer(3, 1, 0, 0)
-        grid_sizer_2 = wx.FlexGridSizer(1, 3, 0, 0)
-        grid_sizer_3 = wx.FlexGridSizer(2, 2, 0, 0)
-        self.sizer_2_staticbox.Lower()
-        sizer_2 = wx.StaticBoxSizer(self.sizer_2_staticbox, wx.HORIZONTAL)
-        grid_sizer_1 = wx.FlexGridSizer(6, 2, 3, 3)
-        grid_sizer_1.Add(self.label_1, 0, 0, 0)
-        grid_sizer_1.Add(self.text_ctrl_1, 0, wx.EXPAND, 0)
-        grid_sizer_1.Add(self.label_2, 0, 0, 0)
-        grid_sizer_1.Add(self.text_ctrl_2, 0, wx.EXPAND, 0)
-        grid_sizer_1.Add(self.label_3, 0, 0, 0)
-        grid_sizer_1.Add(self.text_ctrl_3, 0, wx.EXPAND, 0)
-        grid_sizer_1.Add(self.label_4, 0, 0, 0)
-        grid_sizer_1.Add(self.text_ctrl_4, 0, wx.EXPAND, 0)
-        grid_sizer_1.Add(self.static_line_1, 0, wx.TOP | wx.BOTTOM | wx.EXPAND, 2)
-        grid_sizer_1.Add(self.static_line_2, 0, wx.TOP | wx.BOTTOM | wx.EXPAND, 2)
-        grid_sizer_1.Add(self.label_5, 0, 0, 0)
-        grid_sizer_1.Add(self.text_ctrl_5, 0, wx.EXPAND, 0)
-        grid_sizer_1.AddGrowableCol(1)
-        sizer_2.Add(grid_sizer_1, 1, wx.EXPAND, 0)
-        sizer_1.Add(sizer_2, 1, wx.EXPAND, 0)
-        grid_sizer_3.Add(self.label_6, 0, 0, 0)
-        grid_sizer_3.Add(self.choice_1, 0, wx.EXPAND, 0)
-        grid_sizer_3.Add(self.label_7, 0, 0, 0)
-        grid_sizer_3.Add(self.choice_2, 0, wx.EXPAND, 0)
-        self.window_1_pane_1.SetSizer(grid_sizer_3)
-        grid_sizer_3.AddGrowableCol(1)
-        self.window_1.SplitVertically(self.window_1_pane_1, self.window_1_pane_2)
-        sizer_1.Add(self.window_1, 1, wx.EXPAND, 0)
-        grid_sizer_2.Add(self.button_1, 0, 0, 0)
-        grid_sizer_2.Add(self.button_2, 0, 0, 0)
-        grid_sizer_2.Add(self.button_3, 0, 0, 0)
-        grid_sizer_2.AddGrowableCol(0)
-        grid_sizer_2.AddGrowableCol(1)
-        grid_sizer_2.AddGrowableCol(2)
-        sizer_1.Add(grid_sizer_2, 1, wx.EXPAND, 0)
-        self.SetSizer(sizer_1)
-        sizer_1.Fit(self)
-        sizer_1.AddGrowableRow(1)
-        sizer_1.AddGrowableCol(0)
+        sizer = wx.FlexGridSizer(3, 1, 0, 0)
+        sizer.Add(self.chart_data_panel, 1, wx.EXPAND, 0)
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+        sizer.AddGrowableRow(1)
+        sizer.AddGrowableCol(0)
+
         self.Layout()
