@@ -53,14 +53,14 @@ class _ArtProvider(wx.ArtProvider):
         _action_path = _icon_path + "actions/"
         _toggle_path = _icon_path + "toggles/"
 
-        self.extra_icons = { \
+        self.extra_icons = {
             "PyspreadLogo": _theme_path + "pyspread.png",
             "EditCopyRes": _action_path + "edit-copy-results.png",
             "FormatTextBold": _action_path + "format-text-bold.png",
             "FormatTextItalic": _action_path + "format-text-italic.png",
-            "FormatTextUnderline": _action_path + \
+            "FormatTextUnderline": _action_path +
                                             "format-text-underline.png",
-            "FormatTextStrikethrough": _action_path + \
+            "FormatTextStrikethrough": _action_path +
                                             "format-text-strikethrough.png",
             "JustifyRight": _action_path + "format-justify-right.png",
             "JustifyCenter": _action_path + "format-justify-center.png",
@@ -94,14 +94,25 @@ class _ArtProvider(wx.ArtProvider):
 
 
 class Icons(object):
-    """Provides icons for pyspread"""
+    """Provides icons for pyspread
+
+    Parameters
+    ----------
+    icon_set: Integer, defaults to wx.ART_OTHER
+    \tIcon set as defined by wxArtProvider
+    icon_theme: String, defaults to "Tango"
+    \tIcon theme
+    icon_size: 2-Tuple of Integer, defaults to (24, 24)
+    \tI=Size of icon bitmaps
+
+    """
 
     theme = "Tango"
 
     icon_size = (24, 24)
     icon_set = wx.ART_OTHER
 
-    icons = { \
+    icons = {
         "FileNew": wx.ART_NEW,
         "FileOpen": wx.ART_FILE_OPEN,
         "FileSave": wx.ART_FILE_SAVE,
@@ -113,12 +124,20 @@ class Icons(object):
         "Redo": wx.ART_REDO,
         "Find": wx.ART_FIND,
         "FindReplace": wx.ART_FIND_AND_REPLACE,
-        "SearchDirectionUp": wx.ART_GO_UP,
-        "SearchDirectionDown": wx.ART_GO_DOWN,
+        "GoUp": wx.ART_GO_UP,
+        "GoDown": wx.ART_GO_DOWN,
+        "Add": wx.ART_ADD_BOOKMARK,
+        "Remove": wx.ART_DEL_BOOKMARK,
         }
 
-    def __init__(self):
-        wx.ArtProvider.Push(_ArtProvider(self.theme, self.icon_size))
+    def __init__(self, icon_set=wx.ART_OTHER, icon_theme="Tango",
+                 icon_size=(24, 24)):
+
+        self.icon_set = icon_set
+        self.icon_theme = icon_theme
+        self.icon_size = icon_size
+
+        wx.ArtProvider.Push(_ArtProvider(icon_theme, icon_size))
 
     def __getitem__(self, icon_name):
         """Returns by bitmap

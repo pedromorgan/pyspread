@@ -35,6 +35,14 @@ Provides
 import wx
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+from wx.lib.colourselect import ColourSelect
+
+from _widgets import PenWidthComboBox
+from icons import Icons
+import src.lib.i18n as i18n
+
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class ChartDialog(wx.Dialog):
@@ -45,38 +53,46 @@ class ChartDialog(wx.Dialog):
                         wx.THICK_FRAME
         wx.Dialog.__init__(self, *args, **kwds)
 
-        self.fig = Figure((5.0, 4.0))
+        icons = Icons(icon_size=(16, 16))
+
+        self.figure = Figure((5.0, 4.0))
+        self.axes = self.figure.add_subplot(111)
+        self.axes.plot([3,4.3,5,6,2.3])
 
         self.axis_list_box = wx.ListBox(self, -1, choices=[])
-        self.button_1 = wx.Button(self, -1, "button_1")
-        self.button_2 = wx.Button(self, -1, "button_2")
         self.panel_1 = wx.Panel(self, -1)
-        self.button_3 = wx.Button(self, -1, "button_3")
-        self.button_4 = wx.Button(self, -1, "button_4")
-        self.button_5 = wx.Button(self, -1, "button_5")
-        self.button_6 = wx.Button(self, -1, "button_6")
-        self.label_1 = wx.StaticText(self, -1, "label_1")
+        self.add_button = wx.BitmapButton(self, -1, icons["Add"])
+        self.remove_button = wx.BitmapButton(self, -1, icons["Remove"])
+        self.move_up_buttom = wx.BitmapButton(self, -1, icons["GoUp"])
+        self.move_down_buttom = wx.BitmapButton(self, -1, icons["GoDown"])
+        self.cancel_button = wx.Button(self, wx.ID_CANCEL)
+        self.ok_button = wx.Button(self, wx.ID_OK)
+        self.x_label = wx.StaticText(self, -1, _("X"))
         self.text_ctrl_1 = wx.TextCtrl(self, -1, "")
-        self.label_2 = wx.StaticText(self, -1, "label_2")
+        self.y_label = wx.StaticText(self, -1, _("Y"))
         self.text_ctrl_2 = wx.TextCtrl(self, -1, "")
-        self.label_3 = wx.StaticText(self, -1, "label_3")
+        self.z_label = wx.StaticText(self, -1, _("Z"))
         self.text_ctrl_3 = wx.TextCtrl(self, -1, "")
-        self.sizer_5_staticbox = wx.StaticBox(self, -1, "Data")
-        self.label_4 = wx.StaticText(self, -1, "label_4")
-        self.choice_1 = wx.Choice(self, -1, choices=[])
-        self.label_5 = wx.StaticText(self, -1, "label_5")
-        self.choice_2 = wx.Choice(self, -1, choices=[])
-        self.label_6 = wx.StaticText(self, -1, "label_6")
-        self.choice_3 = wx.Choice(self, -1, choices=[])
-        self.sizer_6_staticbox = wx.StaticBox(self, -1, "Line style")
-        self.label_4_copy = wx.StaticText(self, -1, "label_4")
-        self.choice_1_copy = wx.Choice(self, -1, choices=[])
-        self.label_5_copy = wx.StaticText(self, -1, "label_5")
-        self.choice_2_copy = wx.Choice(self, -1, choices=[])
-        self.label_6_copy = wx.StaticText(self, -1, "label_6")
-        self.choice_3_copy = wx.Choice(self, -1, choices=[])
-        self.sizer_7_staticbox = wx.StaticBox(self, -1, "Marker style")
-        self.window_1 = FigureCanvasWxAgg(self, -1, self.fig)
+        self.sizer_5_staticbox = wx.StaticBox(self, -1, _("Data"))
+        self.label_4 = wx.StaticText(self, -1, _("Style"))
+        self.line_style_choice = wx.Choice(self, -1, choices=[])
+        self.label_5 = wx.StaticText(self, -1, _("Color"))
+        self.line_colorselect = ColourSelect(self, -1, unichr(0x2500) * 6,
+                                                   size=(80, 25))
+        self.label_6 = wx.StaticText(self, -1, _("Width"))
+        choices = map(unicode, xrange(12))
+        self.line_widthselect = PenWidthComboBox(self, choices=choices,
+                                    style=wx.CB_READONLY, size=(50, -1))
+        self.sizer_6_staticbox = wx.StaticBox(self, -1, _("Line"))
+        self.label_4_copy = wx.StaticText(self, -1, _("Style"))
+        self.marker_style_choice = wx.Choice(self, -1, choices=[])
+        self.label_5_copy = wx.StaticText(self, -1, _("Front"))
+        self.marker_front_colorselect = ColourSelect(self, -1, size=(80, 25))
+        self.label_6_copy = wx.StaticText(self, -1, _("Back"))
+        self.marker_back_colorselect = ColourSelect(self, -1, size=(80, 25))
+        self.sizer_7_staticbox = wx.StaticBox(self, -1, _("Marker"))
+        self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
+        
 
         self.__set_properties()
         self.__do_layout()
@@ -84,13 +100,17 @@ class ChartDialog(wx.Dialog):
 
     def __set_properties(self):
         # begin wxGlade: MyDialog.__set_properties
-        self.SetTitle("dialog_1")
-        self.SetSize((800, 300))
-        self.button_1.SetMinSize((30, 30))
-        self.button_2.SetMinSize((30, 30))
-        self.button_3.SetMinSize((30, 30))
-        self.button_4.SetMinSize((30, 30))
-        self.window_1.SetMinSize((400, 300))
+        self.SetTitle(_("Insert chart"))
+        self.SetSize((800, 350))
+        self.add_button.SetMinSize((24, 24))
+        self.add_button.SetToolTipString(_("Add series."))
+        self.remove_button.SetMinSize((24, 24))
+        self.remove_button.SetToolTipString(_("Remove series."))
+        self.move_up_buttom.SetMinSize((24, 24))
+        self.move_up_buttom.SetToolTipString(_("Move series up."))
+        self.move_down_buttom.SetMinSize((24, 24))
+        self.move_down_buttom.SetToolTipString(_("Move series down."))
+        self.figure_canvas.SetMinSize((400, 300))
         # end wxGlade
 
     def __do_layout(self):
@@ -111,21 +131,21 @@ class ChartDialog(wx.Dialog):
         grid_sizer_1 = wx.FlexGridSizer(1, 2, 0, 0)
         grid_sizer_2 = wx.FlexGridSizer(5, 1, 0, 0)
         grid_sizer_1.Add(self.axis_list_box, 0, wx.EXPAND, 0)
-        grid_sizer_2.Add(self.button_1, 0, wx.ALL, 2)
-        grid_sizer_2.Add(self.button_2, 0, wx.ALL, 2)
+        grid_sizer_2.Add(self.add_button, 0, wx.ALL, 2)
+        grid_sizer_2.Add(self.remove_button, 0, wx.ALL, 2)
         grid_sizer_2.Add(self.panel_1, 1, wx.EXPAND, 0)
-        grid_sizer_2.Add(self.button_3, 0, wx.ALL, 2)
-        grid_sizer_2.Add(self.button_4, 0, wx.ALL, 2)
-        grid_sizer_2.AddGrowableRow(2)
+        grid_sizer_2.Add(self.move_up_buttom, 0, wx.ALL, 2)
+        grid_sizer_2.Add(self.move_down_buttom, 0, wx.ALL, 2)
+        grid_sizer_2.AddGrowableRow(1)
         grid_sizer_2.AddGrowableCol(0)
         grid_sizer_1.Add(grid_sizer_2, 1, wx.EXPAND, 0)
         grid_sizer_1.AddGrowableRow(0)
         grid_sizer_1.AddGrowableCol(0)
         sizer_2.Add(grid_sizer_1, 1, wx.EXPAND, 0)
-        sizer_3.Add(self.button_5, 0,
+        sizer_3.Add(self.ok_button, 0,
                     wx.ALL | wx.ALIGN_CENTER_HORIZONTAL |
                     wx.ALIGN_CENTER_VERTICAL, 2)
-        sizer_3.Add(self.button_6, 0,
+        sizer_3.Add(self.cancel_button, 0,
                     wx.ALL | wx.ALIGN_CENTER_HORIZONTAL |
                     wx.ALIGN_CENTER_VERTICAL, 2)
         sizer_3.AddGrowableRow(0)
@@ -135,39 +155,39 @@ class ChartDialog(wx.Dialog):
         sizer_2.AddGrowableRow(0)
         sizer_2.AddGrowableCol(0)
         sizer_1.Add(sizer_2, 1, wx.EXPAND, 0)
-        grid_sizer_3.Add(self.label_1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+        grid_sizer_3.Add(self.x_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
         grid_sizer_3.Add(self.text_ctrl_1, 0, wx.ALL | wx.EXPAND, 0)
-        grid_sizer_3.Add(self.label_2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+        grid_sizer_3.Add(self.y_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
         grid_sizer_3.Add(self.text_ctrl_2, 0, wx.EXPAND, 0)
-        grid_sizer_3.Add(self.label_3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+        grid_sizer_3.Add(self.z_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
         grid_sizer_3.Add(self.text_ctrl_3, 0, wx.EXPAND, 0)
         grid_sizer_3.AddGrowableCol(1)
         sizer_5.Add(grid_sizer_3, 1, wx.ALL | wx.EXPAND, 2)
         sizer_4.Add(sizer_5, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer_4.Add(self.label_4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_4.Add(self.choice_1, 0, wx.EXPAND, 0)
+        grid_sizer_4.Add(self.line_style_choice, 0, wx.EXPAND, 0)
         grid_sizer_4.Add(self.label_5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_4.Add(self.choice_2, 0, wx.EXPAND, 0)
+        grid_sizer_4.Add(self.line_colorselect, 0, wx.EXPAND, 0)
         grid_sizer_4.Add(self.label_6, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_4.Add(self.choice_3, 0, wx.EXPAND, 0)
+        grid_sizer_4.Add(self.line_widthselect, 0, wx.EXPAND, 0)
         grid_sizer_4.AddGrowableCol(1)
         sizer_6.Add(grid_sizer_4, 1, wx.EXPAND, 0)
         sizer_4.Add(sizer_6, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer_4_copy.Add(self.label_4_copy, 0,
                               wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_4_copy.Add(self.choice_1_copy, 0, wx.EXPAND, 0)
+        grid_sizer_4_copy.Add(self.marker_style_choice, 0, wx.EXPAND, 0)
         grid_sizer_4_copy.Add(self.label_5_copy, 0,
                               wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_4_copy.Add(self.choice_2_copy, 0, wx.EXPAND, 0)
+        grid_sizer_4_copy.Add(self.marker_front_colorselect, 0, wx.EXPAND, 0)
         grid_sizer_4_copy.Add(self.label_6_copy, 0,
                               wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_4_copy.Add(self.choice_3_copy, 0, wx.EXPAND, 0)
+        grid_sizer_4_copy.Add(self.marker_back_colorselect, 0, wx.EXPAND, 0)
         grid_sizer_4_copy.AddGrowableCol(1)
         sizer_7.Add(grid_sizer_4_copy, 1, wx.EXPAND, 0)
         sizer_4.Add(sizer_7, 1, wx.ALL | wx.EXPAND, 2)
         sizer_4.AddGrowableCol(0)
         sizer_1.Add(sizer_4, 1, wx.EXPAND, 0)
-        sizer_1.Add(self.window_1, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
+        sizer_1.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
         self.SetSizer(sizer_1)
         sizer_1.AddGrowableRow(0)
         sizer_1.AddGrowableCol(0)

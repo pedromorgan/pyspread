@@ -54,7 +54,7 @@ class MainToolbar(wx.ToolBar, EventMixin):
     """Main application toolbar, built from attribute toolbardata
 
     toolbardata has the following structure:
-    [["Methodname", "Label", "Iconname", "Tooltip", "Help string"] , \
+    [["Methodname", "Label", "Iconname", "Tooltip", "Help string"] ,
     ...
     [] ,\  # Separator
     ...
@@ -67,32 +67,32 @@ class MainToolbar(wx.ToolBar, EventMixin):
 
         self.toolbardata = [
             [self.NewMsg, _("New"), "FileNew", _("New spreadsheet"),
-                _("Create a new, empty spreadsheet")], \
+                _("Create a new, empty spreadsheet")],
             [self.OpenMsg, _("Open"), "FileOpen", _("Open spreadsheet"),
-                _("Open spreadsheet from file")], \
+                _("Open spreadsheet from file")],
             [self.SaveMsg, _("Save"), "FileSave", _("Save spreadsheet"),
-                _("Save spreadsheet to file")], \
-            [], \
+                _("Save spreadsheet to file")],
+            [],
             [self.UndoMsg, _("Undo"), "Undo", _("Undo"),
-                 _("Undo last operation")], \
+                 _("Undo last operation")],
             [self.RedoMsg, _("Redo"), "Redo", _("Redo"),
-                 _("Redo next operation")], \
-            [], \
+                 _("Redo next operation")],
+            [],
             [self.FindFocusMsg, _("Find"), "Find", _("Find"),
-                _("Find cell by content")], \
+                _("Find cell by content")],
             [self.ReplaceMsg, _("Replace"), "FindReplace", _("Replace"),
-                _("Replace strings in cells")], \
-            [], \
+                _("Replace strings in cells")],
+            [],
             [self.CutMsg, _("Cut"), "EditCut", _("Cut"),
-                 _("Cut cells to clipboard")], \
+                 _("Cut cells to clipboard")],
             [self.CopyMsg, _("Copy"), "EditCopy", _("Copy"),
-                _("Copy the input strings of the cells to clipboard")], \
+                _("Copy the input strings of the cells to clipboard")],
             [self.CopyResultMsg, _("Copy Results"), "EditCopyRes",
                  _("Copy Results"),
-                _("Copy the result strings of the cells to the clipboard")], \
+                _("Copy the result strings of the cells to the clipboard")],
             [self.PasteMsg, _("Paste"), "EditPaste", _("Paste"),
-                _("Paste cell from clipboard")], \
-            [], \
+                _("Paste cell from clipboard")],
+            [],
             [self.PrintMsg, _("Print"), "FilePrint",
                  _("Print current spreadsheet"),
                  _("Print current spreadsheet")],
@@ -136,8 +136,8 @@ class FindToolbar(wx.ToolBar, EventMixin):
     """Toolbar for find operations (replaces wxFindReplaceDialog)"""
 
     # Search flag buttons
-    search_options_buttons = { \
-      "matchcase_tb": { \
+    search_options_buttons = {
+      "matchcase_tb": {
         "ID": wx.NewId(),
         "iconname": "SearchCaseSensitive",
         "shorthelp": _("Case sensitive"),
@@ -151,7 +151,7 @@ class FindToolbar(wx.ToolBar, EventMixin):
         "longhelp": _("Treat search string as regular expression"),
         "flag": "REG_EXP",
       },
-      "wholeword_tb": { \
+      "wholeword_tb": {
         "ID": wx.NewId(),
         "iconname": "SearchWholeword",
         "shorthelp": _("Whole word"),
@@ -170,7 +170,7 @@ class FindToolbar(wx.ToolBar, EventMixin):
 
         # Search entry control
         self.search_history = []
-        self.search = wx.SearchCtrl(self, size=(150, -1), \
+        self.search = wx.SearchCtrl(self, size=(150, -1),
                         style=wx.TE_PROCESS_ENTER | wx.NO_BORDER)
         tip_msg = _("Searches in grid cell source code and grid cell results.")
         self.search.SetToolTip(wx.ToolTip(tip_msg))
@@ -206,7 +206,7 @@ class FindToolbar(wx.ToolBar, EventMixin):
     def setup_searchdirection_togglebutton(self):
         """Setup of search direction toggle button for searching up and down"""
 
-        iconnames = ["SearchDirectionDown", "SearchDirectionUp"]
+        iconnames = ["GoDown", "GoUp"]
         bmplist = [icons[iconname] for iconname in iconnames]
         self.search_direction_tb = _widgets.BitmapToggleButton(self, bmplist)
 
@@ -299,7 +299,7 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
 
     """
 
-    border_toggles = [ \
+    border_toggles = [
         ("AllBorders",       (1, 1, 1, 1, 1, 1)),
         ("LeftBorders",      (0, 0, 1, 0, 1, 1)),
         ("RightBorders",     (0, 0, 0, 1, 1, 1)),
@@ -310,7 +310,7 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
         ("TopBottomBorders", (1, 1, 0, 0, 0, 1)),
     ]
 
-    bordermap = { \
+    bordermap = {
         "AllBorders":       ("top", "bottom", "left", "right", "inner"),
         "LeftBorders":      ("left"),
         "RightBorders":     ("right"),
@@ -349,7 +349,7 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
         """Creates font choice combo box"""
 
         self.fonts = get_font_list()
-        self.font_choice_combo = _widgets.FontChoiceCombobox(self, \
+        self.font_choice_combo = _widgets.FontChoiceCombobox(self,
                                     choices=self.fonts, style=wx.CB_READONLY,
                                     size=(125, -1))
         self.AddControl(self.font_choice_combo)

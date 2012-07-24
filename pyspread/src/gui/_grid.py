@@ -348,8 +348,8 @@ class GridCellEventHandlers(object):
     def OnInsertChartDialog(self, event):
         """Chart dialog event handler"""
 
-        chart_dialog = ChartDialog(self.grid, figure="plot")
-        chart_dialog.Show()
+        chart_dialog = ChartDialog(self.grid)
+        chart_dialog.ShowModal()
 
     # Cell attribute events
 
