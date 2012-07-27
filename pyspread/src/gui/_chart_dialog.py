@@ -48,16 +48,15 @@ _ = i18n.language.ugettext
 class ChartDialog(wx.Dialog):
     """Chart dialog for generating chart generation strings"""
 
+    # Overload for diffeent chart types
+    unneeded_ctrls = ["z_label", "z_text_ctrl"]
+
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
                         wx.THICK_FRAME
         wx.Dialog.__init__(self, *args, **kwds)
 
-        icons = Icons(icon_size=(16, 16))
-
-        self.figure = Figure((5.0, 4.0))
-        self.axes = self.figure.add_subplot(111)
-        self.axes.plot([3,4.3,5,6,2.3])
+        icons = Icons(icon_size=(24, 24))
 
         self.axis_list_box = wx.ListBox(self, -1, choices=[])
         self.panel_1 = wx.Panel(self, -1)
@@ -68,11 +67,11 @@ class ChartDialog(wx.Dialog):
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
         self.x_label = wx.StaticText(self, -1, _("X"))
-        self.text_ctrl_1 = wx.TextCtrl(self, -1, "")
+        self.x_text_ctrl = wx.TextCtrl(self, -1, "")
         self.y_label = wx.StaticText(self, -1, _("Y"))
-        self.text_ctrl_2 = wx.TextCtrl(self, -1, "")
+        self.y_text_ctrl = wx.TextCtrl(self, -1, "")
         self.z_label = wx.StaticText(self, -1, _("Z"))
-        self.text_ctrl_3 = wx.TextCtrl(self, -1, "")
+        self.z_text_ctrl = wx.TextCtrl(self, -1, "")
         self.sizer_5_staticbox = wx.StaticBox(self, -1, _("Data"))
         self.label_4 = wx.StaticText(self, -1, _("Style"))
         self.line_style_choice = wx.Choice(self, -1, choices=[])
@@ -91,12 +90,17 @@ class ChartDialog(wx.Dialog):
         self.label_6_copy = wx.StaticText(self, -1, _("Back"))
         self.marker_back_colorselect = ColourSelect(self, -1, size=(80, 25))
         self.sizer_7_staticbox = wx.StaticBox(self, -1, _("Marker"))
+
+        self.figure = Figure((5.0, 4.0))
+        self.axes = self.figure.add_subplot(111)
+        self.__setup_figure()
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        
 
         self.__set_properties()
         self.__do_layout()
-        # end wxGlade
+
+        unneeded_ctrls = [getattr(self, name) for name in self.unneeded_ctrls]
+        self.__disable_controls(unneeded_ctrls)
 
     def __set_properties(self):
         # begin wxGlade: MyDialog.__set_properties
@@ -156,11 +160,11 @@ class ChartDialog(wx.Dialog):
         sizer_2.AddGrowableCol(0)
         sizer_1.Add(sizer_2, 1, wx.EXPAND, 0)
         grid_sizer_3.Add(self.x_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_3.Add(self.text_ctrl_1, 0, wx.ALL | wx.EXPAND, 0)
+        grid_sizer_3.Add(self.x_text_ctrl, 0, wx.ALL | wx.EXPAND, 0)
         grid_sizer_3.Add(self.y_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_3.Add(self.text_ctrl_2, 0, wx.EXPAND, 0)
+        grid_sizer_3.Add(self.y_text_ctrl, 0, wx.EXPAND, 0)
         grid_sizer_3.Add(self.z_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_3.Add(self.text_ctrl_3, 0, wx.EXPAND, 0)
+        grid_sizer_3.Add(self.z_text_ctrl, 0, wx.EXPAND, 0)
         grid_sizer_3.AddGrowableCol(1)
         sizer_5.Add(grid_sizer_3, 1, wx.ALL | wx.EXPAND, 2)
         sizer_4.Add(sizer_5, 1, wx.ALL | wx.EXPAND, 2)
@@ -194,11 +198,47 @@ class ChartDialog(wx.Dialog):
         self.Layout()
         # end wxGlade
 
-# end of class MyDialog
-if __name__ == "__main__":
-    app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
-    dialog_1 = ChartDialog(None, -1, "")
-    app.SetTopWindow(dialog_1)
-    dialog_1.Show()
-    app.MainLoop()
+    def __disable_controls(self, unneeded_ctrls):
+        """Disables the controls that are not needed by chart"""
+
+        for ctrl in unneeded_ctrls:
+            ctrl.Disable()
+
+    def __setup_figure(self):
+        """Paints figure and axes that are displayed at FigureCanvasWxAgg"""
+        
+        ##OBSOLETE
+
+        self.figure.patch.set_alpha(0.0)
+        self.axes.plot([3, 4.3, 5, 6, 2.3])
+
+    def draw_figure(self):
+        """Redraws the figure"""
+
+        self.figure.patch.set_alpha(0.0)
+        str = self.textbox.GetValue()
+        self.data = map(int, str.split())
+        x = range(len(self.data))
+
+        # clear the axes and redraw the plot anew
+
+        self.axes.clear()
+        self.axes.grid(self.cb_grid.IsChecked())
+
+        self.axes.plot(
+            left=x,
+            height=self.data,
+            width=self.slider_width.GetValue() / 100.0,
+            align='center',
+            alpha=0.44,
+            picker=5)
+
+        self.canvas.draw()
+
+    # Handlers
+    # --------
+
+    def OnLineWidth(self, event):
+        """Line width event handler"""
+
+        self.draw_figure()
