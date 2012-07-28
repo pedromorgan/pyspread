@@ -59,7 +59,7 @@ class ChartDialog(wx.Dialog):
         wx.Dialog.__init__(self, *args, **kwds)
 
         # Initial data for chart to be deleted
-        self.data = []
+        self.ydata = []
         self.width = 1
 
         # Icons for BitmapButtons
@@ -212,6 +212,7 @@ class ChartDialog(wx.Dialog):
         """Binds events ton handlers"""
 
         self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.line_width_combo)
+        self.Bind(wx.EVT_TEXT, self.OnXText, self.x_text_ctrl)
         self.Bind(wx.EVT_TEXT, self.OnYText, self.y_text_ctrl)
 
     def __disable_controls(self, unneeded_ctrls):
@@ -227,17 +228,23 @@ class ChartDialog(wx.Dialog):
 
         self.axes.clear()
 
-        self.axes.plot(self.data, linewidth=self.width)
+        self.axes.plot(self.ydata, linewidth=self.width)
 
         self.figure_canvas.draw()
 
     # Handlers
     # --------
 
+    def OnXText(self, event):
+        """Event handler for x_text_ctrl"""
+
+        self.xdata = ast.literal_eval(event.GetString())
+        self.draw_figure()
+
     def OnYText(self, event):
         """Event handler for y_text_ctrl"""
 
-        self.data = ast.literal_eval(event.GetString())
+        self.ydata = ast.literal_eval(event.GetString())
         self.draw_figure()
 
     def OnLineWidth(self, event):
