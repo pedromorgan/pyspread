@@ -32,6 +32,8 @@ Provides
 
 """
 
+import ast
+
 import wx
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
@@ -56,6 +58,11 @@ class ChartDialog(wx.Dialog):
                         wx.THICK_FRAME
         wx.Dialog.__init__(self, *args, **kwds)
 
+        # Initial data for chart to be deleted
+        self.data = []
+        self.width = 1
+
+        # Icons for BitmapButtons
         icons = Icons(icon_size=(24, 24))
 
         self.axis_list_box = wx.ListBox(self, -1, choices=[])
@@ -80,7 +87,7 @@ class ChartDialog(wx.Dialog):
                                                    size=(80, 25))
         self.label_6 = wx.StaticText(self, -1, _("Width"))
         choices = map(unicode, xrange(12))
-        self.line_widthselect = PenWidthComboBox(self, choices=choices,
+        self.line_width_combo = PenWidthComboBox(self, choices=choices,
                                     style=wx.CB_READONLY, size=(50, -1))
         self.sizer_6_staticbox = wx.StaticBox(self, -1, _("Line"))
         self.label_4_copy = wx.StaticText(self, -1, _("Style"))
@@ -91,19 +98,22 @@ class ChartDialog(wx.Dialog):
         self.marker_back_colorselect = ColourSelect(self, -1, size=(80, 25))
         self.sizer_7_staticbox = wx.StaticBox(self, -1, _("Marker"))
 
-        self.figure = Figure((5.0, 4.0))
+        self.figure = Figure((5.0, 4.0), facecolor="white")
         self.axes = self.figure.add_subplot(111)
-        self.__setup_figure()
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
 
         self.__set_properties()
         self.__do_layout()
+        self.__bindings()
 
+        # Disable unneeded controls
         unneeded_ctrls = [getattr(self, name) for name in self.unneeded_ctrls]
         self.__disable_controls(unneeded_ctrls)
 
+        # Draw figure initially
+        self.draw_figure()
+
     def __set_properties(self):
-        # begin wxGlade: MyDialog.__set_properties
         self.SetTitle(_("Insert chart"))
         self.SetSize((800, 350))
         self.add_button.SetMinSize((24, 24))
@@ -115,10 +125,11 @@ class ChartDialog(wx.Dialog):
         self.move_down_buttom.SetMinSize((24, 24))
         self.move_down_buttom.SetToolTipString(_("Move series down."))
         self.figure_canvas.SetMinSize((400, 300))
-        # end wxGlade
+
+        # Set controls to default values
+        self.line_width_combo.SetSelection(self.width)
 
     def __do_layout(self):
-        # begin wxGlade: MyDialog.__do_layout
         sizer_1 = wx.FlexGridSizer(1, 3, 0, 0)
         sizer_4 = wx.FlexGridSizer(1, 1, 0, 0)
         self.sizer_7_staticbox.Lower()
@@ -173,7 +184,7 @@ class ChartDialog(wx.Dialog):
         grid_sizer_4.Add(self.label_5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
         grid_sizer_4.Add(self.line_colorselect, 0, wx.EXPAND, 0)
         grid_sizer_4.Add(self.label_6, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_4.Add(self.line_widthselect, 0, wx.EXPAND, 0)
+        grid_sizer_4.Add(self.line_width_combo, 0, wx.EXPAND, 0)
         grid_sizer_4.AddGrowableCol(1)
         sizer_6.Add(grid_sizer_4, 1, wx.EXPAND, 0)
         sizer_4.Add(sizer_6, 1, wx.ALL | wx.EXPAND, 2)
@@ -196,7 +207,12 @@ class ChartDialog(wx.Dialog):
         sizer_1.AddGrowableRow(0)
         sizer_1.AddGrowableCol(0)
         self.Layout()
-        # end wxGlade
+
+    def __bindings(self):
+        """Binds events ton handlers"""
+
+        self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.line_width_combo)
+        self.Bind(wx.EVT_TEXT, self.OnYText, self.y_text_ctrl)
 
     def __disable_controls(self, unneeded_ctrls):
         """Disables the controls that are not needed by chart"""
@@ -204,41 +220,28 @@ class ChartDialog(wx.Dialog):
         for ctrl in unneeded_ctrls:
             ctrl.Disable()
 
-    def __setup_figure(self):
-        """Paints figure and axes that are displayed at FigureCanvasWxAgg"""
-        
-        ##OBSOLETE
-
-        self.figure.patch.set_alpha(0.0)
-        self.axes.plot([3, 4.3, 5, 6, 2.3])
-
     def draw_figure(self):
-        """Redraws the figure"""
+        """Redraws the figure that is displayed at FigureCanvasWxAgg"""
 
-        self.figure.patch.set_alpha(0.0)
-        str = self.textbox.GetValue()
-        self.data = map(int, str.split())
-        x = range(len(self.data))
-
-        # clear the axes and redraw the plot anew
+        # Clear the axes and redraw the plot anew
 
         self.axes.clear()
-        self.axes.grid(self.cb_grid.IsChecked())
 
-        self.axes.plot(
-            left=x,
-            height=self.data,
-            width=self.slider_width.GetValue() / 100.0,
-            align='center',
-            alpha=0.44,
-            picker=5)
+        self.axes.plot(self.data, linewidth=self.width)
 
-        self.canvas.draw()
+        self.figure_canvas.draw()
 
     # Handlers
     # --------
 
+    def OnYText(self, event):
+        """Event handler for y_text_ctrl"""
+
+        self.data = ast.literal_eval(event.GetString())
+        self.draw_figure()
+
     def OnLineWidth(self, event):
         """Line width event handler"""
 
+        self.width = int(event.GetSelection())
         self.draw_figure()
