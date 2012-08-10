@@ -37,7 +37,7 @@ import ast
 import wx
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
-from wx.lib.colourselect import ColourSelect
+import wx.lib.colourselect as csel
 
 from _widgets import PenWidthComboBox
 from icons import Icons
@@ -60,7 +60,9 @@ class ChartDialog(wx.Dialog):
 
         # Initial data for chart to be deleted
         self.ydata = []
+        self.xdata = []
         self.width = 1
+        self.line_color = (0, 0, 0)
 
         # Icons for BitmapButtons
         icons = Icons(icon_size=(24, 24))
@@ -83,7 +85,7 @@ class ChartDialog(wx.Dialog):
         self.label_4 = wx.StaticText(self, -1, _("Style"))
         self.line_style_choice = wx.Choice(self, -1, choices=[])
         self.label_5 = wx.StaticText(self, -1, _("Color"))
-        self.line_colorselect = ColourSelect(self, -1, unichr(0x2500) * 6,
+        self.line_colorselect = csel.ColourSelect(self, -1, unichr(0x2500) * 6,
                                                    size=(80, 25))
         self.label_6 = wx.StaticText(self, -1, _("Width"))
         choices = map(unicode, xrange(12))
@@ -93,9 +95,11 @@ class ChartDialog(wx.Dialog):
         self.label_4_copy = wx.StaticText(self, -1, _("Style"))
         self.marker_style_choice = wx.Choice(self, -1, choices=[])
         self.label_5_copy = wx.StaticText(self, -1, _("Front"))
-        self.marker_front_colorselect = ColourSelect(self, -1, size=(80, 25))
+        self.marker_front_colorselect = csel.ColourSelect(self, -1,
+                                                          size=(80, 25))
         self.label_6_copy = wx.StaticText(self, -1, _("Back"))
-        self.marker_back_colorselect = ColourSelect(self, -1, size=(80, 25))
+        self.marker_back_colorselect = csel.ColourSelect(self, -1,
+                                                         size=(80, 25))
         self.sizer_7_staticbox = wx.StaticBox(self, -1, _("Marker"))
 
         self.figure = Figure((5.0, 4.0), facecolor="white")
@@ -214,6 +218,7 @@ class ChartDialog(wx.Dialog):
         self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.line_width_combo)
         self.Bind(wx.EVT_TEXT, self.OnXText, self.x_text_ctrl)
         self.Bind(wx.EVT_TEXT, self.OnYText, self.y_text_ctrl)
+        self.line_colorselect.Bind(csel.EVT_COLOURSELECT, self.OnLineColor)
 
     def __disable_controls(self, unneeded_ctrls):
         """Disables the controls that are not needed by chart"""
@@ -228,8 +233,12 @@ class ChartDialog(wx.Dialog):
 
         self.axes.clear()
 
-        self.axes.plot(self.ydata, linewidth=self.width)
-
+        if self.xdata and len(self.xdata) == len(self.ydata):
+            self.axes.plot(self.ydata, linewidth=self.width, xdata=self.xdata,
+                           color=self.line_color)
+        else:
+            self.axes.plot(self.ydata, linewidth=self.width,
+                           color=self.line_color)
         self.figure_canvas.draw()
 
     # Handlers
@@ -251,4 +260,11 @@ class ChartDialog(wx.Dialog):
         """Line width event handler"""
 
         self.width = int(event.GetSelection())
+        self.draw_figure()
+
+    def OnLineColor(self, event):
+        """Line color event handler"""
+
+        self.line_color = tuple(i / 255.0 for i in event.GetValue().Get())
+
         self.draw_figure()
