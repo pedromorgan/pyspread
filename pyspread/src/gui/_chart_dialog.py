@@ -39,12 +39,57 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 
-from _widgets import PenWidthComboBox
+from _widgets import PenWidthComboBox, PenStyleComboBox
 from icons import Icons
 import src.lib.i18n as i18n
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
+
+
+class ChartAxisDataPanel(wx.Panel):
+    """Panel for data entry for chart axis"""
+
+    def __init__(self, *args, **kwargs):
+
+        self.xdata = []
+        self.ydata = []
+        self.zdata = []
+
+        wx.Panel.__init__(self, *args, **kwargs)
+
+        self.x_label = wx.StaticText(self, -1, _("X"))
+        self.x_text_ctrl = wx.TextCtrl(self, -1, "")
+        self.y_label = wx.StaticText(self, -1, _("Y"))
+        self.y_text_ctrl = wx.TextCtrl(self, -1, "")
+        self.z_label = wx.StaticText(self, -1, _("Z"))
+        self.z_text_ctrl = wx.TextCtrl(self, -1, "")
+
+        self.chart_axis_data_staticbox = wx.StaticBox(self, -1, _("Data"))
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        self.chart_axis_data_staticbox.Lower()
+        data_box_sizer = wx.StaticBoxSizer(self.chart_axis_data_staticbox,
+                                    wx.HORIZONTAL)
+        data_box_grid_sizer = wx.FlexGridSizer(3, 2, 0, 0)
+
+        data_box_grid_sizer.Add(self.x_label, 0, wx.ALL |
+                                wx.ALIGN_CENTER_VERTICAL, 2)
+        data_box_grid_sizer.Add(self.x_text_ctrl, 0, wx.ALL | wx.EXPAND, 0)
+        data_box_grid_sizer.Add(self.y_label, 0, wx.ALL |
+                                wx.ALIGN_CENTER_VERTICAL, 2)
+        data_box_grid_sizer.Add(self.y_text_ctrl, 0, wx.EXPAND, 0)
+        data_box_grid_sizer.Add(self.z_label, 0, wx.ALL |
+                                wx.ALIGN_CENTER_VERTICAL, 2)
+        data_box_grid_sizer.Add(self.z_text_ctrl, 0, wx.EXPAND, 0)
+        data_box_grid_sizer.AddGrowableCol(1)
+        data_box_sizer.Add(data_box_grid_sizer, 1, wx.ALL | wx.EXPAND, 2)
+
+        self.SetSizer(data_box_sizer)
+
+        self.Layout()
 
 
 class ChartDialog(wx.Dialog):
@@ -68,28 +113,32 @@ class ChartDialog(wx.Dialog):
         icons = Icons(icon_size=(24, 24))
 
         self.axis_list_box = wx.ListBox(self, -1, choices=[])
-        self.panel_1 = wx.Panel(self, -1)
+        self.series_staticbox = wx.StaticBox(self, -1, _("Series"))
         self.add_button = wx.BitmapButton(self, -1, icons["Add"])
         self.remove_button = wx.BitmapButton(self, -1, icons["Remove"])
         self.move_up_buttom = wx.BitmapButton(self, -1, icons["GoUp"])
         self.move_down_buttom = wx.BitmapButton(self, -1, icons["GoDown"])
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
-        self.x_label = wx.StaticText(self, -1, _("X"))
-        self.x_text_ctrl = wx.TextCtrl(self, -1, "")
-        self.y_label = wx.StaticText(self, -1, _("Y"))
-        self.y_text_ctrl = wx.TextCtrl(self, -1, "")
-        self.z_label = wx.StaticText(self, -1, _("Z"))
-        self.z_text_ctrl = wx.TextCtrl(self, -1, "")
-        self.sizer_5_staticbox = wx.StaticBox(self, -1, _("Data"))
+
+        self.chart_axis_data_panel = ChartAxisDataPanel(self, -1)
+#        self.x_label = wx.StaticText(self, -1, _("X"))
+#        self.x_text_ctrl = wx.TextCtrl(self, -1, "")
+#        self.y_label = wx.StaticText(self, -1, _("Y"))
+#        self.y_text_ctrl = wx.TextCtrl(self, -1, "")
+#        self.z_label = wx.StaticText(self, -1, _("Z"))
+#        self.z_text_ctrl = wx.TextCtrl(self, -1, "")
+#        self.sizer_5_staticbox = wx.StaticBox(self, -1, _("Data"))
         self.label_4 = wx.StaticText(self, -1, _("Style"))
-        self.line_style_choice = wx.Choice(self, -1, choices=[])
+        style_choices = map(unicode, xrange(len(PenStyleComboBox.pen_styles)))
+        self.line_style_choice = PenStyleComboBox(self, -1,
+                                                  choices=style_choices)
         self.label_5 = wx.StaticText(self, -1, _("Color"))
         self.line_colorselect = csel.ColourSelect(self, -1, unichr(0x2500) * 6,
                                                    size=(80, 25))
         self.label_6 = wx.StaticText(self, -1, _("Width"))
-        choices = map(unicode, xrange(12))
-        self.line_width_combo = PenWidthComboBox(self, choices=choices,
+        width_choices = map(unicode, xrange(12))
+        self.line_width_combo = PenWidthComboBox(self, choices=width_choices,
                                     style=wx.CB_READONLY, size=(50, -1))
         self.sizer_6_staticbox = wx.StaticBox(self, -1, _("Line"))
         self.label_4_copy = wx.StaticText(self, -1, _("Style"))
@@ -111,8 +160,8 @@ class ChartDialog(wx.Dialog):
         self.__bindings()
 
         # Disable unneeded controls
-        unneeded_ctrls = [getattr(self, name) for name in self.unneeded_ctrls]
-        self.__disable_controls(unneeded_ctrls)
+#        unneeded_ctrls = [getattr(self, name) for name in self.unneeded_ctrls]
+#        self.__disable_controls(unneeded_ctrls)
 
         # Draw figure initially
         self.draw_figure()
@@ -142,9 +191,9 @@ class ChartDialog(wx.Dialog):
         self.sizer_6_staticbox.Lower()
         sizer_6 = wx.StaticBoxSizer(self.sizer_6_staticbox, wx.HORIZONTAL)
         grid_sizer_4 = wx.FlexGridSizer(3, 2, 0, 0)
-        self.sizer_5_staticbox.Lower()
-        sizer_5 = wx.StaticBoxSizer(self.sizer_5_staticbox, wx.HORIZONTAL)
-        grid_sizer_3 = wx.FlexGridSizer(3, 2, 0, 0)
+#        self.sizer_5_staticbox.Lower()
+#        sizer_5 = wx.StaticBoxSizer(self.sizer_5_staticbox, wx.HORIZONTAL)
+#        grid_sizer_3 = wx.FlexGridSizer(3, 2, 0, 0)
         sizer_2 = wx.FlexGridSizer(2, 1, 0, 0)
         sizer_3 = wx.FlexGridSizer(1, 2, 0, 0)
         grid_sizer_1 = wx.FlexGridSizer(1, 2, 0, 0)
@@ -152,7 +201,6 @@ class ChartDialog(wx.Dialog):
         grid_sizer_1.Add(self.axis_list_box, 0, wx.EXPAND, 0)
         grid_sizer_2.Add(self.add_button, 0, wx.ALL, 2)
         grid_sizer_2.Add(self.remove_button, 0, wx.ALL, 2)
-        grid_sizer_2.Add(self.panel_1, 1, wx.EXPAND, 0)
         grid_sizer_2.Add(self.move_up_buttom, 0, wx.ALL, 2)
         grid_sizer_2.Add(self.move_down_buttom, 0, wx.ALL, 2)
         grid_sizer_2.AddGrowableRow(1)
@@ -173,16 +221,20 @@ class ChartDialog(wx.Dialog):
         sizer_2.Add(sizer_3, 1, wx.ALL | wx.EXPAND, 3)
         sizer_2.AddGrowableRow(0)
         sizer_2.AddGrowableCol(0)
-        sizer_1.Add(sizer_2, 1, wx.EXPAND, 0)
-        grid_sizer_3.Add(self.x_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_3.Add(self.x_text_ctrl, 0, wx.ALL | wx.EXPAND, 0)
-        grid_sizer_3.Add(self.y_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_3.Add(self.y_text_ctrl, 0, wx.EXPAND, 0)
-        grid_sizer_3.Add(self.z_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-        grid_sizer_3.Add(self.z_text_ctrl, 0, wx.EXPAND, 0)
-        grid_sizer_3.AddGrowableCol(1)
-        sizer_5.Add(grid_sizer_3, 1, wx.ALL | wx.EXPAND, 2)
-        sizer_4.Add(sizer_5, 1, wx.ALL | wx.EXPAND, 2)
+        sizer_series_staticbox = wx.StaticBoxSizer(self.series_staticbox,
+                                                   wx.HORIZONTAL)
+        sizer_series_staticbox.Add(sizer_2, 1, wx.EXPAND, 0)
+        sizer_1.Add(sizer_series_staticbox, 1, wx.EXPAND, 0)
+#        grid_sizer_3.Add(self.x_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+#        grid_sizer_3.Add(self.x_text_ctrl, 0, wx.ALL | wx.EXPAND, 0)
+#        grid_sizer_3.Add(self.y_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+#        grid_sizer_3.Add(self.y_text_ctrl, 0, wx.EXPAND, 0)
+#        grid_sizer_3.Add(self.z_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
+#        grid_sizer_3.Add(self.z_text_ctrl, 0, wx.EXPAND, 0)
+#        grid_sizer_3.AddGrowableCol(1)
+#        sizer_5.Add(grid_sizer_3, 1, wx.ALL | wx.EXPAND, 2)
+#        sizer_4.Add(sizer_5, 1, wx.ALL | wx.EXPAND, 2)
+        sizer_4.Add(self.chart_axis_data_panel, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer_4.Add(self.label_4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
         grid_sizer_4.Add(self.line_style_choice, 0, wx.EXPAND, 0)
         grid_sizer_4.Add(self.label_5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
@@ -205,7 +257,7 @@ class ChartDialog(wx.Dialog):
         sizer_7.Add(grid_sizer_4_copy, 1, wx.EXPAND, 0)
         sizer_4.Add(sizer_7, 1, wx.ALL | wx.EXPAND, 2)
         sizer_4.AddGrowableCol(0)
-        sizer_1.Add(sizer_4, 1, wx.EXPAND, 0)
+        sizer_series_staticbox.Add(sizer_4, 1, wx.EXPAND, 0)
         sizer_1.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
         self.SetSizer(sizer_1)
         sizer_1.AddGrowableRow(0)
@@ -216,8 +268,8 @@ class ChartDialog(wx.Dialog):
         """Binds events ton handlers"""
 
         self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.line_width_combo)
-        self.Bind(wx.EVT_TEXT, self.OnXText, self.x_text_ctrl)
-        self.Bind(wx.EVT_TEXT, self.OnYText, self.y_text_ctrl)
+#        self.Bind(wx.EVT_TEXT, self.OnXText, self.x_text_ctrl)
+#        self.Bind(wx.EVT_TEXT, self.OnYText, self.y_text_ctrl)
         self.line_colorselect.Bind(csel.EVT_COLOURSELECT, self.OnLineColor)
 
     def __disable_controls(self, unneeded_ctrls):

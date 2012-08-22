@@ -27,13 +27,14 @@ Provides:
 ---------
   1. PythonSTC: Syntax highlighting editor
   2. ImageComboBox: Base class for image combo boxes
-  3. PenWidthComboBox: ComboBox for border pen width selection
-  4. FontChoiceCombobox: ComboBox for font selection
-  5. BorderEditChoice: ComboBox for border selection
-  6. BitmapToggleButton: Button that toggles through a list of bitmaps
-  7. EntryLine: The line for entering cell code
-  8. StatusBar: Main window statusbar
-  9. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
+  3. PenWidthComboBox: ComboBox for pen width selection
+  4. PenStyleComboBox: ComboBox for pen style selection
+  5. FontChoiceCombobox: ComboBox for font selection
+  6. BorderEditChoice: ComboBox for border selection
+  7. BitmapToggleButton: Button that toggles through a list of bitmaps
+  8. EntryLine: The line for entering cell code
+  9. StatusBar: Main window statusbar
+ 10. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
 
 """
 
@@ -42,7 +43,7 @@ import keyword
 import wx
 import wx.grid
 import wx.combo
-import wx.stc  as  stc
+import wx.stc as stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
 
 import src.lib.i18n as i18n
@@ -97,7 +98,7 @@ class PythonSTC(stc.StyledTextCtrl):
         self.Bind(stc.EVT_STC_MARGINCLICK, self.OnMarginClick)
 
         # Global default styles for all languages
-        self.StyleSetSpec(stc.STC_STYLE_DEFAULT, \
+        self.StyleSetSpec(stc.STC_STYLE_DEFAULT,
                           "face:%(helv)s,size:%(size)d" % self.faces)
         self.StyleClearAll()  # Reset all to be like the default
 
@@ -131,7 +132,7 @@ class PythonSTC(stc.StyledTextCtrl):
 
         self.faces = {'times': 'Times',
                       'mono': 'Courier',
-                      'helv': wx.SystemSettings.GetFont( \
+                      'helv': wx.SystemSettings.GetFont(
                                wx.SYS_DEFAULT_GUI_FONT).GetFaceName(),
                       'other': 'new century schoolbook',
                       'size': 10,
@@ -143,9 +144,9 @@ class PythonSTC(stc.StyledTextCtrl):
         gray1 = "#404040"
         gray2 = "#808080"
 
-        self.fold_symbol_styles = { \
-          "arrows": \
-          [ \
+        self.fold_symbol_styles = {
+          "arrows":
+          [
             (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_ARROWDOWN, black, black),
             (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_ARROW, black, black),
             (stc.STC_MARKNUM_FOLDERSUB, stc.STC_MARK_EMPTY, black, black),
@@ -153,9 +154,9 @@ class PythonSTC(stc.StyledTextCtrl):
             (stc.STC_MARKNUM_FOLDEREND, stc.STC_MARK_EMPTY, white, black),
             (stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_EMPTY, white, black),
             (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_EMPTY, white, black),
-          ], \
-          "plusminus": \
-          [ \
+          ],
+          "plusminus":
+          [
             (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_MINUS, white, black),
             (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_PLUS,  white, black),
             (stc.STC_MARKNUM_FOLDERSUB, stc.STC_MARK_EMPTY, white, black),
@@ -163,9 +164,9 @@ class PythonSTC(stc.StyledTextCtrl):
             (stc.STC_MARKNUM_FOLDEREND, stc.STC_MARK_EMPTY, white, black),
             (stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_EMPTY, white, black),
             (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_EMPTY, white, black),
-          ], \
+          ],
           "circletree":
-          [ \
+          [
             (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_CIRCLEMINUS,
                                                             white, gray1),
             (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_CIRCLEPLUS, white, gray1),
@@ -178,9 +179,9 @@ class PythonSTC(stc.StyledTextCtrl):
                                                             white, gray1),
             (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNERCURVE,
                                                             white, gray1),
-          ], \
+          ],
           "squaretree":
-          [ \
+          [
             (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_BOXMINUS, white, gray2),
             (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_BOXPLUS, white, gray2),
             (stc.STC_MARKNUM_FOLDERSUB, stc.STC_MARK_VLINE, white, gray2),
@@ -191,7 +192,7 @@ class PythonSTC(stc.StyledTextCtrl):
                                                             white, gray2),
             (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNER,
                                                             white, gray2),
-          ] \
+          ]
         }
 
         self.fold_symbol_style = self.fold_symbol_styles["circletree"]
@@ -206,7 +207,7 @@ class PythonSTC(stc.StyledTextCtrl):
 
         """
 
-        self.text_styles = [ \
+        self.text_styles = [
           (stc.STC_STYLE_DEFAULT, "face:%(helv)s,size:%(size)d" % self.faces),
           (stc.STC_STYLE_LINENUMBER, "back:#C0C0C0,face:%(helv)s,"
                                      "size:%(size2)d" % self.faces),
@@ -215,18 +216,18 @@ class PythonSTC(stc.StyledTextCtrl):
           (stc.STC_STYLE_BRACEBAD, "fore:#000000,back:#FF0000,bold"),
           # Python styles
           # Default
-          (stc.STC_P_DEFAULT, "fore:#000000,face:%(helv)s,size:%(size)d" % \
-                                                                self.faces), \
+          (stc.STC_P_DEFAULT, "fore:#000000,face:%(helv)s,size:%(size)d" %
+                                                                self.faces),
           # Comments
           (stc.STC_P_COMMENTLINE, "fore:#007F00,face:%(other)s,"
                                   "size:%(size)d" % self.faces),
           # Number
           (stc.STC_P_NUMBER, "fore:#007F7F,size:%(size)d" % self.faces),
           # String
-          (stc.STC_P_STRING, "fore:#7F007F,face:%(helv)s,size:%(size)d" % \
+          (stc.STC_P_STRING, "fore:#7F007F,face:%(helv)s,size:%(size)d" %
                                                                 self.faces),
           # Single quoted string
-          (stc.STC_P_CHARACTER, "fore:#7F007F,face:%(helv)s,size:%(size)d" % \
+          (stc.STC_P_CHARACTER, "fore:#7F007F,face:%(helv)s,size:%(size)d" %
                                                                 self.faces),
           # Keyword
           (stc.STC_P_WORD, "fore:#00007F,bold,size:%(size)d" % self.faces),
@@ -235,14 +236,14 @@ class PythonSTC(stc.StyledTextCtrl):
           # Triple double quotes
           (stc.STC_P_TRIPLEDOUBLE, "fore:#7F0000,size:%(size)d" % self.faces),
           # Class name definition
-          (stc.STC_P_CLASSNAME, "fore:#0000FF,bold,underline,size:%(size)d" % \
+          (stc.STC_P_CLASSNAME, "fore:#0000FF,bold,underline,size:%(size)d" %
                                                                 self.faces),
           # Function or method name definition
           (stc.STC_P_DEFNAME, "fore:#007F7F,bold,size:%(size)d" % self.faces),
           # Operators
           (stc.STC_P_OPERATOR, "bold,size:%(size)d" % self.faces),
           # Identifiers
-          (stc.STC_P_IDENTIFIER, "fore:#000000,face:%(helv)s,size:%(size)d" % \
+          (stc.STC_P_IDENTIFIER, "fore:#000000,face:%(helv)s,size:%(size)d" %
                                                                 self.faces),
           # Comment-blocks
           (stc.STC_P_COMMENTBLOCK, "fore:#7F7F7F,size:%(size)d" % self.faces),
@@ -281,7 +282,7 @@ class PythonSTC(stc.StyledTextCtrl):
         if brace_at_caret >= 0:
             brace_opposite = self.BraceMatch(brace_at_caret)
 
-        if brace_at_caret != -1  and brace_opposite == -1:
+        if brace_at_caret != -1 and brace_opposite == -1:
             self.BraceBadLight(brace_at_caret)
         else:
             self.BraceHighlight(brace_at_caret, brace_opposite)
@@ -435,6 +436,59 @@ class PenWidthComboBox(ImageComboBox):
 # end of class PenWidthComboBox
 
 
+class PenStyleComboBox(ImageComboBox):
+    """Combo box for choosing line style for matplotlib charts"""
+
+    pen_styles = [
+        ("solid line style", "-'"),
+        ("dashed line style", "--'"),
+        ("dash-dot line style", "-.'"),
+        ("dotted line style", ":'"),
+        ("point marker", ".'"),
+        ("pixel marker", ",'"),
+        ("circle marker", "o'"),
+        ("triangle_down marker", "v'"),
+        ("triangle_up marker", "^'"),
+        ("triangle_left marker", "<'"),
+        ("triangle_right marker", ">'"),
+        ("tri_down marker", "1'"),
+        ("tri_up marker", "2'"),
+        ("tri_left marker", "3'"),
+        ("tri_right marker", "4'"),
+        ("square marker", "s'"),
+        ("pentagon marker", "p'"),
+        ("star marker", "*'"),
+        ("hexagon1 marker", "h'"),
+        ("hexagon2 marker", "H'"),
+        ("plus marker", "+'"),
+        ("x marker", "x'"),
+        ("diamond marker", "D'"),
+        ("thin_diamond marker", "d'"),
+        ("vline marker", "|'"),
+        ("hline marker", "_'"),
+    ]
+
+    def OnDrawItem(self, dc, rect, item, flags):
+
+        if item == wx.NOT_FOUND:
+            return
+
+        r = wx.Rect(*rect)  # make a copy
+        r.Deflate(3, 5)
+
+        pen_style, pen_style_matplot = self.pen_styles[item]
+        pen = wx.Pen(dc.GetTextForeground(), 3, 1)
+        pen.SetCap(wx.CAP_BUTT)
+
+        dc.SetPen(pen)
+
+        # Draw the example line in the combobox
+        dc.DrawLine(r.x + 5, r.y + r.height / 2,
+                    r.x + r.width - 5, r.y + r.height / 2)
+
+# end of class PenStyleComboBox
+
+
 class FontChoiceCombobox(ImageComboBox):
     """Combo box for choosing fonts"""
 
@@ -447,7 +501,7 @@ class FontChoiceCombobox(ImageComboBox):
         __rect.Deflate(3, 5)
 
         font_string = self.GetString(item)
-        font = wx.Font(wx.DEFAULT, wx.DEFAULT, wx.NORMAL, wx.NORMAL, \
+        font = wx.Font(wx.DEFAULT, wx.DEFAULT, wx.NORMAL, wx.NORMAL,
                        False, font_string)
         font.SetPointSize(font.GetPointSize() - 2)
         dc.SetFont(font)
