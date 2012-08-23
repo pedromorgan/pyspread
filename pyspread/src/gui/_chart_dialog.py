@@ -40,6 +40,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 
 from _widgets import PenWidthComboBox, PenStyleComboBox
+from _events import post_command_event, ChartDialogEventMixin
 from icons import Icons
 import src.lib.i18n as i18n
 
@@ -47,27 +48,33 @@ import src.lib.i18n as i18n
 _ = i18n.language.ugettext
 
 
-class ChartAxisDataPanel(wx.Panel):
+class ChartAxisDataPanel(wx.Panel, ChartDialogEventMixin):
     """Panel for data entry for chart axis"""
 
     def __init__(self, *args, **kwargs):
 
-        self.xdata = []
-        self.ydata = []
-        self.zdata = []
+        self.parent = args[0]
+        self.chart_data = kwargs.pop("chart_data")
 
         wx.Panel.__init__(self, *args, **kwargs)
 
         self.x_label = wx.StaticText(self, -1, _("X"))
         self.x_text_ctrl = wx.TextCtrl(self, -1, "")
-        self.y_label = wx.StaticText(self, -1, _("Y"))
-        self.y_text_ctrl = wx.TextCtrl(self, -1, "")
-        self.z_label = wx.StaticText(self, -1, _("Z"))
-        self.z_text_ctrl = wx.TextCtrl(self, -1, "")
+        self.y1_label = wx.StaticText(self, -1, _("Y1"))
+        self.y1_text_ctrl = wx.TextCtrl(self, -1, "")
+        self.y2_label = wx.StaticText(self, -1, _("Y2"))
+        self.y2_text_ctrl = wx.TextCtrl(self, -1, "")
 
         self.chart_axis_data_staticbox = wx.StaticBox(self, -1, _("Data"))
 
+        self.__set_properties()
         self.__do_layout()
+        self.__bindings()
+
+    def __set_properties(self):
+        self.x_text_ctrl.SetToolTipString(_("Enter a list of values."))
+        self.y1_text_ctrl.SetToolTipString(_("Enter a list of values."))
+        self.y2_text_ctrl.SetToolTipString(_("Enter a list of values."))
 
     def __do_layout(self):
         self.chart_axis_data_staticbox.Lower()
@@ -78,12 +85,12 @@ class ChartAxisDataPanel(wx.Panel):
         data_box_grid_sizer.Add(self.x_label, 0, wx.ALL |
                                 wx.ALIGN_CENTER_VERTICAL, 2)
         data_box_grid_sizer.Add(self.x_text_ctrl, 0, wx.ALL | wx.EXPAND, 0)
-        data_box_grid_sizer.Add(self.y_label, 0, wx.ALL |
+        data_box_grid_sizer.Add(self.y1_label, 0, wx.ALL |
                                 wx.ALIGN_CENTER_VERTICAL, 2)
-        data_box_grid_sizer.Add(self.y_text_ctrl, 0, wx.EXPAND, 0)
-        data_box_grid_sizer.Add(self.z_label, 0, wx.ALL |
+        data_box_grid_sizer.Add(self.y1_text_ctrl, 0, wx.EXPAND, 0)
+        data_box_grid_sizer.Add(self.y2_label, 0, wx.ALL |
                                 wx.ALIGN_CENTER_VERTICAL, 2)
-        data_box_grid_sizer.Add(self.z_text_ctrl, 0, wx.EXPAND, 0)
+        data_box_grid_sizer.Add(self.y2_text_ctrl, 0, wx.EXPAND, 0)
         data_box_grid_sizer.AddGrowableCol(1)
         data_box_sizer.Add(data_box_grid_sizer, 1, wx.ALL | wx.EXPAND, 2)
 
@@ -91,23 +98,68 @@ class ChartAxisDataPanel(wx.Panel):
 
         self.Layout()
 
+    def __bindings(self):
+        """Binds events ton handlers"""
 
-class ChartDialog(wx.Dialog):
+        self.Bind(wx.EVT_TEXT, self.OnXText, self.x_text_ctrl)
+        self.Bind(wx.EVT_TEXT, self.OnYText, self.y1_text_ctrl)
+
+    # Handlers
+    # --------
+
+    def OnXText(self, event):
+        """Event handler for x_text_ctrl"""
+
+        self.chart_data["x_data"] = ast.literal_eval(event.GetString())
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnYText(self, event):
+        """Event handler for y1_text_ctrl"""
+
+        self.chart_data["y1_data"] = ast.literal_eval(event.GetString())
+        post_command_event(self, self.DrawChartMsg)
+
+
+class ChartAxisLinePanel(wx.Panel, ChartDialogEventMixin):
+    """"""
+
+    # Handlers
+    # --------
+
+    def OnLineWidth(self, event):
+        """Line width event handler"""
+
+        self.chart_data["line_width"] = int(event.GetSelection())
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnLineColor(self, event):
+        """Line color event handler"""
+
+        self.chart_data["line_color"] = \
+                tuple(i / 255.0 for i in event.GetValue().Get())
+        post_command_event(self, self.DrawChartMsg)
+
+
+class ChartAxisMarkerPanel(wx.Panel, ChartDialogEventMixin):
+    """"""
+
+
+class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
-
-    # Overload for diffeent chart types
-    unneeded_ctrls = ["z_label", "z_text_ctrl"]
 
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
                         wx.THICK_FRAME
         wx.Dialog.__init__(self, *args, **kwds)
 
-        # Initial data for chart to be deleted
-        self.ydata = []
-        self.xdata = []
-        self.width = 1
-        self.line_color = (0, 0, 0)
+        # Initial data for chart
+        self.chart_data = {
+            "x_data": [],
+            "y1_data": [],
+            "y2_data": [],
+            "line_width": 1,
+            "line_color": (0, 0, 0),
+        }
 
         # Icons for BitmapButtons
         icons = Icons(icon_size=(24, 24))
@@ -121,14 +173,9 @@ class ChartDialog(wx.Dialog):
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
 
-        self.chart_axis_data_panel = ChartAxisDataPanel(self, -1)
-#        self.x_label = wx.StaticText(self, -1, _("X"))
-#        self.x_text_ctrl = wx.TextCtrl(self, -1, "")
-#        self.y_label = wx.StaticText(self, -1, _("Y"))
-#        self.y_text_ctrl = wx.TextCtrl(self, -1, "")
-#        self.z_label = wx.StaticText(self, -1, _("Z"))
-#        self.z_text_ctrl = wx.TextCtrl(self, -1, "")
-#        self.sizer_5_staticbox = wx.StaticBox(self, -1, _("Data"))
+        self.chart_axis_data_panel = ChartAxisDataPanel(self, -1,
+                                            chart_data=self.chart_data)
+
         self.label_4 = wx.StaticText(self, -1, _("Style"))
         style_choices = map(unicode, xrange(len(PenStyleComboBox.pen_styles)))
         self.line_style_choice = PenStyleComboBox(self, -1,
@@ -159,12 +206,8 @@ class ChartDialog(wx.Dialog):
         self.__do_layout()
         self.__bindings()
 
-        # Disable unneeded controls
-#        unneeded_ctrls = [getattr(self, name) for name in self.unneeded_ctrls]
-#        self.__disable_controls(unneeded_ctrls)
-
         # Draw figure initially
-        self.draw_figure()
+        post_command_event(self, self.DrawChartMsg)
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
@@ -180,7 +223,7 @@ class ChartDialog(wx.Dialog):
         self.figure_canvas.SetMinSize((400, 300))
 
         # Set controls to default values
-        self.line_width_combo.SetSelection(self.width)
+        self.line_width_combo.SetSelection(self.chart_data["line_width"])
 
     def __do_layout(self):
         sizer_1 = wx.FlexGridSizer(1, 3, 0, 0)
@@ -191,9 +234,6 @@ class ChartDialog(wx.Dialog):
         self.sizer_6_staticbox.Lower()
         sizer_6 = wx.StaticBoxSizer(self.sizer_6_staticbox, wx.HORIZONTAL)
         grid_sizer_4 = wx.FlexGridSizer(3, 2, 0, 0)
-#        self.sizer_5_staticbox.Lower()
-#        sizer_5 = wx.StaticBoxSizer(self.sizer_5_staticbox, wx.HORIZONTAL)
-#        grid_sizer_3 = wx.FlexGridSizer(3, 2, 0, 0)
         sizer_2 = wx.FlexGridSizer(2, 1, 0, 0)
         sizer_3 = wx.FlexGridSizer(1, 2, 0, 0)
         grid_sizer_1 = wx.FlexGridSizer(1, 2, 0, 0)
@@ -225,15 +265,6 @@ class ChartDialog(wx.Dialog):
                                                    wx.HORIZONTAL)
         sizer_series_staticbox.Add(sizer_2, 1, wx.EXPAND, 0)
         sizer_1.Add(sizer_series_staticbox, 1, wx.EXPAND, 0)
-#        grid_sizer_3.Add(self.x_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-#        grid_sizer_3.Add(self.x_text_ctrl, 0, wx.ALL | wx.EXPAND, 0)
-#        grid_sizer_3.Add(self.y_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-#        grid_sizer_3.Add(self.y_text_ctrl, 0, wx.EXPAND, 0)
-#        grid_sizer_3.Add(self.z_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
-#        grid_sizer_3.Add(self.z_text_ctrl, 0, wx.EXPAND, 0)
-#        grid_sizer_3.AddGrowableCol(1)
-#        sizer_5.Add(grid_sizer_3, 1, wx.ALL | wx.EXPAND, 2)
-#        sizer_4.Add(sizer_5, 1, wx.ALL | wx.EXPAND, 2)
         sizer_4.Add(self.chart_axis_data_panel, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer_4.Add(self.label_4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
         grid_sizer_4.Add(self.line_style_choice, 0, wx.EXPAND, 0)
@@ -268,8 +299,7 @@ class ChartDialog(wx.Dialog):
         """Binds events ton handlers"""
 
         self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.line_width_combo)
-#        self.Bind(wx.EVT_TEXT, self.OnXText, self.x_text_ctrl)
-#        self.Bind(wx.EVT_TEXT, self.OnYText, self.y_text_ctrl)
+        self.Bind(self.EVT_CMD_DRAW_CHART, self.OnDrawChart)
         self.line_colorselect.Bind(csel.EVT_COLOURSELECT, self.OnLineColor)
 
     def __disable_controls(self, unneeded_ctrls):
@@ -278,45 +308,45 @@ class ChartDialog(wx.Dialog):
         for ctrl in unneeded_ctrls:
             ctrl.Disable()
 
-    def draw_figure(self):
-        """Redraws the figure that is displayed at FigureCanvasWxAgg"""
+    def draw_chart(self, chart_data):
+        """Redraws the chart that is displayed at FigureCanvasWxAgg"""
+
+        # Unpack chart_data
+
+        x_data = chart_data["x_data"]
+        y1_data = chart_data["y1_data"]
+        line_width = chart_data["line_width"]
+        line_color = chart_data["line_color"]
 
         # Clear the axes and redraw the plot anew
 
         self.axes.clear()
 
-        if self.xdata and len(self.xdata) == len(self.ydata):
-            self.axes.plot(self.ydata, linewidth=self.width, xdata=self.xdata,
-                           color=self.line_color)
+        if x_data and len(x_data) == len(y1_data):
+            self.axes.plot(y1_data, linewidth=line_width, xdata=self.xdata,
+                           color=line_color)
         else:
-            self.axes.plot(self.ydata, linewidth=self.width,
-                           color=self.line_color)
+            self.axes.plot(y1_data, linewidth=line_width, color=line_color)
+
         self.figure_canvas.draw()
 
     # Handlers
     # --------
 
-    def OnXText(self, event):
-        """Event handler for x_text_ctrl"""
-
-        self.xdata = ast.literal_eval(event.GetString())
-        self.draw_figure()
-
-    def OnYText(self, event):
-        """Event handler for y_text_ctrl"""
-
-        self.ydata = ast.literal_eval(event.GetString())
-        self.draw_figure()
-
     def OnLineWidth(self, event):
         """Line width event handler"""
 
-        self.width = int(event.GetSelection())
-        self.draw_figure()
+        self.chart_data["line_width"] = int(event.GetSelection())
+        post_command_event(self, self.DrawChartMsg)
 
     def OnLineColor(self, event):
         """Line color event handler"""
 
-        self.line_color = tuple(i / 255.0 for i in event.GetValue().Get())
+        self.chart_data["line_color"] = \
+                tuple(i / 255.0 for i in event.GetValue().Get())
+        post_command_event(self, self.DrawChartMsg)
 
-        self.draw_figure()
+    def OnDrawChart(self, event):
+        """Figure drawing event handler"""
+
+        self.draw_chart(self.chart_data)

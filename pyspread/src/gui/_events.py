@@ -224,7 +224,7 @@ class EntryLineEventMixin(object):
 
 
 class StatusBarEventMixin(object):
-    """Mixin class for ststusbar events"""
+    """Mixin class for statusbar events"""
 
     StatusBarMsg, EVT_STATUSBAR_MSG = wx.lib.newevent.NewEvent()
 
@@ -234,3 +234,13 @@ class EventMixin(MainWindowEventMixin, GridCellEventMixin, StatusBarEventMixin,
     """Event collector class"""
 
     pass
+
+
+class ChartDialogEventMixin(object):
+    """Mixin class for chart dialog events.
+
+    Class remains independent from EventMixin container class
+
+    """
+
+    DrawChartMsg, EVT_CMD_DRAW_CHART = new_command_event()
