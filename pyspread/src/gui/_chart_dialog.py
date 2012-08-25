@@ -234,6 +234,12 @@ class ChartAxisMarkerPanel(BoxedPanel):
     # --------
 
 
+class ChartPanel(wx.Panel, ChartDialogEventMixin):
+    """Chart panel that contains the matplotlib figure"""
+
+    pass
+
+
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
@@ -374,7 +380,6 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # Handlers
     # --------
-
 
     def OnDrawChart(self, event):
         """Figure drawing event handler"""

@@ -716,6 +716,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
     def paste(self, tl_key, data):
         """Pastes data into grid from top left cell tl_key, marks grid changed
 
+        If no selection is present, data is pasted starting with current cell
+        If a selection is present, data is pasted fully if the selection is
+        smaller. If the selection is larger then data is duplicated.
+
         Parameters
         ----------
 
@@ -725,6 +729,15 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         \tThe outer iterable represents rows
 
         """
+
+        # Get selection bounding box
+
+        ## TODO !!!
+        selection = self.get_selection()
+        bbox = selection.get_bbox()
+        if bbox is not None:
+            selection_tl, selection_br = bbox
+            print selection_tl, selection_br
 
         # Mark content as changed
         post_command_event(self.main_window, self.ContentChangedMsg,
@@ -737,6 +750,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         self.need_abort = False
 
         tl_row, tl_col, tl_tab = self._get_full_key(tl_key)
+        print tl_row, tl_col, tl_tab
 
         row_overflow = False
         col_overflow = False
@@ -1095,7 +1109,7 @@ class SelectionActions(Actions):
 
         selection = self.get_selection()
 
-        del_keys = [key for key in self.grid.code_array \
+        del_keys = [key for key in self.grid.code_array
                         if key[:2] in selection]
 
         for key in del_keys:
