@@ -1,11 +1,6 @@
 Metadata-Version: 1.1
 Name: pyspread
 Version: 0.2.2
-<<<<<<< HEAD
-=======
-Summary: A spreadsheet that accepts python expressions in its cells.
-Home-page: http://manns.github.com/pyspread/
->>>>>>> 99f1f165cc048515e443f485b85d581399e57545
 Author: Martin Manns
 Author-email: mmanns at gmx net
 Home-page: http://manns.github.com/pyspread/
