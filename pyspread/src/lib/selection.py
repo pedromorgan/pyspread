@@ -70,7 +70,7 @@ class Selection(object):
     def __repr__(self):
         """String output for printing selection"""
 
-        return "Selection" + repr( \
+        return "Selection" + repr(
                    (self.block_tl,
                     self.block_br,
                     self.rows,
@@ -182,10 +182,10 @@ class Selection(object):
         self.block_br = build_tuple_list(self.block_br, point, number, axis)
 
         if axis == 0:
-            self.rows = [row + number if row > point else row \
+            self.rows = [row + number if row > point else row
                             for row in self.rows]
         elif axis == 1:
-            self.cols = [col + number if col > point else col \
+            self.cols = [col + number if col > point else col
                             for col in self.cols]
 
         self.cells = build_tuple_list(self.cells, point, number, axis)

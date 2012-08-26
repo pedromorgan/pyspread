@@ -46,6 +46,7 @@ Provides:
 """
 
 import bz2
+import itertools
 import src.lib.i18n as i18n
 import os
 
@@ -713,8 +714,100 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
+    def paste_to_current_cell(self, tl_key, data):
+        """Pastes data into grid from top left cell tl_key
+
+        Parameters
+        ----------
+
+        ul_key: Tuple
+        \key of top left cell of paste area
+        data: iterable of iterables where inner iterable returns string
+        \tThe outer iterable represents rows
+
+        """
+
+        self.pasting = True
+
+        grid_rows, grid_cols, __ = self.grid.code_array.shape
+
+        self.need_abort = False
+
+        tl_row, tl_col, tl_tab = self._get_full_key(tl_key)
+
+        row_overflow = False
+        col_overflow = False
+
+        no_pasted_cells = 0
+
+        for src_row, row_data in enumerate(data):
+            target_row = tl_row + src_row
+
+            if self.grid.actions._is_aborted(src_row, _("Pasting cells... ")):
+                self._abort_paste()
+                return False
+
+            # Check if rows fit into grid
+            if target_row >= grid_rows:
+                row_overflow = True
+                break
+
+            for src_col, cell_data in enumerate(row_data):
+                target_col = tl_col + src_col
+
+                if target_col >= grid_cols:
+                    col_overflow = True
+                    break
+
+                if cell_data is not None:
+                    # Is only None if pasting into selection
+                    key = target_row, target_col, tl_tab
+
+                    try:
+                        self.grid.code_array[key] = cell_data
+                        no_pasted_cells += 1
+                    except KeyError:
+                        pass
+
+        if row_overflow or col_overflow:
+            self._show_final_overflow_message(row_overflow, col_overflow)
+
+        else:
+            self._show_final_paste_message(tl_key, no_pasted_cells)
+
+        self.pasting = False
+
+    def selection_paste_data_gen(self, selection, data):
+        """Generator that yields data for selection paste"""
+
+        (bb_top, bb_left), (bb_bottom, bb_right) = selection.get_bbox()
+        bbox_height = bb_bottom - bb_top + 1
+        bbox_width = bb_right - bb_left + 1
+
+        for row, row_data in enumerate(itertools.cycle(data)):
+            # Break if row is not in selection bbox
+            if row >= bbox_height:
+                break
+
+            # Duplicate row data if selection is wider than row data
+            duplicated_row_data = row_data * (bbox_width // len(row_data) + 1)
+            duplicated_row_data = duplicated_row_data[:bbox_width]
+
+            for col in xrange(len(duplicated_row_data)):
+                if (bb_top, bb_left + col) not in selection:
+                    duplicated_row_data[col] = None
+
+            yield duplicated_row_data
+
+    def paste_to_selection(self, selection, data):
+        """Pastes data into grid selection"""
+
+        (bb_top, bb_left), (bb_bottom, bb_right) = selection.get_bbox()
+        adjusted_data = self.selection_paste_data_gen(selection, data)
+        self.paste_to_current_cell((bb_top, bb_left), adjusted_data)
+
     def paste(self, tl_key, data):
-        """Pastes data into grid from top left cell tl_key, marks grid changed
+        """Pastes data into grid, marks grid changed
 
         If no selection is present, data is pasted starting with current cell
         If a selection is present, data is pasted fully if the selection is
@@ -732,65 +825,18 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         # Get selection bounding box
 
-        ## TODO !!!
         selection = self.get_selection()
-        bbox = selection.get_bbox()
-        if bbox is not None:
-            selection_tl, selection_br = bbox
-            print selection_tl, selection_br
 
         # Mark content as changed
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.pasting = True
-
-        grid_rows, grid_cols, __ = self.grid.code_array.shape
-
-        self.need_abort = False
-
-        tl_row, tl_col, tl_tab = self._get_full_key(tl_key)
-        print tl_row, tl_col, tl_tab
-
-        row_overflow = False
-        col_overflow = False
-
-        no_pasted_cells = 0
-
-        for src_row, col_data in enumerate(data):
-            target_row = tl_row + src_row
-
-            if self.grid.actions._is_aborted(src_row, _("Pasting cells... ")):
-                self._abort_paste()
-                return False
-
-            # Check if rows fit into grid
-            if target_row >= grid_rows:
-                row_overflow = True
-                break
-
-            for src_col, cell_data in enumerate(col_data):
-                target_col = tl_col + src_col
-
-                if target_col >= grid_cols:
-                    col_overflow = True
-                    break
-
-                key = target_row, target_col, tl_tab
-
-                try:
-                    self.grid.code_array[key] = cell_data
-                    no_pasted_cells += 1
-                except KeyError:
-                    pass
-
-        if row_overflow or col_overflow:
-            self._show_final_overflow_message(row_overflow, col_overflow)
-
+        if selection:
+            # There is a selection.  Paste into it
+            self.paste_to_selection(selection, data)
         else:
-            self._show_final_paste_message(tl_key, no_pasted_cells)
-
-        self.pasting = False
+            # There is no selection.  Paste from top left cell.
+            self.paste_to_current_cell(tl_key, data)
 
     def change_grid_shape(self, shape):
         """Grid shape change event handler, marks content as changed"""
