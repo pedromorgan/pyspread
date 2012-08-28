@@ -97,6 +97,11 @@ class BoxedPanel(wx.Panel, ChartDialogEventMixin):
         self.Layout()
 
 
+class ChartSeriesManagerPanel(BoxedPanel):
+    """Panel that allows adding, removing, sorting and choosing data series"""
+
+    pass
+
 class ChartAxisDataPanel(BoxedPanel):
     """Panel for data entry for chart axis"""
 
@@ -276,8 +281,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.chart_axis_marker_panel = \
             ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
 
-        self.figure = Figure((5.0, 4.0), facecolor="white")
-        self.axes = self.figure.add_subplot(111)
+        self.figure = PlotFigure(**self.chart_data)
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
 
         self.__set_properties()
@@ -356,32 +360,54 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for ctrl in unneeded_ctrls:
             ctrl.Disable()
 
-    def draw_chart(self, chart_data):
-        """Redraws the chart that is displayed at FigureCanvasWxAgg"""
-
-        # Unpack chart_data
-
-        x_data = chart_data["x_data"]
-        y1_data = chart_data["y1_data"]
-        line_width = chart_data["line_width"]
-        line_color = chart_data["line_color"]
-
-        # Clear the axes and redraw the plot anew
-
-        self.axes.clear()
-
-        if x_data and len(x_data) == len(y1_data):
-            self.axes.plot(y1_data, linewidth=line_width, xdata=self.xdata,
-                           color=line_color)
-        else:
-            self.axes.plot(y1_data, linewidth=line_width, color=line_color)
-
-        self.figure_canvas.draw()
-
     # Handlers
     # --------
 
     def OnDrawChart(self, event):
         """Figure drawing event handler"""
 
-        self.draw_chart(self.chart_data)
+        self.figure.chart_data = self.chart_data
+        self.figure.draw_chart()
+        self.figure_canvas.draw()
+        print self.figure.get_figure_code()
+
+
+class PlotFigure(Figure):
+    """Plot figure class with drawing method"""
+
+    def __init__(self, **chart_data):
+        self.chart_data = chart_data
+        Figure.__init__(self, (5.0, 4.0), facecolor="white")
+        self.__axes = self.add_subplot(111)
+        self.draw_chart()
+
+    def draw_chart(self):
+        # Update chart data
+        for key in self.chart_data:
+            setattr(self, key, self.chart_data[key])
+
+        # Clear the axes and redraw the plot anew
+
+        self.__axes.clear()
+
+        if hasattr(self, "x_data") and len(self.x_data) == len(self.y1_data):
+            self.__axes.plot(self.y1_data, linewidth=self.line_width,
+                             xdata=self.x_data, color=self.line_color)
+        else:
+            self.__axes.plot(self.y1_data, linewidth=self.line_width,
+                             color=self.line_color)
+
+    def get_figure_code(self):
+        """Returns code that generates figure"""
+
+        # Update chart data
+        for key in self.chart_data:
+            setattr(self, key, self.chart_data[key])
+
+        if hasattr(self, "x_data") and len(self.x_data) == len(self.y1_data):
+            return 'PlotFigure({}, xdata={}, linewidth={}, line_color={})'.\
+                   format(self.y1_data, self.x_data, self.line_width,
+                          self.line_color)
+        else:
+            return 'PlotFigure({}, linewidth={}, line_color={})'.\
+                   format(self.y1_data, self.line_width, self.line_color)
