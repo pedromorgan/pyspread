@@ -59,6 +59,7 @@ from unredo import UnRedo
 
 chart = charts.chart
 
+
 class KeyValueStore(dict):
     """Key-Value store in memory. Currently a dict with default value None.
 
@@ -716,7 +717,7 @@ class DataArray(object):
             # Adjust tabs
             new_tabs = []
             for _, old_tab, _ in self.cell_attributes:
-                new_tabs.append(old_tab + no_to_insert \
+                new_tabs.append(old_tab + no_to_insert
                                 if old_tab > insertion_point else old_tab)
 
             for i, new_tab in new_tabs:
@@ -894,9 +895,9 @@ class CodeArray(DataArray):
 
         repr_key = repr(key)
 
-        unchanged = (repr_key in self.result_cache and \
+        unchanged = (repr_key in self.result_cache and
                      value == self(key)) or \
-                    ((value is None or value == "") and \
+                    ((value is None or value == "") and
                      repr_key not in self.result_cache)
 
         DataArray.__setitem__(self, key, value)
@@ -917,7 +918,7 @@ class CodeArray(DataArray):
                 else:
                     # Frozen cache is empty.
                     # Maybe we have a reload without the frozen cache
-                    result = self._eval_cell(key)
+                    result = self._eval_cell(key, self(key))
                     self.frozen_cache[repr(key)] = result
                     return result
 
@@ -927,7 +928,7 @@ class CodeArray(DataArray):
             return self.result_cache[repr(key)]
 
         elif self(key) is not None:
-            result = self._eval_cell(key)
+            result = self._eval_cell(key, self(key))
             self.result_cache[repr(key)] = result
 
             return result
@@ -985,7 +986,7 @@ class CodeArray(DataArray):
 
         return env
 
-    def _eval_cell(self, key):
+    def _eval_cell(self, key, code):
         """Evaluates one cell"""
 
         # Set up environment for evaluation
@@ -995,7 +996,7 @@ class CodeArray(DataArray):
                     'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
 
-        code = self(key)
+        
 
         # Return cell value if in safe mode
 
@@ -1046,10 +1047,10 @@ class CodeArray(DataArray):
 
     def reload_modules(self):
         """Reloads modules that are available in cells"""
-        
+
         import src.lib.charts as charts
         modules = [charts, bz2, base64, re, ast, sys, wx, numpy]
-        
+
         for module in modules:
             reload(module)
 

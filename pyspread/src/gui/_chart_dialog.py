@@ -102,6 +102,7 @@ class ChartSeriesManagerPanel(BoxedPanel):
 
     pass
 
+
 class ChartAxisDataPanel(BoxedPanel):
     """Panel for data entry for chart axis"""
 
@@ -138,13 +139,23 @@ class ChartAxisDataPanel(BoxedPanel):
     def OnXText(self, event):
         """Event handler for x_text_ctrl"""
 
-        self.chart_data["x_data"] = ast.literal_eval(event.GetString())
+        ##self.chart_data["x_data"] = ast.literal_eval(event.GetString())
+        key = self.parent.grid.actions.cursor
+        code = event.GetString()
+        result = self.parent.grid.code_array._eval_cell(key, code)
+        self.chart_data["x_data"] = result
+
         post_command_event(self, self.DrawChartMsg)
 
     def OnY1Text(self, event):
         """Event handler for y1_text_ctrl"""
 
-        self.chart_data["y1_data"] = ast.literal_eval(event.GetString())
+        ##self.chart_data["y1_data"] = ast.literal_eval(event.GetString())
+        key = self.parent.grid.actions.cursor
+        code = event.GetString()
+        result = self.parent.grid.code_array._eval_cell(key, code)
+        self.chart_data["y1_data"] = result
+
         post_command_event(self, self.DrawChartMsg)
 
 
@@ -248,10 +259,11 @@ class ChartPanel(wx.Panel, ChartDialogEventMixin):
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
-    def __init__(self, *args, **kwds):
+    def __init__(self, parent, **kwds):
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
                         wx.THICK_FRAME
-        wx.Dialog.__init__(self, *args, **kwds)
+        self.grid = parent
+        wx.Dialog.__init__(self, parent, **kwds)
 
         # Initial data for chart
         self.chart_data = {

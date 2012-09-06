@@ -463,7 +463,8 @@ class CellActions(Actions):
                 skey = attr_selection.cells[0]
                 if skey in selection:
                     key = tuple(list(skey) + [tab])
-                    result = self.grid.code_array._eval_cell(key)
+                    code = self.grid.code_array(key)
+                    result = self.grid.code_array._eval_cell(key, code)
                     self.grid.code_array.frozen_cache[repr(key)] = result
 
         cell_attributes._attr_cache.clear()

@@ -50,6 +50,7 @@ import lib.i18n as i18n
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
+sys.setrecursionlimit(1000000)
 sys.path.insert(0, get_program_path())
 
 try:
