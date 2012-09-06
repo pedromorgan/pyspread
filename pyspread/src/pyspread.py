@@ -92,14 +92,14 @@ class Commandlineparser(object):
         version = _("%prog {}").format(config["version"])
         self.parser = optparse.OptionParser(usage=usage, version=version)
 
-        grid_shape = ( \
+        grid_shape = (
             config["grid_rows"],
             config["grid_columns"],
             config["grid_tables"],
         )
 
         self.parser.add_option("-d", "--dimensions", type="int", nargs=3,
-            dest="dimensions", default=grid_shape, \
+            dest="dimensions", default=grid_shape,
             help=_("Dimensions of empty grid (works only without filename) "
                    "rows, cols, tables [default: %default]"))
 

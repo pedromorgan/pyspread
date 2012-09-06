@@ -57,8 +57,6 @@ import src.lib.charts as charts
 
 from unredo import UnRedo
 
-chart = charts.chart
-
 
 class KeyValueStore(dict):
     """Key-Value store in memory. Currently a dict with default value None.
@@ -992,11 +990,11 @@ class CodeArray(DataArray):
         # Set up environment for evaluation
 
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2], 'bz2': bz2,
-                    'base64': base64, 'chart': chart,
+                    'base64': base64, 'charts': charts,
                     'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
 
-        
+        _old_code = self(key)
 
         # Return cell value if in safe mode
 
@@ -1038,7 +1036,7 @@ class CodeArray(DataArray):
             result = Exception(err)
 
         # Change back cell value for evaluation from other cells
-        self.dict_grid[key] = code
+        self.dict_grid[key] = _old_code
 
         if glob_var is not None:
             globals().update({glob_var: result})
@@ -1062,7 +1060,7 @@ class CodeArray(DataArray):
                      'is_string_like', 'ParserMixin', 'bz2', 'base64',
                      '__package__', 're', 'config', '__doc__', 'SliceType',
                      'CellAttributes', 'product', 'ast', '__builtins__',
-                     '__file__', 'chart', 'sys', 'is_slice_like', '__name__',
+                     '__file__', 'charts', 'sys', 'is_slice_like', '__name__',
                      'copy', 'imap', 'wx', 'ifilter', 'Selection', 'DictGrid',
                      'numpy', 'CodeArray', 'DataArray']
 

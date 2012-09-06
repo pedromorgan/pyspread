@@ -349,7 +349,10 @@ class GridCellEventHandlers(object):
         """Chart dialog event handler"""
 
         chart_dialog = ChartDialog(self.grid)
-        chart_dialog.ShowModal()
+        if chart_dialog.ShowModal() == wx.ID_OK:
+            code = chart_dialog.figure.get_figure_code()
+            key = self.grid.actions.cursor
+            self.grid.actions.set_code(key, code)
 
     # Cell attribute events
 

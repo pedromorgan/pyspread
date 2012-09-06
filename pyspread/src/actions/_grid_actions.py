@@ -297,7 +297,7 @@ class FileActions(Actions):
 
             raise ValueError(_("No section parser present."))
 
-        section_readers = { \
+        section_readers = {
             "[shape]": self.code_array.dict_grid.parse_to_shape,
             "[grid]": self.code_array.dict_grid.parse_to_grid,
             "[attributes]": self.code_array.dict_grid.parse_to_attribute,
@@ -459,7 +459,7 @@ class FileActions(Actions):
             return False
 
         # The output generators yield the lines for the outfile
-        output_generators = [ \
+        output_generators = [
             # Grid content
             dict_grid.grid_to_strings(),
             # Cell attributes
@@ -473,7 +473,7 @@ class FileActions(Actions):
         ]
 
         # Options for self._is_aborted
-        abort_options_list = [ \
+        abort_options_list = [
             ["Saving grid... ", len(dict_grid), 100000],
             ["Saving cell attributes... ", len(dict_grid.cell_attributes)],
             ["Saving row heights... ", len(dict_grid.row_heights)],

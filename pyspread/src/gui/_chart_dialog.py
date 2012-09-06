@@ -32,10 +32,7 @@ Provides
 
 """
 
-import ast
-
 import wx
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 
@@ -43,6 +40,7 @@ from _widgets import PenWidthComboBox, PenStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
 from icons import Icons
 import src.lib.i18n as i18n
+import src.lib.charts as charts
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -293,7 +291,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.chart_axis_marker_panel = \
             ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
 
-        self.figure = PlotFigure(**self.chart_data)
+        self.figure = charts.PlotFigure(**self.chart_data)
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
 
         self.__set_properties()
@@ -382,44 +380,3 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.figure.draw_chart()
         self.figure_canvas.draw()
         print self.figure.get_figure_code()
-
-
-class PlotFigure(Figure):
-    """Plot figure class with drawing method"""
-
-    def __init__(self, **chart_data):
-        self.chart_data = chart_data
-        Figure.__init__(self, (5.0, 4.0), facecolor="white")
-        self.__axes = self.add_subplot(111)
-        self.draw_chart()
-
-    def draw_chart(self):
-        # Update chart data
-        for key in self.chart_data:
-            setattr(self, key, self.chart_data[key])
-
-        # Clear the axes and redraw the plot anew
-
-        self.__axes.clear()
-
-        if hasattr(self, "x_data") and len(self.x_data) == len(self.y1_data):
-            self.__axes.plot(self.y1_data, linewidth=self.line_width,
-                             xdata=self.x_data, color=self.line_color)
-        else:
-            self.__axes.plot(self.y1_data, linewidth=self.line_width,
-                             color=self.line_color)
-
-    def get_figure_code(self):
-        """Returns code that generates figure"""
-
-        # Update chart data
-        for key in self.chart_data:
-            setattr(self, key, self.chart_data[key])
-
-        if hasattr(self, "x_data") and len(self.x_data) == len(self.y1_data):
-            return 'PlotFigure({}, xdata={}, linewidth={}, line_color={})'.\
-                   format(self.y1_data, self.x_data, self.line_width,
-                          self.line_color)
-        else:
-            return 'PlotFigure({}, linewidth={}, line_color={})'.\
-                   format(self.y1_data, self.line_width, self.line_color)
