@@ -191,9 +191,10 @@ class Selection(object):
         self.cells = build_tuple_list(self.cells, point, number, axis)
 
     def get_bbox(self):
-        """Returns top left and bottom right of bounding box
+        """Returns ((top, left), (bottom, right)) of bounding box
 
         A bounding box is the smallest rectangle that contains all selections.
+        Non-specified boundaries are None.
 
         """
 
@@ -244,5 +245,32 @@ class Selection(object):
 
         if all(val is None for val in [bb_top, bb_left, bb_bottom, bb_right]):
             return None
+
+        return ((bb_top, bb_left), (bb_bottom, bb_right))
+
+    def get_grid_bbox(self, shape):
+        """Returns ((top, left), (bottom, right)) of bounding box
+
+        A bounding box is the smallest rectangle that contains all selections.
+        Non-specified boundaries are filled i from size.
+
+        Parameters
+        ----------
+
+        shape: 3-Tuple of Integer
+        \tGrid shape
+
+        """
+
+        (bb_top, bb_left), (bb_bottom, bb_right) = self.get_bbox()
+
+        if bb_top is None:
+            bb_top = 0
+        if bb_left is None:
+            bb_left = 0
+        if bb_bottom is None:
+            bb_bottom = shape[0]
+        if bb_right is None:
+            bb_right = shape[1]
 
         return ((bb_top, bb_left), (bb_bottom, bb_right))

@@ -35,6 +35,7 @@ Provides
 import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
+import numpy
 
 from _widgets import PenWidthComboBox, PenStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
@@ -112,10 +113,8 @@ class ChartAxisDataPanel(BoxedPanel):
         kwargs["widgets"] = [
             ("x", _("X"), wx.TextCtrl,
              (self, -1, unicode(kwargs["chart_data"]["x_data"])), {}),
-            ("y1", _("Y1"), wx.TextCtrl,
-             (self, -1, unicode(kwargs["chart_data"]["y1_data"])), {}),
-            ("y2", _("Y2"), wx.TextCtrl,
-             (self, -1, unicode(kwargs["chart_data"]["y2_data"])), {}),
+            ("y", _("Y"), wx.TextCtrl,
+             (self, -1, unicode(kwargs["chart_data"]["y1_data"])),{}),
         ]
 
         BoxedPanel.__init__(self, *args, **kwargs)
@@ -124,15 +123,29 @@ class ChartAxisDataPanel(BoxedPanel):
         self.__bindings()
 
     def __set_properties(self):
-        self.x_editor.SetToolTipString(_("Enter a list of values."))
-        self.y1_editor.SetToolTipString(_("Enter a list of values."))
-        self.y2_editor.SetToolTipString(_("Enter a list of values."))
+        self.x_editor.SetToolTipString(
+            _("Enter a list of X values (optional)."))
+        self.y_editor.SetToolTipString(_("Enter a list of Y values."))
 
     def __bindings(self):
         """Binds events ton handlers"""
 
         self.Bind(wx.EVT_TEXT, self.OnXText, self.x_editor)
-        self.Bind(wx.EVT_TEXT, self.OnY1Text, self.y1_editor)
+        self.Bind(wx.EVT_TEXT, self.OnYText, self.y_editor)
+
+    def get_series_tuple(self, key, code, textctrl):
+        """Returns series tuples"""
+
+        textstyle = wx.TextAttr()
+
+        try:
+            result = self.parent.grid.code_array._eval_cell(key, code)
+            result_tuple = tuple(numpy.array(result))
+
+        except (TypeError, ValueError), err:
+            result_tuple = tuple(())
+
+        return result_tuple
 
     # Handlers
     # --------
@@ -143,19 +156,19 @@ class ChartAxisDataPanel(BoxedPanel):
         ##self.chart_data["x_data"] = ast.literal_eval(event.GetString())
         key = self.parent.grid.actions.cursor
         code = event.GetString()
-        result = self.parent.grid.code_array._eval_cell(key, code)
-        self.chart_data["x_data"] = result
 
+        self.chart_data["x_data"] = self.get_series_tuple(key, code,
+                                                          self.x_editor)
         post_command_event(self, self.DrawChartMsg)
 
-    def OnY1Text(self, event):
-        """Event handler for y1_text_ctrl"""
+    def OnYText(self, event):
+        """Event handler for y_text_ctrl"""
 
-        ##self.chart_data["y1_data"] = ast.literal_eval(event.GetString())
         key = self.parent.grid.actions.cursor
         code = event.GetString()
-        result = self.parent.grid.code_array._eval_cell(key, code)
-        self.chart_data["y1_data"] = result
+
+        self.chart_data["y1_data"] = self.get_series_tuple(key, code,
+                                                          self.y_editor)
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -402,6 +415,11 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         """Figure drawing event handler"""
 
         self.figure.chart_data = self.chart_data
-        self.figure.draw_chart()
+
+        try:
+            self.figure.draw_chart()
+        except ValueError, err:
+            return
+
         self.figure_canvas.draw()
         ##print self.figure.get_figure_code()

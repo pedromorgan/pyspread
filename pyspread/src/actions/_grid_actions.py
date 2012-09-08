@@ -79,7 +79,7 @@ class FileActions(Actions):
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_OPEN, self.open)
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_SAVE, self.save)
 
-    def _is_aborted(self, cycle, statustext, total_elements=None, freq=1000):
+    def _is_aborted(self, cycle, statustext, total_elements=None, freq=100):
         """Displays progress and returns True if abort
 
         Parameters
@@ -780,7 +780,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
     def selection_paste_data_gen(self, selection, data):
         """Generator that yields data for selection paste"""
 
-        (bb_top, bb_left), (bb_bottom, bb_right) = selection.get_bbox()
+        (bb_top, bb_left), (bb_bottom, bb_right) = \
+            selection.get_grid_bbox(self.grid.code_array.shape)
         bbox_height = bb_bottom - bb_top + 1
         bbox_width = bb_right - bb_left + 1
 
@@ -802,7 +803,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
     def paste_to_selection(self, selection, data):
         """Pastes data into grid selection"""
 
-        (bb_top, bb_left), (bb_bottom, bb_right) = selection.get_bbox()
+        (bb_top, bb_left), (bb_bottom, bb_right) = \
+            selection.get_grid_bbox(self.grid.code_array.shape)
         adjusted_data = self.selection_paste_data_gen(selection, data)
         self.paste_to_current_cell((bb_top, bb_left), adjusted_data)
 
