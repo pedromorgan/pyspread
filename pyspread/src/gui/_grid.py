@@ -348,7 +348,10 @@ class GridCellEventHandlers(object):
     def OnInsertChartDialog(self, event):
         """Chart dialog event handler"""
 
-        chart_dialog = ChartDialog(self.grid)
+        cell_code = self.grid.code_array(self.grid.actions.cursor)
+        if cell_code is None:
+            cell_code = u""
+        chart_dialog = ChartDialog(self.grid, cell_code)
         if chart_dialog.ShowModal() == wx.ID_OK:
             code = chart_dialog.figure.get_figure_code()
             key = self.grid.actions.cursor

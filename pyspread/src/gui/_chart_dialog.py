@@ -110,9 +110,12 @@ class ChartAxisDataPanel(BoxedPanel):
         kwargs["box_label"] = _("Data")
 
         kwargs["widgets"] = [
-            ("x", _("X"), wx.TextCtrl, (self, -1, ""), {}),
-            ("y1", _("Y1"), wx.TextCtrl, (self, -1, ""), {}),
-            ("y2", _("Y2"), wx.TextCtrl, (self, -1, ""), {}),
+            ("x", _("X"), wx.TextCtrl,
+             (self, -1, unicode(kwargs["chart_data"]["x_data"])), {}),
+            ("y1", _("Y1"), wx.TextCtrl,
+             (self, -1, unicode(kwargs["chart_data"]["y1_data"])), {}),
+            ("y2", _("Y2"), wx.TextCtrl,
+             (self, -1, unicode(kwargs["chart_data"]["y2_data"])), {}),
         ]
 
         BoxedPanel.__init__(self, *args, **kwargs)
@@ -257,20 +260,31 @@ class ChartPanel(wx.Panel, ChartDialogEventMixin):
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
-    def __init__(self, parent, **kwds):
+    def __init__(self, parent, code, **kwds):
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
                         wx.THICK_FRAME
         self.grid = parent
+
         wx.Dialog.__init__(self, parent, **kwds)
 
         # Initial data for chart
+
+        self.ChartCls = charts.PlotFigure
         self.chart_data = {
-            "x_data": [],
-            "y1_data": [],
-            "y2_data": [],
+            "x_data": (),
+            "y1_data": (),
+            "y2_data": (),
             "line_width": 1,
             "line_color": (0, 0, 0),
         }
+
+        # Update if chart data present
+
+        if code[:7] == "charts.":
+            # Get data from cell code
+
+            self.ChartCls, chart_data = self.parse_figure_args(code)
+            self.chart_data.update(chart_data)
 
         # Icons for BitmapButtons
         icons = Icons(icon_size=(24, 24))
@@ -291,7 +305,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.chart_axis_marker_panel = \
             ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
 
-        self.figure = charts.PlotFigure(**self.chart_data)
+        self.figure = self.ChartCls(**self.chart_data)
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
 
         self.__set_properties()
@@ -370,6 +384,17 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for ctrl in unneeded_ctrls:
             ctrl.Disable()
 
+    def parse_figure_args(self, code):
+        """Returns tuple with chart type and dict with parameters"""
+
+        key = self.grid.actions.cursor
+        code_split = code[7:].split("(", 1)
+        cls_name = code_split[0]
+        params_code = "dict({})".format(code_split[1].strip()[:-1])
+        cls_params = self.grid.code_array._eval_cell(key, params_code)
+
+        return getattr(charts, cls_name), cls_params
+
     # Handlers
     # --------
 
@@ -379,4 +404,4 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.figure.chart_data = self.chart_data
         self.figure.draw_chart()
         self.figure_canvas.draw()
-        print self.figure.get_figure_code()
+        ##print self.figure.get_figure_code()
