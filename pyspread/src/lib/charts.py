@@ -59,14 +59,3 @@ class PlotFigure(Figure):
         else:
             self.__axes.plot(self.y1_data, linewidth=self.line_width,
                              color=self.line_color)
-
-    def get_figure_code(self):
-        """Returns code that generates figure"""
-
-        # Build chart data string
-        chart_data_code = ""
-        for key in self.chart_data:
-            setattr(self, key, self.chart_data[key])
-            chart_data_code += "{}={}, ".format(key, self.chart_data[key])
-
-        return 'charts.PlotFigure({})'.format(chart_data_code)

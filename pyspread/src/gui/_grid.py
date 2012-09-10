@@ -353,7 +353,7 @@ class GridCellEventHandlers(object):
             cell_code = u""
         chart_dialog = ChartDialog(self.grid, cell_code)
         if chart_dialog.ShowModal() == wx.ID_OK:
-            code = chart_dialog.figure.get_figure_code()
+            code = chart_dialog.get_figure_code()
             key = self.grid.actions.cursor
             self.grid.actions.set_code(key, code)
 

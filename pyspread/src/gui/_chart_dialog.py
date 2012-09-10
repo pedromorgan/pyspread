@@ -32,6 +32,8 @@ Provides
 
 """
 
+from copy import copy
+
 import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
@@ -114,7 +116,7 @@ class ChartAxisDataPanel(BoxedPanel):
             ("x", _("X"), wx.TextCtrl,
              (self, -1, unicode(kwargs["chart_data"]["x_data"])), {}),
             ("y", _("Y"), wx.TextCtrl,
-             (self, -1, unicode(kwargs["chart_data"]["y1_data"])),{}),
+             (self, -1, unicode(kwargs["chart_data"]["y1_data"])), {}),
         ]
 
         BoxedPanel.__init__(self, *args, **kwargs)
@@ -133,42 +135,20 @@ class ChartAxisDataPanel(BoxedPanel):
         self.Bind(wx.EVT_TEXT, self.OnXText, self.x_editor)
         self.Bind(wx.EVT_TEXT, self.OnYText, self.y_editor)
 
-    def get_series_tuple(self, key, code, textctrl):
-        """Returns series tuples"""
-
-        textstyle = wx.TextAttr()
-
-        try:
-            result = self.parent.grid.code_array._eval_cell(key, code)
-            result_tuple = tuple(numpy.array(result))
-
-        except (TypeError, ValueError), err:
-            result_tuple = tuple(())
-
-        return result_tuple
-
     # Handlers
     # --------
 
     def OnXText(self, event):
         """Event handler for x_text_ctrl"""
 
-        ##self.chart_data["x_data"] = ast.literal_eval(event.GetString())
-        key = self.parent.grid.actions.cursor
-        code = event.GetString()
+        self.chart_data["x_data"] = event.GetString()
 
-        self.chart_data["x_data"] = self.get_series_tuple(key, code,
-                                                          self.x_editor)
         post_command_event(self, self.DrawChartMsg)
 
     def OnYText(self, event):
         """Event handler for y_text_ctrl"""
 
-        key = self.parent.grid.actions.cursor
-        code = event.GetString()
-
-        self.chart_data["y1_data"] = self.get_series_tuple(key, code,
-                                                          self.y_editor)
+        self.chart_data["y1_data"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -216,7 +196,7 @@ class ChartAxisLinePanel(BoxedPanel):
     def OnWidth(self, event):
         """Line width event handler"""
 
-        self.chart_data["line_width"] = int(event.GetSelection())
+        self.chart_data["line_width"] = event.GetSelection()
         post_command_event(self, self.DrawChartMsg)
 
     def OnColor(self, event):
@@ -283,10 +263,11 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         # Initial data for chart
 
         self.ChartCls = charts.PlotFigure
+        self.series_keys = ["x_data", "y1_data", "y2_data"]
         self.chart_data = {
-            "x_data": (),
-            "y1_data": (),
-            "y2_data": (),
+            "x_data": u"()",
+            "y1_data": u"()",
+            "y2_data": u"()",
             "line_width": 1,
             "line_color": (0, 0, 0),
         }
@@ -318,7 +299,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.chart_axis_marker_panel = \
             ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
 
-        self.figure = self.ChartCls(**self.chart_data)
+        self.figure = self.ChartCls(**self.eval_chart_data(self.chart_data))
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
 
         self.__set_properties()
@@ -403,10 +384,56 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         key = self.grid.actions.cursor
         code_split = code[7:].split("(", 1)
         cls_name = code_split[0]
+        
+        print code_split[1].strip()[:-1]
+        ### TODO: Tokenize
         params_code = "dict({})".format(code_split[1].strip()[:-1])
         cls_params = self.grid.code_array._eval_cell(key, params_code)
+        for key in self.series_keys:
+            cls_params[key] = unicode(cls_params[key])
 
         return getattr(charts, cls_name), cls_params
+
+    def get_series_tuple(self, code):
+        """Returns series tuples"""
+
+        key = self.grid.actions.cursor
+
+        try:
+            result = self.grid.code_array._eval_cell(key, code)
+            result_tuple = tuple(numpy.array(result))
+
+        except (TypeError, ValueError):
+            result_tuple = tuple(())
+
+        return result_tuple
+
+    def eval_chart_data(self, chart_data):
+        """Returns evaluated content for chart data"""
+
+        evaluated_chart_data = copy(chart_data)
+
+        for key in self.series_keys:
+            evaluated_chart_data[key] = self.get_series_tuple(chart_data[key])
+
+        return evaluated_chart_data
+
+    def get_figure_code(self):
+        """Returns code that generates figure"""
+
+        # Build chart data string
+        chart_data_code = ""
+        for key in self.chart_data:
+            if key in self.series_keys:
+                if self.chart_data[key][0] != "(":
+                    self.chart_data[key] = "(" + self.chart_data[key]
+                if self.chart_data[key][-1] != ")":
+                    self.chart_data[key] += ")"
+
+            setattr(self, key, self.chart_data[key])
+            chart_data_code += "{}={}, ".format(key, self.chart_data[key])
+
+        return 'charts.{}({})'.format(self.ChartCls.__name__, chart_data_code)
 
     # Handlers
     # --------
@@ -414,11 +441,11 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def OnDrawChart(self, event):
         """Figure drawing event handler"""
 
-        self.figure.chart_data = self.chart_data
+        self.figure.chart_data = self.eval_chart_data(self.chart_data)
 
         try:
             self.figure.draw_chart()
-        except ValueError, err:
+        except ValueError:
             return
 
         self.figure_canvas.draw()
