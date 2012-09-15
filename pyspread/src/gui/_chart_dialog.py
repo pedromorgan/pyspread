@@ -114,9 +114,9 @@ class ChartAxisDataPanel(BoxedPanel):
 
         kwargs["widgets"] = [
             ("x", _("X"), wx.TextCtrl,
-             (self, -1, unicode(kwargs["chart_data"]["x_data"])), {}),
+             (self, -1, kwargs["chart_data"]["x_data"]), {}),
             ("y", _("Y"), wx.TextCtrl,
-             (self, -1, unicode(kwargs["chart_data"]["y1_data"])), {}),
+             (self, -1, kwargs["chart_data"]["y1_data"]), {}),
         ]
 
         BoxedPanel.__init__(self, *args, **kwargs)
@@ -182,7 +182,7 @@ class ChartAxisLinePanel(BoxedPanel):
 
     def __set_properties(self):
         # Set controls to default values
-        self.width_editor.SetSelection(self.chart_data["line_width"])
+        self.width_editor.SetSelection(int(self.chart_data["line_width"]))
 
     def __bindings(self):
         """Binds events to handlers"""
@@ -196,14 +196,14 @@ class ChartAxisLinePanel(BoxedPanel):
     def OnWidth(self, event):
         """Line width event handler"""
 
-        self.chart_data["line_width"] = event.GetSelection()
+        self.chart_data["line_width"] = repr(event.GetSelection())
         post_command_event(self, self.DrawChartMsg)
 
     def OnColor(self, event):
         """Line color event handler"""
 
         self.chart_data["line_color"] = \
-                tuple(i / 255.0 for i in event.GetValue().Get())
+                repr(tuple(i / 255.0 for i in event.GetValue().Get()))
         post_command_event(self, self.DrawChartMsg)
 
 
@@ -263,22 +263,31 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         # Initial data for chart
 
         self.ChartCls = charts.PlotFigure
-        self.series_keys = ["x_data", "y1_data", "y2_data"]
+
         self.chart_data = {
-            "x_data": u"()",
-            "y1_data": u"()",
-            "y2_data": u"()",
-            "line_width": 1,
-            "line_color": (0, 0, 0),
+            "x_data": u"",
+            "y1_data": u"",
+            "y2_data": u"",
+            "line_width": u"1",
+            "line_color": u"(0, 0, 0)",
         }
 
-        # Update if chart data present
+        self.series_keys = ["x_data", "y1_data", "y2_data", "line_color"]
 
         if code[:7] == "charts.":
-            # Get data from cell code
+            # If chart data is present build the chart
+            key = self.grid.actions.cursor
+            self.figure = self.grid.code_array._eval_cell(key, code)
 
-            self.ChartCls, chart_data = self.parse_figure_args(code)
-            self.chart_data.update(chart_data)
+            # Get data from figure
+            for key, value in self.param_gen(code.split("(", 1)[1][:-1]):
+                self.chart_data[key] = value
+
+        else:
+            # Use default values
+
+            self.figure = \
+                self.ChartCls(**self.eval_chart_data(self.chart_data))
 
         # Icons for BitmapButtons
         icons = Icons(icon_size=(24, 24))
@@ -298,8 +307,6 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             ChartAxisLinePanel(self, -1, chart_data=self.chart_data)
         self.chart_axis_marker_panel = \
             ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
-
-        self.figure = self.ChartCls(**self.eval_chart_data(self.chart_data))
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
 
         self.__set_properties()
@@ -378,21 +385,36 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for ctrl in unneeded_ctrls:
             ctrl.Disable()
 
-    def parse_figure_args(self, code):
-        """Returns tuple with chart type and dict with parameters"""
+    def param_gen(self, code):
+        """Generator of keys and value stings of a function parameter string"""
 
-        key = self.grid.actions.cursor
-        code_split = code[7:].split("(", 1)
-        cls_name = code_split[0]
-        
-        print code_split[1].strip()[:-1]
-        ### TODO: Tokenize
-        params_code = "dict({})".format(code_split[1].strip()[:-1])
-        cls_params = self.grid.code_array._eval_cell(key, params_code)
-        for key in self.series_keys:
-            cls_params[key] = unicode(cls_params[key])
+        pmap = {"(": 1, "{": 1, "[": 1, ")": -1, "}": -1, "]": -1}
 
-        return getattr(charts, cls_name), cls_params
+        plevel = 0
+
+        # Store positions of commata and equal signs
+        comma_positions = []
+        equal_positions = []
+
+        for i, char in enumerate(code):
+            if char in pmap:
+                plevel += pmap[char]
+
+            if plevel == 0:
+                if char == ",":
+                    comma_positions.append(i)
+                elif char == "=":
+                    equal_positions.append(i)
+
+        last_comma_position = -1
+        for comma_position in comma_positions:
+            for equal_position in equal_positions:
+                if last_comma_position < equal_position < comma_position:
+                    yield \
+                        code[last_comma_position + 1:equal_position].strip(),\
+                        code[equal_position + 1:comma_position].strip()
+                    break
+            last_comma_position = comma_position
 
     def get_series_tuple(self, code):
         """Returns series tuples"""
@@ -424,14 +446,17 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         # Build chart data string
         chart_data_code = ""
         for key in self.chart_data:
-            if key in self.series_keys:
-                if self.chart_data[key][0] != "(":
-                    self.chart_data[key] = "(" + self.chart_data[key]
-                if self.chart_data[key][-1] != ")":
-                    self.chart_data[key] += ")"
+            value_str = self.chart_data[key]
 
-            setattr(self, key, self.chart_data[key])
-            chart_data_code += "{}={}, ".format(key, self.chart_data[key])
+            if not value_str or value_str == "()":
+                value_str = None
+
+            elif key in self.series_keys and \
+                 (value_str[0] != "(" or value_str[-1] != ")"):
+                value_str = "(" + value_str + ")"
+
+            if value_str is not None:
+                chart_data_code += "{}={}, ".format(key, value_str)
 
         return 'charts.{}({})'.format(self.ChartCls.__name__, chart_data_code)
 
