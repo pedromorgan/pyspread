@@ -474,4 +474,3 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             return
 
         self.figure_canvas.draw()
-        ##print self.figure.get_figure_code()
