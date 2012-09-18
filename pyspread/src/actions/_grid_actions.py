@@ -764,7 +764,11 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                     key = target_row, target_col, tl_tab
 
                     try:
-                        self.grid.code_array[key] = cell_data
+                        # Set cell but do not mark unredo
+                        # before pasting is finished
+
+                        self.grid.code_array.__setitem__(key, cell_data,
+                                                         mark_unredo=False)
                         no_pasted_cells += 1
                     except KeyError:
                         pass
@@ -774,6 +778,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         else:
             self._show_final_paste_message(tl_key, no_pasted_cells)
+
+        if no_pasted_cells:
+            # If cells have been pasted mark unredo operation
+            self.grid.code_array.unredo.mark()
 
         self.pasting = False
 

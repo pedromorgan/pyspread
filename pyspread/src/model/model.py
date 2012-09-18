@@ -571,7 +571,7 @@ class DataArray(object):
 
         return self.dict_grid[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value, mark_unredo=True):
         """Accepts index and slice keys"""
 
         single_keys_per_dim = []
@@ -616,8 +616,10 @@ class DataArray(object):
 
                     unredo_mark = True
 
-                    undo_operation = (self.__setitem__, [key, old_value])
-                    redo_operation = (self.__setitem__, [key, value])
+                    undo_operation = (self.__setitem__,
+                                      [key, old_value, mark_unredo])
+                    redo_operation = (self.__setitem__,
+                                      [key, value, mark_unredo])
 
                     self.unredo.append(undo_operation, redo_operation)
 
@@ -632,7 +634,7 @@ class DataArray(object):
                 except (KeyError, TypeError):
                     pass
 
-        if unredo_mark:
+        if mark_unredo and unredo_mark:
             self.unredo.mark()
 
     def cell_array_generator(self, key):
@@ -886,7 +888,7 @@ class CodeArray(DataArray):
     # Cache for frozen objects
     frozen_cache = {}
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value, mark_unredo=True):
         """Sets cell code and resets result cache"""
 
         # Prevent unchanged cells from being recalculated on cursor movement
@@ -898,7 +900,7 @@ class CodeArray(DataArray):
                     ((value is None or value == "") and
                      repr_key not in self.result_cache)
 
-        DataArray.__setitem__(self, key, value)
+        DataArray.__setitem__(self, key, value, mark_unredo=mark_unredo)
 
         if not unchanged:
             # Reset result cache
