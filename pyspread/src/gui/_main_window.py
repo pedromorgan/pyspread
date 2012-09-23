@@ -159,7 +159,7 @@ class MainWindow(wx.Frame, EventMixin):
     def _set_menu_toggles(self):
         """Enable menu bar view item checkmarks"""
 
-        toggles = [ \
+        toggles = [
             (self.main_toolbar, "main_window_toolbar", _("Main toolbar")),
             (self.attributes_toolbar, "attributes_toolbar",
                                                        _("Format toolbar")),
@@ -594,7 +594,7 @@ class MainWindowEventHandlers(object):
         wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
         message = _("Choose pyspread file to open.")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
                                     wildcard, message, style)
 
         if filepath is None:
@@ -648,7 +648,7 @@ class MainWindowEventHandlers(object):
         wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
         message = _("Choose filename for saving.")
         style = wx.SAVE | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
                                     wildcard, message, style)
 
         if filepath is None:
@@ -668,7 +668,7 @@ class MainWindowEventHandlers(object):
             message = _("The file {filepath} is already present.\nOverwrite?")\
                                   .format(filepath=filepath)
             short_message = _("File collison")
-            if not self.main_window.interfaces.get_warning_choice( \
+            if not self.main_window.interfaces.get_warning_choice(
                         message, short_message):
 
                 statustext = _("File present. Save aborted by user.")
@@ -700,7 +700,7 @@ class MainWindowEventHandlers(object):
         wildcard = _("Csv file (*.*)|*.*|Tab delimited text file (*.*)|*.*")
         message = _("Choose file to import.")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
                                     wildcard, message, style)
 
         if filepath is None:
@@ -753,7 +753,7 @@ class MainWindowEventHandlers(object):
         wildcard = _("CSV file (*.*)|*.*")
         message = _("Choose filename for export.")
         style = wx.OPEN | wx.CHANGE_DIR
-        path, filterindex = self.interfaces.get_filepath_findex_from_user( \
+        path, filterindex = self.interfaces.get_filepath_findex_from_user(
                                     wildcard, message, style)
 
         # Export file
@@ -792,16 +792,16 @@ class MainWindowEventHandlers(object):
 
     def OnClearGlobals(self, event):
         """Clear globals event handler"""
-        
+
         msg = _("Deleting globals and reloading modules cannot be undone."
                     " Proceed?")
         short_msg = _("Really delete globals and modules?")
-        
+
         choice = self.main_window.interfaces.get_warning_choice(msg, short_msg)
-        
+
         if choice:
             self.main_window.grid.actions.clear_globals_reload_modules()
-        
+
             statustext = _("Globals cleared and base modules reloaded.")
             post_command_event(self.main_window, self.main_window.StatusBarMsg,
                                text=statustext)
@@ -868,7 +868,7 @@ class MainWindowEventHandlers(object):
     def OnCopyResult(self, event):
         """Clipboard copy results event handler"""
 
-        data = self.main_window.actions.copy_result( \
+        data = self.main_window.actions.copy_result(
                             self.main_window.grid.selection)
 
         # Check if result is a bitmap
@@ -921,7 +921,7 @@ class MainWindowEventHandlers(object):
         cursor = self.main_window.grid.actions.cursor
         attr = self.main_window.grid.code_array.cell_attributes[cursor]
 
-        size, style, weight, font = [attr[name] for name in \
+        size, style, weight, font = [attr[name] for name in
             ["pointsize", "fontstyle", "fontweight", "textfont"]]
         current_font = wx.Font(int(size), -1, style, weight, 0, font)
 
@@ -1017,7 +1017,7 @@ class MainWindowEventHandlers(object):
         message = _("Choose macro file.")
 
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(\
+        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
                                     wildcard, message, style)
 
         if filepath is None:

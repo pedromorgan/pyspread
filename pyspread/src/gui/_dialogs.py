@@ -193,7 +193,7 @@ class CsvParameterWidgets(object):
           _("A one-character string used to quote fields containing special "
             "characters, such as the delimiter or quotechar, or which "
             "contain new-line characters.")],
-         ["quoting", types.TupleType, _("Quoting style"),
+         ["quoting", types.IntType, _("Quoting style"),
           _("Controls when quotes should be recognised.")],
          ["self.has_header", types.BooleanType, _("Header present"),
           _("Analyze the CSV file and treat the first row as strings if it "
@@ -207,6 +207,7 @@ class CsvParameterWidgets(object):
         types.StringType: wx.TextCtrl,
         types.BooleanType: wx.CheckBox,
         types.TupleType: wx.Choice,
+        types.IntType: wx.Choice,
     }
 
     # All tuple types from csv_params have choice boxes
@@ -265,8 +266,9 @@ class CsvParameterWidgets(object):
                 event_type = wx.EVT_TEXT
             elif isinstance(ptype, types.BooleanType):
                 event_type = wx.EVT_CHECKBOX
-            elif isinstance(ptype, types.TupleType):
+            else:
                 event_type = wx.EVT_CHOICE
+
             handler = getattr(self, self.widget_handlers[pname])
             self.parent.Bind(event_type, handler, widget)
 
@@ -326,7 +328,6 @@ class CsvParameterWidgets(object):
                     widget.SetValue(digest(self.has_header))
             else:
                 value = getattr(dialect, pname)
-
                 widget.SetValue(digest(value))
 
     def _widget_from_p(self, pname, ptype):
@@ -371,9 +372,9 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if isinstance(ptype, types.StringType):
+            if ptype is types.StringType:
                 parameters[pname] = str(widget.GetValue())
-            elif isinstance(ptype, types.BooleanType):
+            elif ptype is types.BooleanType:
                 parameters[pname] = widget.GetValue()
             elif pname == 'quoting':
                 choice = self.choices['quoting'][widget.GetSelection()]
@@ -592,6 +593,7 @@ class CsvImportDialog(wx.Dialog):
         wx.Dialog.__init__(self, *args, **kwds)
 
         self.csvwidgets = CsvParameterWidgets(self, self.csvfilepath)
+
         dialect, self.has_header = sniff(self.csvfilepath)
 
         self.grid = CSVPreviewGrid(self, -1,
@@ -1129,57 +1131,57 @@ class CheckBoxCtrl(wx.CheckBox):
 class PreferencesDialog(wx.Dialog):
     """Dialog for changing pyspread's configuration preferences"""
 
-    parameters = ( \
-        ("max_unredo", { \
+    parameters = (
+        ("max_unredo", {
             "label": _(u"Max. undo steps"),
             "tooltip": _(u"Maximum number of undo steps"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
-        ("grid_rows", { \
+        ("grid_rows", {
             "label": _(u"Grid rows"),
             "tooltip": _(u"Number of grid rows when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
-        ("grid_columns", { \
+        ("grid_columns", {
             "label": _(u"Grid columns"),
             "tooltip": _(u"Number of grid columns when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
-        ("grid_tables", { \
+        ("grid_tables", {
             "label": _(u"Grid tables"),
             "tooltip": _(u"Number of grid tables when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
-        ("max_result_length", { \
+        ("max_result_length", {
             "label": _(u"Max. result length"),
             "tooltip": _(u"Maximum length of cell result string"),
             "widget": wx.lib.intctrl.IntCtrl,
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
-        ("gpg_key_uid", { \
+        ("gpg_key_uid", {
             "label": _(u"GPG key name"),
             "tooltip": _(u"Name of the GPG key for signing files"),
             "widget": wx.TextCtrl,
             "widget_params": {},
             "prepocessor": unicode,
         }),
-        ("gpg_key_passphrase", { \
+        ("gpg_key_passphrase", {
             "label": _(u"GPG key passphrase"),
             "tooltip": _(u"Passphrase of the GPG key for signing files"),
             "widget": wx.TextCtrl,
             "widget_params": {"style": wx.TE_PASSWORD | wx.OK},
             "prepocessor": unicode,
         }),
-        ("gpg_key_passphrase_isstored", { \
+        ("gpg_key_passphrase_isstored", {
             "label": _(u"Store passphrase in config file"),
             "tooltip": _(u"If False then the passprase is not stored on exit"),
             "widget": CheckBoxCtrl,

@@ -81,9 +81,6 @@ class ExchangeActions(Actions):
             dialect, has_header, digest_types = \
                 self.main_window.interfaces.get_csv_import_info(path)
 
-        except TypeError:
-            return
-
         except IOError:
             statustext = _("Error opening file {}.").format(path)
             post_command_event(self.main_window, self.StatusBarMsg,
