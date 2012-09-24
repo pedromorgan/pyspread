@@ -39,6 +39,7 @@ import base64
 import bz2
 from copy import copy
 import cStringIO
+import datetime
 from itertools import imap, ifilter, product
 import re
 import sys
@@ -1049,7 +1050,7 @@ class CodeArray(DataArray):
         """Reloads modules that are available in cells"""
 
         import src.lib.charts as charts
-        modules = [charts, bz2, base64, re, ast, sys, wx, numpy]
+        modules = [charts, bz2, base64, re, ast, sys, wx, numpy, datetime]
 
         for module in modules:
             reload(module)
@@ -1064,7 +1065,7 @@ class CodeArray(DataArray):
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'charts', 'sys', 'is_slice_like', '__name__',
                      'copy', 'imap', 'wx', 'ifilter', 'Selection', 'DictGrid',
-                     'numpy', 'CodeArray', 'DataArray']
+                     'numpy', 'CodeArray', 'DataArray', 'datetime']
 
         for key in globals().keys():
             if key not in base_keys:

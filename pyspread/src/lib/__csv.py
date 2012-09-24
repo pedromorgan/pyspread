@@ -45,6 +45,11 @@ from src.config import config
 
 from src.gui._events import post_command_event, StatusBarEventMixin
 
+import src.lib.i18n as i18n
+
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
+
 
 def sniff(filepath):
     """
@@ -238,27 +243,26 @@ class Digest(object):
 
             return obj
 
-        self.typehandlers = { \
-            None: repr, \
-            types.StringType: make_string, \
-            types.UnicodeType: make_unicode, \
-            types.SliceType: make_slice, \
-            types.BooleanType: bool, \
-            types.ObjectType: make_object, \
-            types.IntType: int, \
-            types.FloatType: float, \
-            types.CodeType: make_object, \
-            datetime.date: make_date, \
-            datetime.datetime: make_datetime, \
-            datetime.time: make_time, \
-            }
+        self.typehandlers = {
+            None: repr,
+            types.StringType: make_string,
+            types.UnicodeType: make_unicode,
+            types.SliceType: make_slice,
+            types.BooleanType: bool,
+            types.ObjectType: make_object,
+            types.IntType: int,
+            types.FloatType: float,
+            types.CodeType: make_object,
+            datetime.date: make_date,
+            datetime.datetime: make_datetime,
+            datetime.time: make_time,
+        }
 
         if self.fallback_type is not None and \
            self.fallback_type not in self.typehandlers:
 
-            err_msg = " ".join(["Fallback type", \
-                                str(self.fallback_type), \
-                                "unknown."])
+            err_msg = _("Fallback type {} unknown.").format(
+                                str(self.fallback_type))
             raise NotImplementedError(err_msg)
 
     def __call__(self, orig_obj):
