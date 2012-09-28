@@ -222,8 +222,8 @@ class ChartAxisMarkerPanel(BoxedPanel):
 
         kwargs["widgets"] = [
             ("style", _("Style"), PenStyleComboBox) + pen_style_combo_args,
-            ("front", _("Front"), csel.ColourSelect) + colorselect_args,
-            ("back", _("Back"), csel.ColourSelect) + colorselect_args,
+            ("face_color", _("Face"), csel.ColourSelect) + colorselect_args,
+            ("edge_color", _("Edge"), csel.ColourSelect) + colorselect_args,
         ]
 
         BoxedPanel.__init__(self, *args, **kwargs)
@@ -238,10 +238,25 @@ class ChartAxisMarkerPanel(BoxedPanel):
     def __bindings(self):
         """Binds events to handlers"""
 
-        pass
+        self.face_color_editor.Bind(csel.EVT_COLOURSELECT, self.OnFaceColor)
+        self.edge_color_editor.Bind(csel.EVT_COLOURSELECT, self.OnEdgeColor)
 
     # Handlers
     # --------
+
+    def OnEdgeColor(self, event):
+        """Marker front color event handler"""
+
+        self.chart_data["marker_edge_color"] = \
+                repr(tuple(i / 255.0 for i in event.GetValue().Get()))
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnFaceColor(self, event):
+        """Marker back color event handler"""
+
+        self.chart_data["marker_face_color"] = \
+                repr(tuple(i / 255.0 for i in event.GetValue().Get()))
+        post_command_event(self, self.DrawChartMsg)
 
 
 class ChartPanel(wx.Panel, ChartDialogEventMixin):
@@ -270,9 +285,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             "y2_data": u"",
             "line_width": u"1",
             "line_color": u"(0, 0, 0)",
+            "marker_face_color": u"(0, 0, 0)",
+            "marker_edge_color": u"(0, 0, 0)",
         }
 
-        self.series_keys = ["x_data", "y1_data", "y2_data", "line_color"]
+        self.series_keys = ["x_data", "y1_data", "y2_data", "line_color",
+                            "marker_face_color", "marker_edge_color"]
 
         if code[:7] == "charts.":
             # If chart data is present build the chart
