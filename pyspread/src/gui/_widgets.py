@@ -436,36 +436,14 @@ class PenWidthComboBox(ImageComboBox):
 # end of class PenWidthComboBox
 
 
-class PenStyleComboBox(ImageComboBox):
+class LineStyleComboBox(ImageComboBox):
     """Combo box for choosing line style for matplotlib charts"""
 
     pen_styles = [
-        ("solid line style", "-'"),
-        ("dashed line style", "--'"),
-        ("dash-dot line style", "-.'"),
-        ("dotted line style", ":'"),
-        ("point marker", ".'"),
-        ("pixel marker", ",'"),
-        ("circle marker", "o'"),
-        ("triangle_down marker", "v'"),
-        ("triangle_up marker", "^'"),
-        ("triangle_left marker", "<'"),
-        ("triangle_right marker", ">'"),
-        ("tri_down marker", "1'"),
-        ("tri_up marker", "2'"),
-        ("tri_left marker", "3'"),
-        ("tri_right marker", "4'"),
-        ("square marker", "s'"),
-        ("pentagon marker", "p'"),
-        ("star marker", "*'"),
-        ("hexagon1 marker", "h'"),
-        ("hexagon2 marker", "H'"),
-        ("plus marker", "+'"),
-        ("x marker", "x'"),
-        ("diamond marker", "D'"),
-        ("thin_diamond marker", "d'"),
-        ("vline marker", "|'"),
-        ("hline marker", "_'"),
+        ("solid line style", "-"),
+        ("dashed line style", "--"),
+        ("dash-dot line style", "-."),
+        ("dotted line style", ":"),
     ]
 
     def OnDrawItem(self, dc, rect, item, flags):
@@ -487,6 +465,51 @@ class PenStyleComboBox(ImageComboBox):
                     r.x + r.width - 5, r.y + r.height / 2)
 
 # end of class PenStyleComboBox
+
+
+class MarkerStyleComboBox(wx.Choice):
+    """Choice box for choosing matplotlib chart markers"""
+
+    markers = [
+        ("No marker", ""),
+        ("Point marker", "."),
+        ("Pixel marker", ","),
+        ("Circle marker", "o"),
+        ("Triangle_down marker", "v"),
+        ("Triangle_up marker", "^"),
+        ("Triangle_left marker", "<"),
+        ("Triangle_right marker", ">"),
+        ("Tri_down marker", "1"),
+        ("Tri_up marker", "2"),
+        ("Tri_left marker", "3"),
+        ("Tri_right marker", "4"),
+        ("Square marker", "s"),
+        ("Pentagon marker", "p"),
+        ("Star marker", "*"),
+        ("Hexagon1 marker", "h"),
+        ("hexagon2 marker", "H"),
+        ("Plus marker", "+"),
+        ("X marker", "x"),
+        ("Diamond marker", "D"),
+        ("Thin_diamond marker", "d"),
+        ("Vline marker", "|"),
+        ("Hline marker", "_"),
+    ]
+
+    def __init__(self, *args, **kwargs):
+        kwargs["choices"] = [marker[0] for marker in self.markers]
+        wx.Choice.__init__(self, *args, **kwargs)
+
+    def get_code(self, label):
+        """Returns code for label"""
+
+        for marker in self.markers:
+            if marker[0] == label:
+                return marker[1]
+
+        raise ValueError(_("Label {} is invalid.".format(label)))
+
+# end of class PenWidthComboBox
 
 
 class FontChoiceCombobox(ImageComboBox):

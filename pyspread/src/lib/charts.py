@@ -52,7 +52,6 @@ class PlotFigure(Figure):
         # Clear the axes and redraw the plot anew
 
         self.__axes.clear()
-        print self.line_color, self.marker_face_color
 
         if hasattr(self, "x_data") and len(self.x_data) == len(self.y1_data):
             self.__axes.plot(
@@ -60,7 +59,7 @@ class PlotFigure(Figure):
                 linewidth=self.line_width,
                 xdata=self.x_data,
                 color=self.line_color,
-                marker='o',
+                marker=self.marker_style,
                 markerfacecolor=self.marker_face_color,
                 markeredgecolor=self.marker_edge_color)
         else:
@@ -68,6 +67,6 @@ class PlotFigure(Figure):
                 self.y1_data,
                 linewidth=self.line_width,
                 color=self.line_color,
-                marker='o',
+                marker=self.marker_style,
                 markerfacecolor=self.marker_face_color,
                 markeredgecolor=self.marker_edge_color)

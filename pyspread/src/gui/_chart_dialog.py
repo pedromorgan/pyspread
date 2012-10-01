@@ -39,7 +39,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 import numpy
 
-from _widgets import PenWidthComboBox, PenStyleComboBox
+from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
 from icons import Icons
 import src.lib.i18n as i18n
@@ -159,7 +159,7 @@ class ChartAxisLinePanel(BoxedPanel):
     def __init__(self, *args, **kwargs):
 
         # Custom data
-        _styles = map(unicode, xrange(len(PenStyleComboBox.pen_styles)))
+        _styles = map(unicode, xrange(len(LineStyleComboBox.pen_styles)))
         _widths = map(unicode, xrange(12))
 
         kwargs["box_label"] = _("Line")
@@ -170,7 +170,7 @@ class ChartAxisLinePanel(BoxedPanel):
                                 "style": wx.CB_READONLY, "size": (50, -1)}
 
         kwargs["widgets"] = [
-            ("style", _("Style"), PenStyleComboBox) + pen_style_combo_args,
+            ("style", _("Style"), LineStyleComboBox) + pen_style_combo_args,
             ("color", _("Color"), csel.ColourSelect) + colorselect_args,
             ("width", _("Width"), PenWidthComboBox) + pen_width_combo_args,
         ]
@@ -212,16 +212,14 @@ class ChartAxisMarkerPanel(BoxedPanel):
 
     def __init__(self, *args, **kwargs):
 
-        # Custom data
-        _styles = map(unicode, xrange(len(PenStyleComboBox.pen_styles)))
-
         kwargs["box_label"] = _("Marker")
 
-        pen_style_combo_args = (self, -1), {"choices": _styles},
+        marker_style_combo_args = (self, -1), {}
         colorselect_args = (self, -1), {"size": (80, 25)}
 
         kwargs["widgets"] = [
-            ("style", _("Style"), PenStyleComboBox) + pen_style_combo_args,
+            ("style", _("Style"), MarkerStyleComboBox) +
+                                  marker_style_combo_args,
             ("face_color", _("Face"), csel.ColourSelect) + colorselect_args,
             ("edge_color", _("Edge"), csel.ColourSelect) + colorselect_args,
         ]
@@ -238,11 +236,19 @@ class ChartAxisMarkerPanel(BoxedPanel):
     def __bindings(self):
         """Binds events to handlers"""
 
+        self.style_editor.Bind(wx.EVT_CHOICE, self.OnStyle)
         self.face_color_editor.Bind(csel.EVT_COLOURSELECT, self.OnFaceColor)
         self.edge_color_editor.Bind(csel.EVT_COLOURSELECT, self.OnEdgeColor)
 
     # Handlers
     # --------
+
+    def OnStyle(self, event):
+        """Marker style event handler"""
+
+        marker_style_code = self.style_editor.get_code(event.GetString())
+        self.chart_data["marker_style"] = marker_style_code
+        post_command_event(self, self.DrawChartMsg)
 
     def OnEdgeColor(self, event):
         """Marker front color event handler"""
@@ -285,6 +291,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             "y2_data": u"",
             "line_width": u"1",
             "line_color": u"(0, 0, 0)",
+            "marker_style": "",
             "marker_face_color": u"(0, 0, 0)",
             "marker_edge_color": u"(0, 0, 0)",
         }
