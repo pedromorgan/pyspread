@@ -247,7 +247,7 @@ class ChartAxisMarkerPanel(BoxedPanel):
         """Marker style event handler"""
 
         marker_style_code = self.style_editor.get_code(event.GetString())
-        self.chart_data["marker_style"] = marker_style_code
+        self.chart_data["marker_style"] = repr(marker_style_code)
         post_command_event(self, self.DrawChartMsg)
 
     def OnEdgeColor(self, event):
@@ -298,6 +298,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         self.series_keys = ["x_data", "y1_data", "y2_data", "line_color",
                             "marker_face_color", "marker_edge_color"]
+        self.string_keys = ["marker_style"]
 
         if code[:7] == "charts.":
             # If chart data is present build the chart
@@ -462,6 +463,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         for key in self.series_keys:
             evaluated_chart_data[key] = self.get_series_tuple(chart_data[key])
+
+        for key in self.string_keys:
+            evaluated_chart_data[key] = chart_data[key][1:-1]
 
         return evaluated_chart_data
 
