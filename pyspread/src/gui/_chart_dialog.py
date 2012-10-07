@@ -38,6 +38,7 @@ import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 from wx.lib.intctrl import IntCtrl, EVT_INT
+import wx.lib.agw.flatnotebook as fnb
 import numpy
 
 from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
@@ -49,7 +50,7 @@ import src.lib.charts as charts
 _ = i18n.language.ugettext
 
 
-class BoxedPanel(wx.Panel, ChartDialogEventMixin):
+class LabeledWidgetPanel(wx.Panel, ChartDialogEventMixin):
     """Base class for boxed panels with labeled widgets"""
 
     def __init__(self, *args, **kwargs):
@@ -105,7 +106,7 @@ class BoxedPanel(wx.Panel, ChartDialogEventMixin):
         return wx.Colour(*color_tuple_int)
 
 
-class ChartAxisDataPanel(BoxedPanel):
+class ChartAxisDataPanel(LabeledWidgetPanel):
     """Panel for data entry for chart axis"""
 
     def __init__(self, *args, **kwargs):
@@ -120,7 +121,7 @@ class ChartAxisDataPanel(BoxedPanel):
              (self, -1, kwargs["chart_data"]["ydata"]), {}),
         ]
 
-        BoxedPanel.__init__(self, *args, **kwargs)
+        LabeledWidgetPanel.__init__(self, *args, **kwargs)
 
         self.__set_properties()
         self.__bindings()
@@ -154,7 +155,7 @@ class ChartAxisDataPanel(BoxedPanel):
         post_command_event(self, self.DrawChartMsg)
 
 
-class ChartAxisLinePanel(BoxedPanel):
+class ChartAxisLinePanel(LabeledWidgetPanel):
     """Panel for line style entry"""
 
     def __init__(self, *args, **kwargs):
@@ -175,7 +176,7 @@ class ChartAxisLinePanel(BoxedPanel):
             ("width", _("Width"), PenWidthComboBox) + pen_width_combo_args,
         ]
 
-        BoxedPanel.__init__(self, *args, **kwargs)
+        LabeledWidgetPanel.__init__(self, *args, **kwargs)
 
         self.__set_properties()
         self.__bindings()
@@ -215,7 +216,7 @@ class ChartAxisLinePanel(BoxedPanel):
         post_command_event(self, self.DrawChartMsg)
 
 
-class ChartAxisMarkerPanel(BoxedPanel):
+class ChartAxisMarkerPanel(LabeledWidgetPanel):
     """Panel for marker style entry"""
 
     def __init__(self, parent, *args, **kwargs):
@@ -235,7 +236,7 @@ class ChartAxisMarkerPanel(BoxedPanel):
             ("edge_color", _("Edge"), csel.ColourSelect) + colorselect_args,
         ]
 
-        BoxedPanel.__init__(self, parent, *args, **kwargs)
+        LabeledWidgetPanel.__init__(self, parent, *args, **kwargs)
 
         self.__set_properties()
         self.__bindings()
@@ -296,8 +297,81 @@ class ChartAxisMarkerPanel(BoxedPanel):
         post_command_event(self, self.DrawChartMsg)
 
 
+class PlotPanel(wx.Panel):
+    """Static box panel that holds widgets for one plot series"""
+
+    # Default data for series plot
+
+    chart_data = {
+        "xdata": u"",
+        "ydata": u"",
+        "linestyle": u"'-'",
+        "linewidth": u"1",
+        "color": u"(0, 0, 0)",
+        "marker": u"''",
+        "markersize": u"5",
+        "markerfacecolor": u"(0, 0, 0)",
+        "markeredgecolor": u"(0, 0, 0)",
+    }
+
+    series_keys = ["xdata", "ydata", "color", "markerfacecolor",
+                   "markeredgecolor"]
+    string_keys = ["linestyle", "marker"]
+    float_keys = ["markersize"]
+
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        self.get_series_tuple = parent.get_series_tuple
+
+        self.chart_axis_data_panel = \
+            ChartAxisDataPanel(self, -1, chart_data=self.chart_data)
+        self.chart_axis_line_panel = \
+            ChartAxisLinePanel(self, -1, chart_data=self.chart_data)
+        self.chart_axis_marker_panel = \
+            ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+
+        main_sizer.Add(self.chart_axis_data_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.chart_axis_line_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.chart_axis_marker_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+
+class SeriesNotebook(wx.Notebook):
+    def __init__(self, parent, *args, **kwargs):
+        kwargs["style"] = wx.BK_LEFT
+        wx.Notebook.__init__(self, parent, *args, **kwargs)
+        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
+        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
+
+    def OnPageChanged(self, event):
+        old = event.GetOldSelection()
+        new = event.GetSelection()
+        sel = self.GetSelection()
+        print 'OnPageChanged,  old:%d, new:%d, sel:%d\n' % (old, new, sel)
+        event.Skip()
+
+    def OnPageChanging(self, event):
+        old = event.GetOldSelection()
+        new = event.GetSelection()
+        sel = self.GetSelection()
+        print 'OnPageChanging, old:%d, new:%d, sel:%d\n' % (old, new, sel)
+        event.Skip()
+
+
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
+
+    series = []
 
     def __init__(self, parent, code, **kwds):
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
@@ -306,26 +380,14 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         wx.Dialog.__init__(self, parent, **kwds)
 
-        # Initial data for chart
+        agwstyle = fnb.FNB_NODRAG | fnb.FNB_DROPDOWN_TABS_LIST | fnb.FNB_BOTTOM
+        self.series_notebook = fnb.FlatNotebook(self, -1, agwStyle=agwstyle)
 
-        self.ChartCls = charts.PlotFigure
-
-        self.chart_data = {
-            "xdata": u"",
-            "ydata": u"",
-            "linestyle": u"'-'",
-            "linewidth": u"1",
-            "color": u"(0, 0, 0)",
-            "marker": u"''",
-            "markersize": u"5",
-            "markerfacecolor": u"(0, 0, 0)",
-            "markeredgecolor": u"(0, 0, 0)",
-        }
-
-        self.series_keys = ["xdata", "ydata", "color",
-                            "markerfacecolor", "markeredgecolor"]
-        self.string_keys = ["linestyle", "marker"]
-        self.float_keys = ["markersize"]
+        # Series creation
+        self.series_notebook.AddPage(PlotPanel(self, -1), _("Series"))
+        print dir(self.series_notebook)
+        print self.series_notebook.GetPage(0)
+        chart_data = self.series_notebook.GetPage(0).chart_data
 
         if code[:7] == "charts.":
             # If chart data is present build the chart
@@ -334,24 +396,18 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
             # Get data from figure
             for key, value in self.param_gen(code.split("(", 1)[1][:-1]):
-                self.chart_data[key] = value
+                chart_data[key] = value
 
         else:
             # Use default values
+            default_data = self.eval_chart_data()
+            self.figure = charts.ChartFigure(**default_data)
 
-            self.figure = \
-                self.ChartCls(**self.eval_chart_data(self.chart_data))
+        # end series creation
 
-        self.series_staticbox = wx.StaticBox(self, -1, _("Series"))
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
 
-        self.chart_axis_data_panel = \
-            ChartAxisDataPanel(self, -1, chart_data=self.chart_data)
-        self.chart_axis_line_panel = \
-            ChartAxisLinePanel(self, -1, chart_data=self.chart_data)
-        self.chart_axis_marker_panel = \
-            ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
         self.figure_canvas = FigureCanvasWxAgg(self, -1, self.figure)
 
         self.__set_properties()
@@ -368,22 +424,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __do_layout(self):
         main_sizer = wx.FlexGridSizer(2, 2, 0, 0)
-        series_sizer = wx.StaticBoxSizer(self.series_staticbox, wx.HORIZONTAL)
-        attr_sizer = wx.FlexGridSizer(1, 1, 0, 0)
         button_sizer = wx.FlexGridSizer(1, 3, 0, 3)
 
-        main_sizer.Add(series_sizer, 1, wx.EXPAND, 0)
+        main_sizer.Add(self.series_notebook, 1, wx.EXPAND, 0)
         main_sizer.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
         main_sizer.Add(button_sizer, wx.ALL | wx.EXPAND, 3)
         main_sizer.AddGrowableRow(0)
         main_sizer.AddGrowableCol(0)
-
-        series_sizer.Add(attr_sizer, 1, wx.EXPAND, 0)
-
-        attr_sizer.Add(self.chart_axis_data_panel, 1, wx.ALL | wx.EXPAND, 2)
-        attr_sizer.Add(self.chart_axis_line_panel, 1, wx.ALL | wx.EXPAND, 2)
-        attr_sizer.Add(self.chart_axis_marker_panel, 1, wx.ALL | wx.EXPAND, 2)
-        attr_sizer.AddGrowableCol(0)
 
         button_sizer.Add(self.ok_button, 0,
             wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
@@ -451,29 +498,31 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         return result_tuple
 
-    def eval_chart_data(self, chart_data):
+    def eval_chart_data(self):
         """Returns evaluated content for chart data"""
 
-        evaluated_chart_data = copy(chart_data)
+        series_panel = self.series_notebook.GetPage(0)
+        chart_data = copy(series_panel.chart_data)
 
-        for key in self.series_keys:
-            evaluated_chart_data[key] = self.get_series_tuple(chart_data[key])
+        for key in series_panel.series_keys:
+            chart_data[key] = self.get_series_tuple(chart_data[key])
 
-        for key in self.string_keys:
-            evaluated_chart_data[key] = chart_data[key][1:-1]
+        for key in series_panel.string_keys:
+            chart_data[key] = chart_data[key][1:-1]
 
-        for key in self.float_keys:
-            evaluated_chart_data[key] = float(chart_data[key])
+        for key in series_panel.float_keys:
+            chart_data[key] = float(chart_data[key])
 
-        return evaluated_chart_data
+        return chart_data
 
     def get_figure_code(self):
         """Returns code that generates figure"""
 
+        chart_data = self.series_notebook.GetPage(0).chart_data
         # Build chart data string
         chart_data_code = ""
-        for key in self.chart_data:
-            value_str = self.chart_data[key]
+        for key in chart_data:
+            value_str = chart_data[key]
 
             if key in self.series_keys:
                 if not value_str or \
@@ -490,7 +539,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def OnDrawChart(self, event):
         """Figure drawing event handler"""
 
-        self.figure.chart_data = self.eval_chart_data(self.chart_data)
+        self.figure.chart_data = self.eval_chart_data()
 
         try:
             self.figure.draw_chart()

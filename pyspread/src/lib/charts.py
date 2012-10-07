@@ -28,15 +28,19 @@ Provides matplotlib figure that are chart templates
 Provides
 --------
 
-* PlotFigure: Plot figure class
+* Chart: Main chart class
 
 """
 
 from matplotlib.figure import Figure
 
 
-class PlotFigure(Figure):
-    """Plot figure class with drawing method"""
+class PlotSeries(object):
+    """"""
+
+
+class ChartFigure(Figure):
+    """Chart figure class with drawing method"""
 
     def __init__(self, **chart_data):
         self.chart_data = chart_data
@@ -50,6 +54,7 @@ class PlotFigure(Figure):
         # xdata and ydata is extracted and handled separately
         try:
             ydata = self.chart_data.pop("ydata")
+
         except KeyError:
             ydata = []
 
