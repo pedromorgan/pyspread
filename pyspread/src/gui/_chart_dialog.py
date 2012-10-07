@@ -42,7 +42,6 @@ import numpy
 
 from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
-from icons import Icons
 import src.lib.i18n as i18n
 import src.lib.charts as charts
 
@@ -297,12 +296,6 @@ class ChartAxisMarkerPanel(BoxedPanel):
         post_command_event(self, self.DrawChartMsg)
 
 
-class ChartPanel(wx.Panel, ChartDialogEventMixin):
-    """Chart panel that contains the matplotlib figure"""
-
-    pass
-
-
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
@@ -349,15 +342,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             self.figure = \
                 self.ChartCls(**self.eval_chart_data(self.chart_data))
 
-        # Icons for BitmapButtons
-        icons = Icons(icon_size=(24, 24))
-
-        self.axis_list_box = wx.ListBox(self, -1, choices=[])
         self.series_staticbox = wx.StaticBox(self, -1, _("Series"))
-        self.add_button = wx.BitmapButton(self, -1, icons["Add"])
-        self.remove_button = wx.BitmapButton(self, -1, icons["Remove"])
-        self.move_up_buttom = wx.BitmapButton(self, -1, icons["GoUp"])
-        self.move_down_buttom = wx.BitmapButton(self, -1, icons["GoDown"])
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
 
@@ -378,60 +363,36 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((800, 350))
-        self.add_button.SetMinSize((24, 24))
-        self.add_button.SetToolTipString(_("Add series."))
-        self.remove_button.SetMinSize((24, 24))
-        self.remove_button.SetToolTipString(_("Remove series."))
-        self.move_up_buttom.SetMinSize((24, 24))
-        self.move_up_buttom.SetToolTipString(_("Move series up."))
-        self.move_down_buttom.SetMinSize((24, 24))
-        self.move_down_buttom.SetToolTipString(_("Move series down."))
+        self.SetSize((600, 400))
         self.figure_canvas.SetMinSize((400, 300))
 
     def __do_layout(self):
-        sizer_1 = wx.FlexGridSizer(1, 3, 0, 0)
-        sizer_4 = wx.FlexGridSizer(1, 1, 0, 0)
-        sizer_2 = wx.FlexGridSizer(2, 1, 0, 0)
-        sizer_3 = wx.FlexGridSizer(1, 2, 0, 0)
-        grid_sizer_1 = wx.FlexGridSizer(1, 2, 0, 0)
-        grid_sizer_2 = wx.FlexGridSizer(5, 1, 0, 0)
-        grid_sizer_1.Add(self.axis_list_box, 0, wx.EXPAND, 0)
-        grid_sizer_2.Add(self.add_button, 0, wx.ALL, 2)
-        grid_sizer_2.Add(self.remove_button, 0, wx.ALL, 2)
-        grid_sizer_2.Add(self.move_up_buttom, 0, wx.ALL, 2)
-        grid_sizer_2.Add(self.move_down_buttom, 0, wx.ALL, 2)
-        grid_sizer_2.AddGrowableRow(1)
-        grid_sizer_2.AddGrowableCol(0)
-        grid_sizer_1.Add(grid_sizer_2, 1, wx.EXPAND, 0)
-        grid_sizer_1.AddGrowableRow(0)
-        grid_sizer_1.AddGrowableCol(0)
-        sizer_2.Add(grid_sizer_1, 1, wx.EXPAND, 0)
-        sizer_3.Add(self.ok_button, 0,
-                    wx.ALL | wx.ALIGN_CENTER_HORIZONTAL |
-                    wx.ALIGN_CENTER_VERTICAL, 2)
-        sizer_3.Add(self.cancel_button, 0,
-                    wx.ALL | wx.ALIGN_CENTER_HORIZONTAL |
-                    wx.ALIGN_CENTER_VERTICAL, 2)
-        sizer_3.AddGrowableRow(0)
-        sizer_3.AddGrowableCol(0)
-        sizer_3.AddGrowableCol(1)
-        sizer_2.Add(sizer_3, 1, wx.ALL | wx.EXPAND, 3)
-        sizer_2.AddGrowableRow(0)
-        sizer_2.AddGrowableCol(0)
-        sizer_series_staticbox = wx.StaticBoxSizer(self.series_staticbox,
-                                                   wx.HORIZONTAL)
-        sizer_series_staticbox.Add(sizer_2, 1, wx.EXPAND, 0)
-        sizer_1.Add(sizer_series_staticbox, 1, wx.EXPAND, 0)
-        sizer_4.Add(self.chart_axis_data_panel, 1, wx.ALL | wx.EXPAND, 2)
-        sizer_4.Add(self.chart_axis_line_panel, 1, wx.ALL | wx.EXPAND, 2)
-        sizer_4.Add(self.chart_axis_marker_panel, 1, wx.ALL | wx.EXPAND, 2)
-        sizer_4.AddGrowableCol(0)
-        sizer_series_staticbox.Add(sizer_4, 1, wx.EXPAND, 0)
-        sizer_1.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
-        self.SetSizer(sizer_1)
-        sizer_1.AddGrowableRow(0)
-        sizer_1.AddGrowableCol(0)
+        main_sizer = wx.FlexGridSizer(2, 2, 0, 0)
+        series_sizer = wx.StaticBoxSizer(self.series_staticbox, wx.HORIZONTAL)
+        attr_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+        button_sizer = wx.FlexGridSizer(1, 3, 0, 3)
+
+        main_sizer.Add(series_sizer, 1, wx.EXPAND, 0)
+        main_sizer.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
+        main_sizer.Add(button_sizer, wx.ALL | wx.EXPAND, 3)
+        main_sizer.AddGrowableRow(0)
+        main_sizer.AddGrowableCol(0)
+
+        series_sizer.Add(attr_sizer, 1, wx.EXPAND, 0)
+
+        attr_sizer.Add(self.chart_axis_data_panel, 1, wx.ALL | wx.EXPAND, 2)
+        attr_sizer.Add(self.chart_axis_line_panel, 1, wx.ALL | wx.EXPAND, 2)
+        attr_sizer.Add(self.chart_axis_marker_panel, 1, wx.ALL | wx.EXPAND, 2)
+        attr_sizer.AddGrowableCol(0)
+
+        button_sizer.Add(self.ok_button, 0,
+            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
+        button_sizer.Add(self.cancel_button, 0,
+            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
+        button_sizer.AddGrowableCol(2)
+
+        self.SetSizer(main_sizer)
+
         self.Layout()
 
     def __bindings(self):
