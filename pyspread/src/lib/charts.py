@@ -45,25 +45,21 @@ class PlotFigure(Figure):
         self.draw_chart()
 
     def draw_chart(self):
-        # Update chart data
-        for key in self.chart_data:
-            setattr(self, key, self.chart_data[key])
+        """Plots chart from self.chart_data.clear"""
+
+        # xdata and ydata is extracted and handled separately
+        try:
+            ydata = self.chart_data.pop("ydata")
+        except KeyError:
+            ydata = []
+
+        # Check xdata length
+        if "xdata" in self.chart_data and \
+           len(self.chart_data["xdata"]) != len(ydata):
+            # Wrong length --> ignore xdata
+            self.chart_data.pop("xdata")
 
         # Clear the axes and redraw the plot anew
 
         self.__axes.clear()
-
-        plot_kwargs = {
-            "linestyle": self.line_style,
-            "linewidth": self.line_width,
-            "color": self.line_color,
-            "marker": self.marker_style,
-            "markersize": self.marker_size,
-            "markerfacecolor": self.marker_face_color,
-            "markeredgecolor": self.marker_edge_color,
-        }
-
-        if hasattr(self, "x_data") and len(self.x_data) == len(self.y1_data):
-            plot_kwargs["xdata"] = self.x_data
-
-        self.__axes.plot(self.y1_data, **plot_kwargs)
+        self.__axes.plot(ydata, **self.chart_data)

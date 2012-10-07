@@ -116,9 +116,9 @@ class ChartAxisDataPanel(BoxedPanel):
 
         kwargs["widgets"] = [
             ("x", _("X"), wx.TextCtrl,
-             (self, -1, kwargs["chart_data"]["x_data"]), {}),
+             (self, -1, kwargs["chart_data"]["xdata"]), {}),
             ("y", _("Y"), wx.TextCtrl,
-             (self, -1, kwargs["chart_data"]["y1_data"]), {}),
+             (self, -1, kwargs["chart_data"]["ydata"]), {}),
         ]
 
         BoxedPanel.__init__(self, *args, **kwargs)
@@ -143,14 +143,14 @@ class ChartAxisDataPanel(BoxedPanel):
     def OnXText(self, event):
         """Event handler for x_text_ctrl"""
 
-        self.chart_data["x_data"] = event.GetString()
+        self.chart_data["xdata"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
     def OnYText(self, event):
         """Event handler for y_text_ctrl"""
 
-        self.chart_data["y1_data"] = event.GetString()
+        self.chart_data["ydata"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -183,7 +183,7 @@ class ChartAxisLinePanel(BoxedPanel):
 
     def __set_properties(self):
         # Set controls to default values
-        self.width_editor.SetSelection(int(self.chart_data["line_width"]))
+        self.width_editor.SetSelection(int(self.chart_data["linewidth"]))
 
     def __bindings(self):
         """Binds events to handlers"""
@@ -199,19 +199,19 @@ class ChartAxisLinePanel(BoxedPanel):
         """Line style event handler"""
 
         line_style_code = self.style_editor.get_code(event.GetString())
-        self.chart_data["line_style"] = repr(line_style_code)
+        self.chart_data["linestyle"] = repr(line_style_code)
         post_command_event(self, self.DrawChartMsg)
 
     def OnWidth(self, event):
         """Line width event handler"""
 
-        self.chart_data["line_width"] = repr(event.GetSelection())
+        self.chart_data["linewidth"] = repr(event.GetSelection())
         post_command_event(self, self.DrawChartMsg)
 
     def OnColor(self, event):
         """Line color event handler"""
 
-        self.chart_data["line_color"] = \
+        self.chart_data["color"] = \
                 repr(tuple(i / 255.0 for i in event.GetValue().Get()))
         post_command_event(self, self.DrawChartMsg)
 
@@ -244,17 +244,17 @@ class ChartAxisMarkerPanel(BoxedPanel):
     def __set_properties(self):
         # Set controls to default values
 
-        marker_style_code = self.chart_data["marker_style"][1:-1]
+        marker_style_code = self.chart_data["marker"][1:-1]
         marker_style_label = self.style_editor.get_label(marker_style_code)
         self.style_editor.SetStringSelection(marker_style_label)
 
-        self.size_editor.SetValue(int(self.chart_data["marker_size"]))
+        self.size_editor.SetValue(int(self.chart_data["markersize"]))
 
-        face_color_string = self.chart_data["marker_face_color"]
+        face_color_string = self.chart_data["markerfacecolor"]
         face_color = self._color_from_string(face_color_string)
         self.face_color_editor.SetColour(face_color)
 
-        edge_color_string = self.chart_data["marker_edge_color"]
+        edge_color_string = self.chart_data["markeredgecolor"]
         edge_color = self._color_from_string(edge_color_string)
         self.edge_color_editor.SetColour(edge_color)
 
@@ -273,26 +273,26 @@ class ChartAxisMarkerPanel(BoxedPanel):
         """Marker style event handler"""
 
         marker_style_code = self.style_editor.get_code(event.GetString())
-        self.chart_data["marker_style"] = repr(marker_style_code)
+        self.chart_data["marker"] = repr(marker_style_code)
         post_command_event(self, self.DrawChartMsg)
 
     def OnSize(self, event):
         """Marker size event"""
 
-        self.chart_data["marker_size"] = repr(event.GetValue())
+        self.chart_data["markersize"] = repr(event.GetValue())
         post_command_event(self, self.DrawChartMsg)
 
     def OnEdgeColor(self, event):
         """Marker front color event handler"""
 
-        self.chart_data["marker_edge_color"] = \
+        self.chart_data["markeredgecolor"] = \
                 repr(tuple(i / 255.0 for i in event.GetValue().Get()))
         post_command_event(self, self.DrawChartMsg)
 
     def OnFaceColor(self, event):
         """Marker back color event handler"""
 
-        self.chart_data["marker_face_color"] = \
+        self.chart_data["markerfacecolor"] = \
                 repr(tuple(i / 255.0 for i in event.GetValue().Get()))
         post_command_event(self, self.DrawChartMsg)
 
@@ -318,22 +318,21 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.ChartCls = charts.PlotFigure
 
         self.chart_data = {
-            "x_data": u"",
-            "y1_data": u"",
-            "y2_data": u"",
-            "line_style": u"'-'",
-            "line_width": u"1",
-            "line_color": u"(0, 0, 0)",
-            "marker_style": u"''",
-            "marker_size": u"5",
-            "marker_face_color": u"(0, 0, 0)",
-            "marker_edge_color": u"(0, 0, 0)",
+            "xdata": u"",
+            "ydata": u"",
+            "linestyle": u"'-'",
+            "linewidth": u"1",
+            "color": u"(0, 0, 0)",
+            "marker": u"''",
+            "markersize": u"5",
+            "markerfacecolor": u"(0, 0, 0)",
+            "markeredgecolor": u"(0, 0, 0)",
         }
 
-        self.series_keys = ["x_data", "y1_data", "y2_data", "line_color",
-                            "marker_face_color", "marker_edge_color"]
-        self.string_keys = ["line_style", "marker_style"]
-        self.float_keys = ["marker_size"]
+        self.series_keys = ["xdata", "ydata", "color",
+                            "markerfacecolor", "markeredgecolor"]
+        self.string_keys = ["linestyle", "marker"]
+        self.float_keys = ["markersize"]
 
         if code[:7] == "charts.":
             # If chart data is present build the chart
