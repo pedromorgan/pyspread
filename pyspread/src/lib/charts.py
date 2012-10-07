@@ -53,22 +53,17 @@ class PlotFigure(Figure):
 
         self.__axes.clear()
 
+        plot_kwargs = {
+            "linestyle": self.line_style,
+            "linewidth": self.line_width,
+            "color": self.line_color,
+            "marker": self.marker_style,
+            "markersize": self.marker_size,
+            "markerfacecolor": self.marker_face_color,
+            "markeredgecolor": self.marker_edge_color,
+        }
+
         if hasattr(self, "x_data") and len(self.x_data) == len(self.y1_data):
-            self.__axes.plot(
-                self.y1_data,
-                linewidth=self.line_width,
-                xdata=self.x_data,
-                color=self.line_color,
-                marker=self.marker_style,
-                markersize = self.marker_size,
-                markerfacecolor=self.marker_face_color,
-                markeredgecolor=self.marker_edge_color)
-        else:
-            self.__axes.plot(
-                self.y1_data,
-                linewidth=self.line_width,
-                color=self.line_color,
-                marker=self.marker_style,
-                markersize = self.marker_size,
-                markerfacecolor=self.marker_face_color,
-                markeredgecolor=self.marker_edge_color)
+            plot_kwargs["xdata"] = self.x_data
+
+        self.__axes.plot(self.y1_data, **plot_kwargs)

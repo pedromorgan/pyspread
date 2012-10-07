@@ -29,12 +29,15 @@ Provides:
   2. ImageComboBox: Base class for image combo boxes
   3. PenWidthComboBox: ComboBox for pen width selection
   4. PenStyleComboBox: ComboBox for pen style selection
-  5. FontChoiceCombobox: ComboBox for font selection
-  6. BorderEditChoice: ComboBox for border selection
-  7. BitmapToggleButton: Button that toggles through a list of bitmaps
-  8. EntryLine: The line for entering cell code
-  9. StatusBar: Main window statusbar
- 10. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
+  5. MatplotlibStyleChoice: Base class for matplotlib chart style choices
+  6. LineStyleComboBox: ChoiceBox for selection matplotlib line styles
+  7. MarkerStyleComboBox: ChoiceBox for selection matplotlib marker styles
+  8. FontChoiceCombobox: ComboBox for font selection
+  9. BorderEditChoice: ComboBox for border selection
+ 10. BitmapToggleButton: Button that toggles through a list of bitmaps
+ 11. EntryLine: The line for entering cell code
+ 12. StatusBar: Main window statusbar
+ 13. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
 
 """
 
@@ -435,42 +438,72 @@ class PenWidthComboBox(ImageComboBox):
 
 # end of class PenWidthComboBox
 
+# Chart dialog widgets for matplotlib interaction
+# -----------------------------------------------
 
-class LineStyleComboBox(ImageComboBox):
+
+class MatplotlibStyleChoice(wx.Choice):
+    """Base class for line and marker choice for matplotlib charts"""
+
+    # Style label and code are stored in styles as a list of tuples
+    styles = []
+
+    def __init__(self, *args, **kwargs):
+        kwargs["choices"] = [style[0] for style in self.styles]
+        wx.Choice.__init__(self, *args, **kwargs)
+
+    def get_code(self, label):
+        """Returns code for given label string
+
+        Inverse of get_code
+
+        Parameters
+        ----------
+        label: String
+        \tLlabel string, field 0 of style tuple
+
+        """
+
+        for style in self.styles:
+            if style[0] == label:
+                return style[1]
+
+        raise ValueError(_("Label {} is invalid.".format(label)))
+
+    def get_label(self, code):
+        """Returns string label for given code string
+
+        Inverse of get_code
+
+        Parameters
+        ----------
+        code: String
+        \tCode string, field 1 of style tuple
+
+        """
+
+        for style in self.styles:
+            if style[1] == code:
+                return style[0]
+
+        raise ValueError(_("Code {} is invalid.".format(code)))
+
+
+class LineStyleComboBox(MatplotlibStyleChoice):
     """Combo box for choosing line style for matplotlib charts"""
 
-    pen_styles = [
-        ("solid line style", "-"),
-        ("dashed line style", "--"),
-        ("dash-dot line style", "-."),
-        ("dotted line style", ":"),
+    styles = [
+        ("Solid line style", "-"),
+        ("Dashed line style", "--"),
+        ("Dash-dot line style", "-."),
+        ("Dotted line style", ":"),
     ]
 
-    def OnDrawItem(self, dc, rect, item, flags):
 
-        if item == wx.NOT_FOUND:
-            return
-
-        r = wx.Rect(*rect)  # make a copy
-        r.Deflate(3, 5)
-
-        pen_style, pen_style_matplot = self.pen_styles[item]
-        pen = wx.Pen(dc.GetTextForeground(), 3, 1)
-        pen.SetCap(wx.CAP_BUTT)
-
-        dc.SetPen(pen)
-
-        # Draw the example line in the combobox
-        dc.DrawLine(r.x + 5, r.y + r.height / 2,
-                    r.x + r.width - 5, r.y + r.height / 2)
-
-# end of class PenStyleComboBox
-
-
-class MarkerStyleComboBox(wx.Choice):
+class MarkerStyleComboBox(MatplotlibStyleChoice):
     """Choice box for choosing matplotlib chart markers"""
 
-    markers = [
+    styles = [
         ("No marker", ""),
         ("Point marker", "."),
         ("Pixel marker", ","),
@@ -496,47 +529,9 @@ class MarkerStyleComboBox(wx.Choice):
         ("Hline marker", "_"),
     ]
 
-    def __init__(self, *args, **kwargs):
-        kwargs["choices"] = [marker[0] for marker in self.markers]
-        wx.Choice.__init__(self, *args, **kwargs)
 
-    def get_code(self, label):
-        """Returns code for given label string
-
-        Inverse of get_code
-
-        Parameters
-        ----------
-        label: String
-        \tLlabel string, field 0 of marker tuple
-
-        """
-
-        for marker in self.markers:
-            if marker[0] == label:
-                return marker[1]
-
-        raise ValueError(_("Label {} is invalid.".format(label)))
-
-    def get_label(self, code):
-        """Returns string label for given code string
-
-        Inverse of get_code
-
-        Parameters
-        ----------
-        code: String
-        \tCode string, field 1 of marker tuple
-
-        """
-
-        for marker in self.markers:
-            if marker[1] == code:
-                return marker[0]
-
-        raise ValueError(_("Code {} is invalid.".format(code)))
-
-# end of class PenWidthComboBox
+# End of chart dialog widgets for matplotlib interaction
+# ------------------------------------------------------
 
 
 class FontChoiceCombobox(ImageComboBox):

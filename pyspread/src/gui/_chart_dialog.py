@@ -37,7 +37,7 @@ from copy import copy
 import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
-from  wx.lib.intctrl import IntCtrl, EVT_INT
+from wx.lib.intctrl import IntCtrl, EVT_INT
 import numpy
 
 from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
@@ -105,11 +105,6 @@ class BoxedPanel(wx.Panel, ChartDialogEventMixin):
         color_tuple_int = map(lambda x: int(x * 255), color_tuple)
         return wx.Colour(*color_tuple_int)
 
-class ChartSeriesManagerPanel(BoxedPanel):
-    """Panel that allows adding, removing, sorting and choosing data series"""
-
-    pass
-
 
 class ChartAxisDataPanel(BoxedPanel):
     """Panel for data entry for chart axis"""
@@ -166,12 +161,11 @@ class ChartAxisLinePanel(BoxedPanel):
     def __init__(self, *args, **kwargs):
 
         # Custom data
-        _styles = map(unicode, xrange(len(LineStyleComboBox.pen_styles)))
         _widths = map(unicode, xrange(12))
 
         kwargs["box_label"] = _("Line")
 
-        pen_style_combo_args = (self, -1), {"choices": _styles},
+        pen_style_combo_args = (self, -1), {}
         colorselect_args = (self, -1, unichr(0x2500) * 6), {"size": (80, 25)}
         pen_width_combo_args = (self,), {"choices": _widths,
                                 "style": wx.CB_READONLY, "size": (50, -1)}
@@ -194,11 +188,19 @@ class ChartAxisLinePanel(BoxedPanel):
     def __bindings(self):
         """Binds events to handlers"""
 
+        self.style_editor.Bind(wx.EVT_CHOICE, self.OnStyle)
         self.Bind(wx.EVT_COMBOBOX, self.OnWidth, self.width_editor)
         self.color_editor.Bind(csel.EVT_COLOURSELECT, self.OnColor)
 
     # Handlers
     # --------
+
+    def OnStyle(self, event):
+        """Line style event handler"""
+
+        line_style_code = self.style_editor.get_code(event.GetString())
+        self.chart_data["line_style"] = repr(line_style_code)
+        post_command_event(self, self.DrawChartMsg)
 
     def OnWidth(self, event):
         """Line width event handler"""
@@ -319,9 +321,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             "x_data": u"",
             "y1_data": u"",
             "y2_data": u"",
+            "line_style": u"'-'",
             "line_width": u"1",
             "line_color": u"(0, 0, 0)",
-            "marker_style": u"",
+            "marker_style": u"''",
             "marker_size": u"5",
             "marker_face_color": u"(0, 0, 0)",
             "marker_edge_color": u"(0, 0, 0)",
@@ -329,7 +332,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         self.series_keys = ["x_data", "y1_data", "y2_data", "line_color",
                             "marker_face_color", "marker_edge_color"]
-        self.string_keys = ["marker_style"]
+        self.string_keys = ["line_style", "marker_style"]
         self.float_keys = ["marker_size"]
 
         if code[:7] == "charts.":
@@ -512,15 +515,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for key in self.chart_data:
             value_str = self.chart_data[key]
 
-            if not value_str or value_str == "()":
-                value_str = None
+            if key in self.series_keys:
+                if not value_str or \
+                   (value_str[0] != "(" or value_str[-1] != ")"):
+                    value_str = "(" + value_str + ")"
 
-            elif key in self.series_keys and \
-                 (value_str[0] != "(" or value_str[-1] != ")"):
-                value_str = "(" + value_str + ")"
-
-            if value_str is not None:
-                chart_data_code += "{}={}, ".format(key, value_str)
+            chart_data_code += "{}={}, ".format(key, value_str)
 
         return 'charts.{}({})'.format(self.ChartCls.__name__, chart_data_code)
 
