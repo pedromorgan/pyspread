@@ -300,29 +300,29 @@ class ChartAxisMarkerPanel(LabeledWidgetPanel):
 class PlotPanel(wx.Panel):
     """Static box panel that holds widgets for one plot series"""
 
-    # Default data for series plot
-
-    chart_data = {
-        "xdata": u"",
-        "ydata": u"",
-        "linestyle": u"'-'",
-        "linewidth": u"1",
-        "color": u"(0, 0, 0)",
-        "marker": u"''",
-        "markersize": u"5",
-        "markerfacecolor": u"(0, 0, 0)",
-        "markeredgecolor": u"(0, 0, 0)",
-    }
-
-    series_keys = ["xdata", "ydata", "color", "markerfacecolor",
-                   "markeredgecolor"]
-    string_keys = ["linestyle", "marker"]
-    float_keys = ["markersize"]
-
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         self.get_series_tuple = parent.get_series_tuple
+
+        # Default data for series plot
+
+        self.chart_data = {
+            "xdata": u"",
+            "ydata": u"",
+            "linestyle": u"'-'",
+            "linewidth": u"1",
+            "color": u"(0, 0, 0)",
+            "marker": u"''",
+            "markersize": u"5",
+            "markerfacecolor": u"(0, 0, 0)",
+            "markeredgecolor": u"(0, 0, 0)",
+        }
+
+        self.series_keys = ["xdata", "ydata", "color", "markerfacecolor",
+                       "markeredgecolor"]
+        self.string_keys = ["linestyle", "marker"]
+        self.float_keys = ["markersize"]
 
         self.chart_axis_data_panel = \
             ChartAxisDataPanel(self, -1, chart_data=self.chart_data)
@@ -346,28 +346,6 @@ class PlotPanel(wx.Panel):
         self.Layout()
 
 
-class SeriesNotebook(wx.Notebook):
-    def __init__(self, parent, *args, **kwargs):
-        kwargs["style"] = wx.BK_LEFT
-        wx.Notebook.__init__(self, parent, *args, **kwargs)
-        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
-        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
-
-    def OnPageChanged(self, event):
-        old = event.GetOldSelection()
-        new = event.GetSelection()
-        sel = self.GetSelection()
-        print 'OnPageChanged,  old:%d, new:%d, sel:%d\n' % (old, new, sel)
-        event.Skip()
-
-    def OnPageChanging(self, event):
-        old = event.GetOldSelection()
-        new = event.GetSelection()
-        sel = self.GetSelection()
-        print 'OnPageChanging, old:%d, new:%d, sel:%d\n' % (old, new, sel)
-        event.Skip()
-
-
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
@@ -384,10 +362,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.series_notebook = fnb.FlatNotebook(self, -1, agwStyle=agwstyle)
 
         # Series creation
-        self.series_notebook.AddPage(PlotPanel(self, -1), _("Series"))
-        print dir(self.series_notebook)
-        print self.series_notebook.GetPage(0)
-        chart_data = self.series_notebook.GetPage(0).chart_data
+        self.series_notebook.AddPage(PlotPanel(self, -1), _(_("Series")))
+        self.series_notebook.AddPage(wx.Panel(self, -1), _("+"))
+        no_series = self.series_notebook.GetPageCount() - 1
+        chart_data = []
+        for i in xrange(no_series):
+            chart_data.append(self.series_notebook.GetPage(i).chart_data)
 
         if code[:7] == "charts.":
             # If chart data is present build the chart
@@ -401,7 +381,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         else:
             # Use default values
             default_data = self.eval_chart_data()
-            self.figure = charts.ChartFigure(**default_data)
+            self.figure = charts.ChartFigure(*default_data)
 
         # end series creation
 
@@ -446,6 +426,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         """Binds events to handlers"""
 
         self.Bind(self.EVT_CMD_DRAW_CHART, self.OnDrawChart)
+        self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CHANGED, self.OnSeriesChanged)
 
     def __disable_controls(self, unneeded_ctrls):
         """Disables the controls that are not needed by chart"""
@@ -501,40 +482,67 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def eval_chart_data(self):
         """Returns evaluated content for chart data"""
 
-        series_panel = self.series_notebook.GetPage(0)
-        chart_data = copy(series_panel.chart_data)
+        chart_data = []
+        no_series = self.series_notebook.GetPageCount() - 1
 
-        for key in series_panel.series_keys:
-            chart_data[key] = self.get_series_tuple(chart_data[key])
+        for panel_number in xrange(no_series):
+            series_panel = self.series_notebook.GetPage(panel_number)
 
-        for key in series_panel.string_keys:
-            chart_data[key] = chart_data[key][1:-1]
+            series_data = copy(series_panel.chart_data)
 
-        for key in series_panel.float_keys:
-            chart_data[key] = float(chart_data[key])
+            for key in series_panel.series_keys:
+                series_data[key] = self.get_series_tuple(series_data[key])
+
+            for key in series_panel.string_keys:
+                series_data[key] = series_data[key][1:-1]
+
+            for key in series_panel.float_keys:
+                series_data[key] = float(series_data[key])
+
+            chart_data.append(series_data)
 
         return chart_data
 
     def get_figure_code(self):
         """Returns code that generates figure"""
 
-        chart_data = self.series_notebook.GetPage(0).chart_data
-        # Build chart data string
         chart_data_code = ""
-        for key in chart_data:
-            value_str = chart_data[key]
+        no_series = self.series_notebook.GetPageCount() - 1
 
-            if key in self.series_keys:
-                if not value_str or \
-                   (value_str[0] != "(" or value_str[-1] != ")"):
-                    value_str = "(" + value_str + ")"
+        for panel_number in xrange(no_series):
+            series_data = self.series_notebook.GetPage(panel_number).chart_data
 
-            chart_data_code += "{}={}, ".format(key, value_str)
+            # Build series data string
+            series_data_code = ""
+            for key in series_data:
+                value_str = series_data[key]
+
+                if key in self.series_keys:
+                    if not value_str or \
+                       (value_str[0] != "(" or value_str[-1] != ")"):
+                        value_str = "(" + value_str + ")"
+
+                series_data_code += "{}: {}, ".format(key, value_str)
+
+            ##TODO: Merge series data to chart data
+            chart_data_code = series_data_code
 
         return 'charts.{}({})'.format(self.ChartCls.__name__, chart_data_code)
 
     # Handlers
     # --------
+
+    def OnSeriesChanged(self, event):
+        """FlatNotebook change event handler"""
+
+        selection = event.GetSelection()
+
+        if selection == self.series_notebook.GetPageCount() - 1:
+            # Add new series
+            new_panel = PlotPanel(self, -1)
+            self.series_notebook.InsertPage(selection, new_panel, _("Series"))
+
+        event.Skip()
 
     def OnDrawChart(self, event):
         """Figure drawing event handler"""

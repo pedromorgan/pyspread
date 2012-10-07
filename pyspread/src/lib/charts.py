@@ -42,7 +42,7 @@ class PlotSeries(object):
 class ChartFigure(Figure):
     """Chart figure class with drawing method"""
 
-    def __init__(self, **chart_data):
+    def __init__(self, *chart_data):
         self.chart_data = chart_data
         Figure.__init__(self, (5.0, 4.0), facecolor="white")
         self.__axes = self.add_subplot(111)
@@ -50,21 +50,21 @@ class ChartFigure(Figure):
 
     def draw_chart(self):
         """Plots chart from self.chart_data.clear"""
-
-        # xdata and ydata is extracted and handled separately
-        try:
-            ydata = self.chart_data.pop("ydata")
-
-        except KeyError:
-            ydata = []
-
-        # Check xdata length
-        if "xdata" in self.chart_data and \
-           len(self.chart_data["xdata"]) != len(ydata):
-            # Wrong length --> ignore xdata
-            self.chart_data.pop("xdata")
-
-        # Clear the axes and redraw the plot anew
-
         self.__axes.clear()
-        self.__axes.plot(ydata, **self.chart_data)
+
+        for series in self.chart_data:
+            # xdata and ydata is extracted and handled separately
+            try:
+                ydata = series.pop("ydata")
+
+            except KeyError:
+                ydata = []
+
+            # Check xdata length
+            if "xdata" in series and len(series["xdata"]) != len(ydata):
+                # Wrong length --> ignore xdata
+                series.pop("xdata")
+            if ydata:
+
+                # Draw series to axes
+                self.__axes.plot(ydata, **series)
