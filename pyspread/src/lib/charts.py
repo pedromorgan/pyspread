@@ -60,6 +60,7 @@ class PlotFigure(Figure):
                 xdata=self.x_data,
                 color=self.line_color,
                 marker=self.marker_style,
+                markersize = self.marker_size,
                 markerfacecolor=self.marker_face_color,
                 markeredgecolor=self.marker_edge_color)
         else:
@@ -68,5 +69,6 @@ class PlotFigure(Figure):
                 linewidth=self.line_width,
                 color=self.line_color,
                 marker=self.marker_style,
+                markersize = self.marker_size,
                 markerfacecolor=self.marker_face_color,
                 markeredgecolor=self.marker_edge_color)

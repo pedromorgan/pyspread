@@ -37,6 +37,7 @@ from copy import copy
 import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
+from  wx.lib.intctrl import IntCtrl, EVT_INT
 import numpy
 
 from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
@@ -97,6 +98,12 @@ class BoxedPanel(wx.Panel, ChartDialogEventMixin):
 
         self.Layout()
 
+    def _color_from_string(self, color_string):
+        """Returns wx.Colour from given tuple string"""
+
+        color_tuple = self.parent.get_series_tuple(color_string)
+        color_tuple_int = map(lambda x: int(x * 255), color_tuple)
+        return wx.Colour(*color_tuple_int)
 
 class ChartSeriesManagerPanel(BoxedPanel):
     """Panel that allows adding, removing, sorting and choosing data series"""
@@ -210,33 +217,50 @@ class ChartAxisLinePanel(BoxedPanel):
 class ChartAxisMarkerPanel(BoxedPanel):
     """Panel for marker style entry"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
 
+        self.parent = parent
         kwargs["box_label"] = _("Marker")
 
         marker_style_combo_args = (self, -1), {}
         colorselect_args = (self, -1), {"size": (80, 25)}
+        intctrl_args = (self, -1, 0, None), {}
 
         kwargs["widgets"] = [
             ("style", _("Style"), MarkerStyleComboBox) +
                                   marker_style_combo_args,
+            ("size", _("Size"), IntCtrl) + intctrl_args,
             ("face_color", _("Face"), csel.ColourSelect) + colorselect_args,
             ("edge_color", _("Edge"), csel.ColourSelect) + colorselect_args,
         ]
 
-        BoxedPanel.__init__(self, *args, **kwargs)
+        BoxedPanel.__init__(self, parent, *args, **kwargs)
 
         self.__set_properties()
         self.__bindings()
 
     def __set_properties(self):
         # Set controls to default values
-        pass
+
+        marker_style_code = self.chart_data["marker_style"][1:-1]
+        marker_style_label = self.style_editor.get_label(marker_style_code)
+        self.style_editor.SetStringSelection(marker_style_label)
+
+        self.size_editor.SetValue(int(self.chart_data["marker_size"]))
+
+        face_color_string = self.chart_data["marker_face_color"]
+        face_color = self._color_from_string(face_color_string)
+        self.face_color_editor.SetColour(face_color)
+
+        edge_color_string = self.chart_data["marker_edge_color"]
+        edge_color = self._color_from_string(edge_color_string)
+        self.edge_color_editor.SetColour(edge_color)
 
     def __bindings(self):
         """Binds events to handlers"""
 
         self.style_editor.Bind(wx.EVT_CHOICE, self.OnStyle)
+        self.size_editor.Bind(EVT_INT, self.OnSize)
         self.face_color_editor.Bind(csel.EVT_COLOURSELECT, self.OnFaceColor)
         self.edge_color_editor.Bind(csel.EVT_COLOURSELECT, self.OnEdgeColor)
 
@@ -248,6 +272,12 @@ class ChartAxisMarkerPanel(BoxedPanel):
 
         marker_style_code = self.style_editor.get_code(event.GetString())
         self.chart_data["marker_style"] = repr(marker_style_code)
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnSize(self, event):
+        """Marker size event"""
+
+        self.chart_data["marker_size"] = repr(event.GetValue())
         post_command_event(self, self.DrawChartMsg)
 
     def OnEdgeColor(self, event):
@@ -291,7 +321,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             "y2_data": u"",
             "line_width": u"1",
             "line_color": u"(0, 0, 0)",
-            "marker_style": "",
+            "marker_style": u"",
+            "marker_size": u"5",
             "marker_face_color": u"(0, 0, 0)",
             "marker_edge_color": u"(0, 0, 0)",
         }
@@ -299,6 +330,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.series_keys = ["x_data", "y1_data", "y2_data", "line_color",
                             "marker_face_color", "marker_edge_color"]
         self.string_keys = ["marker_style"]
+        self.float_keys = ["marker_size"]
 
         if code[:7] == "charts.":
             # If chart data is present build the chart
@@ -466,6 +498,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         for key in self.string_keys:
             evaluated_chart_data[key] = chart_data[key][1:-1]
+
+        for key in self.float_keys:
+            evaluated_chart_data[key] = float(chart_data[key])
 
         return evaluated_chart_data
 

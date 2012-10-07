@@ -501,13 +501,40 @@ class MarkerStyleComboBox(wx.Choice):
         wx.Choice.__init__(self, *args, **kwargs)
 
     def get_code(self, label):
-        """Returns code for label"""
+        """Returns code for given label string
+
+        Inverse of get_code
+
+        Parameters
+        ----------
+        label: String
+        \tLlabel string, field 0 of marker tuple
+
+        """
 
         for marker in self.markers:
             if marker[0] == label:
                 return marker[1]
 
         raise ValueError(_("Label {} is invalid.".format(label)))
+
+    def get_label(self, code):
+        """Returns string label for given code string
+
+        Inverse of get_code
+
+        Parameters
+        ----------
+        code: String
+        \tCode string, field 1 of marker tuple
+
+        """
+
+        for marker in self.markers:
+            if marker[1] == code:
+                return marker[0]
+
+        raise ValueError(_("Code {} is invalid.".format(code)))
 
 # end of class PenWidthComboBox
 
