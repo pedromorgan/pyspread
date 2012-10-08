@@ -32,6 +32,7 @@ Provides
 
 """
 
+import ast
 from copy import copy
 
 import wx
@@ -361,27 +362,30 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         agwstyle = fnb.FNB_NODRAG | fnb.FNB_DROPDOWN_TABS_LIST | fnb.FNB_BOTTOM
         self.series_notebook = fnb.FlatNotebook(self, -1, agwStyle=agwstyle)
 
-        # Series creation
-        self.series_notebook.AddPage(PlotPanel(self, -1), _(_("Series")))
-        self.series_notebook.AddPage(wx.Panel(self, -1), _("+"))
-        no_series = self.series_notebook.GetPageCount() - 1
-        chart_data = []
-        for i in xrange(no_series):
-            chart_data.append(self.series_notebook.GetPage(i).chart_data)
-
         if code[:7] == "charts.":
             # If chart data is present build the chart
             key = self.grid.actions.cursor
             self.figure = self.grid.code_array._eval_cell(key, code)
 
             # Get data from figure
-            for key, value in self.param_gen(code.split("(", 1)[1][:-1]):
-                chart_data[key] = value
-
+            code_param_string = "[" + code.split("(", 1)[1][:-1] + "]"
+            code_param = ast.literal_eval(code_param_string)
+            for series_param in code_param:
+                self.series_notebook.AddPage(PlotPanel(self, -1),
+                                             _(_("Series")))
+                i = self.series_notebook.GetPageCount() - 1
+                series_data = self.series_notebook.GetPage(i).chart_data
+                for key in series_param:
+                    series_data[key] = repr(series_param[key])
         else:
+            # Series creation
+            self.series_notebook.AddPage(PlotPanel(self, -1), _(_("Series")))
+
             # Use default values
             default_data = self.eval_chart_data()
             self.figure = charts.ChartFigure(*default_data)
+
+        self.series_notebook.AddPage(wx.Panel(self, -1), _("+"))
 
         # end series creation
 
