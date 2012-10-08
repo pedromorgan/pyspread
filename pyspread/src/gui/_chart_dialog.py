@@ -57,7 +57,7 @@ class LabeledWidgetPanel(wx.Panel, ChartDialogEventMixin):
     def __init__(self, *args, **kwargs):
 
         self.parent = args[0]
-        self.chart_data = kwargs.pop("chart_data")
+        self.series_data = kwargs.pop("series_data")
 
         box_label = kwargs.pop("box_label")
         self.widgets = kwargs.pop("widgets")
@@ -117,9 +117,9 @@ class ChartAxisDataPanel(LabeledWidgetPanel):
 
         kwargs["widgets"] = [
             ("x", _("X"), wx.TextCtrl,
-             (self, -1, kwargs["chart_data"]["xdata"]), {}),
+             (self, -1, kwargs["series_data"]["xdata"]), {}),
             ("y", _("Y"), wx.TextCtrl,
-             (self, -1, kwargs["chart_data"]["ydata"]), {}),
+             (self, -1, kwargs["series_data"]["ydata"]), {}),
         ]
 
         LabeledWidgetPanel.__init__(self, *args, **kwargs)
@@ -144,14 +144,14 @@ class ChartAxisDataPanel(LabeledWidgetPanel):
     def OnXText(self, event):
         """Event handler for x_text_ctrl"""
 
-        self.chart_data["xdata"] = event.GetString()
+        self.series_data["xdata"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
     def OnYText(self, event):
         """Event handler for y_text_ctrl"""
 
-        self.chart_data["ydata"] = event.GetString()
+        self.series_data["ydata"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -184,7 +184,7 @@ class ChartAxisLinePanel(LabeledWidgetPanel):
 
     def __set_properties(self):
         # Set controls to default values
-        self.width_editor.SetSelection(int(self.chart_data["linewidth"]))
+        self.width_editor.SetSelection(int(self.series_data["linewidth"]))
 
     def __bindings(self):
         """Binds events to handlers"""
@@ -200,19 +200,19 @@ class ChartAxisLinePanel(LabeledWidgetPanel):
         """Line style event handler"""
 
         line_style_code = self.style_editor.get_code(event.GetString())
-        self.chart_data["linestyle"] = repr(line_style_code)
+        self.series_data["linestyle"] = repr(line_style_code)
         post_command_event(self, self.DrawChartMsg)
 
     def OnWidth(self, event):
         """Line width event handler"""
 
-        self.chart_data["linewidth"] = repr(event.GetSelection())
+        self.series_data["linewidth"] = repr(event.GetSelection())
         post_command_event(self, self.DrawChartMsg)
 
     def OnColor(self, event):
         """Line color event handler"""
 
-        self.chart_data["color"] = \
+        self.series_data["color"] = \
                 repr(tuple(i / 255.0 for i in event.GetValue().Get()))
         post_command_event(self, self.DrawChartMsg)
 
@@ -245,17 +245,17 @@ class ChartAxisMarkerPanel(LabeledWidgetPanel):
     def __set_properties(self):
         # Set controls to default values
 
-        marker_style_code = self.chart_data["marker"][1:-1]
+        marker_style_code = self.series_data["marker"][1:-1]
         marker_style_label = self.style_editor.get_label(marker_style_code)
         self.style_editor.SetStringSelection(marker_style_label)
 
-        self.size_editor.SetValue(int(self.chart_data["markersize"]))
+        self.size_editor.SetValue(int(self.series_data["markersize"]))
 
-        face_color_string = self.chart_data["markerfacecolor"]
+        face_color_string = self.series_data["markerfacecolor"]
         face_color = self._color_from_string(face_color_string)
         self.face_color_editor.SetColour(face_color)
 
-        edge_color_string = self.chart_data["markeredgecolor"]
+        edge_color_string = self.series_data["markeredgecolor"]
         edge_color = self._color_from_string(edge_color_string)
         self.edge_color_editor.SetColour(edge_color)
 
@@ -274,26 +274,26 @@ class ChartAxisMarkerPanel(LabeledWidgetPanel):
         """Marker style event handler"""
 
         marker_style_code = self.style_editor.get_code(event.GetString())
-        self.chart_data["marker"] = repr(marker_style_code)
+        self.series_data["marker"] = repr(marker_style_code)
         post_command_event(self, self.DrawChartMsg)
 
     def OnSize(self, event):
         """Marker size event"""
 
-        self.chart_data["markersize"] = repr(event.GetValue())
+        self.series_data["markersize"] = repr(event.GetValue())
         post_command_event(self, self.DrawChartMsg)
 
     def OnEdgeColor(self, event):
         """Marker front color event handler"""
 
-        self.chart_data["markeredgecolor"] = \
+        self.series_data["markeredgecolor"] = \
                 repr(tuple(i / 255.0 for i in event.GetValue().Get()))
         post_command_event(self, self.DrawChartMsg)
 
     def OnFaceColor(self, event):
         """Marker back color event handler"""
 
-        self.chart_data["markerfacecolor"] = \
+        self.series_data["markerfacecolor"] = \
                 repr(tuple(i / 255.0 for i in event.GetValue().Get()))
         post_command_event(self, self.DrawChartMsg)
 
@@ -301,14 +301,15 @@ class ChartAxisMarkerPanel(LabeledWidgetPanel):
 class PlotPanel(wx.Panel):
     """Static box panel that holds widgets for one plot series"""
 
-    def __init__(self, parent, *args, **kwargs):
-        wx.Panel.__init__(self, parent, *args, **kwargs)
+    def __init__(self, parent, __id, series_data=None):
+
+        wx.Panel.__init__(self, parent, __id)
 
         self.get_series_tuple = parent.get_series_tuple
 
         # Default data for series plot
 
-        self.chart_data = {
+        self.series_data = {
             "xdata": u"",
             "ydata": u"",
             "linestyle": u"'-'",
@@ -320,26 +321,33 @@ class PlotPanel(wx.Panel):
             "markeredgecolor": u"(0, 0, 0)",
         }
 
+        if series_data is not None:
+            self.series_data.update(series_data)
+
+        # Data types for keys
+
         self.series_keys = ["xdata", "ydata", "color", "markerfacecolor",
-                       "markeredgecolor"]
+                            "markeredgecolor"]
         self.string_keys = ["linestyle", "marker"]
         self.float_keys = ["markersize"]
 
-        self.chart_axis_data_panel = \
-            ChartAxisDataPanel(self, -1, chart_data=self.chart_data)
-        self.chart_axis_line_panel = \
-            ChartAxisLinePanel(self, -1, chart_data=self.chart_data)
-        self.chart_axis_marker_panel = \
-            ChartAxisMarkerPanel(self, -1, chart_data=self.chart_data)
+        # Widgets
+
+        self.data_panel = \
+            ChartAxisDataPanel(self, -1, series_data=self.series_data)
+        self.line_panel = \
+            ChartAxisLinePanel(self, -1, series_data=self.series_data)
+        self.marker_panel = \
+            ChartAxisMarkerPanel(self, -1, series_data=self.series_data)
 
         self.__do_layout()
 
     def __do_layout(self):
         main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
 
-        main_sizer.Add(self.chart_axis_data_panel, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(self.chart_axis_line_panel, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(self.chart_axis_marker_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.data_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.line_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.marker_panel, 1, wx.ALL | wx.EXPAND, 2)
         main_sizer.AddGrowableCol(0)
 
         self.SetSizer(main_sizer)
@@ -371,19 +379,23 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             code_param_string = "[" + code.split("(", 1)[1][:-1] + "]"
             code_param = ast.literal_eval(code_param_string)
             for series_param in code_param:
-                self.series_notebook.AddPage(PlotPanel(self, -1),
-                                             _(_("Series")))
-                i = self.series_notebook.GetPageCount() - 1
-                series_data = self.series_notebook.GetPage(i).chart_data
-                for key in series_param:
-                    series_data[key] = repr(series_param[key])
-        else:
-            # Series creation
-            self.series_notebook.AddPage(PlotPanel(self, -1), _(_("Series")))
+                series_data = copy(series_param)
+                for key in series_data:
+                    series_data[key] = repr(series_data[key])
 
+                plot_panel = PlotPanel(self, -1, series_data)
+
+                self.series_notebook.AddPage(plot_panel, _("Series"))
+
+                for key in series_param:
+                    plot_panel.series_data[key] = repr(series_param[key])
+
+        else:
             # Use default values
-            default_data = self.eval_chart_data()
-            self.figure = charts.ChartFigure(*default_data)
+            plot_panel = PlotPanel(self, -1)
+            self.series_notebook.AddPage(plot_panel, _("Series"))
+            chart_data = self.eval_chart_data()
+            self.figure = charts.ChartFigure(*chart_data)
 
         self.series_notebook.AddPage(wx.Panel(self, -1), _("+"))
 
@@ -430,6 +442,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         """Binds events to handlers"""
 
         self.Bind(self.EVT_CMD_DRAW_CHART, self.OnDrawChart)
+        self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CLOSING, self.OnSeriesDeleted)
         self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CHANGED, self.OnSeriesChanged)
 
     def __disable_controls(self, unneeded_ctrls):
@@ -437,37 +450,6 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         for ctrl in unneeded_ctrls:
             ctrl.Disable()
-
-    def param_gen(self, code):
-        """Generator of keys and value stings of a function parameter string"""
-
-        pmap = {"(": 1, "{": 1, "[": 1, ")": -1, "}": -1, "]": -1}
-
-        plevel = 0
-
-        # Store positions of commata and equal signs
-        comma_positions = []
-        equal_positions = []
-
-        for i, char in enumerate(code):
-            if char in pmap:
-                plevel += pmap[char]
-
-            if plevel == 0:
-                if char == ",":
-                    comma_positions.append(i)
-                elif char == "=":
-                    equal_positions.append(i)
-
-        last_comma_position = -1
-        for comma_position in comma_positions:
-            for equal_position in equal_positions:
-                if last_comma_position < equal_position < comma_position:
-                    yield \
-                        code[last_comma_position + 1:equal_position].strip(),\
-                        code[equal_position + 1:comma_position].strip()
-                    break
-            last_comma_position = comma_position
 
     def get_series_tuple(self, code):
         """Returns series tuples"""
@@ -492,7 +474,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for panel_number in xrange(no_series):
             series_panel = self.series_notebook.GetPage(panel_number)
 
-            series_data = copy(series_panel.chart_data)
+            series_data = copy(series_panel.series_data)
 
             for key in series_panel.series_keys:
                 series_data[key] = self.get_series_tuple(series_data[key])
@@ -515,7 +497,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         for panel_number in xrange(no_series):
             panel = self.series_notebook.GetPage(panel_number)
-            series_data = panel.chart_data
+            series_data = panel.series_data
 
             # Build series data string
             series_data_code = ""
@@ -550,6 +532,14 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             # Add new series
             new_panel = PlotPanel(self, -1)
             self.series_notebook.InsertPage(selection, new_panel, _("Series"))
+
+        event.Skip()
+
+    def OnSeriesDeleted(self, event):
+        """FlatNotebook closing event handler"""
+
+        # Redraw Chart
+        post_command_event(self, self.DrawChartMsg)
 
         event.Skip()
 
