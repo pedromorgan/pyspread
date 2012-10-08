@@ -28,15 +28,11 @@ Provides matplotlib figure that are chart templates
 Provides
 --------
 
-* Chart: Main chart class
+* ChartFigure: Main chart class
 
 """
 
 from matplotlib.figure import Figure
-
-
-class PlotSeries(object):
-    """"""
 
 
 class ChartFigure(Figure):
@@ -45,6 +41,7 @@ class ChartFigure(Figure):
     def __init__(self, *chart_data):
         self.chart_data = chart_data
         Figure.__init__(self, (5.0, 4.0), facecolor="white")
+
         self.__axes = self.add_subplot(111)
         self.draw_chart()
 

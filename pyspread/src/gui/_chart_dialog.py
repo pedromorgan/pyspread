@@ -510,24 +510,29 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         no_series = self.series_notebook.GetPageCount() - 1
 
         for panel_number in xrange(no_series):
-            series_data = self.series_notebook.GetPage(panel_number).chart_data
+            panel = self.series_notebook.GetPage(panel_number)
+            series_data = panel.chart_data
 
             # Build series data string
             series_data_code = ""
+
             for key in series_data:
                 value_str = series_data[key]
 
-                if key in self.series_keys:
+                if key in panel.series_keys:
                     if not value_str or \
                        (value_str[0] != "(" or value_str[-1] != ")"):
                         value_str = "(" + value_str + ")"
 
-                series_data_code += "{}: {}, ".format(key, value_str)
+                series_data_code += "'{}': {}, ".format(key, value_str)
 
-            ##TODO: Merge series data to chart data
-            chart_data_code = series_data_code
+            # Merge series data to chart data
+            chart_data_code += ", {" + series_data_code + "}"
 
-        return 'charts.{}({})'.format(self.ChartCls.__name__, chart_data_code)
+        chart_data_code = chart_data_code[2:]
+
+        cls_name = charts.ChartFigure.__name__
+        return 'charts.{}({})'.format(cls_name, chart_data_code)
 
     # Handlers
     # --------
