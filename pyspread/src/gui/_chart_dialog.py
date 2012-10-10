@@ -32,6 +32,7 @@ Provides
 
 """
 
+
 import ast
 from copy import copy
 
@@ -355,6 +356,20 @@ class PlotPanel(wx.Panel):
         self.Layout()
 
 
+def parse_dict_strings(code):
+    level = 0
+    chunk_start = 0
+    for i, char in enumerate(code):
+        if char in ["(", "[", "{"]:
+            level += 1
+        elif char in [")", "]", "}"]:
+            level -= 1
+        if level == 0 and char in [':', ',']:
+            yield code[chunk_start: i].strip()
+            chunk_start = i + 1
+    yield code[chunk_start: i + 1].strip()
+
+
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
@@ -376,19 +391,23 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             self.figure = self.grid.code_array._eval_cell(key, code)
 
             # Get data from figure
-            code_param_string = "[" + code.split("(", 1)[1][:-1] + "]"
-            code_param = ast.literal_eval(code_param_string)
-            for series_param in code_param:
-                series_data = copy(series_param)
-                for key in series_data:
-                    series_data[key] = repr(series_data[key])
+            code_param_string = code.split("(", 1)[1][:-1]
+            code_param_list = list(parse_dict_strings(code_param_string))
+            code_param = []
+            for series_param_string in code_param_list:
+                series_param_list = \
+                    list(parse_dict_strings(series_param_string[1:-1]))
+                series_param = dict((ast.literal_eval(k), v) for k, v in
+                    zip(series_param_list[::2], series_param_list[1::2]))
+                code_param.append(series_param)
 
-                plot_panel = PlotPanel(self, -1, series_data)
+            for series_param in code_param:
+                plot_panel = PlotPanel(self, -1, series_param)
 
                 self.series_notebook.AddPage(plot_panel, _("Series"))
 
                 for key in series_param:
-                    plot_panel.series_data[key] = repr(series_param[key])
+                    plot_panel.series_data[key] = series_param[key]
 
         else:
             # Use default values

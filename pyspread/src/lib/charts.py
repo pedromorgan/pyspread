@@ -52,15 +52,18 @@ class ChartFigure(Figure):
         for series in self.chart_data:
             # xdata and ydata is extracted and handled separately
             try:
-                ydata = series.pop("ydata")
+                ydata = tuple(series.pop("ydata"))
 
             except KeyError:
-                ydata = []
+                ydata = ()
 
             # Check xdata length
             if "xdata" in series and len(series["xdata"]) != len(ydata):
                 # Wrong length --> ignore xdata
                 series.pop("xdata")
+            else:
+                series["xdata"] = tuple(series["xdata"])
+
             if ydata:
 
                 # Draw series to axes
