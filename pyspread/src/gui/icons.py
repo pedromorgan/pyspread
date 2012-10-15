@@ -81,6 +81,7 @@ class _ArtProvider(wx.ArtProvider):
             "SearchCaseSensitive": _toggle_path + "aA.png",
             "SearchRegexp": _toggle_path + "regex.png",
             "SearchWholeword": _toggle_path + "wholeword.png",
+            "InsertChart": _action_path + "chart_line.png",
             }
 
     def CreateBitmap(self, artid, client, size):

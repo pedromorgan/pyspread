@@ -50,8 +50,8 @@ import _widgets
 _ = i18n.language.ugettext
 
 
-class MainToolbar(wx.ToolBar, EventMixin):
-    """Main application toolbar, built from attribute toolbardata
+class ToolbarBase(wx.ToolBar, EventMixin):
+    """Base class for toolbars, requires self.toolbardata set in init
 
     toolbardata has the following structure:
     [["Methodname", "Label", "Iconname", "Tooltip", "Help string"] ,
@@ -62,8 +62,45 @@ class MainToolbar(wx.ToolBar, EventMixin):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        wx.ToolBar.__init__(self, *args, **kwargs)
+    def __init__(self, parent, *args, **kwargs):
+        wx.ToolBar.__init__(self, parent, *args, **kwargs)
+
+        self.SetToolBitmapSize(icons.icon_size)
+
+        self.ids_msgs = {}
+
+        self.parent = parent
+        self._add_tools()
+
+    def _add_tools(self):
+        """Adds tools from self.toolbardata to self"""
+
+        for tool in self.toolbardata:
+            if tool:
+                msgtype, label, icon_name, tooltip, helpstring = tool
+                icon = icons[icon_name]
+                toolid = wx.NewId()
+                self.AddLabelTool(toolid, label, icon, wx.NullBitmap,
+                                  wx.ITEM_NORMAL, tooltip, helpstring)
+
+                self.ids_msgs[toolid] = msgtype
+
+                self.parent.Bind(wx.EVT_TOOL, self.OnTool, id=toolid)
+
+            else:
+                self.AddSeparator()
+
+    def OnTool(self, event):
+        """Toolbar event handler"""
+
+        msgtype = self.ids_msgs[event.GetId()]
+        post_command_event(self, msgtype)
+
+
+class MainToolbar(ToolbarBase):
+    """Main application toolbar, built from attribute toolbardata"""
+
+    def __init__(self, parent, *args, **kwargs):
 
         self.toolbardata = [
             [self.NewMsg, _("New"), "FileNew", _("New spreadsheet"),
@@ -94,40 +131,25 @@ class MainToolbar(wx.ToolBar, EventMixin):
                 _("Paste cell from clipboard")],
             [],
             [self.PrintMsg, _("Print"), "FilePrint",
-                 _("Print current spreadsheet"),
-                 _("Print current spreadsheet")],
+                 _("Print spreadsheet"), _("Print spreadsheet")],
         ]
 
-        self.SetToolBitmapSize(icons.icon_size)
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
 
-        self.ids_msgs = {}
+# end of class MainToolbar
 
-        self.parent = args[0]
-        self._add_tools()
 
-    def _add_tools(self):
-        """Adds tools from self.toolbardata to self"""
+class MacroToolbar(ToolbarBase):
+    """Macro toolbar, built from attribute toolbardata"""
 
-        for tool in self.toolbardata:
-            if tool:
-                msgtype, label, icon_name, tooltip, helpstring = tool
-                icon = icons[icon_name]
-                toolid = wx.NewId()
-                self.AddLabelTool(toolid, label, icon, wx.NullBitmap,
-                                  wx.ITEM_NORMAL, tooltip, helpstring)
+    def __init__(self, parent, *args, **kwargs):
 
-                self.ids_msgs[toolid] = msgtype
+        self.toolbardata = [
+            [self.InsertChartMsg, _("Insert chart"), "InsertChart",
+             _("Insert chart"), _("Insert chart into cell")],
+        ]
 
-                self.parent.Bind(wx.EVT_TOOL, self.OnTool, id=toolid)
-
-            else:
-                self.AddSeparator()
-
-    def OnTool(self, event):
-        """Toolbar event handler"""
-
-        msgtype = self.ids_msgs[event.GetId()]
-        post_command_event(self, msgtype)
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
 
 # end of class MainToolbar
 

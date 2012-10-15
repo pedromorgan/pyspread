@@ -87,6 +87,7 @@ class MainWindowEventMixin(object):
     MacroSaveMsg, EVT_CMD_MACROSAVE = new_command_event()
 
     MainToolbarToggleMsg, EVT_CMD_MAINTOOLBAR_TOGGLE = new_command_event()
+    MacroToolbarToggleMsg, EVT_CMD_MACROTOOLBAR_TOGGLE = new_command_event()
     AttributesToolbarToggleMsg, EVT_CMD_ATTRIBUTESTOOLBAR_TOGGLE = \
                                             new_command_event()
     FindToolbarToggleMsg, EVT_CMD_FIND_TOOLBAR_TOGGLE = new_command_event()

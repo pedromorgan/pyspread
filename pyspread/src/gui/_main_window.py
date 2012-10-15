@@ -39,7 +39,7 @@ import src.lib.i18n as i18n
 from src.config import config
 
 from _menubars import MainMenu
-from _toolbars import MainToolbar, FindToolbar, AttributesToolbar
+from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
 from _widgets import EntryLine, StatusBar, TableChoiceIntCtrl
 
 from src.lib.clipboard import Clipboard
@@ -96,6 +96,7 @@ class MainWindow(wx.Frame, EventMixin):
 
         # Toolbars
         self.main_toolbar = MainToolbar(self, -1)
+        self.macro_toolbar = MacroToolbar(self, -1)
         self.find_toolbar = FindToolbar(self, -1)
         self.attributes_toolbar = AttributesToolbar(self, -1)
 
@@ -161,6 +162,7 @@ class MainWindow(wx.Frame, EventMixin):
 
         toggles = [
             (self.main_toolbar, "main_window_toolbar", _("Main toolbar")),
+            (self.macro_toolbar, "macro_toolbar", _("Macro toolbar")),
             (self.attributes_toolbar, "attributes_toolbar",
                                                        _("Format toolbar")),
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
@@ -174,6 +176,7 @@ class MainWindow(wx.Frame, EventMixin):
 
             # Get menu item to toggle
             toggle_id = self.menubar.FindMenuItem(_("View"), toggle_label)
+
             toggle_item = self.menubar.FindItemById(toggle_id)
 
             # Adjust toggle to pane visibility
@@ -183,6 +186,12 @@ class MainWindow(wx.Frame, EventMixin):
         """Adds widgets to the wx.aui manager and controls the layout"""
 
         # Add the toolbars to the manager
+
+        self._mgr.AddPane(self.macro_toolbar, wx.aui.AuiPaneInfo().
+            Name("macro_toolbar").Caption("Macro Toolbar").
+            ToolbarPane().Top().Row(0).CloseButton(False).
+            LeftDockable(False).RightDockable(False))
+
         self._mgr.AddPane(self.main_toolbar, wx.aui.AuiPaneInfo().
             Name("main_window_toolbar").Caption("Main Toolbar").
             ToolbarPane().Top().Row(0).CloseButton(False).
@@ -252,6 +261,8 @@ class MainWindow(wx.Frame, EventMixin):
 
         self.Bind(self.EVT_CMD_MAINTOOLBAR_TOGGLE,
                   handlers.OnMainToolbarToggle)
+        self.Bind(self.EVT_CMD_MACROTOOLBAR_TOGGLE,
+                  handlers.OnMacroToolbarToggle)
         self.Bind(self.EVT_CMD_ATTRIBUTESTOOLBAR_TOGGLE,
                   handlers.OnAttributesToolbarToggle)
         self.Bind(self.EVT_CMD_FIND_TOOLBAR_TOGGLE,
@@ -474,11 +485,20 @@ class MainWindowEventHandlers(object):
         self.main_window._mgr.Update()
 
     def OnMainToolbarToggle(self, event):
-        """Standard toolbar toggle event handler"""
+        """Main window toolbar toggle event handler"""
 
         main_toolbar = self.main_window._mgr.GetPane("main_window_toolbar")
 
         self._toggle_pane(main_toolbar)
+
+        event.Skip()
+
+    def OnMacroToolbarToggle(self, event):
+        """Macro toolbar toggle event handler"""
+
+        macro_toolbar = self.main_window._mgr.GetPane("macro_toolbar")
+
+        self._toggle_pane(macro_toolbar)
 
         event.Skip()
 
@@ -893,8 +913,8 @@ class MainWindowEventHandlers(object):
 
         else:  # We got a grid selection
             grid = self.main_window.grid
-            key = (grid.GetGridCursorRow(), \
-                   grid.GetGridCursorCol(), \
+            key = (grid.GetGridCursorRow(),
+                   grid.GetGridCursorCol(),
                    grid.current_table)
 
             data = self.main_window.clipboard.get_clipboard()

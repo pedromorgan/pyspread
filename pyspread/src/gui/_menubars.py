@@ -250,9 +250,6 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.DeleteTabsMsg, _("Delete table"),
                     _("Delete current table")]],
                 ["Separator"],
-                [item, [self.InsertChartMsg, _("Insert chart..."),
-                    _("Insert chart into cell")]],
-                ["Separator"],
                 [item, [self.ShowResizeGridDialogMsg, _("Resize grid"),
                         _("Resize grid")]]]
             ],
@@ -260,6 +257,9 @@ class MainMenu(_filledMenu, EventMixin):
                 [wx.Menu, _("Toolbars"), [
                     [item, [self.MainToolbarToggleMsg, _("Main toolbar"),
                             _("Shows and hides the main toolbar.")],
+                        wx.ITEM_CHECK],
+                    [item, [self.MacroToolbarToggleMsg, _("Macro toolbar"),
+                            _("Shows and hides the macro toolbar.")],
                         wx.ITEM_CHECK],
                     [item, [self.AttributesToolbarToggleMsg,
                             _("Format toolbar"),
@@ -336,7 +336,11 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.MacroLoadMsg, _("&Load macro list"),
                             _("Load macro list")]],
                 [item, [self.MacroSaveMsg, _("&Save macro list"),
-                            _("Save macro list")]]]],
+                            _("Save macro list")]],
+                ["Separator"],
+                [item, [self.InsertChartMsg, _("Insert chart..."),
+                    _("Insert chart into cell")]],
+            ]],
             [wx.Menu, _("&Help"), [
                 [item, [self.ManualMsg, _("First &Steps"),
                     _("Launch First Steps in pyspread"), wx.ID_HELP]],
