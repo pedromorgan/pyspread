@@ -655,12 +655,11 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
         self.ignore_changes = False
 
         parent.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
-        ##parent.Bind(EVT_ENTRYLINE_SELECTION_MSG, self.OnSelectionMsg)
 
         self.SetToolTip(wx.ToolTip("Enter Python expression here."))
 
         self.Bind(wx.EVT_TEXT, self.OnText)
-        self.Bind(wx.EVT_CHAR, self.EvtChar)
+        self.Bind(wx.EVT_CHAR, self.OnChar)
 
     def OnContentChange(self, event):
         """Event handler for updating the content"""
@@ -670,22 +669,17 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
         else:
             self.SetValue(event.text)
 
-    def OnSelectionMsg(self, event):
-        """Event handler for setting selection"""
-
-        self.SetSelection(event.start, event.stop)
+        event.Skip()
 
     def OnText(self, event):
         """Text event method evals the cell and updates the grid"""
 
-        if self.ignore_changes:
-            return
-
-        post_command_event(self, self.CodeEntryMsg, code=event.GetString())
+        if not self.ignore_changes:
+            post_command_event(self, self.CodeEntryMsg, code=event.GetString())
 
         event.Skip()
 
-    def EvtChar(self, event):
+    def OnChar(self, event):
         """Key event method
 
          * Forces grid update on <Enter> key
@@ -693,20 +687,18 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
 
         """
 
-        if self.ignore_changes:
-            return
+        if not self.ignore_changes:
 
-        # Handle special keys
+            # Handle special keys
+            keycode = event.GetKeyCode()
 
-        keycode = event.GetKeyCode()
+            if keycode == 13:
+                # <Enter> pressed --> Focus on grid
+                self.parent.grid.SetFocus()
 
-        if keycode == 13:
-            # <Enter> pressed --> Focus on grid
-            self.parent.grid.SetFocus()
-
-            # Ignore <Ctrl> + <Enter> and Quote content
-            if event.ControlDown():
-                self.SetValue('"' + self.GetValue() + '"')
+                # Ignore <Ctrl> + <Enter> and Quote content
+                if event.ControlDown():
+                    self.SetValue('"' + self.GetValue() + '"')
 
         event.Skip()
 

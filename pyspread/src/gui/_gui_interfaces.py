@@ -65,7 +65,7 @@ class ModalDialogInterfaceMixin(object):
         # Grid dimension dialog
 
         if no_dim != 3:
-            raise NotImplementedError( \
+            raise NotImplementedError(
                 _("Currently, only 3D grids are supported."))
 
         dim_dialog = DimensionsEntryDialog(self.main_window)
@@ -325,7 +325,7 @@ class GuiInterfaces(DialogInterfaceMixin, ModalDialogInterfaceMixin):
 def get_key_params_from_user():
     """Displays parameter entry dialog and returns parameter string"""
 
-    gpg_key_parameters = [ \
+    gpg_key_parameters = [
         ('Key-Type', 'DSA'),
         ('Key-Length', '2048'),
         ('Subkey-Type', 'ELG-E'),
@@ -336,7 +336,7 @@ def get_key_params_from_user():
     PASSWD = True
     NO_PASSWD = False
 
-    params = [ \
+    params = [
         [_('Real name'), 'Name-Real', NO_PASSWD],
         [_('Passphrase'), 'Passphrase', PASSWD],
         [_('E-mail'), 'Name-Email', NO_PASSWD],

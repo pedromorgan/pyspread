@@ -906,18 +906,20 @@ class MainWindowEventHandlers(object):
     def OnPaste(self, event):
         """Clipboard paste event handler"""
 
+        data = self.main_window.clipboard.get_clipboard()
+
         focus = self.main_window.FindFocus()
 
         if isinstance(focus, wx.TextCtrl):
-            return
+            # Paste into TextCtrl if in focus
+            focus.WriteText(data)
 
-        else:  # We got a grid selection
+        else:
+            # We got a grid selection
             grid = self.main_window.grid
             key = (grid.GetGridCursorRow(),
                    grid.GetGridCursorCol(),
                    grid.current_table)
-
-            data = self.main_window.clipboard.get_clipboard()
 
             self.main_window.actions.paste(key, data)
 
