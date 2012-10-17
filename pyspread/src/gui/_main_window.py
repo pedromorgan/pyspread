@@ -880,8 +880,16 @@ class MainWindowEventHandlers(object):
     def OnCopy(self, event):
         """Clipboard copy event handler"""
 
-        data = self.main_window.actions.copy(self.main_window.grid.selection)
-        self.main_window.clipboard.set_clipboard(data)
+        focus = self.main_window.FindFocus()
+
+        if isinstance(focus, wx.TextCtrl):
+            # Copy selection from TextCtrl if in focus
+            focus.Copy()
+
+        else:
+            data = self.main_window.actions.copy( \
+                       self.main_window.grid.selection)
+            self.main_window.clipboard.set_clipboard(data)
 
         event.Skip()
 
