@@ -49,7 +49,7 @@ class ChartFigure(Figure):
         """Plots chart from self.chart_data.clear"""
         self.__axes.clear()
 
-        for series in self.chart_data:
+        for series in self.chart_data[1:]:
             # xdata and ydata is extracted and handled separately
             try:
                 ydata = tuple(series.pop("ydata"))

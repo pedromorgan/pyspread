@@ -126,9 +126,9 @@ class AxesLabelPanel(LabeledWidgetPanel):
         kwargs["box_label"] = _("Labels")
 
         kwargs["widgets"] = [
-            ("x_label", _("X"), wx.TextCtrl,
+            ("xlabel", _("X"), wx.TextCtrl,
              (self, -1, kwargs["axes_data"]["xlabel"]), {}),
-            ("y_label", _("Y"), wx.TextCtrl,
+            ("ylabel", _("Y"), wx.TextCtrl,
              (self, -1, kwargs["axes_data"]["ylabel"]), {}),
         ]
 
@@ -138,29 +138,29 @@ class AxesLabelPanel(LabeledWidgetPanel):
         self.__bindings()
 
     def __set_properties(self):
-        self.x_label_editor.SetToolTipString(_("Enter label for X-axis."))
-        self.y_label_editor.SetToolTipString(_("Enter label for Y-axis."))
+        self.xlabel_editor.SetToolTipString(_("Enter label for X-axis."))
+        self.ylabel_editor.SetToolTipString(_("Enter label for Y-axis."))
 
     def __bindings(self):
         """Binds events ton handlers"""
 
-        self.Bind(wx.EVT_TEXT, self.OnXLabelText, self.x_label_editor)
-        self.Bind(wx.EVT_TEXT, self.OnYLabelText, self.y_label_editor)
+        self.Bind(wx.EVT_TEXT, self.OnXLabelText, self.xlabel_editor)
+        self.Bind(wx.EVT_TEXT, self.OnYLabelText, self.ylabel_editor)
 
     # Handlers
     # --------
 
     def OnXLabelText(self, event):
-        """Event handler for x_label_editor"""
+        """Event handler for xlabel_editor"""
 
-        self.series_data["xlabel"] = event.GetString()
+        self.axes_data["xlabel"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
     def OnYLabelText(self, event):
-        """Event handler for y_label_editor"""
+        """Event handler for ylabel_editor"""
 
-        self.series_data["ylabel"] = event.GetString()
+        self.axes_data["ylabel"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -366,8 +366,8 @@ class AxesPanel(wx.Panel):
         # Default data for series plot
 
         self.axes_data = {
-            "xlabel": u"",
-            "ylabel": u"",
+            "xlabel": u"''",
+            "ylabel": u"''",
         }
 
         if axes_data is not None:
@@ -497,7 +497,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             code_param_string = code.split("(", 1)[1][:-1]
             code_param_list = list(parse_dict_strings(code_param_string))
             code_param = []
-            axes_param = None  ## TODO
+
+            # The first item in the code param list is axes data
+            axes_param_string = code_param_list.pop(0)
+            axes_param_list = list(parse_dict_strings(axes_param_string[1:-1]))
+            axes_param = dict((ast.literal_eval(k), v) for k, v in
+                            zip(axes_param_list[::2], axes_param_list[1::2]))
+
             for series_param_string in code_param_list:
                 series_param_list = \
                     list(parse_dict_strings(series_param_string[1:-1]))
@@ -605,22 +611,30 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def eval_chart_data(self):
         """Returns evaluated content for chart data"""
 
-        chart_data = []
+        def polish_data(panel, data):
+            """Polishes data dict"""
+
+            for key in panel.series_keys:
+                data[key] = self.get_series_tuple(data[key])
+
+            for key in panel.string_keys:
+                data[key] = data[key][1:-1]
+
+            for key in panel.float_keys:
+                data[key] = float(data[key])
+
+        axes_data = copy(self.axes_panel.axes_data)
+        polish_data(self.axes_panel, axes_data)
+
+        chart_data = [axes_data]
+
         no_series = self.series_notebook.GetPageCount() - 1
 
         for panel_number in xrange(no_series):
             series_panel = self.series_notebook.GetPage(panel_number)
 
             series_data = copy(series_panel.series_data)
-
-            for key in series_panel.series_keys:
-                series_data[key] = self.get_series_tuple(series_data[key])
-
-            for key in series_panel.string_keys:
-                series_data[key] = series_data[key][1:-1]
-
-            for key in series_panel.float_keys:
-                series_data[key] = float(series_data[key])
+            polish_data(series_panel, series_data)
 
             chart_data.append(series_data)
 
@@ -629,33 +643,48 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def get_figure_code(self):
         """Returns code that generates figure"""
 
-        chart_data_code = ""
-        no_series = self.series_notebook.GetPageCount() - 1
+        def get_dict_code(series_keys, data):
+            """Builds data string
 
-        for panel_number in xrange(no_series):
-            panel = self.series_notebook.GetPage(panel_number)
-            series_data = panel.series_data
+            data: Dict
+            \tThe dict that is converted to a string
 
-            # Build series data string
-            series_data_code = ""
+            """
 
-            for key in series_data:
-                value_str = series_data[key]
+            data_code = ""
 
-                if key in panel.series_keys:
+            for key in data:
+                value_str = data[key]
+
+                if key in series_keys:
                     if not value_str or \
                        (value_str[0] != "(" or value_str[-1] != ")"):
                         value_str = "(" + value_str + ")"
 
-                series_data_code += "'{}': {}, ".format(key, value_str)
+                data_code += "'{}': {}, ".format(key, value_str)
 
-            # Merge series data to chart data
-            chart_data_code += ", {" + series_data_code + "}"
+            return data_code
 
-        chart_data_code = chart_data_code[2:]
+        axes_data_code = "{" + \
+            get_dict_code(self.axes_panel.series_keys,
+                          self.axes_panel.axes_data)[:-2] + \
+            "}"
+
+        chart_data_code = ""
+
+        no_series = self.series_notebook.GetPageCount() - 1
+
+        for panel_number in xrange(no_series):
+            panel = self.series_notebook.GetPage(panel_number)
+
+            chart_data_code += ", " + get_dict_code(panel.series_keys,
+                                                    panel.series_data)
+
+        chart_data_code = "{" + chart_data_code[2:] + "}"
 
         cls_name = charts.ChartFigure.__name__
-        return 'charts.{}({})'.format(cls_name, chart_data_code)
+        return 'charts.{}({}, {})'.format(cls_name, axes_data_code,
+                                      chart_data_code)
 
     # Handlers
     # --------
