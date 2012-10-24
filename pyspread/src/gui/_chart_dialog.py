@@ -58,7 +58,16 @@ class LabeledWidgetPanel(wx.Panel, ChartDialogEventMixin):
     def __init__(self, *args, **kwargs):
 
         self.parent = args[0]
-        self.series_data = kwargs.pop("series_data")
+
+        try:
+            self.series_data = kwargs.pop("series_data")
+        except KeyError:
+            pass
+
+        try:
+            self.axes_data = kwargs.pop("axes_data")
+        except KeyError:
+            pass
 
         box_label = kwargs.pop("box_label")
         self.widgets = kwargs.pop("widgets")
@@ -108,6 +117,54 @@ class LabeledWidgetPanel(wx.Panel, ChartDialogEventMixin):
         return wx.Colour(*color_tuple_int)
 
 
+class AxesLabelPanel(LabeledWidgetPanel):
+    """Panel for data entry for axes label"""
+
+    def __init__(self, *args, **kwargs):
+
+        # Custom data
+        kwargs["box_label"] = _("Labels")
+
+        kwargs["widgets"] = [
+            ("x_label", _("X"), wx.TextCtrl,
+             (self, -1, kwargs["axes_data"]["xlabel"]), {}),
+            ("y_label", _("Y"), wx.TextCtrl,
+             (self, -1, kwargs["axes_data"]["ylabel"]), {}),
+        ]
+
+        LabeledWidgetPanel.__init__(self, *args, **kwargs)
+
+        self.__set_properties()
+        self.__bindings()
+
+    def __set_properties(self):
+        self.x_label_editor.SetToolTipString(_("Enter label for X-axis."))
+        self.y_label_editor.SetToolTipString(_("Enter label for Y-axis."))
+
+    def __bindings(self):
+        """Binds events ton handlers"""
+
+        self.Bind(wx.EVT_TEXT, self.OnXLabelText, self.x_label_editor)
+        self.Bind(wx.EVT_TEXT, self.OnYLabelText, self.y_label_editor)
+
+    # Handlers
+    # --------
+
+    def OnXLabelText(self, event):
+        """Event handler for x_label_editor"""
+
+        self.series_data["xlabel"] = event.GetString()
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnYLabelText(self, event):
+        """Event handler for y_label_editor"""
+
+        self.series_data["ylabel"] = event.GetString()
+
+        post_command_event(self, self.DrawChartMsg)
+
+
 class ChartAxisDataPanel(LabeledWidgetPanel):
     """Panel for data entry for chart axis"""
 
@@ -143,14 +200,14 @@ class ChartAxisDataPanel(LabeledWidgetPanel):
     # --------
 
     def OnXText(self, event):
-        """Event handler for x_text_ctrl"""
+        """Event handler for x_editor"""
 
         self.series_data["xdata"] = event.GetString()
 
         post_command_event(self, self.DrawChartMsg)
 
     def OnYText(self, event):
-        """Event handler for y_text_ctrl"""
+        """Event handler for y_editor"""
 
         self.series_data["ydata"] = event.GetString()
 
@@ -299,8 +356,48 @@ class ChartAxisMarkerPanel(LabeledWidgetPanel):
         post_command_event(self, self.DrawChartMsg)
 
 
+class AxesPanel(wx.Panel):
+    """Panel that holds widgets for axes"""
+
+    def __init__(self, parent, __id, axes_data=None):
+
+        wx.Panel.__init__(self, parent, __id)
+
+        # Default data for series plot
+
+        self.axes_data = {
+            "xlabel": u"",
+            "ylabel": u"",
+        }
+
+        if axes_data is not None:
+            self.axes_data.update(axes_data)
+
+        # Data types for keys
+
+        self.series_keys = []
+        self.string_keys = ["xlabel", "ylabel"]
+        self.float_keys = []
+
+        # Widgets
+
+        self.label_panel = AxesLabelPanel(self, -1, axes_data=self.axes_data)
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+
+        main_sizer.Add(self.label_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+
 class PlotPanel(wx.Panel):
-    """Static box panel that holds widgets for one plot series"""
+    """Panel that holds widgets for one plot series"""
 
     def __init__(self, parent, __id, series_data=None):
 
@@ -400,12 +497,15 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             code_param_string = code.split("(", 1)[1][:-1]
             code_param_list = list(parse_dict_strings(code_param_string))
             code_param = []
+            axes_param = None  ## TODO
             for series_param_string in code_param_list:
                 series_param_list = \
                     list(parse_dict_strings(series_param_string[1:-1]))
                 series_param = dict((ast.literal_eval(k), v) for k, v in
                     zip(series_param_list[::2], series_param_list[1::2]))
                 code_param.append(series_param)
+
+            self.axes_panel = AxesPanel(self, -1, axes_param)
 
             for series_param in code_param:
                 plot_panel = PlotPanel(self, -1, series_param)
@@ -417,6 +517,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         else:
             # Use default values
+            self.axes_panel = AxesPanel(self, -1)
             plot_panel = PlotPanel(self, -1)
             self.series_notebook.AddPage(plot_panel, _("Series"))
             chart_data = self.eval_chart_data()
@@ -440,18 +541,29 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((600, 400))
+        self.SetSize((800, 400))
         self.figure_canvas.SetMinSize((400, 300))
 
+        self.axes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
+        self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
+
     def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(2, 2, 0, 0)
+        main_sizer = wx.FlexGridSizer(2, 3, 0, 0)
+        axes_box_sizer = wx.StaticBoxSizer(self.axes_staticbox, wx.HORIZONTAL)
+        series_box_sizer = wx.StaticBoxSizer(self.series_staticbox,
+                                             wx.HORIZONTAL)
         button_sizer = wx.FlexGridSizer(1, 3, 0, 3)
 
-        main_sizer.Add(self.series_notebook, 1, wx.EXPAND, 0)
+        main_sizer.Add(axes_box_sizer, 1, wx.EXPAND, 0)
+        main_sizer.Add(series_box_sizer, 1, wx.EXPAND, 0)
         main_sizer.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
         main_sizer.Add(button_sizer, wx.ALL | wx.EXPAND, 3)
         main_sizer.AddGrowableRow(0)
         main_sizer.AddGrowableCol(0)
+        main_sizer.AddGrowableCol(1)
+
+        axes_box_sizer.Add(self.axes_panel, 1, wx.EXPAND, 0)
+        series_box_sizer.Add(self.series_notebook, 1, wx.EXPAND, 0)
 
         button_sizer.Add(self.ok_button, 0,
             wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
