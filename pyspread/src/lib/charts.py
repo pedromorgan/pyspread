@@ -39,15 +39,34 @@ class ChartFigure(Figure):
     """Chart figure class with drawing method"""
 
     def __init__(self, *chart_data):
-        self.chart_data = chart_data
+
         Figure.__init__(self, (5.0, 4.0), facecolor="white")
 
+        self.chart_data = chart_data
         self.__axes = self.add_subplot(111)
         self.draw_chart()
 
+    def _setup_axes(self, axes_data):
+        """Sets up axes for drawing chart"""
+
+        self.__axes.clear()
+
+        if "xlabel" in axes_data:
+            if axes_data["xlabel"]:
+                self.__axes.set_xlabel(axes_data["xlabel"])
+
+        if "ylabel" in axes_data:
+            if axes_data["ylabel"]:
+                self.__axes.set_ylabel(axes_data["ylabel"])
+
     def draw_chart(self):
         """Plots chart from self.chart_data.clear"""
-        self.__axes.clear()
+
+        if not hasattr(self, "chart_data"):
+            return
+
+        # The first element is always aaxes data
+        self._setup_axes(self.chart_data[0])
 
         for series in self.chart_data[1:]:
             # xdata and ydata is extracted and handled separately
