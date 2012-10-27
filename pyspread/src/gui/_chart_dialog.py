@@ -677,10 +677,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for panel_number in xrange(no_series):
             panel = self.series_notebook.GetPage(panel_number)
 
-            chart_data_code += ", " + get_dict_code(panel.series_keys,
-                                                    panel.series_data)
+            chart_data_code += ", {" + get_dict_code(panel.series_keys,
+                                                    panel.series_data) + "}"
 
-        chart_data_code = "{" + chart_data_code[2:] + "}"
+        chart_data_code = chart_data_code[2:]
 
         cls_name = charts.ChartFigure.__name__
         return 'charts.{}({}, {})'.format(cls_name, axes_data_code,
