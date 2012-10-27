@@ -408,6 +408,7 @@ class PlotPanel(wx.Panel):
         # Default data for series plot
 
         self.series_data = {
+            "type": "plot",
             "xdata": u"",
             "ydata": u"",
             "linestyle": u"'-'",
