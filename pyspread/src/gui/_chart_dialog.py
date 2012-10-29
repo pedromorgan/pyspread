@@ -408,7 +408,7 @@ class PlotPanel(wx.Panel):
         # Default data for series plot
 
         self.series_data = {
-            "type": "plot",
+            "type": "'plot'",
             "xdata": u"",
             "ydata": u"",
             "linestyle": u"'-'",
@@ -427,7 +427,7 @@ class PlotPanel(wx.Panel):
 
         self.series_keys = ["xdata", "ydata", "color", "markerfacecolor",
                             "markeredgecolor"]
-        self.string_keys = ["linestyle", "marker"]
+        self.string_keys = ["type", "linestyle", "marker"]
         self.float_keys = ["markersize"]
 
         # Widgets

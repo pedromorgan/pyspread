@@ -69,6 +69,9 @@ class ChartFigure(Figure):
         self._setup_axes(self.chart_data[0])
 
         for series in self.chart_data[1:]:
+            # Extract chart type
+            chart_type = series.pop("type")
+
             # xdata and ydata is extracted and handled separately
             try:
                 ydata = tuple(series.pop("ydata"))
