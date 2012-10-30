@@ -47,6 +47,7 @@ from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
+from icons import icons
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -431,6 +432,8 @@ class PlotPanel(wx.Panel):
         self.float_keys = ["markersize"]
 
         # Widgets
+        style = wx.BORDER_NONE | wx.LC_SINGLE_SEL
+        self.chart_type_list = wx.ListCtrl(self, -1, style=style)
 
         self.data_panel = \
             ChartAxisDataPanel(self, -1, series_data=self.series_data)
@@ -439,15 +442,31 @@ class PlotPanel(wx.Panel):
         self.marker_panel = \
             ChartAxisMarkerPanel(self, -1, series_data=self.series_data)
 
+        self._properties()
         self.__do_layout()
 
-    def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+    def _properties(self):
+        self.il = wx.ImageList(24, 24)
+        self.il.Add(icons["plot_chart"])
+        self.il.Add(icons["bar_chart"])
+        self.chart_type_list.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
+        self.chart_type_list.InsertColumn(0, _("Chart type"))
+        self.chart_type_list.InsertImageStringItem(0, "test", 0)
+        self.chart_type_list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
-        main_sizer.Add(self.data_panel, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(self.line_panel, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(self.marker_panel, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.AddGrowableCol(0)
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+        panel_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+
+        main_sizer.Add(self.chart_type_list, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(panel_sizer, 1, wx.ALL | wx.EXPAND, 2)
+        panel_sizer.AddGrowableCol(0)
+        panel_sizer.AddGrowableCol(1)
+
+        panel_sizer.Add(self.data_panel, 1, wx.ALL | wx.EXPAND, 2)
+        panel_sizer.Add(self.line_panel, 1, wx.ALL | wx.EXPAND, 2)
+        panel_sizer.Add(self.marker_panel, 1, wx.ALL | wx.EXPAND, 2)
+        panel_sizer.AddGrowableCol(0)
 
         self.SetSizer(main_sizer)
 
@@ -548,7 +567,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((800, 400))
+        self.SetSize((1000, 400))
         self.figure_canvas.SetMinSize((400, 300))
 
         self.axes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))

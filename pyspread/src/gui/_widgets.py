@@ -557,8 +557,8 @@ class FontChoiceCombobox(ImageComboBox):
         # Draw the example text in the combobox
         dc.DrawText(font_string, text_x, text_y)
 
-
 # end of class FontChoiceCombobox
+
 
 class BorderEditChoice(ImageComboBox):
     """Combo box for selecting the cell borders that shall be changed"""
