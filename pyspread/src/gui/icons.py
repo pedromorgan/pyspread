@@ -82,8 +82,8 @@ class _ArtProvider(wx.ArtProvider):
             "SearchRegexp": _toggle_path + "regex.png",
             "SearchWholeword": _toggle_path + "wholeword.png",
             "InsertChart": _action_path + "chart_line.png",
-            "plot_chart": _action_path + "chart_line.png",
-            "bar_chart": _action_path + "chart_column.png",
+            "plot": _action_path + "chart_line.png",  # matplotlib plot chart
+            "bar": _action_path + "chart_column.png",  # matplotlib bar chart
             }
 
     def CreateBitmap(self, artid, client, size):

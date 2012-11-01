@@ -400,6 +400,8 @@ class AxesPanel(wx.Panel):
 class PlotPanel(wx.Panel):
     """Panel that holds widgets for one plot series"""
 
+    plot_types = ["plot", "bar"]
+
     def __init__(self, parent, __id, series_data=None):
 
         wx.Panel.__init__(self, parent, __id)
@@ -447,12 +449,12 @@ class PlotPanel(wx.Panel):
 
     def _properties(self):
         self.il = wx.ImageList(24, 24)
-        self.il.Add(icons["plot_chart"])
-        self.il.Add(icons["bar_chart"])
+        for plot_type in self.plot_types:
+            self.il.Add(icons[plot_type])
         self.chart_type_list.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
         self.chart_type_list.InsertColumn(0, _("Chart type"))
-        self.chart_type_list.InsertImageStringItem(0, "test", 0)
-        self.chart_type_list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        for i, plot_type in enumerate(self.plot_types):
+            self.chart_type_list.InsertImageStringItem(i, plot_type, i)
 
     def __do_layout(self):
         main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
