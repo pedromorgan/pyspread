@@ -28,6 +28,7 @@ Provides
 
  * get_font_from_data
  * get_pen_from_data
+ * parse_dict_strings
 
 """
 
@@ -60,8 +61,35 @@ def get_pen_from_data(pendata):
     return pen
 
 
+def parse_dict_strings(code):
+    """Generator of elements of a dict that is given in the code string
 
+    Parsing is shallow, i.e. all content is yielded as strings
 
+    Parameters
+    ----------
+    code: String
+    \tString that contains a dict
 
+    """
 
+    level = 0
+    chunk_start = 0
+    curr_paren = None
 
+    for i, char in enumerate(code):
+        if char in ["(", "[", "{"] and curr_paren is None:
+            level += 1
+        elif char in [")", "]", "}"] and curr_paren is None:
+            level -= 1
+        elif char in ['"', "'"]:
+            if curr_paren == char:
+                curr_paren = None
+            elif curr_paren is None:
+                curr_paren = char
+
+        if level == 0 and char in [':', ','] and curr_paren is None:
+            yield code[chunk_start: i].strip().strip("(").strip(")")
+            chunk_start = i + 1
+
+    yield code[chunk_start: i + 1].strip()

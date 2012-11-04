@@ -38,6 +38,15 @@ from matplotlib.figure import Figure
 class ChartFigure(Figure):
     """Chart figure class with drawing method"""
 
+    plot_type_fixed_attrs = {
+        "plot": ["ydata"],
+        "bar": ["xdata", "ydata"],
+    }
+    plot_type_kwd_attrs = {
+        "plot": ["linestyle"],
+        "bar": [],
+    }
+
     def __init__(self, *chart_data):
 
         Figure.__init__(self, (5.0, 4.0), facecolor="white")
@@ -70,23 +79,35 @@ class ChartFigure(Figure):
 
         for series in self.chart_data[1:]:
             # Extract chart type
-            chart_type = series.pop("type")
-
-            # xdata and ydata is extracted and handled separately
-            try:
-                ydata = tuple(series.pop("ydata"))
-
-            except KeyError:
-                ydata = ()
+            chart_type_string = series.pop("type")
 
             # Check xdata length
-            if "xdata" in series and len(series["xdata"]) != len(ydata):
+            if "xdata" in series and \
+               len(series["xdata"]) != len(series["ydata"]):
                 # Wrong length --> ignore xdata
                 series.pop("xdata")
             else:
                 series["xdata"] = tuple(series["xdata"])
 
-            if ydata:
+            fixed_attrs = []
+            for attr in self.plot_type_fixed_attrs[chart_type_string]:
+                # Remove attr if it is a fixed (non-kwd) attr
+                # If a fixed attr is missing, insert a dummy
+
+                # TODO: Move kwds into extra classes
+                try:
+                    fixed_attrs.append(tuple(series.pop(attr)))
+                except KeyError:
+                    fixed_attrs.append(())
+
+            # Remove unneeded kwd attrs
+            attrs = self.plot_type_kwd_attrs[chart_type_string]
+            for attr in series.keys():
+                if attr not in attrs:
+                    series.pop(attr)
+
+            if all(fixed_attrs):
 
                 # Draw series to axes
-                self.__axes.plot(ydata, **series)
+                chart_method = getattr(self.__axes, chart_type_string)
+                chart_method(*fixed_attrs, **series)

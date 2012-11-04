@@ -47,6 +47,7 @@ from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
+from src.lib.parsers import parse_dict_strings
 from icons import icons
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -444,9 +445,6 @@ class PlotPanel(wx.Panel):
         self.marker_panel = \
             ChartAxisMarkerPanel(self, -1, series_data=self.series_data)
 
-        # Index of current chart type in self.plot_types
-        self.plot_type_index = 0
-
         self._properties()
         self.__bindings()
         self.__do_layout()
@@ -490,30 +488,9 @@ class PlotPanel(wx.Panel):
     def OnChartTypeSelected(self, event):
         """Chart type selection ListCtrl selection event handler"""
 
-        self.plot_type_index = event.m_itemIndex
-        print self.plot_types[self.plot_type_index]
+        self.series_data["type"] = repr(self.plot_types[event.m_itemIndex])
 
         event.Skip()
-
-
-def parse_dict_strings(code):
-    level = 0
-    chunk_start = 0
-    curr_paren = None
-    for i, char in enumerate(code):
-        if char in ["(", "[", "{"] and curr_paren is None:
-            level += 1
-        elif char in [")", "]", "}"] and curr_paren is None:
-            level -= 1
-        elif char in ['"', "'"]:
-            if curr_paren == char:
-                curr_paren = None
-            elif curr_paren is None:
-                curr_paren = char
-        if level == 0 and char in [':', ','] and curr_paren is None:
-            yield code[chunk_start: i].strip().strip("(").strip(")")
-            chunk_start = i + 1
-    yield code[chunk_start: i + 1].strip()
 
 
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
