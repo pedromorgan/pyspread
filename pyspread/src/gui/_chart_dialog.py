@@ -444,7 +444,11 @@ class PlotPanel(wx.Panel):
         self.marker_panel = \
             ChartAxisMarkerPanel(self, -1, series_data=self.series_data)
 
+        # Index of current chart type in self.plot_types
+        self.plot_type_index = 0
+
         self._properties()
+        self.__bindings()
         self.__do_layout()
 
     def _properties(self):
@@ -455,6 +459,12 @@ class PlotPanel(wx.Panel):
         self.chart_type_list.InsertColumn(0, _("Chart type"))
         for i, plot_type in enumerate(self.plot_types):
             self.chart_type_list.InsertImageStringItem(i, plot_type, i)
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnChartTypeSelected,
+                  self.chart_type_list)
 
     def __do_layout(self):
         main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
@@ -473,6 +483,17 @@ class PlotPanel(wx.Panel):
         self.SetSizer(main_sizer)
 
         self.Layout()
+
+    # Handlers
+    # --------
+
+    def OnChartTypeSelected(self, event):
+        """Chart type selection ListCtrl selection event handler"""
+
+        self.plot_type_index = event.m_itemIndex
+        print self.plot_types[self.plot_type_index]
+
+        event.Skip()
 
 
 def parse_dict_strings(code):
