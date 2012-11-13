@@ -401,7 +401,7 @@ class AxesPanel(wx.Panel):
 class PlotPanel(wx.Panel):
     """Panel that holds widgets for one plot series"""
 
-    plot_types = ["plot", "bar"]
+    plot_types = sorted(charts.charts.keys())
 
     def __init__(self, parent, __id, series_data=None):
 
@@ -411,18 +411,9 @@ class PlotPanel(wx.Panel):
 
         # Default data for series plot
 
-        self.series_data = {
-            "type": "'plot'",
-            "xdata": u"",
-            "ydata": u"",
-            "linestyle": u"'-'",
-            "linewidth": u"1",
-            "color": u"(0, 0, 0)",
-            "marker": u"''",
-            "markersize": u"5",
-            "markerfacecolor": u"(0, 0, 0)",
-            "markeredgecolor": u"(0, 0, 0)",
-        }
+        plot_type = self.plot_types[0]
+        self.series_data = charts.charts[plot_type]["defaults"]
+        self.series_data["type"] = repr(plot_type)
 
         if series_data is not None:
             self.series_data.update(series_data)

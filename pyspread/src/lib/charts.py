@@ -32,7 +32,143 @@ Provides
 
 """
 
+import i18n
+import types
+
+import wx
+import wx.lib.colourselect as csel
+from wx.lib.intctrl import IntCtrl
 from matplotlib.figure import Figure
+
+from gui._widgets import PenWidthComboBox, LineStyleComboBox
+from gui._widgets import MarkerStyleComboBox
+
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
+
+
+int_validator = lambda x: isinstance(x, types.IntType)
+color_validator = lambda x: isinstance(x, types.IntType) and len(x) == 3
+linestyle_validator = lambda x: x in [s[1] for s in LineStyleComboBox.styles]
+markerstyle_validator = lambda x: x in [s[1]
+                            for s in MarkerStyleComboBox.styles]
+
+charts = {
+    "plot": {
+        "defaults": {
+            "xdata": u"",
+            "ydata": u"",
+            "linestyle": u"'-'",
+            "linewidth": u"1",
+            "color": u"(0, 0, 0)",
+            "marker": u"''",
+            "markersize": u"5",
+            "markerfacecolor": u"(0, 0, 0)",
+            "markeredgecolor": u"(0, 0, 0)",
+        },
+        "args": ["xdata", "ydata"],
+        "labels": {
+            "xdata": _("X"),
+            "ydata": _("Y"),
+            "linestyle": _("Style"),
+            "linewidth": _("Width"),
+            "color": _("Color"),
+            "marker": _("Style"),
+            "markersize": _("Size"),
+            "markerfacecolor": _("Face"),
+            "markeredgecolor": _("Edge"),
+        },
+        "boxes": [
+            (_("Data"), "xdata", "ydata"),
+            (_("Line"), "linestyle", "color", "linewidth"),
+            (_("Marker"), "marker", "markersize", "markerfacecolor",
+                          "markeredgecolor"),
+        ],
+        "widgets": {
+            "xdata": (wx.TextCtrl,
+                      {"tooltip":  _("Enter a list of X values (optional).")}),
+            "ydata": (wx.TextCtrl,
+                      {"tooltip":  _("Enter a list of Y values.")}),
+            "linestyle": (LineStyleComboBox, {"size": (80, 25)}),
+            "linewidth": (PenWidthComboBox,
+                              {"choices": map(unicode, xrange(12)),
+                               "style": wx.CB_READONLY, "size": (50, -1)}),
+            "color": (csel.ColourSelect, {}),
+            "marker": (MarkerStyleComboBox, {}),
+            "markersize": (IntCtrl, {}),
+            "markerfacecolor": (csel.ColourSelect, {"size": (80, 25)}),
+            "markeredgecolor": (csel.ColourSelect, {"size": (80, 25)}),
+        },
+        "validators": {
+            "xdata": iter,
+            "ydata": iter,
+            "linestyle": linestyle_validator,
+            "linewidth": int_validator,
+            "color": color_validator,
+            "marker": markerstyle_validator,
+            "markersize": int_validator,
+            "markerfacecolor": color_validator,
+            "markeredgecolor": color_validator,
+        },
+    },
+    "bar": {
+        "defaults": {
+            "xdata": u"",
+            "ydata": u"",
+            "linestyle": u"'-'",
+            "linewidth": u"1",
+            "color": u"(0, 0, 0)",
+            "marker": u"''",
+            "markersize": u"5",
+            "markerfacecolor": u"(0, 0, 0)",
+            "markeredgecolor": u"(0, 0, 0)",
+        },
+        "args": ["xdata", "ydata"],
+        "labels": {
+            "xdata": _("X"),
+            "ydata": _("Y"),
+            "linestyle": _("Style"),
+            "linewidth": _("Width"),
+            "color": _("Color"),
+            "marker": _("Style"),
+            "markersize": _("Size"),
+            "markerfacecolor": _("Face"),
+            "markeredgecolor": _("Edge"),
+        },
+        "boxes": [
+            (_("Data"), "xdata", "ydata"),
+            (_("Line"), "linestyle", "color", "linewidth"),
+            (_("Marker"), "marker", "markersize", "markerfacecolor",
+                          "markeredgecolor"),
+        ],
+        "widgets": {
+            "xdata": (wx.TextCtrl,
+                      {"tooltip":  _("Enter a list of X values (optional).")}),
+            "ydata": (wx.TextCtrl,
+                      {"tooltip":  _("Enter a list of Y values.")}),
+            "linestyle": (LineStyleComboBox, {"size": (80, 25)}),
+            "linewidth": (PenWidthComboBox,
+                              {"choices": map(unicode, xrange(12)),
+                               "style": wx.CB_READONLY, "size": (50, -1)}),
+            "color": (csel.ColourSelect, {}),
+            "marker": (MarkerStyleComboBox, {}),
+            "markersize": (IntCtrl, {}),
+            "markerfacecolor": (csel.ColourSelect, {"size": (80, 25)}),
+            "markeredgecolor": (csel.ColourSelect, {"size": (80, 25)}),
+        },
+        "validators": {
+            "xdata": iter,
+            "ydata": iter,
+            "linestyle": linestyle_validator,
+            "linewidth": int_validator,
+            "color": color_validator,
+            "marker": markerstyle_validator,
+            "markersize": int_validator,
+            "markerfacecolor": color_validator,
+            "markeredgecolor": color_validator,
+        },
+    },
+}
 
 
 class ChartFigure(Figure):
