@@ -409,8 +409,7 @@ class SeriesPanel(wx.Panel):
 
         wx.Panel.__init__(self, parent, __id)
 
-        style = wx.BORDER_NONE | wx.LC_SINGLE_SEL
-        self.chart_type_list = wx.ListCtrl(self, -1, style=style)
+        self.chart_type_list = wx.Treebook(self, -1, style=wx.BK_LEFT)
         self.plot_panel = PlotPanel(self, __id, series_data)
 
         self._properties()
@@ -421,11 +420,10 @@ class SeriesPanel(wx.Panel):
         self.il = wx.ImageList(24, 24)
         for plot_type in self.plot_types:
             self.il.Add(icons[plot_type])
-        self.chart_type_list.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
-        self.chart_type_list.InsertColumn(0, _("Chart type"))
+        self.chart_type_list.SetImageList(self.il)
 
         for i, plot_type in enumerate(self.plot_types):
-            self.chart_type_list.InsertImageStringItem(i, plot_type, i)
+            self.chart_type_list.AddPage(self.plot_panel, plot_type, imageId=i)
 
     def __bindings(self):
         """Binds events to handlers"""
@@ -449,7 +447,7 @@ class SeriesPanel(wx.Panel):
         """Chart type selection ListCtrl selection event handler"""
 
         self.plot_panel.series_data["type"] = \
-            repr(self.plot_types[event.m_itemIndex])
+                repr(self.plot_types[event.m_itemIndex])
 
         event.Skip()
 
