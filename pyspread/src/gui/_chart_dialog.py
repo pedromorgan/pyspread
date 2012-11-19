@@ -398,22 +398,85 @@ class AxesPanel(wx.Panel):
         self.Layout()
 
 
+class SeriesPanel(wx.Panel):
+    """Panel that holds widgets for one series"""
+
+    plot_types = ["plot", "bar"]
+
+    def __init__(self, parent, __id, series_data=None):
+
+        self.parent = parent
+
+        wx.Panel.__init__(self, parent, __id)
+
+        style = wx.BORDER_NONE | wx.LC_SINGLE_SEL
+        self.chart_type_list = wx.ListCtrl(self, -1, style=style)
+        self.plot_panel = PlotPanel(self, __id, series_data)
+
+        self._properties()
+        self.__bindings()
+        self.__do_layout()
+
+    def _properties(self):
+        self.il = wx.ImageList(24, 24)
+        for plot_type in self.plot_types:
+            self.il.Add(icons[plot_type])
+        self.chart_type_list.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
+        self.chart_type_list.InsertColumn(0, _("Chart type"))
+
+        for i, plot_type in enumerate(self.plot_types):
+            self.chart_type_list.InsertImageStringItem(i, plot_type, i)
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnChartTypeSelected,
+                  self.chart_type_list)
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+        main_sizer.Add(self.chart_type_list, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.plot_panel, 1, wx.ALL | wx.EXPAND, 2)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+    # Handlers
+    # --------
+
+    def OnChartTypeSelected(self, event):
+        """Chart type selection ListCtrl selection event handler"""
+
+        self.plot_panel.series_data["type"] = \
+            repr(self.plot_types[event.m_itemIndex])
+
+        event.Skip()
+
+
 class PlotPanel(wx.Panel):
     """Panel that holds widgets for one plot series"""
-
-    plot_types = sorted(charts.charts.keys())
 
     def __init__(self, parent, __id, series_data=None):
 
         wx.Panel.__init__(self, parent, __id)
 
-        self.get_series_tuple = parent.get_series_tuple
+        self.get_series_tuple = parent.parent.get_series_tuple
 
         # Default data for series plot
 
-        plot_type = self.plot_types[0]
-        self.series_data = charts.charts[plot_type]["defaults"]
-        self.series_data["type"] = repr(plot_type)
+        self.series_data = {
+            "type": "'plot'",
+            "xdata": u"",
+            "ydata": u"",
+            "linestyle": u"'-'",
+            "linewidth": u"1",
+            "color": u"(0, 0, 0)",
+            "marker": u"''",
+            "markersize": u"5",
+            "markerfacecolor": u"(0, 0, 0)",
+            "markeredgecolor": u"(0, 0, 0)",
+        }
 
         if series_data is not None:
             self.series_data.update(series_data)
@@ -426,8 +489,6 @@ class PlotPanel(wx.Panel):
         self.float_keys = ["markersize"]
 
         # Widgets
-        style = wx.BORDER_NONE | wx.LC_SINGLE_SEL
-        self.chart_type_list = wx.ListCtrl(self, -1, style=style)
 
         self.data_panel = \
             ChartAxisDataPanel(self, -1, series_data=self.series_data)
@@ -436,52 +497,22 @@ class PlotPanel(wx.Panel):
         self.marker_panel = \
             ChartAxisMarkerPanel(self, -1, series_data=self.series_data)
 
-        self._properties()
-        self.__bindings()
         self.__do_layout()
 
-    def _properties(self):
-        self.il = wx.ImageList(24, 24)
-        for plot_type in self.plot_types:
-            self.il.Add(icons[plot_type])
-        self.chart_type_list.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
-        self.chart_type_list.InsertColumn(0, _("Chart type"))
-        for i, plot_type in enumerate(self.plot_types):
-            self.chart_type_list.InsertImageStringItem(i, plot_type, i)
-
-    def __bindings(self):
-        """Binds events to handlers"""
-
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnChartTypeSelected,
-                  self.chart_type_list)
-
     def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
-        panel_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
 
-        main_sizer.Add(self.chart_type_list, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(panel_sizer, 1, wx.ALL | wx.EXPAND, 2)
-        panel_sizer.AddGrowableCol(0)
-        panel_sizer.AddGrowableCol(1)
+        main_sizer.AddGrowableCol(0)
+        main_sizer.AddGrowableCol(1)
 
-        panel_sizer.Add(self.data_panel, 1, wx.ALL | wx.EXPAND, 2)
-        panel_sizer.Add(self.line_panel, 1, wx.ALL | wx.EXPAND, 2)
-        panel_sizer.Add(self.marker_panel, 1, wx.ALL | wx.EXPAND, 2)
-        panel_sizer.AddGrowableCol(0)
+        main_sizer.Add(self.data_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.line_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.marker_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.AddGrowableCol(0)
 
         self.SetSizer(main_sizer)
 
         self.Layout()
-
-    # Handlers
-    # --------
-
-    def OnChartTypeSelected(self, event):
-        """Chart type selection ListCtrl selection event handler"""
-
-        self.series_data["type"] = repr(self.plot_types[event.m_itemIndex])
-
-        event.Skip()
 
 
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
@@ -525,7 +556,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             self.axes_panel = AxesPanel(self, -1, axes_param)
 
             for series_param in code_param:
-                plot_panel = PlotPanel(self, -1, series_param)
+                plot_panel = SeriesPanel(self, -1, series_param)
 
                 self.series_notebook.AddPage(plot_panel, _("Series"))
 
@@ -535,7 +566,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         else:
             # Use default values
             self.axes_panel = AxesPanel(self, -1)
-            plot_panel = PlotPanel(self, -1)
+            plot_panel = SeriesPanel(self, -1)
             self.series_notebook.AddPage(plot_panel, _("Series"))
             chart_data = self.eval_chart_data()
             self.figure = charts.ChartFigure(*chart_data)
@@ -644,8 +675,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for panel_number in xrange(no_series):
             series_panel = self.series_notebook.GetPage(panel_number)
 
-            series_data = copy(series_panel.series_data)
-            polish_data(series_panel, series_data)
+            series_data = copy(series_panel.plot_panel.series_data)
+            polish_data(series_panel.plot_panel, series_data)
 
             chart_data.append(series_data)
 
@@ -707,7 +738,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         if selection == self.series_notebook.GetPageCount() - 1:
             # Add new series
-            new_panel = PlotPanel(self, -1)
+            new_panel = SeriesPanel(self, -1)
             self.series_notebook.InsertPage(selection, new_panel, _("Series"))
 
         event.Skip()
