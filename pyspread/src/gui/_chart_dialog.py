@@ -398,60 +398,6 @@ class AxesPanel(wx.Panel):
         self.Layout()
 
 
-class SeriesPanel(wx.Panel):
-    """Panel that holds widgets for one series"""
-
-    plot_types = ["plot", "bar"]
-
-    def __init__(self, parent, __id, series_data=None):
-
-        self.parent = parent
-
-        wx.Panel.__init__(self, parent, __id)
-
-        self.chart_type_list = wx.Treebook(self, -1, style=wx.BK_LEFT)
-        self.plot_panel = PlotPanel(self, __id, series_data)
-
-        self._properties()
-        self.__bindings()
-        self.__do_layout()
-
-    def _properties(self):
-        self.il = wx.ImageList(24, 24)
-        for plot_type in self.plot_types:
-            self.il.Add(icons[plot_type])
-        self.chart_type_list.SetImageList(self.il)
-
-        for i, plot_type in enumerate(self.plot_types):
-            self.chart_type_list.AddPage(self.plot_panel, plot_type, imageId=i)
-
-    def __bindings(self):
-        """Binds events to handlers"""
-
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnChartTypeSelected,
-                  self.chart_type_list)
-
-    def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
-        main_sizer.Add(self.chart_type_list, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(self.plot_panel, 1, wx.ALL | wx.EXPAND, 2)
-
-        self.SetSizer(main_sizer)
-
-        self.Layout()
-
-    # Handlers
-    # --------
-
-    def OnChartTypeSelected(self, event):
-        """Chart type selection ListCtrl selection event handler"""
-
-        self.plot_panel.series_data["type"] = \
-                repr(self.plot_types[event.m_itemIndex])
-
-        event.Skip()
-
-
 class PlotPanel(wx.Panel):
     """Panel that holds widgets for one plot series"""
 
@@ -511,6 +457,66 @@ class PlotPanel(wx.Panel):
         self.SetSizer(main_sizer)
 
         self.Layout()
+
+
+class SeriesPanel(wx.Panel):
+    """Panel that holds widgets for one series"""
+
+    plot_type_data = [
+        {"type": "plot", "panel_class": PlotPanel},
+        {"type": "bar", "panel_class": PlotPanel},
+    ]
+
+    def __init__(self, parent, __id, series_data=None):
+
+        self.parent = parent
+
+        wx.Panel.__init__(self, parent, __id)
+
+        self.chart_type_book = wx.Treebook(self, -1, style=wx.BK_LEFT)
+
+        # Add plot panels
+
+        for i, plot_type_dict in enumerate(self.plot_type_data):
+            plot_type = plot_type_dict["type"]
+            PlotPanelClass = plot_type_dict["panel_class"]
+            plot_panel = PlotPanelClass(self, -1, series_data)
+            self.chart_type_book.AddPage(plot_panel, plot_type, imageId=i)
+
+        self._properties()
+        self.__bindings()
+        self.__do_layout()
+
+    def _properties(self):
+        self.il = wx.ImageList(24, 24)
+        for plot_type_dict in self.plot_type_data:
+            self.il.Add(icons[plot_type_dict["type"]])
+        self.chart_type_book.SetImageList(self.il)
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnChartTypeSelected,
+                  self.chart_type_book)
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+        main_sizer.Add(self.chart_type_book, 1, wx.ALL | wx.EXPAND, 2)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+    # Handlers
+    # --------
+
+    def OnChartTypeSelected(self, event):
+        """Chart type selection ListCtrl selection event handler"""
+
+        self.plot_panel.series_data["type"] = \
+                repr(self.plot_types[event.m_itemIndex])
+
+        event.Skip()
 
 
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
@@ -673,8 +679,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for panel_number in xrange(no_series):
             series_panel = self.series_notebook.GetPage(panel_number)
 
-            series_data = copy(series_panel.plot_panel.series_data)
-            polish_data(series_panel.plot_panel, series_data)
+            plot_type_no = series_panel.chart_type_book.GetSelection()
+            plot_panel = series_panel.chart_type_book.GetPage(plot_type_no)
+            series_data = copy(plot_panel.series_data)
+            polish_data(plot_panel, series_data)
 
             chart_data.append(series_data)
 
