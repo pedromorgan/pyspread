@@ -507,6 +507,12 @@ class SeriesPanel(wx.Panel):
 
         self.Layout()
 
+    def get_current_plot_panel(self):
+        """Returns current plot_panel"""
+
+        plot_type_no = self.chart_type_book.GetSelection()
+        return self.chart_type_book.GetPage(plot_type_no)
+
     # Handlers
     # --------
 
@@ -560,11 +566,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             self.axes_panel = AxesPanel(self, -1, axes_param)
 
             for series_param in code_param:
-                plot_panel = SeriesPanel(self, -1, series_param)
+                series_panel = SeriesPanel(self, -1, series_param)
 
-                self.series_notebook.AddPage(plot_panel, _("Series"))
+                self.series_notebook.AddPage(series_panel, _("Series"))
 
                 for key in series_param:
+                    plot_panel = series_panel.get_current_plot_panel()
                     plot_panel.series_data[key] = series_param[key]
 
         else:
@@ -678,9 +685,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         for panel_number in xrange(no_series):
             series_panel = self.series_notebook.GetPage(panel_number)
+            plot_panel = series_panel.get_current_plot_panel()
 
-            plot_type_no = series_panel.chart_type_book.GetSelection()
-            plot_panel = series_panel.chart_type_book.GetPage(plot_type_no)
             series_data = copy(plot_panel.series_data)
             polish_data(plot_panel, series_data)
 
@@ -723,10 +729,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         no_series = self.series_notebook.GetPageCount() - 1
 
         for panel_number in xrange(no_series):
-            panel = self.series_notebook.GetPage(panel_number)
+            series_panel = self.series_notebook.GetPage(panel_number)
+            sdp_id = series_panel.chart_type_book.GetSelection()
+            series_data_panel = series_panel.chart_type_book.GetPage(sdp_id)
 
-            chart_data_code += ", {" + get_dict_code(panel.series_keys,
-                                                    panel.series_data) + "}"
+            chart_data_code += ", {" + get_dict_code(
+                                    series_data_panel.series_keys,
+                                    series_data_panel.series_data) + "}"
 
         chart_data_code = chart_data_code[2:]
 
