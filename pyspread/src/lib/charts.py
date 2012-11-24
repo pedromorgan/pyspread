@@ -47,10 +47,6 @@ class ChartFigure(Figure):
         "plot": ["ydata"],
         "bar": ["xdata", "ydata"],
     }
-    plot_type_kwd_attrs = {
-        "plot": ["linestyle"],
-        "bar": [],
-    }
 
     def __init__(self, *chart_data):
 
@@ -102,12 +98,6 @@ class ChartFigure(Figure):
                     fixed_attrs.append(tuple(series.pop(attr)))
                 except KeyError:
                     fixed_attrs.append(())
-
-            # Remove unneeded kwd attrs
-            attrs = self.plot_type_kwd_attrs[chart_type_string]
-            for attr in series.keys():
-                if attr not in attrs:
-                    series.pop(attr)
 
             if all(fixed_attrs):
 
