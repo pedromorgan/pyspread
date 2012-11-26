@@ -398,6 +398,67 @@ class AxesPanel(wx.Panel):
         self.Layout()
 
 
+class BarPanel(wx.Panel):
+    """Panel that holds widgets for one bar series"""
+
+    def __init__(self, parent, __id, series_data=None):
+
+        wx.Panel.__init__(self, parent, __id)
+
+        self.get_series_tuple = parent.parent.get_series_tuple
+
+        # Default data for series plot
+
+        self.series_data = {
+            "type": "'bar'",
+            "xdata": u"",
+            "ydata": u"",
+            "linestyle": u"'-'",
+            "linewidth": u"1",
+            "color": u"(0, 0, 0)",
+            "marker": u"''",
+            "markersize": u"5",
+            "markerfacecolor": u"(0, 0, 0)",
+            "markeredgecolor": u"(0, 0, 0)",
+        }
+
+        if series_data is not None:
+            self.series_data.update(series_data)
+
+        # Data types for keys
+
+        self.series_keys = ["xdata", "ydata", "color", "markerfacecolor",
+                            "markeredgecolor"]
+        self.string_keys = ["type", "linestyle", "marker"]
+        self.float_keys = ["markersize"]
+
+        # Widgets
+
+        self.data_panel = \
+            ChartAxisDataPanel(self, -1, series_data=self.series_data)
+        self.line_panel = \
+            ChartAxisLinePanel(self, -1, series_data=self.series_data)
+        self.marker_panel = \
+            ChartAxisMarkerPanel(self, -1, series_data=self.series_data)
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+
+        main_sizer.AddGrowableCol(0)
+        main_sizer.AddGrowableCol(1)
+
+        main_sizer.Add(self.data_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.line_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.marker_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+
 class PlotPanel(wx.Panel):
     """Panel that holds widgets for one plot series"""
 
@@ -464,7 +525,7 @@ class SeriesPanel(wx.Panel):
 
     plot_type_data = [
         {"type": "plot", "panel_class": PlotPanel},
-        {"type": "bar", "panel_class": PlotPanel},
+        {"type": "bar", "panel_class": BarPanel},
     ]
 
     def __init__(self, parent, __id, series_data=None):
