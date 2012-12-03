@@ -45,7 +45,12 @@ class ChartFigure(Figure):
 
     plot_type_fixed_attrs = {
         "plot": ["ydata"],
-        "bar": ["xdata", "ydata"],
+        "bar": ["left", "height"],
+    }
+
+    plot_type_xy_mapping = {
+        "plot": ["xdata", "ydata"],
+        "bar": ["left", "height"],
     }
 
     def __init__(self, *chart_data):
@@ -82,13 +87,14 @@ class ChartFigure(Figure):
             # Extract chart type
             chart_type_string = series.pop("type")
 
+            x_str, y_str = self.plot_type_xy_mapping[chart_type_string]
             # Check xdata length
-            if "xdata" in series and \
-               len(series["xdata"]) != len(series["ydata"]):
+            if x_str in series and \
+               len(series[x_str]) != len(series[y_str]):
                 # Wrong length --> ignore xdata
-                series.pop("xdata")
+                series.pop(x_str)
             else:
-                series["xdata"] = tuple(series["xdata"])
+                series[x_str] = tuple(series[x_str])
 
             fixed_attrs = []
             for attr in self.plot_type_fixed_attrs[chart_type_string]:

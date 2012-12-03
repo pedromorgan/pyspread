@@ -171,15 +171,19 @@ class ChartAxisDataPanel(LabeledWidgetPanel):
     """Panel for data entry for chart axis"""
 
     def __init__(self, *args, **kwargs):
+        # Different chart tzpes have different names for x and y data
+        series_mapping = kwargs.pop("series_mapping")
+        xdata = series_mapping["x"]
+        ydata = series_mapping["y"]
 
         # Custom data
         kwargs["box_label"] = _("Data")
 
         kwargs["widgets"] = [
             ("x", _("X"), wx.TextCtrl,
-             (self, -1, kwargs["series_data"]["xdata"]), {}),
+             (self, -1, kwargs["series_data"][xdata]), {}),
             ("y", _("Y"), wx.TextCtrl,
-             (self, -1, kwargs["series_data"]["ydata"]), {}),
+             (self, -1, kwargs["series_data"][ydata]), {}),
         ]
 
         LabeledWidgetPanel.__init__(self, *args, **kwargs)
@@ -274,6 +278,79 @@ class ChartAxisLinePanel(LabeledWidgetPanel):
 
         self.series_data["color"] = \
                 repr(tuple(i / 255.0 for i in event.GetValue().Get()))
+        post_command_event(self, self.DrawChartMsg)
+
+
+class ChartAxisBarPanel(LabeledWidgetPanel):
+    """Panel for bar style entry"""
+
+    def __init__(self, *args, **kwargs):
+
+        kwargs["box_label"] = _("Bar")
+
+        default_args = (self, -1), {}
+        colorselect_args = (self, -1, unichr(0x2500) * 6), {"size": (80, 25)}
+
+        kwargs["widgets"] = [
+            ("left", _("Left values"), wx.TextCtrl) + default_args,
+            ("color", _("Color"), csel.ColourSelect) + colorselect_args,
+            ("edgecolor", _("Edge color"),
+                                csel.ColourSelect) + colorselect_args,
+            ("width", _("Bar width"), wx.TextCtrl) + default_args,
+            ("log", _("Log scale"), wx.CheckBox) + default_args,
+        ]
+
+        LabeledWidgetPanel.__init__(self, *args, **kwargs)
+
+        self.__set_properties()
+        self.__bindings()
+
+    def __set_properties(self):
+        # Set controls to default values
+        self.width_editor.SetValue(self.series_data["width"])
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.left_editor.Bind(wx.EVT_TEXT, self.OnLeft)
+        self.color_editor.Bind(csel.EVT_COLOURSELECT, self.OnColor)
+        self.edgecolor_editor.Bind(csel.EVT_COLOURSELECT, self.OnEdgeColor)
+        self.width_editor.Bind(wx.EVT_TEXT, self.OnLeft)
+        self.log_editor.Bind(wx.EVT_CHECKBOX, self.OnLog)
+
+    # Handlers
+    # --------
+
+    def OnLeft(self, event):
+        """Left values event handler"""
+
+        self.series_data["left"] = repr(event.GetString())
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnColor(self, event):
+        """Bar background color event handler"""
+
+        self.series_data["color"] = \
+                repr(tuple(i / 255.0 for i in event.GetValue().Get()))
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnEdgeColor(self, event):
+        """Edge color event handler"""
+
+        self.series_data["edgecolor"] = \
+                repr(tuple(i / 255.0 for i in event.GetValue().Get()))
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnWidth(self, event):
+        """Bar width event handler"""
+
+        self.series_data["linewidth"] = repr(event.GetString())
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnLog(self, event):
+        """Logarithmic scale event handler"""
+
+        self.series_data["log"] = repr(event.IsChecked())
         post_command_event(self, self.DrawChartMsg)
 
 
@@ -380,6 +457,7 @@ class AxesPanel(wx.Panel):
         self.series_keys = []
         self.string_keys = ["xlabel", "ylabel"]
         self.float_keys = []
+        self.bool_keys = []
 
         # Widgets
 
@@ -411,15 +489,13 @@ class BarPanel(wx.Panel):
 
         self.series_data = {
             "type": "'bar'",
-            "xdata": u"",
-            "ydata": u"",
-            "linestyle": u"'-'",
-            "linewidth": u"1",
+            "left": u"",
+            "height": u"",
+            "width": u"",
+            "bottom": u"",
             "color": u"(0, 0, 0)",
-            "marker": u"''",
-            "markersize": u"5",
-            "markerfacecolor": u"(0, 0, 0)",
-            "markeredgecolor": u"(0, 0, 0)",
+            "edgecolor": u"(0, 0, 0)",
+            "log": u"False",
         }
 
         if series_data is not None:
@@ -427,19 +503,19 @@ class BarPanel(wx.Panel):
 
         # Data types for keys
 
-        self.series_keys = ["xdata", "ydata", "color", "markerfacecolor",
-                            "markeredgecolor"]
-        self.string_keys = ["type", "linestyle", "marker"]
-        self.float_keys = ["markersize"]
+        self.series_keys = ["left", "height", "width", "bottom",
+                            "color", "edgecolor"]
+        self.string_keys = ["type"]
+        self.float_keys = []
+        self.bool_keys = ["log"]
 
         # Widgets
-
+        series_mapping = {"x": "bottom", "y": "height"}
         self.data_panel = \
-            ChartAxisDataPanel(self, -1, series_data=self.series_data)
-        self.line_panel = \
-            ChartAxisLinePanel(self, -1, series_data=self.series_data)
-        self.marker_panel = \
-            ChartAxisMarkerPanel(self, -1, series_data=self.series_data)
+            ChartAxisDataPanel(self, -1, series_data=self.series_data,
+                               series_mapping=series_mapping)
+        self.bar_panel = \
+            ChartAxisBarPanel(self, -1, series_data=self.series_data)
 
         self.__do_layout()
 
@@ -450,8 +526,7 @@ class BarPanel(wx.Panel):
         main_sizer.AddGrowableCol(1)
 
         main_sizer.Add(self.data_panel, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(self.line_panel, 1, wx.ALL | wx.EXPAND, 2)
-        main_sizer.Add(self.marker_panel, 1, wx.ALL | wx.EXPAND, 2)
+        main_sizer.Add(self.bar_panel, 1, wx.ALL | wx.EXPAND, 2)
         main_sizer.AddGrowableCol(0)
 
         self.SetSizer(main_sizer)
@@ -492,11 +567,13 @@ class PlotPanel(wx.Panel):
                             "markeredgecolor"]
         self.string_keys = ["type", "linestyle", "marker"]
         self.float_keys = ["markersize"]
+        self.bool_keys = []
 
         # Widgets
-
+        series_mapping = {"x": "xdata", "y": "ydata"}
         self.data_panel = \
-            ChartAxisDataPanel(self, -1, series_data=self.series_data)
+            ChartAxisDataPanel(self, -1, series_data=self.series_data,
+                               series_mapping=series_mapping)
         self.line_panel = \
             ChartAxisLinePanel(self, -1, series_data=self.series_data)
         self.marker_panel = \
@@ -736,6 +813,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
             for key in panel.float_keys:
                 data[key] = float(data[key])
+
+            for key in panel.bool_keys:
+                data[key] = bool(data[key])
 
         axes_data = copy(self.axes_panel.axes_data)
         polish_data(self.axes_panel, axes_data)
