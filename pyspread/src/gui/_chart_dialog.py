@@ -32,6 +32,34 @@ Provides
 
 """
 
+# Ideas
+# -----
+#
+# Create widgets <Type>Editor for each type
+# types are: bool, int, str, color, iterable, marker_style, line_style
+# Each widget has a get_evaled_value method
+#
+# A SeriesBoxPanel is defined by:
+# [panel_label, (matplotlib_key, widget, label, tooltip), ...]
+#
+# A <Seriestype>AttributesPanel is defined by:
+# [seriestype_key, SeriesBoxPanel, ...]
+# It is derived from SeriesBasePanel and provides a widgets attribute
+#
+# SeriesBasePanel provides a method
+# __iter__ that yields (key, evaled_value) for each widget
+#
+# SeriesPanel provides a TreeBook of series types
+# It is defined by:
+# [(seriestype_key, seriestype_label, seriestype_image,
+#                                     <Seriestype>AttributesPanel), ...]
+#
+# FigureAttributesPanel is equivalent to a <Seriestype>AttributesPanel
+#
+# FigurePanel provides a matplotlib chart drawing
+#
+# ChartDialog provides FigureAttributesPanel, Flatnotebook of SeriesPanels,
+#                      FigurePanel
 
 import ast
 from copy import copy
@@ -52,6 +80,41 @@ from icons import icons
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class LabeledWidgetPanel(wx.Panel, ChartDialogEventMixin):
