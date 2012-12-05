@@ -32,8 +32,8 @@ Provides
 
 """
 
-# Ideas
-# -----
+# Architecture
+# ------------
 #
 # Create widgets <Type>Editor for each type
 # types are: bool, int, str, color, iterable, marker_style, line_style
@@ -82,19 +82,144 @@ from icons import icons
 _ = i18n.language.ugettext
 
 
+# Editor widgets
+# --------------
+
+class EditorReprEvalMixin(object):
+    """Mixin class that provides standard interfaces for Editor<type> classes
+
+    Provides
+    --------
+
+    Methods:
+
+    * get_repr_value
+    * set_repr_value
+    * get_evaled_value
+    * set_evaled_value
+
+    Properties:
+
+    * repr_value
+    * evaled_value
+
+    """
+
+    def get_repr_value(self):
+        """Returns string representation of value of widget"""
+
+        return repr(self.GetValue())
+
+    def set_repr_value(self, value_str):
+        """Sets widget from string representation of widget value
+
+        Parameters
+        ----------
+        value: String
+        \tString representation of widget value
+
+        """
+
+        self.SetValue(ast.literal_eval(value_str))
+
+    def get_evaled_value(self):
+        """Returns evaled value of widget"""
+
+        return self.GetValue()
+
+    def set_evaled_value(self, value):
+        """Sets widget with evaled value
+
+        Parameters
+        ----------
+        value: Object
+        \tEvaled value of widget
+
+        """
+
+        self.SetValue(value)
+
+    # Properties
+
+    repr_value = property(get_repr_value, set_repr_value)
+    evaled_value = property(get_evaled_value, set_evaled_value)
 
 
+class BoolEditor(wx.CheckBox, EditorReprEvalMixin):
+    """Editor widget for bool values"""
+
+    def __init__(self, *args, **kwargs):
+        wx.CheckBox.__init__(self, *args, **kwargs)
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_CHECKBOX, self.OnChecked)
+
+    # Handlers
+
+    def OnChecked(self, event):
+        """Check event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
 
 
+class IntegerEditor(IntCtrl, EditorReprEvalMixin):
+    """Editor widget for integer values"""
+
+    def __init__(self, *args, **kwargs):
+        IntCtrl.__init__(self, *args, **kwargs)
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(EVT_INT, self.OnInt)
+
+    # Handlers
+
+    def OnInt(self, event):
+        """Check event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
 
 
+class StringEditor(wx.TextCtrl, EditorReprEvalMixin):
+    """Editor widget for string values"""
+
+    def get_evaled_value(self):
+        """Returns evaluated value of widget, i. e. a string"""
 
 
+class ColorEditor(csel.ColourSelect, EditorReprEvalMixin):
+    """Editor widget for wx.Colour values"""
+
+    def get_evaled_value(self):
+        """Returns evaluated value of widget, i. e. a wx.Colour"""
 
 
+class FloatListEditor(wx.TextCtrl, EditorReprEvalMixin):
+    """Editor widget for a list of floats"""
+
+    def get_evaled_value(self):
+        """Returns evaluated value of widget, i. e. a list of floats"""
 
 
+class MarkerStyleEditor(MarkerStyleComboBox, EditorReprEvalMixin):
+    """Editor widget for marker style string values"""
 
+    def get_evaled_value(self):
+        """Returns evaluated value of widget, i. e. a marker style string"""
+
+
+class LineStyleEditor(LineStyleComboBox, EditorReprEvalMixin):
+    """Editor widget for line style string values"""
+
+    def get_evaled_value(self):
+        """Returns evaluated value of widget, i. e. a line style string"""
 
 
 
