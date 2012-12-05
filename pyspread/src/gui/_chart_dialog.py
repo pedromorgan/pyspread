@@ -75,7 +75,7 @@ from _widgets import PenWidthComboBox, LineStyleComboBox, MarkerStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
-from src.lib.parsers import parse_dict_strings
+from src.lib.parsers import parse_dict_strings, color2code, code2color
 from icons import icons
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -85,7 +85,7 @@ _ = i18n.language.ugettext
 # Editor widgets
 # --------------
 
-class EditorReprEvalMixin(object):
+class EditorCodeMixin(object):
     """Mixin class that provides standard interfaces for Editor<type> classes
 
     Provides
@@ -93,59 +93,37 @@ class EditorReprEvalMixin(object):
 
     Methods:
 
-    * get_repr_value
-    * set_repr_value
-    * get_evaled_value
-    * set_evaled_value
-
+    * get_code
+    * set_code
     Properties:
 
-    * repr_value
-    * evaled_value
+    * code
 
     """
 
-    def get_repr_value(self):
-        """Returns string representation of value of widget"""
-
-        return repr(self.GetValue())
-
-    def set_repr_value(self, value_str):
-        """Sets widget from string representation of widget value
-
-        Parameters
-        ----------
-        value: String
-        \tString representation of widget value
-
-        """
-
-        self.SetValue(ast.literal_eval(value_str))
-
-    def get_evaled_value(self):
-        """Returns evaled value of widget"""
+    def get_code(self):
+        """Returns code representation of value of widget"""
 
         return self.GetValue()
 
-    def set_evaled_value(self, value):
-        """Sets widget with evaled value
+    def set_code(self, code):
+        """Sets widget from code string
 
         Parameters
         ----------
-        value: Object
-        \tEvaled value of widget
+        code: String
+        \tCode representation of widget value
 
         """
 
-        self.SetValue(value)
+        self.SetValue(code)
 
     # Properties
 
-    repr_value = property(get_repr_value, set_repr_value)
-    evaled_value = property(get_evaled_value, set_evaled_value)
+    code = property(get_code, set_code)
 
 
-class BoolEditor(wx.CheckBox, EditorReprEvalMixin):
+class BoolEditor(wx.CheckBox, EditorCodeMixin):
     """Editor widget for bool values"""
 
     def __init__(self, *args, **kwargs):
@@ -158,6 +136,23 @@ class BoolEditor(wx.CheckBox, EditorReprEvalMixin):
 
         self.Bind(wx.EVT_CHECKBOX, self.OnChecked)
 
+    def get_code(self):
+        """Returns '0' or '1'"""
+
+        return repr(self.GetValue())
+
+    def set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of bool value
+
+        """
+
+        self.SetValue(bool(code))
+
     # Handlers
 
     def OnChecked(self, event):
@@ -166,7 +161,7 @@ class BoolEditor(wx.CheckBox, EditorReprEvalMixin):
         post_command_event(self, self.DrawChartMsg)
 
 
-class IntegerEditor(IntCtrl, EditorReprEvalMixin):
+class IntegerEditor(IntCtrl, EditorCodeMixin):
     """Editor widget for integer values"""
 
     def __init__(self, *args, **kwargs):
@@ -179,6 +174,23 @@ class IntegerEditor(IntCtrl, EditorReprEvalMixin):
 
         self.Bind(EVT_INT, self.OnInt)
 
+    def get_code(self):
+        """Returns string representation of Integer"""
+
+        return repr(self.GetValue())
+
+    def set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of integer value
+
+        """
+
+        self.SetValue(int(code))
+
     # Handlers
 
     def OnInt(self, event):
@@ -187,39 +199,75 @@ class IntegerEditor(IntCtrl, EditorReprEvalMixin):
         post_command_event(self, self.DrawChartMsg)
 
 
-class StringEditor(wx.TextCtrl, EditorReprEvalMixin):
+class StringEditor(wx.TextCtrl, EditorCodeMixin):
     """Editor widget for string values"""
 
-    def get_evaled_value(self):
-        """Returns evaluated value of widget, i. e. a string"""
+    def __init__(self, *args, **kwargs):
+        wx.TextCtrl.__init__(self, *args, **kwargs)
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_TEXT, self.OnText)
+
+    # Handlers
+
+    def OnText(self, event):
+        """Text entry event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
 
 
-class ColorEditor(csel.ColourSelect, EditorReprEvalMixin):
-    """Editor widget for wx.Colour values"""
+class ColorEditor(csel.ColourSelect, EditorCodeMixin):
+    """Editor widget for 3-tuples of floats that represent color"""
 
-    def get_evaled_value(self):
-        """Returns evaluated value of widget, i. e. a wx.Colour"""
+    def __init__(self, *args, **kwargs):
+        wx.TextCtrl.__init__(self, *args, **kwargs)
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(csel.EVT_COLOURSELECT, self.OnColor)
+
+    def get_code(self):
+        """Returns string representation of Integer"""
+
+        return color2code(self.GetValue())
+
+    def set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tString representation of 3 tuple of float
+
+        """
+
+        self.SetColour(code2color(code))
+
+    # Handlers
+
+    def OnColor(self, event):
+        """Check event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
 
 
-class FloatListEditor(wx.TextCtrl, EditorReprEvalMixin):
+class FloatListEditor(wx.TextCtrl, EditorCodeMixin):
     """Editor widget for a list of floats"""
 
-    def get_evaled_value(self):
-        """Returns evaluated value of widget, i. e. a list of floats"""
 
-
-class MarkerStyleEditor(MarkerStyleComboBox, EditorReprEvalMixin):
+class MarkerStyleEditor(MarkerStyleComboBox, EditorCodeMixin):
     """Editor widget for marker style string values"""
 
-    def get_evaled_value(self):
-        """Returns evaluated value of widget, i. e. a marker style string"""
 
-
-class LineStyleEditor(LineStyleComboBox, EditorReprEvalMixin):
+class LineStyleEditor(LineStyleComboBox, EditorCodeMixin):
     """Editor widget for line style string values"""
-
-    def get_evaled_value(self):
-        """Returns evaluated value of widget, i. e. a line style string"""
 
 
 

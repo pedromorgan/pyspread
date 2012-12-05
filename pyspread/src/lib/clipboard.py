@@ -67,7 +67,7 @@ class Clipboard(object):
         if datastring is None:
             datastring = self.get_clipboard()
 
-        data_it = ((ele for ele in line.split(sep)) \
+        data_it = ((ele for ele in line.split(sep))
                             for line in datastring.splitlines())
         return data_it
 
