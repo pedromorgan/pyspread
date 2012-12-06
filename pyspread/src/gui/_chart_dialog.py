@@ -437,12 +437,22 @@ class BarAttributesPanel(SeriesPanelBase):
     # Data for bar plot
     # matplotlib_key, label, widget_cls, default_code
 
-    data = {}
+    data = {
+        "left": (_("Left positions"), StringEditor, ""),
+        "height": (_("Bar heights"), StringEditor, ""),
+        "width": (_("Bar widths"), StringEditor, ""),
+        "bottom": (_("Bar bottoms"), StringEditor, ""),
+        "color": (_("Bar color"), ColorEditor, "(0, 0, 0)"),
+        "edgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
+    }
 
     # Boxes and their widgets' matplotlib_keys
     # label, [matplotlib_key, ...]
 
-    boxes = []
+    boxes = [
+        (_("Data"), ["left", "height", "width", "bottom"]),
+        (_("Bar"), ["color", "edgecolor"]),
+    ]
 
 
 class FigureAttributesPanel(SeriesPanelBase):
@@ -451,14 +461,72 @@ class FigureAttributesPanel(SeriesPanelBase):
     # Data for figure
     # matplotlib_key, label, widget_cls, default_code
 
-    data = {}
+    data = {
+        "xlabel": (_("Label"), StringEditor, ""),
+        "xlim": (_("Limits"), StringEditor, ""),
+        "xscale": (_("Log"), BoolEditor, "False"),
+        "ylabel": (_("Label"), StringEditor, ""),
+        "yscale": (_("Log"), BoolEditor, "False"),
+        "ylim": (_("Limits"), StringEditor, ""),
+    }
 
     # Boxes and their widgets' matplotlib_keys
     # label, [matplotlib_key, ...]
 
-    boxes = []
+    boxes = [
+        (_("X-Axis"), ["xlabel", "xlim", "xscale"]),
+        (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
+    ]
 
 
+class FigurePanel(wx.Panel):
+    """Panel that draws a matplotlib figure_canvas"""
+
+    def __init__(self, figure):
+
+        # Set figure_canvas
+
+        self.figure_canvas = self._get_figure_canvas(figure)
+
+        self.__set_properties()
+        self.__do_layout()
+
+    def __set_properties(self):
+        self.figure_canvas.SetMinSize((100, 100))
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+
+        main_sizer.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
+
+        main_sizer.AddGrowableCol(0)
+        main_sizer.AddGrowableCol(1)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+    def _get_figure_canvas(self, figure):
+        """Returns figure canvas"""
+
+        return FigureCanvasWxAgg(self, -1, self.figure)
+
+    def update(self, figure):
+        """Updates figure on data change
+
+        Parameters
+        ----------
+        * figure: matplotlib.figure.Figure
+        \tMatplotlib figure object that is displayed in self
+
+        """
+
+        self.figure_canvas = self._get_figure_canvas(figure)
+        self.figure_canvas.draw()
+
+
+class ChartDialog(wx.Dialog, ChartDialogEventMixin):
+    """Chart dialog for generating chart generation strings"""
 
 
 
