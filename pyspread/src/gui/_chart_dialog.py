@@ -37,17 +37,17 @@ Provides
 #
 # Create widgets <Type>Editor for each type
 # types are: bool, int, str, color, iterable, marker_style, line_style
-# Each widget has a get_evaled_value method
+# Each widget has a get_code method and a set_code method
 #
 # A SeriesBoxPanel is defined by:
 # [panel_label, (matplotlib_key, widget, label, tooltip), ...]
 #
-# A <Seriestype>AttributesPanel is defined by:
+# A <Seriestype>AttributesPanel(SeriesPanelBase) is defined by:
 # [seriestype_key, SeriesBoxPanel, ...]
 # It is derived from SeriesBasePanel and provides a widgets attribute
 #
-# SeriesBasePanel provides a method
-# __iter__ that yields (key, evaled_value) for each widget
+# SeriesPanelBase provides a method
+# __iter__ that yields (key, code) for each widget
 #
 # SeriesPanel provides a TreeBook of series types
 # It is defined by:
@@ -63,6 +63,7 @@ Provides
 
 import ast
 from copy import copy
+from itertools import izip
 
 import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
@@ -82,6 +83,7 @@ from icons import icons
 _ = i18n.language.ugettext
 
 
+# --------------
 # Editor widgets
 # --------------
 
@@ -258,26 +260,203 @@ class ColorEditor(csel.ColourSelect, EditorCodeMixin):
         post_command_event(self, self.DrawChartMsg)
 
 
-class FloatListEditor(wx.TextCtrl, EditorCodeMixin):
-    """Editor widget for a list of floats"""
+class StyleEditorMixin(object):
+    """Mixin class for stzle editors that are based on MatplotlibStyleChoice"""
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_CHOICE, self.OnStyle)
+
+    def get_code(self):
+        """Returns string representation of Integer"""
+
+        return self.get_style_code(self.StringSelection)
+
+    def set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tMarker style string
+
+        """
+
+        self.StringSelection = self.get_label(code)
+
+    # Handlers
+    # --------
+
+    def OnStyle(self, event):
+        """Marker style event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
 
 
-class MarkerStyleEditor(MarkerStyleComboBox, EditorCodeMixin):
+class MarkerStyleEditor(MarkerStyleComboBox, EditorCodeMixin,
+                        StyleEditorMixin):
     """Editor widget for marker style string values"""
 
+    def __init__(self, *args, **kwargs):
+        MarkerStyleComboBox.__init__(self, *args, **kwargs)
 
-class LineStyleEditor(LineStyleComboBox, EditorCodeMixin):
+        self.__bindings()
+
+
+class LineStyleEditor(LineStyleComboBox, EditorCodeMixin, StyleEditorMixin):
     """Editor widget for line style string values"""
 
+    def __init__(self, *args, **kwargs):
+        LineStyleComboBox.__init__(self, *args, **kwargs)
+
+        self.__bindings()
 
 
+# -------------
+# Panel widgets
+# -------------
+
+class SeriesBoxPanel(wx.Panel):
+    """Box panel that contains labels and widgets
+
+    Parameters
+    ----------
+
+    * panel_label: String
+    \tLabel that is displayed left of the widget
+    * labels: List of strings
+    \tWidget labels
+    * widgets: List of class instances
+    \tWidget instance list must be as long as labels
+
+    """
+
+    def __init__(self, parent, box_label, labels, widgets):
+
+        wx.Panel.__init__(self, parent, -1)
+
+        self.staticbox = wx.StaticBox(self, -1, box_label)
+
+        self.__do_layout(labels, widgets)
+
+    def __do_layout(self, labels, widgets):
+        box_sizer = wx.StaticBoxSizer(self.staticbox, wx.HORIZONTAL)
+        grid_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+
+        for label, widget in izip(labels, widgets):
+            grid_sizer.Add(wx.StaticText(self, -1, label))
+            grid_sizer.Add(widget)
+
+        grid_sizer.AddGrowableCol(1)
+        box_sizer.Add(grid_sizer, 1, wx.ALL | wx.EXPAND, 2)
+
+        self.SetSizer(box_sizer)
+
+        self.Layout()
 
 
+class SeriesPanelBase(wx.Panel):
+    """Base class for <Seriestype>AttributesPanel and FigureAttributesPanel"""
+
+    def __init__(self, parent):
+
+        self.boxes = []
+        self.widgets = {}
+
+        for box_label, keys in self.boxes:
+
+            labels = []
+            widgets = []
+
+            for key in keys:
+                widget_label, widget_cls, widget_default = self.data[key]
+                widget = widget_cls(self, -1)
+                widget.code = widget_default
+
+                widgets.append(widget)
+                labels.append(widget_label)
+
+                self.widgets[key] = widget
+
+            self.boxes.append(SeriesBoxPanel(self, box_label, labels, widgets))
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+
+        for box in self.boxes:
+            main_sizer.Add(box, 1, wx.ALL | wx.EXPAND, 2)
+
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+    def __iter__(self):
+        """Yields (key, code) for each widget"""
+
+        for widget in self.widgets:
+            yield widget.code
 
 
+class PlotAttributesPanel(SeriesPanelBase):
+    """Panel that provides plot series attributes in multiple boxed panels"""
+
+    # Data for series plot
+    # matplotlib_key, label, widget_cls, default_code
+
+    data = {
+        "xdata":  (_("X"), StringEditor, ""),
+        "ydata":  (_("Y"), StringEditor, ""),
+        "linestyle":  (_("Style"), LineStyleEditor, '-'),
+        "linewidth":  (_("Width"), IntegerEditor, "1"),
+        "color":  (_("Color"), ColorEditor, "(0, 0, 0)"),
+        "marker":  (_("Style"), MarkerStyleEditor, ""),
+        "markersize":  (_("Size"), IntegerEditor, "5"),
+        "markerfacecolor": (_("Face color"), ColorEditor, "(0, 0, 0)"),
+        "markeredgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["xdata", "ydata"]),
+        (_("Line"), ["linestyle", "linewidth", "color"]),
+        (_("Marker"), ["marker", "markersize", "markerfacecolor",
+                       "markeredgecolor"]),
+    ]
 
 
+class BarAttributesPanel(SeriesPanelBase):
+    """Panel that provides bar series attributes in multiple boxed panels"""
 
+    # Data for bar plot
+    # matplotlib_key, label, widget_cls, default_code
+
+    data = {}
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = []
+
+
+class FigureAttributesPanel(SeriesPanelBase):
+    """Panel that provides figure attributes in multiple boxed panels"""
+
+    # Data for figure
+    # matplotlib_key, label, widget_cls, default_code
+
+    data = {}
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = []
 
 
 

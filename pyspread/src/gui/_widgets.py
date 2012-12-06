@@ -452,7 +452,7 @@ class MatplotlibStyleChoice(wx.Choice):
         kwargs["choices"] = [style[0] for style in self.styles]
         wx.Choice.__init__(self, *args, **kwargs)
 
-    def get_code(self, label):
+    def get_style_code(self, label):
         """Returns code for given label string
 
         Inverse of get_code
