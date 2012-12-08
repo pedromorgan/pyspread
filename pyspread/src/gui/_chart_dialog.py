@@ -54,6 +54,8 @@ Provides
 # [(seriestype_key, seriestype_label, seriestype_image,
 #                                     <Seriestype>AttributesPanel), ...]
 #
+# AllSeriesPanel provides a flatnotebook with one tab per series
+#
 # FigureAttributesPanel is equivalent to a <Seriestype>AttributesPanel
 #
 # FigurePanel provides a matplotlib chart drawing
@@ -356,7 +358,7 @@ class SeriesBoxPanel(wx.Panel):
         self.Layout()
 
 
-class SeriesPanelBase(wx.Panel):
+class SeriesAttributesPanelBase(wx.Panel):
     """Base class for <Seriestype>AttributesPanel and FigureAttributesPanel"""
 
     def __init__(self, parent):
@@ -402,13 +404,14 @@ class SeriesPanelBase(wx.Panel):
             yield widget.code
 
 
-class PlotAttributesPanel(SeriesPanelBase):
+class PlotAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides plot series attributes in multiple boxed panels"""
 
     # Data for series plot
     # matplotlib_key, label, widget_cls, default_code
 
     data = {
+        "name": (_("Series name"), StringEditor, ""),
         "xdata":  (_("X"), StringEditor, ""),
         "ydata":  (_("Y"), StringEditor, ""),
         "linestyle":  (_("Style"), LineStyleEditor, '-'),
@@ -431,13 +434,14 @@ class PlotAttributesPanel(SeriesPanelBase):
     ]
 
 
-class BarAttributesPanel(SeriesPanelBase):
+class BarAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides bar series attributes in multiple boxed panels"""
 
     # Data for bar plot
     # matplotlib_key, label, widget_cls, default_code
 
     data = {
+        "name": (_("Series name"), StringEditor, ""),
         "left": (_("Left positions"), StringEditor, ""),
         "height": (_("Bar heights"), StringEditor, ""),
         "width": (_("Bar widths"), StringEditor, ""),
@@ -455,7 +459,7 @@ class BarAttributesPanel(SeriesPanelBase):
     ]
 
 
-class FigureAttributesPanel(SeriesPanelBase):
+class FigureAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides figure attributes in multiple boxed panels"""
 
     # Data for figure
@@ -477,6 +481,146 @@ class FigureAttributesPanel(SeriesPanelBase):
         (_("X-Axis"), ["xlabel", "xlim", "xscale"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
     ]
+
+
+class SeriesPanel(wx.Panel):
+    """Panel that holds attribute information for one series of the chart"""
+
+    plot_types = [
+        {"type": "plot", "panel_class": PlotAttributesPanel},
+        {"type": "bar", "panel_class": BarAttributesPanel},
+    ]
+
+    def __init__(self, grid, series_dict):
+
+        self.grid = grid
+
+        wx.Panel.__init__(self, grid, -1)
+
+        self.chart_type_book = wx.Treebook(self, -1, style=wx.BK_LEFT)
+        self.il = wx.ImageList(24, 24)
+
+        # Add plot panels
+
+        for i, plot_type_dict in enumerate(self.plot_types):
+            plot_type = plot_type_dict["type"]
+            PlotPanelClass = plot_type_dict["panel_class"]
+
+            series_data = {}
+            if plot_type == series_dict["series_type"]:
+                series_data.update(series_dict)
+                self.plot_type = plot_type
+
+            plot_panel = PlotPanelClass(self, -1, series_data)
+            self.chart_type_book.AddPage(plot_panel, plot_type, imageId=i)
+            self.il.Add(icons[plot_type_dict["type"]])
+
+        self._properties()
+        self.__bindings()
+        self.__do_layout()
+
+    def _properties(self):
+        self.chart_type_book.SetImageList(self.il)
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+        main_sizer.Add(self.chart_type_book, 1, wx.ALL | wx.EXPAND, 2)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+    def get_plot_panel(self):
+        """Returns current plot_panel"""
+
+        plot_type_no = self.chart_type_book.GetSelection()
+        return self.chart_type_book.GetPage(plot_type_no)
+
+    def set_plot_panel(self, plot_type_no):
+        """Sets current plot_panel to plot_type_no"""
+
+        self.chart_type_book.SetPage(plot_type_no)
+
+    plot_panel = property(get_plot_panel, set_plot_panel)
+
+    def get_plot_type(self):
+        """Returns current plot type"""
+
+        return self.plot_types[self.plot_panel]["type"]
+
+    def set_plot_type(self, plot_type):
+        """Sets plot type"""
+
+        ptypes = [pt["type"] for pt in self.plot_types]
+        self.plot_panel = ptypes.index(plot_type)
+
+    plot_type = property(get_plot_type, set_plot_type)
+
+
+class AllSeriesPanel(wx.Panel):
+    """Panel that holds series panels for all series of the chart"""
+
+    def __init__(self, grid, series_list):
+        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
+                        wx.THICK_FRAME
+
+        wx.Dialog.__init__(self, grid, style=style)
+
+        agwstyle = fnb.FNB_NODRAG | fnb.FNB_DROPDOWN_TABS_LIST | fnb.FNB_BOTTOM
+        self.series_notebook = fnb.FlatNotebook(self, -1, agwStyle=agwstyle)
+
+        # Add as many tabs as there are series in code
+
+        for series_dict in series_list:
+            series_panel = SeriesPanel(self, grid, series_dict)
+            self.series_notebook.AddPage(series_panel, series_dict["name"])
+
+        # Update widget content
+
+        self.update(series_list)
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CHANGED, self.OnSeriesChanged)
+        self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CLOSING, self.OnSeriesDeleted)
+
+    def update(self, series_list):
+        """Updates widget content from series_list
+
+        Parameters
+        ----------
+        series_list: List of dict
+        \tList of dicts with data from all series
+
+        """
+
+        raise NotImplementedError
+
+    # Handlers
+    # --------
+
+    def OnSeriesChanged(self, event):
+        """FlatNotebook change event handler"""
+
+        selection = event.GetSelection()
+
+        if selection == self.series_notebook.GetPageCount() - 1:
+            # Add new series
+            new_panel = SeriesPanel(self, -1)
+            self.series_notebook.InsertPage(selection, new_panel, _("Series"))
+
+        event.Skip()
+
+    def OnSeriesDeleted(self, event):
+        """FlatNotebook closing event handler"""
+
+        # Redraw Chart
+        post_command_event(self, self.DrawChartMsg)
+
+        event.Skip()
 
 
 class FigurePanel(wx.Panel):
@@ -527,6 +671,35 @@ class FigurePanel(wx.Panel):
 
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
+
+    def __init__(self, grid):
+        wx.Dialog.__init__(self, grid, -1)
+
+        self.grid = grid
+        self.key = self.grid.actions.cursor
+
+        self.update_widgets()
+
+    def _get_figure(self):
+        """Returns figure from code"""
+
+    def set_code(self):
+        """Update widgets from code"""
+
+    def get_code(self):
+        """Returns code from widgets"""
+
+    code = property(set_code, get_code)
+
+
+
+
+
+
+
+
+
+
 
 
 
