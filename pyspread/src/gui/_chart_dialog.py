@@ -365,7 +365,7 @@ class SeriesAttributesPanelBase(wx.Panel):
     def __init__(self, parent):
 
         self.boxes = []
-        self.widgets = {}
+        self.keys2widgets = {}
 
         for box_label, keys in self.boxes:
 
@@ -380,7 +380,7 @@ class SeriesAttributesPanelBase(wx.Panel):
                 widgets.append(widget)
                 labels.append(widget_label)
 
-                self.widgets[key] = widget
+                self.keys2widgets[key] = widget
 
             self.boxes.append(SeriesBoxPanel(self, box_label, labels, widgets))
 
@@ -401,8 +401,8 @@ class SeriesAttributesPanelBase(wx.Panel):
     def __iter__(self):
         """Yields (key, code) for each widget"""
 
-        for key in self.widgets:
-            yield key, self.widgets[key].code
+        for key in self.keys2widgets:
+            yield key, self.keys2widgets[key].code
 
 
 class PlotAttributesPanel(SeriesAttributesPanelBase):
@@ -726,6 +726,18 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def set_code(self, code):
         """Update widgets from code"""
 
+        # Get attributes from code
+        attributes = self.get_figure(code).attributes
+
+        # Set widgets from attributes
+        figure_attributes = attributes.pop(0)
+        figure_keys2widgets = self.figure_attributes_panel.keys2widgets
+
+        for key in figure_attributes:
+            figure_keys2widgets[key].code = figure_attributes[key]
+
+        raise NotImplementedError
+
     def get_code(self):
         """Returns code that generates figure from widgets"""
 
@@ -733,10 +745,11 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         cls_name = "charts." + charts.ChartFigure.__name__
 
         # figure_attributes is a dict key2code
-        attributes = [dict(self.figure_attributes_panel)]
+        attributes = [dict((k, v) for k, v in self.figure_attributes_panel)]
 
         # series_attributes is a list of dicts key2code
-        attributes += [dict(spanel) for spanel in self.all_series_panel]
+        for series_panel in self.all_series_panel:
+            attributes.append(dict((k, v) for k, v in series_panel))
 
         return "{}{}".format(cls_name, tuple(attributes))
 

@@ -53,11 +53,11 @@ class ChartFigure(Figure):
         "bar": ["left", "height"],
     }
 
-    def __init__(self, *chart_data):
+    def __init__(self, *attributes):
 
         Figure.__init__(self, (5.0, 4.0), facecolor="white")
 
-        self.chart_data = chart_data
+        self.attributes = attributes
         self.__axes = self.add_subplot(111)
         self.draw_chart()
 
@@ -75,15 +75,15 @@ class ChartFigure(Figure):
                 self.__axes.set_ylabel(axes_data["ylabel"])
 
     def draw_chart(self):
-        """Plots chart from self.chart_data.clear"""
+        """Plots chart from self.attributes.clear"""
 
-        if not hasattr(self, "chart_data"):
+        if not hasattr(self, "attributes"):
             return
 
         # The first element is always aaxes data
-        self._setup_axes(self.chart_data[0])
+        self._setup_axes(self.attributes[0])
 
-        for series in self.chart_data[1:]:
+        for series in self.attributes[1:]:
             # Extract chart type
             chart_type_string = series.pop("type")
 
