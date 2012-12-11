@@ -401,8 +401,8 @@ class SeriesAttributesPanelBase(wx.Panel):
     def __iter__(self):
         """Yields (key, code) for each widget"""
 
-        for widget in self.widgets:
-            yield widget.code
+        for key in self.widgets:
+            yield key, self.widgets[key].code
 
 
 class PlotAttributesPanel(SeriesAttributesPanelBase):
@@ -727,7 +727,18 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         """Update widgets from code"""
 
     def get_code(self):
-        """Returns code from widgets"""
+        """Returns code that generates figure from widgets"""
+
+        # cls_name inludes full class name incl. charts
+        cls_name = "charts." + charts.ChartFigure.__name__
+
+        # figure_attributes is a dict key2code
+        attributes = [dict(self.figure_attributes_panel)]
+
+        # series_attributes is a list of dicts key2code
+        attributes += [dict(spanel) for spanel in self.all_series_panel]
+
+        return "{}{}".format(cls_name, tuple(attributes))
 
     code = property(set_code, get_code)
 
