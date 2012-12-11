@@ -68,6 +68,7 @@ from copy import copy
 from itertools import izip
 
 import wx
+import matplotlib
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 from wx.lib.intctrl import IntCtrl, EVT_INT
@@ -587,6 +588,13 @@ class AllSeriesPanel(wx.Panel):
         self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CHANGED, self.OnSeriesChanged)
         self.Bind(fnb.EVT_FLATNOTEBOOK_PAGE_CLOSING, self.OnSeriesDeleted)
 
+    def __iter__(self):
+        """Yields series panels of the chart's series"""
+
+        no_pages = self.series_notebook.GetPageCount()
+        for page_number in xrange(no_pages):
+            yield self.series_notebook.GetPage(page_number)
+
     def update(self, series_list):
         """Updates widget content from series_list
 
@@ -672,18 +680,50 @@ class FigurePanel(wx.Panel):
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
-    def __init__(self, grid):
+    def __init__(self, grid, code):
         wx.Dialog.__init__(self, grid, -1)
 
         self.grid = grid
         self.key = self.grid.actions.cursor
 
-        self.update_widgets()
+        self.figure_attributes_panel = FigureAttributesPanel()
+        self.all_series_panel = AllSeriesPanel()
+        self.figure_panel = FigurePanel(self.get_figure(code))
 
-    def _get_figure(self):
-        """Returns figure from code"""
+        self.set_code(code)
 
-    def set_code(self):
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(self.EVT_CMD_DRAW_CHART, self.OnUpdateFigurePanel)
+
+    def get_figure(self, code):
+        """Returns figure from executing code in grid
+
+        Returns an empty matplotlib figure if code does not eval to a
+        matplotlib figure instance.
+
+        Parameters
+        ----------
+        code: Unicode
+        \tUnicode string which contains Python code that should yield a figure
+
+        """
+
+        # key is the current cursor cell of the grid
+        key = self.grid.actions.cursor
+        cell_result = self.grid.code_array._eval_cell(key, code)
+
+        # If cell_result is matplotlib figure then return it
+        if isinstance(cell_result, matplotlib.pyplot.Figure):
+            return cell_result
+        # Otherwise resturn empty figure
+        else:
+            return charts.ChartFigure()
+
+    def set_code(self, code):
         """Update widgets from code"""
 
     def get_code(self):
@@ -691,7 +731,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     code = property(set_code, get_code)
 
+    # Handlers
+    # --------
 
+    def OnUpdateFigurePanel(self, event):
+        """Redraw event handler for the figure panel"""
+
+        self.figure_panel.update(self.get_figure(self.code))
 
 
 
