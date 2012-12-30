@@ -58,6 +58,7 @@ class ChartFigure(Figure):
         Figure.__init__(self, (5.0, 4.0), facecolor="white")
 
         self.attributes = attributes
+
         self.__axes = self.add_subplot(111)
 
         # Insert empty attributes with a dict for figure attributes

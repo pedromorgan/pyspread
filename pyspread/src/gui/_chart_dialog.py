@@ -63,7 +63,6 @@ Provides
 # ChartDialog provides FigureAttributesPanel, Flatnotebook of SeriesPanels,
 #                      FigurePanel
 
-from copy import copy
 
 import wx
 import matplotlib
@@ -104,7 +103,7 @@ class BoolEditor(wx.CheckBox, ChartDialogEventMixin):
     def get_code(self):
         """Returns '0' or '1'"""
 
-        return repr(self.GetValue())
+        return unicode(self.GetValue())
 
     def set_code(self, code):
         """Sets widget from code string
@@ -146,7 +145,7 @@ class IntegerEditor(IntCtrl, ChartDialogEventMixin):
     def get_code(self):
         """Returns string representation of Integer"""
 
-        return repr(self.GetValue())
+        return unicode(self.GetValue())
 
     def set_code(self, code):
         """Sets widget from code string
@@ -259,15 +258,21 @@ class ColorEditor(csel.ColourSelect, ChartDialogEventMixin):
 class StyleEditorMixin(object):
     """Mixin class for stzle editors that are based on MatplotlibStyleChoice"""
 
-    def __bindings(self):
+    def bindings(self):
         """Binds events to handlers"""
 
         self.Bind(wx.EVT_CHOICE, self.OnStyle)
 
     def get_code(self):
-        """Returns string representation of Integer"""
+        """Returns code representation of value of widget"""
 
-        return self.get_style_code(self.StringSelection)
+        selection = self.GetSelection()
+
+        if selection == wx.NOT_FOUND:
+            selection = 0
+
+        # Return code string
+        return self.styles[selection][1]
 
     def set_code(self, code):
         """Sets widget from code string
@@ -275,11 +280,13 @@ class StyleEditorMixin(object):
         Parameters
         ----------
         code: String
-        \tMarker style string
+        \tCode representation of widget value
 
         """
 
-        self.StringSelection = self.get_label(code)
+        for i, (_, style_code) in enumerate(self.styles):
+            if code == style_code:
+                self.SetSelection(i)
 
     # Properties
 
@@ -301,27 +308,7 @@ class MarkerStyleEditor(MarkerStyleComboBox, ChartDialogEventMixin,
     def __init__(self, *args, **kwargs):
         MarkerStyleComboBox.__init__(self, *args, **kwargs)
 
-    def get_code(self):
-        """Returns code representation of value of widget"""
-
-        return self.GetStringSelection()
-
-    def set_code(self, code):
-        """Sets widget from code string
-
-        Parameters
-        ----------
-        code: String
-        \tCode representation of widget value
-
-        """
-
-        index = self.FindString(code)
-        self.SetSelection(index)
-
-    # Properties
-
-    code = property(get_code, set_code)
+        self.bindings()
 
 
 class LineStyleEditor(LineStyleComboBox, ChartDialogEventMixin,
@@ -331,27 +318,7 @@ class LineStyleEditor(LineStyleComboBox, ChartDialogEventMixin,
     def __init__(self, *args, **kwargs):
         LineStyleComboBox.__init__(self, *args, **kwargs)
 
-    def get_code(self):
-        """Returns code representation of value of widget"""
-
-        return self.GetStringSelection()
-
-    def set_code(self, code):
-        """Sets widget from code string
-
-        Parameters
-        ----------
-        code: String
-        \tCode representation of widget value
-
-        """
-
-        index = self.FindString(code)
-        self.SetSelection(index)
-
-    # Properties
-
-    code = property(get_code, set_code)
+        self.bindings()
 
 
 # -------------
@@ -592,8 +559,13 @@ class SeriesPanel(wx.Panel):
 
         panel = self.get_plot_panel()
 
-        for key in panel.data:
-            yield key, panel.data[key]
+        # First yield the panel type because it is not contained in any widget
+        chart_type_number = self.chart_type_book.GetSelection()
+        chart_type = self.plot_types[chart_type_number]["type"]
+        yield "type", chart_type
+
+        for key, code in panel:
+            yield key, code
 
     def get_plot_panel(self):
         """Returns current plot_panel"""
@@ -788,7 +760,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((1000, 400))
+        self.SetSize((1200, 400))
         self.figure_panel.SetMinSize((400, 300))
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
@@ -842,11 +814,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         key = self.grid.actions.cursor
         cell_result = self.grid.code_array._eval_cell(key, code)
 
-        # If cell_result is matplotlib figure then return it
+        # If cell_result is matplotlib figure
         if isinstance(cell_result, matplotlib.pyplot.Figure):
+            # Return it
             return cell_result
-        # Otherwise resturn empty figure
+
         else:
+            # Otherwise resturn empty figure
             return charts.ChartFigure()
 
     def set_code(self, code):
@@ -863,17 +837,63 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def get_code(self):
         """Returns code that generates figure from widgets"""
 
+        def dict2str(attr_dict):
+            """Returns string with dict content with values as code
+
+            Code means that string identifiers are removed
+
+            """
+
+            # Tuple keys have to be put in parentheses
+            tuple_keys = ["xdata", "ydata",
+                          "left", "height", "width", "bottom"]
+
+            # String keys need to be put in "
+            string_keys = ["type", "linestyle", "marker"]
+
+            result = u"{"
+
+            for key in attr_dict:
+                code = attr_dict[key]
+
+                if key in string_keys:
+                    code = repr(code)
+
+                elif code and key in tuple_keys and \
+                     not (code[0] in ["[", "("] and code[-1] in ["]", ")"]):
+                    code = "(" + code + ")"
+
+                if not code:
+                    code = 'u""'
+
+                result += repr(key) + ": " + code + ", "
+
+            result = result[:-2] + u"}"
+
+            return result
+
         # cls_name inludes full class name incl. charts
         cls_name = "charts." + charts.ChartFigure.__name__
 
         # figure_attributes is a dict key2code
-        attributes = [dict((k, v) for k, v in self.figure_attributes_panel)]
+        attr_dicts = [dict((k, v) for k, v in self.figure_attributes_panel)]
 
         # series_attributes is a list of dicts key2code
         for series_panel in self.all_series_panel:
-            attributes.append(dict((k, v) for k, v in series_panel))
+            attr_dict = {}
+            for key, code in series_panel:
+                attr_dict[key] = code
 
-        return "{}{}".format(cls_name, tuple(attributes))
+            attr_dicts.append(attr_dict)
+
+        code = cls_name + "("
+
+        for attr_dict in attr_dicts:
+            code += dict2str(attr_dict) + ", "
+
+        code = code[:-2] + ")"
+
+        return code
 
     # Properties
     # ----------

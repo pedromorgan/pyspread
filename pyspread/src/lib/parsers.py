@@ -76,9 +76,9 @@ def code2color(color_string):
 
 
 def color2code(color):
-    """Returns 3-tuple of floats in [0.0, 1.0] from wx.Colour"""
+    """Returns repr of 3-tuple of floats in [0.0, 1.0] from wx.Colour"""
 
-    return repr(tuple(i / 255.0 for i in color.Get()))
+    return unicode(tuple(i / 255.0 for i in color.Get()))
 
 
 def parse_dict_strings(code):
