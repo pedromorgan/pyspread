@@ -72,6 +72,8 @@ class ToolbarBase(wx.ToolBar, EventMixin):
         self.parent = parent
         self._add_tools()
 
+        self.Realize()
+
     def _add_tools(self):
         """Adds tools from self.toolbardata to self"""
 

@@ -66,7 +66,7 @@ def get_pen_from_data(pendata):
     return pen
 
 
-def color2code(color_string):
+def code2color(color_string):
     """Returns wx.Colour from 3-tuple of floats in [0.0, 1.0]"""
 
     color_tuple = ast.literal_eval(color_string)
@@ -75,7 +75,7 @@ def color2code(color_string):
     return wx.Colour(*color_tuple_int)
 
 
-def code2color(color):
+def color2code(color):
     """Returns 3-tuple of floats in [0.0, 1.0] from wx.Colour"""
 
     return repr(tuple(i / 255.0 for i in color.Get()))
