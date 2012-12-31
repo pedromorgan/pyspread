@@ -422,7 +422,7 @@ class SeriesAttributesPanelBase(wx.Panel):
 
         for box_panel, (_, keys) in zip(self.box_panels, self.boxes):
             for widget, key in zip(box_panel.widgets, keys):
-                yield key, widget.code
+                yield key, widget
 
 
 class PlotAttributesPanel(SeriesAttributesPanelBase):
@@ -824,16 +824,62 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             # Otherwise resturn empty figure
             return charts.ChartFigure()
 
+    # Tuple keys have to be put in parentheses
+    tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom"]
+
+    # String keys need to be put in "
+    string_keys = ["type", "linestyle", "marker"]
+
+    def object2code(self, key, code):
+        """Returns code for widget from dict object"""
+
+        if key in ["xscale", "yscale"]:
+            if code == "log":
+                code = True
+            else:
+                code = False
+
+        else:
+            code = repr(code)
+
+        return code
+
     def set_code(self, code):
         """Update widgets from code"""
 
         # Get attributes from code
         attributes = list(self.get_figure(code).attributes)
 
+        if not attributes:
+            return
+
         # Set widgets from attributes
 
-        #for attr_dict in attributes:
-        #    panel_type = attr_dict["type"]
+        # Figure attributes
+        figure_attributes = attributes[0]
+
+        for key, widget in self.figure_attributes_panel:
+            try:
+                obj = figure_attributes[key]
+
+            except KeyError:
+                obj = ""
+
+            widget.code = self.object2code(key, obj)
+
+        # Series attributes
+        #self.all_series_panel.update(attributes[1:])
+
+        for attrdict, panel in zip(attributes[1:], self.all_series_panel):
+            for key, widget in panel:
+                try:
+                    obj = attrdict[key]
+
+                except KeyError:
+                    obj = ""
+
+                if key != "type":
+                    widget.code = self.object2code(key, obj)
 
     def get_code(self):
         """Returns code that generates figure from widgets"""
@@ -845,30 +891,23 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
             """
 
-            # Tuple keys have to be put in parentheses
-            tuple_keys = ["xdata", "ydata",
-                          "left", "height", "width", "bottom"]
-
-            # String keys need to be put in "
-            string_keys = ["type", "linestyle", "marker"]
-
             result = u"{"
 
             for key in attr_dict:
                 code = attr_dict[key]
 
-                if key in string_keys:
+                if key in self.string_keys:
                     code = repr(code)
 
-                elif code and key in tuple_keys and \
+                elif code and key in self.tuple_keys and \
                      not (code[0] in ["[", "("] and code[-1] in ["]", ")"]):
                     code = "(" + code + ")"
 
                 elif key in ["xscale", "yscale"]:
-                    if code == 0 or code == False:
-                        code = '"linear"'
-                    else:
+                    if code:
                         code = '"log"'
+                    else:
+                        code = '"linear"'
 
                 if not code:
                     code = 'u""'
@@ -882,14 +921,27 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         # cls_name inludes full class name incl. charts
         cls_name = "charts." + charts.ChartFigure.__name__
 
-        # figure_attributes is a dict key2code
-        attr_dicts = [dict((k, v) for k, v in self.figure_attributes_panel)]
+        attr_dicts = []
 
-        # series_attributes is a list of dicts key2code
+        # Figure attributes
+        attr_dict = {}
+        # figure_attributes is a dict key2code
+        for key, widget in self.figure_attributes_panel:
+            if key == "type":
+                attr_dict[key] = widget
+            else:
+                attr_dict[key] = widget.code
+
+        attr_dicts.append(attr_dict)
+
+        # Series_attributes is a list of dicts key2code
         for series_panel in self.all_series_panel:
             attr_dict = {}
-            for key, code in series_panel:
-                attr_dict[key] = code
+            for key, widget in series_panel:
+                if key == "type":
+                    attr_dict[key] = widget
+                else:
+                    attr_dict[key] = widget.code
 
             attr_dicts.append(attr_dict)
 
@@ -899,7 +951,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             code += dict2str(attr_dict) + ", "
 
         code = code[:-2] + ")"
-        print code
+
         return code
 
     # Properties
