@@ -825,7 +825,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             return charts.ChartFigure()
 
     # Tuple keys have to be put in parentheses
-    tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom"]
+    tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
+                  "xlim", "ylim"]
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker"]
@@ -839,8 +840,11 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             else:
                 code = False
 
-        else:
+        elif key in ["xlabel", "ylabel", "name"]:
             code = repr(code)
+
+        else:
+            code = str(code)
 
         return code
 
@@ -849,6 +853,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         # Get attributes from code
         attributes = list(self.get_figure(code).attributes)
+        print attributes
 
         if not attributes:
             return
@@ -871,6 +876,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         #self.all_series_panel.update(attributes[1:])
 
         for attrdict, panel in zip(attributes[1:], self.all_series_panel):
+
             for key, widget in panel:
                 try:
                     obj = attrdict[key]
@@ -878,8 +884,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                 except KeyError:
                     obj = ""
 
-                if key != "type":
-                    widget.code = self.object2code(key, obj)
+                if key == "type":
+                    pass
+
+                else:
+                    code = self.object2code(key, obj)
+                    print code
+                    widget.code = code
 
     def get_code(self):
         """Returns code that generates figure from widgets"""

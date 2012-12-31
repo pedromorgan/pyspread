@@ -32,6 +32,7 @@ Provides
 
 """
 
+from copy import copy
 import i18n
 
 from matplotlib.figure import Figure
@@ -72,21 +73,18 @@ class ChartFigure(Figure):
 
         self.__axes.clear()
 
-        if "xlabel" in axes_data:
-            if axes_data["xlabel"]:
-                self.__axes.set_xlabel(axes_data["xlabel"])
+        key2setter = {
+            "xlabel": self.__axes.set_xlabel,
+            "ylabel": self.__axes.set_ylabel,
+            "xscale": self.__axes.set_xscale,
+            "yscale": self.__axes.set_yscale,
+            "xlim": self.__axes.set_xlim,
+            "ylim": self.__axes.set_ylim,
+        }
 
-        if "ylabel" in axes_data:
-            if axes_data["ylabel"]:
-                self.__axes.set_ylabel(axes_data["ylabel"])
-
-        if "xscale" in axes_data:
-            if axes_data["xscale"]:
-                self.__axes.set_xscale(axes_data["xscale"])
-
-        if "yscale" in axes_data:
-            if axes_data["yscale"]:
-                self.__axes.set_yscale(axes_data["yscale"])
+        for key in key2setter:
+            if key in axes_data and axes_data[key]:
+                key2setter[key](axes_data[key])
 
     def draw_chart(self):
         """Plots chart from self.attributes"""
@@ -97,7 +95,8 @@ class ChartFigure(Figure):
         # The first element is always aaxes data
         self._setup_axes(self.attributes[0])
 
-        for series in self.attributes[1:]:
+        for attribute in self.attributes[1:]:
+            series = copy(attribute)
             # Extract chart type
             chart_type_string = series.pop("type")
 
