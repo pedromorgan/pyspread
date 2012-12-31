@@ -720,16 +720,10 @@ class AllSeriesPanel(wx.Panel, ChartDialogEventMixin):
 class FigurePanel(wx.Panel):
     """Panel that draws a matplotlib figure_canvas"""
 
-    def __init__(self, parent, figure):
+    def __init__(self, parent):
 
         wx.Panel.__init__(self, parent)
-
-        # Set figure_canvas
-        self.figure_canvas = self._get_figure_canvas(figure)
-
         self.__do_layout()
-
-        self.update(figure)
 
     def __do_layout(self):
         self.main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
@@ -756,8 +750,8 @@ class FigurePanel(wx.Panel):
 
         """
 
-        self.figure_canvas.Hide()
-        self.figure_canvas.Destroy()
+        if hasattr(self, "figure_canvas"):
+            self.figure_canvas.Destroy()
 
         self.figure_canvas = self._get_figure_canvas(figure)
 
@@ -783,16 +777,20 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         self.figure_attributes_panel = FigureAttributesPanel(self, {}, -1)
         self.all_series_panel = AllSeriesPanel(self)
-        self.figure_panel = FigurePanel(self, self.get_figure(code))
+        self.figure_panel = FigurePanel(self)
+
+        # Figure cache speeds up screen updates if figure code is unchanged
+        self.figure_code_old = None
+        self.figure_cache = None
 
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
 
         self.set_code(code)
 
-        self.__bindings()
         self.__set_properties()
         self.__do_layout()
+        self.__bindings()
 
     def __bindings(self):
         """Binds events to handlers"""
@@ -849,6 +847,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         """
 
+        # Caching for fast response if there are no changes
+        if code == self.figure_code_old and self.figure_cache:
+            return self.figure_cache
+
+        self.figure_code_old = code
+
         # key is the current cursor cell of the grid
         key = self.grid.actions.cursor
         cell_result = self.grid.code_array._eval_cell(key, code)
@@ -856,11 +860,14 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         # If cell_result is matplotlib figure
         if isinstance(cell_result, matplotlib.pyplot.Figure):
             # Return it
+            self.figure_cache = cell_result
             return cell_result
 
         else:
-            # Otherwise resturn empty figure
-            return charts.ChartFigure()
+            # Otherwise return empty figure
+            self.figure_cache = charts.ChartFigure()
+
+        return self.figure_cache
 
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
