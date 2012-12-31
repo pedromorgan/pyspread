@@ -41,6 +41,24 @@ from matplotlib.figure import Figure
 _ = i18n.language.ugettext
 
 
+def object2code(key, code):
+    """Returns code for widget from dict object"""
+
+    if key in ["xscale", "yscale"]:
+        if code == "log":
+            code = True
+        else:
+            code = False
+
+    elif key in ["xlabel", "ylabel", "name"]:
+        code = repr(code)
+
+    else:
+        code = str(code)
+
+    return code
+
+
 class ChartFigure(Figure):
     """Chart figure class with drawing method"""
 

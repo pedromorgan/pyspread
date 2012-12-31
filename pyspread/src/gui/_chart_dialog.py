@@ -380,7 +380,10 @@ class SeriesAttributesPanelBase(wx.Panel):
     def __init__(self, parent, series_data, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
-        self.data.update(series_data)
+        self.data = {}
+        self.data.update(self.default_data)
+
+        self.update(series_data)
 
         self.box_panels = []
 
@@ -424,6 +427,24 @@ class SeriesAttributesPanelBase(wx.Panel):
             for widget, key in zip(box_panel.widgets, keys):
                 yield key, widget
 
+    def update(self, series_data):
+        """Updates self.data from series data
+
+        Parameters
+        ----------
+         * series_data: dict
+        \tKey value pairs for self.data, which correspond to chart attributes
+
+        """
+
+        for key in series_data:
+            try:
+                data_list = list(self.data[key])
+                data_list[2] = str(series_data[key])
+                self.data[key] = tuple(data_list)
+            except KeyError:
+                pass
+
 
 class PlotAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides plot series attributes in multiple boxed panels"""
@@ -431,7 +452,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
     # Data for series plot
     # matplotlib_key, label, widget_cls, default_code
 
-    data = {
+    default_data = {
         "name": (_("Series name"), StringEditor, ""),
         "xdata":  (_("X"), StringEditor, ""),
         "ydata":  (_("Y"), StringEditor, ""),
@@ -461,7 +482,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     # Data for bar plot
     # matplotlib_key, label, widget_cls, default_code
 
-    data = {
+    default_data = {
         "name": (_("Series name"), StringEditor, ""),
         "left": (_("Left positions"), StringEditor, ""),
         "height": (_("Bar heights"), StringEditor, ""),
@@ -486,7 +507,7 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
     # Data for figure
     # matplotlib_key, label, widget_cls, default_code
 
-    data = {
+    default_data = {
         "xlabel": (_("Label"), StringEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log"), BoolEditor, False),
@@ -532,7 +553,7 @@ class SeriesPanel(wx.Panel):
                 series_data.update(series_dict)
                 self.plot_type = plot_type
 
-            plot_panel = PlotPanelClass(grid, series_data, -1)
+            plot_panel = PlotPanelClass(self, series_data, -1)
 
             self.chart_type_book.AddPage(plot_panel, plot_type, imageId=i)
             self.il.Add(icons[plot_type_dict["type"]])
@@ -601,14 +622,14 @@ class AllSeriesPanel(wx.Panel, ChartDialogEventMixin):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
                         wx.THICK_FRAME
 
+        self.grid = grid
+
+        self.updating = False  # Set to true if you want to delete all tabs
+
         wx.Panel.__init__(self, grid, style=style)
 
         agwstyle = fnb.FNB_NODRAG | fnb.FNB_DROPDOWN_TABS_LIST | fnb.FNB_BOTTOM
         self.series_notebook = fnb.FlatNotebook(self, -1, agwStyle=agwstyle)
-
-        self.series_panel = SeriesPanel(self, {"type": "plot"})
-        self.series_notebook.AddPage(self.series_panel, _("Series"))
-        self.series_notebook.AddPage(wx.Panel(self, -1), _("+"))
 
         self.__bindings()
         self.__do_layout()
@@ -649,11 +670,26 @@ class AllSeriesPanel(wx.Panel, ChartDialogEventMixin):
 
         """
 
+        if not series_list:
+            self.series_notebook.AddPage(wx.Panel(self, -1), _("+"))
+            return
+
+        self.updating = True
+
+        # Delete all tabs in the notebook
+        self.series_notebook.DeleteAllPages()
+
         # Add as many tabs as there are series in code
 
-        for series_dict in series_list:
-            series_panel = SeriesPanel(self, series_dict)
-            self.series_notebook.AddPage(series_panel, series_dict["name"])
+        for page, attrdict in enumerate(series_list):
+            series_panel = SeriesPanel(self.grid, attrdict)
+            name = "Series"
+
+            self.series_notebook.InsertPage(page, series_panel, name)
+
+        self.series_notebook.AddPage(wx.Panel(self, -1), _("+"))
+
+        self.updating = False
 
     # Handlers
     # --------
@@ -663,7 +699,8 @@ class AllSeriesPanel(wx.Panel, ChartDialogEventMixin):
 
         selection = event.GetSelection()
 
-        if selection == self.series_notebook.GetPageCount() - 1:
+        if not self.updating and \
+           selection == self.series_notebook.GetPageCount() - 1:
             # Add new series
             new_panel = SeriesPanel(self, {"type": "plot"})
             self.series_notebook.InsertPage(selection, new_panel, _("Series"))
@@ -831,34 +868,17 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker"]
 
-    def object2code(self, key, code):
-        """Returns code for widget from dict object"""
-
-        if key in ["xscale", "yscale"]:
-            if code == "log":
-                code = True
-            else:
-                code = False
-
-        elif key in ["xlabel", "ylabel", "name"]:
-            code = repr(code)
-
-        else:
-            code = str(code)
-
-        return code
-
     def set_code(self, code):
         """Update widgets from code"""
 
         # Get attributes from code
         attributes = list(self.get_figure(code).attributes)
-        print attributes
 
         if not attributes:
             return
 
         # Set widgets from attributes
+        # ---------------------------
 
         # Figure attributes
         figure_attributes = attributes[0]
@@ -870,27 +890,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             except KeyError:
                 obj = ""
 
-            widget.code = self.object2code(key, obj)
+            widget.code = charts.object2code(key, obj)
 
         # Series attributes
-        #self.all_series_panel.update(attributes[1:])
-
-        for attrdict, panel in zip(attributes[1:], self.all_series_panel):
-
-            for key, widget in panel:
-                try:
-                    obj = attrdict[key]
-
-                except KeyError:
-                    obj = ""
-
-                if key == "type":
-                    pass
-
-                else:
-                    code = self.object2code(key, obj)
-                    print code
-                    widget.code = code
+        self.all_series_panel.update(attributes[1:])
 
     def get_code(self):
         """Returns code that generates figure from widgets"""
