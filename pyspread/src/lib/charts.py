@@ -80,8 +80,16 @@ class ChartFigure(Figure):
             if axes_data["ylabel"]:
                 self.__axes.set_ylabel(axes_data["ylabel"])
 
+        if "xscale" in axes_data:
+            if axes_data["xscale"]:
+                self.__axes.set_xscale(axes_data["xscale"])
+
+        if "yscale" in axes_data:
+            if axes_data["yscale"]:
+                self.__axes.set_yscale(axes_data["yscale"])
+
     def draw_chart(self):
-        """Plots chart from self.attributes.clear"""
+        """Plots chart from self.attributes"""
 
         if not hasattr(self, "attributes"):
             return

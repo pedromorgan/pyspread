@@ -103,7 +103,7 @@ class BoolEditor(wx.CheckBox, ChartDialogEventMixin):
     def get_code(self):
         """Returns '0' or '1'"""
 
-        return unicode(self.GetValue())
+        return self.GetValue()
 
     def set_code(self, code):
         """Sets widget from code string
@@ -686,34 +686,27 @@ class FigurePanel(wx.Panel):
 
         wx.Panel.__init__(self, parent)
 
-        self.figure = figure
-
         # Set figure_canvas
-
         self.figure_canvas = self._get_figure_canvas(figure)
 
-        self.__set_properties()
         self.__do_layout()
 
-    def __set_properties(self):
-        self.figure_canvas.SetMinSize((100, 100))
+        self.update(figure)
 
     def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+        self.main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
 
-        main_sizer.Add(self.figure_canvas, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
+        self.main_sizer.AddGrowableCol(0)
+        self.main_sizer.AddGrowableCol(1)
 
-        main_sizer.AddGrowableCol(0)
-        main_sizer.AddGrowableCol(1)
-
-        self.SetSizer(main_sizer)
+        self.SetSizer(self.main_sizer)
 
         self.Layout()
 
     def _get_figure_canvas(self, figure):
         """Returns figure canvas"""
 
-        return FigureCanvasWxAgg(self, -1, self.figure)
+        return FigureCanvasWxAgg(self, -1, figure)
 
     def update(self, figure):
         """Updates figure on data change
@@ -725,7 +718,17 @@ class FigurePanel(wx.Panel):
 
         """
 
+        self.figure_canvas.Hide()
+        self.figure_canvas.Destroy()
+
         self.figure_canvas = self._get_figure_canvas(figure)
+
+        self.figure_canvas.SetSize(self.GetSize())
+
+        self.main_sizer.Add(self.figure_canvas, 1,
+                            wx.EXPAND | wx.FIXED_MINSIZE, 0)
+
+        self.Layout()
         self.figure_canvas.draw()
 
 
@@ -760,14 +763,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((1200, 400))
-        self.figure_panel.SetMinSize((400, 300))
+        self.SetSize((1000, 400))
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
         self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
 
     def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(2, 3, 0, 0)
+        main_sizer = wx.FlexGridSizer(2, 3, 2, 2)
         figure_attributes_box_sizer = wx.StaticBoxSizer(
                         self.figure_attributes_staticbox, wx.HORIZONTAL)
         series_box_sizer = wx.StaticBoxSizer(
@@ -780,8 +782,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         main_sizer.Add(button_sizer, wx.ALL | wx.EXPAND, 3)
 
         main_sizer.AddGrowableRow(0)
-        main_sizer.AddGrowableCol(0)
-        main_sizer.AddGrowableCol(1)
+        main_sizer.SetItemMinSize(1, (300, 300))
+        main_sizer.AddGrowableCol(2)
 
         figure_attributes_box_sizer.Add(self.figure_attributes_panel,
                                         1, wx.EXPAND, 0)
@@ -794,7 +796,6 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         button_sizer.AddGrowableCol(2)
 
         self.SetSizer(main_sizer)
-
         self.Layout()
 
     def get_figure(self, code):
@@ -863,6 +864,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                      not (code[0] in ["[", "("] and code[-1] in ["]", ")"]):
                     code = "(" + code + ")"
 
+                elif key in ["xscale", "yscale"]:
+                    if code == 0 or code == False:
+                        code = '"linear"'
+                    else:
+                        code = '"log"'
+
                 if not code:
                     code = 'u""'
 
@@ -892,7 +899,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
             code += dict2str(attr_dict) + ", "
 
         code = code[:-2] + ")"
-
+        print code
         return code
 
     # Properties
