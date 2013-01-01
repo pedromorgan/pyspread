@@ -312,7 +312,7 @@ class FindToolbar(ToolbarBase):
 # end of class FindToolbar
 
 
-class AttributesToolbar(wx.ToolBar, EventMixin):
+class AttributesToolbar(aui.AuiToolBar, EventMixin):
     """Toolbar for editing cell attributes
 
     Class attributes
@@ -348,7 +348,7 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
 
     def __init__(self, parent, *args, **kwargs):
         kwargs["style"] = wx.TB_FLAT | wx.TB_NODIVIDER
-        wx.ToolBar.__init__(self, parent, *args, **kwargs)
+        aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
         self.parent = parent
 
@@ -410,7 +410,8 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
 
         for __id, method, iconname, helpstring in font_face_buttons:
             bmp = icons[iconname]
-            self.AddCheckLabelTool(__id, "", bmp, shortHelp=helpstring)
+            self.AddCheckTool(__id, iconname, bmp, bmp,
+                              short_help_string=helpstring)
             self.Bind(wx.EVT_TOOL, getattr(self, method), id=__id)
 
     def _create_justification_button(self):
@@ -494,8 +495,8 @@ class AttributesToolbar(wx.ToolBar, EventMixin):
 
         bmp = icons["Merge"]
         self.mergetool_id = wx.NewId()
-        self.AddCheckLabelTool(self.mergetool_id, "", bmp,
-                               shortHelp=_("Merge cells"))
+        self.AddCheckTool(self.mergetool_id, "Merge", bmp, bmp,
+                               short_help_string=_("Merge cells"))
         self.Bind(wx.EVT_TOOL, self.OnMerge, id=self.mergetool_id)
 
     def _create_textrotation_spinctrl(self):
