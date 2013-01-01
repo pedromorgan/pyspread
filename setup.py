@@ -54,7 +54,7 @@ setup(name='pyspread',
          'examples/*',
          'COPYING', 'thanks', 'faq',
          'authors', '../pyspread.pth', '../README', '../changelog']},
-      classifiers=[ \
+      classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: X11 Applications :: GTK',
         'Intended Audience :: End Users/Desktop',
