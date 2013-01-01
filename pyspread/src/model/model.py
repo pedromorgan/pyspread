@@ -216,7 +216,11 @@ class ParserMixin(object):
         row, tab, height = self._split_tidy(line)
         key = self._get_key(row, tab)
 
-        self.row_heights[key] = float(height)
+        try:
+            self.row_heights[key] = float(height)
+
+        except ValueError:
+            pass
 
     def parse_to_width(self, line):
         """Parses line and inserts column width"""
@@ -225,7 +229,11 @@ class ParserMixin(object):
         col, tab, width = self._split_tidy(line)
         key = self._get_key(col, tab)
 
-        self.col_widths[key] = float(width)
+        try:
+            self.col_widths[key] = float(width)
+
+        except ValueError:
+            pass
 
     def parse_to_macro(self, line):
         """Appends line to macro"""
