@@ -706,7 +706,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
     def _show_final_paste_message(self, tl_key, no_pasted_cells):
         """Show actually pasted number of cells"""
 
-        plural = _("") if no_pasted_cells == 1 else _("s")
+        plural = "" if no_pasted_cells == 1 else _("s")
 
         statustext = _("{ncells} cell{plural} pasted at cell {topleft}").\
             format(ncells=no_pasted_cells, plural=plural, topleft=tl_key)
