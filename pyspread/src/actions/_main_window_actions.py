@@ -75,6 +75,10 @@ class ExchangeActions(Actions):
     def _import_csv(self, path):
         """CSV import workflow"""
 
+        # If path is not set, do nothing
+        if not path:
+            return
+
         # Get csv info
 
         try:
