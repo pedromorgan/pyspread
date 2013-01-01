@@ -93,6 +93,7 @@ def parse_dict_strings(code):
 
     """
 
+    i = 0
     level = 0
     chunk_start = 0
     curr_paren = None
@@ -109,7 +110,7 @@ def parse_dict_strings(code):
                 curr_paren = char
 
         if level == 0 and char in [':', ','] and curr_paren is None:
-            yield code[chunk_start: i].strip().strip("(").strip(")")
+            yield code[chunk_start: i].strip()
             chunk_start = i + 1
 
-    yield code[chunk_start: i + 1].strip()
+    yield code[chunk_start:i + 1].strip()

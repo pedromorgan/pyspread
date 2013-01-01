@@ -75,7 +75,7 @@ from _widgets import LineStyleComboBox, MarkerStyleComboBox
 from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
-from src.lib.parsers import color2code, code2color
+from src.lib.parsers import color2code, code2color, parse_dict_strings
 from icons import icons
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -880,7 +880,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         """Update widgets from code"""
 
         # Get attributes from code
-        attributes = list(self.get_figure(code).attributes)
+
+        attributes = []
+        strip = lambda s: s.strip('u').strip("'").strip('"')
+        for attr_dict in parse_dict_strings(unicode(code).strip()[19:-1]):
+            attrs = list(strip(s) for s in parse_dict_strings(attr_dict[1:-1]))
+            attributes.append(dict(zip(attrs[::2], attrs[1::2])))
 
         if not attributes:
             return

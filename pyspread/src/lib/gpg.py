@@ -190,9 +190,9 @@ def genkey():
 
         gpg_key_parameters = get_key_params_from_user()
 
-        config["gpg_key_uid"] = repr(str( \
+        config["gpg_key_uid"] = repr(str(
             [val for key, val in gpg_key_parameters if key == 'Name-Real'][0]))
-        config["gpg_key_passphrase"] = repr(str(([val \
+        config["gpg_key_passphrase"] = repr(str(([val
             for key, val in gpg_key_parameters if key == 'Passphrase'][0])))
 
         gpg_key_parameters_string = get_key_params_string(gpg_key_parameters)
