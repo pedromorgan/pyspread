@@ -39,6 +39,7 @@ Provides
 import sys
 
 import wx
+import gnupg
 
 import src.lib.i18n as i18n
 from src.config import config
@@ -129,6 +130,16 @@ def get_key_params_string(params):
 
 def genkey():
     """Creates a new standard GPG key"""
+
+    gpg = gnupg.GPG()
+
+    gpg.encoding = 'utf-8'
+
+    # Check if standard key is already present
+
+    private_keys = gpg.list_keys(True)
+    print private_keys
+
 
     # Initialize our context.
     core.check_version(None)
