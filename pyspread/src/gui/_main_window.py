@@ -887,7 +887,7 @@ class MainWindowEventHandlers(object):
             focus.Copy()
 
         else:
-            data = self.main_window.actions.copy( \
+            data = self.main_window.actions.copy(
                        self.main_window.grid.selection)
             self.main_window.clipboard.set_clipboard(data)
 

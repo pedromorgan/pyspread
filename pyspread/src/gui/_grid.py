@@ -149,6 +149,9 @@ class Grid(wx.grid.Grid, EventMixin):
         # Cell code events
 
         main_window.Bind(self.EVT_CMD_CODE_ENTRY, c_handlers.OnCellText)
+
+        main_window.Bind(self.EVT_CMD_INSERT_BMP, c_handlers.OnInsertBitmap)
+        main_window.Bind(self.EVT_CMD_LINK_BMP, c_handlers.OnLinkBitmap)
         main_window.Bind(self.EVT_CMD_INSERT_CHART,
                          c_handlers.OnInsertChartDialog)
 
@@ -344,6 +347,46 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_code(key, event.code)
 
         event.Skip()
+
+    def OnInsertBitmap(self, event):
+        """Insert bitmap event handler"""
+
+        # Get file name
+        wildcard = "*"
+        message = _("Select bitmap for current cell")
+        style = wx.OPEN | wx.CHANGE_DIR
+        filepath, __ = self.grid.interfaces.get_filepath_findex_from_user(
+                                                    wildcard, message, style)
+
+        bmp = wx.Bitmap(filepath)
+        if bmp.Size == (-1, -1):
+            # Bitmap could not be read
+            return
+
+        key = self.grid.actions.cursor
+        code = self.grid.main_window.actions.bmp2code(key, bmp)
+
+        self.grid.actions.set_code(key, code)
+
+    def OnLinkBitmap(self, event):
+        """Link bitmap event handler"""
+
+        # Get file name
+        wildcard = "*"
+        message = _("Select bitmap for current cell")
+        style = wx.OPEN | wx.CHANGE_DIR
+        filepath, __ = self.grid.interfaces.get_filepath_findex_from_user(
+                                                    wildcard, message, style)
+
+        bmp = wx.Bitmap(filepath)
+        if bmp.Size == (-1, -1):
+            # Bitmap could not be read
+            return
+
+        code = "wx.Bitmap('{}')".format(filepath)
+
+        key = self.grid.actions.cursor
+        self.grid.actions.set_code(key, code)
 
     def OnInsertChartDialog(self, event):
         """Chart dialog event handler"""
