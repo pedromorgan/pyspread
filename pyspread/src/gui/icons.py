@@ -78,9 +78,9 @@ class _ArtProvider(wx.ArtProvider):
             "InsideBorders": _toggle_path + "border_inside.xpm",
             "OutsideBorders": _toggle_path + "border_outside.xpm",
             "TopBottomBorders": _toggle_path + "border_top_n_bottom.xpm",
-            "SearchCaseSensitive": _toggle_path + "aA.png",
-            "SearchRegexp": _toggle_path + "regex.png",
-            "SearchWholeword": _toggle_path + "wholeword.png",
+            "MATCH_CASE": _toggle_path + "aA.png",
+            "REG_EXP": _toggle_path + "regex.png",
+            "WHOLE_WORD": _toggle_path + "wholeword.png",
             "InsertChart": _action_path + "chart_line.png",
             "plot": _action_path + "chart_line.png",  # matplotlib plot chart
             "bar": _action_path + "chart_column.png",  # matplotlib bar chart

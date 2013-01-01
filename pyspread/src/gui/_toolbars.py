@@ -35,6 +35,7 @@ Provides:
 
 import wx
 import wx.lib.colourselect as csel
+import wx.lib.agw.aui as aui
 
 from _events import post_command_event, EventMixin
 
@@ -50,47 +51,77 @@ import _widgets
 _ = i18n.language.ugettext
 
 
-class ToolbarBase(wx.ToolBar, EventMixin):
+class ToolbarBase(aui.AuiToolBar, EventMixin):
     """Base class for toolbars, requires self.toolbardata set in init
 
-    toolbardata has the following structure:
-    [["Methodname", "Label", "Iconname", "Tooltip", "Help string"] ,
-    ...
-    [] ,\  # Separator
-    ...
-    ]
+    Toolbardata has the following structure:
+    [["tool type", "method name", "label", "tool tip"], ... ]
+
+    Tool types are:
+
+    "T": Simple tool
+    "S": Separator
+    "C": Control
+    "O": Check tool / option button
 
     """
 
     def __init__(self, parent, *args, **kwargs):
-        wx.ToolBar.__init__(self, parent, *args, **kwargs)
+
+        aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
         self.SetToolBitmapSize(icons.icon_size)
 
         self.ids_msgs = {}
+        self.label2id = {}
 
         self.parent = parent
-        self._add_tools()
 
-        self.Realize()
-
-    def _add_tools(self):
+    def add_tools(self):
         """Adds tools from self.toolbardata to self"""
 
-        for tool in self.toolbardata:
-            if tool:
-                msgtype, label, icon_name, tooltip, helpstring = tool
-                icon = icons[icon_name]
-                toolid = wx.NewId()
-                self.AddLabelTool(toolid, label, icon, wx.NullBitmap,
-                                  wx.ITEM_NORMAL, tooltip, helpstring)
+        for data in self.toolbardata:
+            # tool type is in data[0]
 
-                self.ids_msgs[toolid] = msgtype
+            if data[0] == "T":
+                # Simple tool
 
-                self.parent.Bind(wx.EVT_TOOL, self.OnTool, id=toolid)
+                _, msg_type, label, tool_tip = data
+                icon = icons[label]
+
+                self.label2id[label] = tool_id = wx.NewId()
+
+                self.AddSimpleTool(tool_id, label, icon,
+                                   short_help_string=tool_tip)
+
+                self.ids_msgs[tool_id] = msg_type
+
+                self.parent.Bind(wx.EVT_TOOL, self.OnTool, id=tool_id)
+
+            elif data[0] == "S":
+                # Separator
+
+                self.AddSeparator()
+
+            elif data[0] == "C":
+                # Control
+
+                _, control, tool_tip = data
+
+                self.AddControl(control, label=tool_tip)
+
+            elif data[0] == "O":
+                # Check tool / option button
+
+                _, label, tool_tip = data
+                icon = icons[label]
+
+                self.label2id[label] = tool_id = wx.NewId()
+
+                self.AddCheckTool(tool_id, label, icon, icon, tool_tip)
 
             else:
-                self.AddSeparator()
+                raise ValueError("Unknown tooltype " + str(data[0]))
 
     def OnTool(self, event):
         """Toolbar event handler"""
@@ -104,39 +135,30 @@ class MainToolbar(ToolbarBase):
 
     def __init__(self, parent, *args, **kwargs):
 
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
+
         self.toolbardata = [
-            [self.NewMsg, _("New"), "FileNew", _("New spreadsheet"),
-                _("Create a new, empty spreadsheet")],
-            [self.OpenMsg, _("Open"), "FileOpen", _("Open spreadsheet"),
-                _("Open spreadsheet from file")],
-            [self.SaveMsg, _("Save"), "FileSave", _("Save spreadsheet"),
-                _("Save spreadsheet to file")],
-            [],
-            [self.UndoMsg, _("Undo"), "Undo", _("Undo"),
-                 _("Undo last operation")],
-            [self.RedoMsg, _("Redo"), "Redo", _("Redo"),
-                 _("Redo next operation")],
-            [],
-            [self.FindFocusMsg, _("Find"), "Find", _("Find"),
-                _("Find cell by content")],
-            [self.ReplaceMsg, _("Replace"), "FindReplace", _("Replace"),
-                _("Replace strings in cells")],
-            [],
-            [self.CutMsg, _("Cut"), "EditCut", _("Cut"),
-                 _("Cut cells to clipboard")],
-            [self.CopyMsg, _("Copy"), "EditCopy", _("Copy"),
-                _("Copy the input strings of the cells to clipboard")],
-            [self.CopyResultMsg, _("Copy Results"), "EditCopyRes",
-                 _("Copy Results"),
-                _("Copy the result strings of the cells to the clipboard")],
-            [self.PasteMsg, _("Paste"), "EditPaste", _("Paste"),
-                _("Paste cell from clipboard")],
-            [],
-            [self.PrintMsg, _("Print"), "FilePrint",
-                 _("Print spreadsheet"), _("Print spreadsheet")],
+            ["T", self.NewMsg, "FileNew", _("New")],
+            ["T", self.OpenMsg, "FileOpen", _("Open")],
+            ["T", self.SaveMsg, "FileSave", _("Save")],
+            ["S"],
+            ["T", self.UndoMsg, "Undo", _("Undo")],
+            ["T", self.RedoMsg, "Redo", _("Redo")],
+            ["S"],
+            ["T", self.FindFocusMsg, "Find", _("Find")],
+            ["T", self.ReplaceMsg, "FindReplace", _("Replace")],
+            ["S"],
+            ["T", self.CutMsg, "EditCut", _("Cut")],
+            ["T", self.CopyMsg, "EditCopy", _("Copy")],
+            ["T", self.CopyResultMsg, "EditCopyRes", _("Copy Results")],
+            ["T", self.PasteMsg, "EditPaste", _("Paste")],
+            ["S"],
+            ["T", self.PrintMsg, "FilePrint", _("Print")],
         ]
 
-        ToolbarBase.__init__(self, parent, *args, **kwargs)
+        self.add_tools()
+
+        self.Realize()
 
 # end of class MainToolbar
 
@@ -146,97 +168,75 @@ class MacroToolbar(ToolbarBase):
 
     def __init__(self, parent, *args, **kwargs):
 
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
+
         self.toolbardata = [
-            [self.InsertChartMsg, _("Insert chart"), "InsertChart",
-             _("Insert chart"), _("Insert chart into cell")],
+            ["T", self.InsertChartMsg, "InsertChart", _("Insert chart")],
         ]
 
-        ToolbarBase.__init__(self, parent, *args, **kwargs)
+        self.add_tools()
+
+        self.Realize()
 
 # end of class MainToolbar
 
 
-class FindToolbar(wx.ToolBar, EventMixin):
+class FindToolbar(ToolbarBase):
     """Toolbar for find operations (replaces wxFindReplaceDialog)"""
 
-    # Search flag buttons
-    search_options_buttons = {
-      "matchcase_tb": {
-        "ID": wx.NewId(),
-        "iconname": "SearchCaseSensitive",
-        "shorthelp": _("Case sensitive"),
-        "longhelp": _("Case sensitive search"),
-        "flag": "MATCH_CASE",
-      },
-      "regexp_tb": {
-        "ID": wx.NewId(),
-        "iconname": "SearchRegexp",
-        "shorthelp": _("Regular expression"),
-        "longhelp": _("Treat search string as regular expression"),
-        "flag": "REG_EXP",
-      },
-      "wholeword_tb": {
-        "ID": wx.NewId(),
-        "iconname": "SearchWholeword",
-        "shorthelp": _("Whole word"),
-        "longhelp": _("Search string is surronted by whitespace characters"),
-        "flag": "WHOLE_WORD",
-      },
-    }
-
     def __init__(self, parent, *args, **kwargs):
-        kwargs["style"] = wx.TB_FLAT | wx.TB_NODIVIDER
-        wx.ToolBar.__init__(self, parent, *args, **kwargs)
 
-        self.SetToolBitmapSize(icons.icon_size)
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
 
-        self.parent = parent
+        self.search_history = []
+        self.search_options = ["DOWN"]
+        self.search_options_buttons = ["MATCH_CASE", "REG_EXP", "WHOLE_WORD"]
+
+        # Controls
+        # --------
 
         # Search entry control
-        self.search_history = []
-        self.search = wx.SearchCtrl(self, size=(150, -1),
+        search_tooltip = _("Find in code and results")
+        self.search = wx.SearchCtrl(self, size=(140, -1),
                         style=wx.TE_PROCESS_ENTER | wx.NO_BORDER)
-        tip_msg = _("Searches in grid cell source code and grid cell results.")
-        self.search.SetToolTip(wx.ToolTip(tip_msg))
+        self.search.SetToolTip(wx.ToolTip(search_tooltip))
         self.menu = self.make_menu()
         self.search.SetMenu(self.menu)
-        self.AddControl(self.search)
 
-        # Search direction toggle button
-        self.search_options = ["DOWN"]
-        self.setup_searchdirection_togglebutton()
+        # Search direction togglebutton
+        direction_tooltip = _("Search direction")
+        iconnames = ["GoDown", "GoUp"]
+        bmplist = [icons[iconname] for iconname in iconnames]
+        self.search_direction_tb = _widgets.BitmapToggleButton(self, bmplist)
+        self.search_direction_tb.SetToolTip(wx.ToolTip(direction_tooltip))
 
-        # Search flags buttons
-        sfbs = self.search_options_buttons
-        for name in sfbs:
-            iconname = sfbs[name]["iconname"]
-            __id = sfbs[name]["ID"]
-            shorthelp = sfbs[name]["shorthelp"]
-            longhelp = sfbs[name]["longhelp"]
+        # Toolbar data
+        # ------------
 
-            bmp = icons[iconname]
-            self.AddCheckLabelTool(__id, name, bmp,
-                shortHelp=shorthelp, longHelp=longhelp)
+        self.toolbardata = [
+            ["C", self.search, search_tooltip],
+            ["C", self.search_direction_tb, direction_tooltip],
+            ["O", "MATCH_CASE", _("Case sensitive")],
+            ["O", "REG_EXP", _("Regular expression")],
+            ["O", "WHOLE_WORD", _("Surrounded by whitespace")],
+        ]
 
-        # Event bindings
+        self.add_tools()
+
+        # Bindings and polish
+        # -------------------
+
+        self._bindings()
+
+        self.Realize()
+
+    def _bindings(self):
         self.Bind(wx.EVT_SEARCHCTRL_SEARCH_BTN, self.OnSearch, self.search)
         self.Bind(wx.EVT_TEXT_ENTER, self.OnSearch, self.search)
         self.Bind(wx.EVT_MENU_RANGE, self.OnSearchFlag)
         self.Bind(wx.EVT_BUTTON, self.OnSearchDirectionButton,
                                  self.search_direction_tb)
         self.Bind(wx.EVT_MENU, self.OnMenu)
-        self.Realize()
-
-    def setup_searchdirection_togglebutton(self):
-        """Setup of search direction toggle button for searching up and down"""
-
-        iconnames = ["GoDown", "GoUp"]
-        bmplist = [icons[iconname] for iconname in iconnames]
-        self.search_direction_tb = _widgets.BitmapToggleButton(self, bmplist)
-
-        self.search_direction_tb.SetInitialSize()
-        self.search_direction_tb.SetToolTip(wx.ToolTip(_("Search direction")))
-        self.AddControl(self.search_direction_tb)
 
     def make_menu(self):
         """Creates the search menu"""
@@ -298,14 +298,15 @@ class FindToolbar(wx.ToolBar, EventMixin):
     def OnSearchFlag(self, event):
         """Event handler for search flag toggle buttons"""
 
-        sfbs = self.search_options_buttons
-        for name in sfbs:
-            if sfbs[name]["ID"] == event.GetId():
+        for label in self.search_options_buttons:
+            button_id = self.label2id[label]
+            if button_id == event.GetId():
                 if event.IsChecked():
-                    self.search_options.append(sfbs[name]["flag"])
+                    self.search_options.append(label)
                 else:
-                    flag_index = self.search_options.index(sfbs[name]["flag"])
+                    flag_index = self.search_options.index(label)
                     self.search_options.pop(flag_index)
+
         event.Skip()
 
 # end of class FindToolbar
