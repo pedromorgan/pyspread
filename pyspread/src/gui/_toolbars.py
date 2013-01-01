@@ -171,6 +171,8 @@ class MacroToolbar(ToolbarBase):
         ToolbarBase.__init__(self, parent, *args, **kwargs)
 
         self.toolbardata = [
+            ["T", self.InsertBitmapMsg, "InsertBitmap", _("Insert bitmap")],
+            ["T", self.LinkBitmapMsg, "LinkBitmap", _("Link bitmap")],
             ["T", self.InsertChartMsg, "InsertChart", _("Insert chart")],
         ]
 

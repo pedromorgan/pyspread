@@ -81,6 +81,8 @@ class _ArtProvider(wx.ArtProvider):
             "MATCH_CASE": _toggle_path + "aA.png",
             "REG_EXP": _toggle_path + "regex.png",
             "WHOLE_WORD": _toggle_path + "wholeword.png",
+            "InsertBitmap": _action_path + "insert_bmp.png",
+            "LinkBitmap": _action_path + "link_bmp.png",
             "InsertChart": _action_path + "chart_line.png",
             "plot": _action_path + "chart_line.png",  # matplotlib plot chart
             "bar": _action_path + "chart_column.png",  # matplotlib bar chart

@@ -326,8 +326,7 @@ class MainMenu(_filledMenu, EventMixin):
                     _("Launch color dialog to specify background color.")]],
                 ["Separator"],
                 [item, [self.RotationDialogMsg, _("Rotation..."),
-                        _("Set text rotation.")]
-                    ]
+                        _("Set text rotation.")]],
                 ],
             ],
             [wx.Menu, _("&Macro"), [
@@ -344,7 +343,8 @@ class MainMenu(_filledMenu, EventMixin):
                     _("Link bitmap from file into cell")]],
                 [item, [self.InsertChartMsg, _("Insert chart..."),
                     _("Insert chart into cell")]],
-            ]],
+                ],
+            ],
             [wx.Menu, _("&Help"), [
                 [item, [self.ManualMsg, _("First &Steps"),
                     _("Launch First Steps in pyspread"), wx.ID_HELP]],
