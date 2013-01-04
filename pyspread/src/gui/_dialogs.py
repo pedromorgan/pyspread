@@ -1174,20 +1174,6 @@ class PreferencesDialog(wx.Dialog):
             "widget_params": {},
             "prepocessor": unicode,
         }),
-        ("gpg_key_passphrase", {
-            "label": _(u"GPG key passphrase"),
-            "tooltip": _(u"Passphrase of the GPG key for signing files"),
-            "widget": wx.TextCtrl,
-            "widget_params": {"style": wx.TE_PASSWORD | wx.OK},
-            "prepocessor": unicode,
-        }),
-        ("gpg_key_passphrase_isstored", {
-            "label": _(u"Store passphrase in config file"),
-            "tooltip": _(u"If False then the passprase is not stored on exit"),
-            "widget": CheckBoxCtrl,
-            "widget_params": {},
-            "prepocessor": bool,
-        }),
     )
 
     def __init__(self, *args, **kwargs):
@@ -1260,25 +1246,15 @@ class GPGParamsDialog(wx.Dialog):
 
         self.textctrls = []
 
-        for labeltext, __, pwd in params:
+        for labeltext, __ in params:
             label = wx.StaticText(self, -1, labeltext)
             sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
 
-            if pwd:
-                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1),
-                                       style=wx.TE_PASSWORD)
-            else:
-                textctrl = wx.TextCtrl(self, -1, "", size=(80, -1))
+            textctrl = wx.TextCtrl(self, -1, "", size=(80, -1))
 
             self.textctrls.append(textctrl)
 
             sizer.Add(textctrl, 1, wx.ALIGN_CENTRE | wx.ALL, 5)
-
-        label = wx.StaticText(self, -1, _("Store passphrase in keyring"))
-        sizer.Add(label)
-        self.store_passwd_checkbox = wx.CheckBox(self, True, "")
-        self.store_passwd_checkbox.SetValue(True)
-        sizer.Add(self.store_passwd_checkbox)
 
         ok_button = wx.Button(self, wx.ID_OK)
         ok_button.SetToolTipString(_("Starts key generation."))

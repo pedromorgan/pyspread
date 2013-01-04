@@ -39,8 +39,6 @@ import wx.lib.agw.genericmessagedialog as GMD
 
 import src.lib.i18n as i18n
 
-from config import config
-
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from _dialogs import PreferencesDialog, GPGParamsDialog
@@ -323,24 +321,18 @@ class GuiInterfaces(DialogInterfaceMixin, ModalDialogInterfaceMixin):
 
 
 def get_key_params_from_user():
-    """Displays parameter entry dialog and returns parameter string"""
+    """Displays parameter entry dialog and returns parameter dict"""
 
     gpg_key_parameters = [
-        ('Key-Type', 'DSA'),
-        ('Key-Length', '2048'),
-        ('Subkey-Type', 'ELG-E'),
-        ('Subkey-Length', '2048'),
-        ('Expire-Date', '0'),
+        ('key_type', 'DSA'),
+        ('key_length', '2048'),
+        ('subkey_type', 'ELG-E'),
+        ('subkey_length', '2048'),
+        ('expire_date', '0'),
     ]
 
-    PASSWD = True
-    NO_PASSWD = False
-
     params = [
-        [_('Real name'), 'Name-Real', NO_PASSWD],
-        [_('Passphrase'), 'Passphrase', PASSWD],
-        [_('E-mail'), 'Name-Email', NO_PASSWD],
-        [_('Comment'), 'Name-Comment', NO_PASSWD],
+        [_('Real name'), 'name_real'],
     ]
 
     vals = [""] * len(params)
@@ -356,49 +348,18 @@ def get_key_params_from_user():
             sys.exit()
 
         vals = [textctrl.Value for textctrl in dlg.textctrls]
-        config["gpg_key_passphrase_isstored"] = \
-            repr(dlg.store_passwd_checkbox.Value)
 
         dlg.Destroy()
 
         if "" in vals:
-            msg = "Please enter a value in each field."
+            msg = _("Please enter a value in each field.")
 
             dlg = GMD.GenericMessageDialog(None, msg, _("Missing value"),
                                            wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
 
-    for (__, key, __), val in zip(params, vals):
+    for (__, key), val in zip(params, vals):
         gpg_key_parameters.insert(-2, (key, val))
 
-    return gpg_key_parameters
-
-
-def get_gpg_passwd_from_user(stored=True, passwd_is_incorrect=False, uid=''):
-    """Opens a dialog for a GPG password and returns the password or None
-
-    Parameters
-    ----------
-
-    stored: Bool
-    \tIf True then a message is displayed that the password is stored on disk
-
-    """
-
-    dlg_msg = _("Please enter your GPG key passphrase for {}.").format(uid)
-
-    if stored:
-        dlg_msg += _('\nThe password will be stored in your config file.')
-
-    if passwd_is_incorrect:
-        dlg_msg = _('Wrong password!\n') + dlg_msg
-
-    dlg = wx.TextEntryDialog(None, dlg_msg, _('GPG key passphrase'), '',
-                             style=wx.TE_PASSWORD | wx.OK | wx.CANCEL)
-
-    if dlg.ShowModal() == wx.ID_OK:
-        dlg.Destroy()
-        return dlg.GetValue()
-
-    dlg.Destroy()
+    return dict(gpg_key_parameters)

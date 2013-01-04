@@ -97,8 +97,6 @@ class DefaultConfig(object):
         # --------------
 
         self.gpg_key_uid = repr('')
-        self.gpg_key_passphrase = repr('')
-        self.gpg_key_passphrase_isstored = repr(True)
 
         # CSV parameters for import and export
         # ------------------------------------

@@ -212,7 +212,7 @@ def main():
     """Parses command line and starts pyspread"""
 
     # Initialize main application
-    app = MainApplication(0)
+    app = MainApplication(redirect=True)
 
     app.MainLoop()
 

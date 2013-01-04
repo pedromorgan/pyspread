@@ -39,12 +39,12 @@ Provides
 import sys
 
 import wx
+import wx.lib.agw.genericmessagedialog as GMD
 import gnupg
 
 import src.lib.i18n as i18n
 from src.config import config
 from src.gui._gui_interfaces import get_key_params_from_user
-from src.gui._gui_interfaces import get_gpg_passwd_from_user
 
 from pyme import core, pygpgme, errors
 import pyme.errors
@@ -128,6 +128,40 @@ def get_key_params_string(params):
     return str("\n".join(param_str_list))
 
 
+def choose_uid_key(keylist):
+    """Displays gpg key choice and returns uid and key dict"""
+
+    uid_strings = []
+    uid_string2key = {}
+
+    for key in keylist:
+        for uid_string in key['uids']:
+            uid_strings.append(uid_string)
+            uid_string2key[uid_string] = key
+
+    dlg = wx.SingleChoiceDialog(
+            None,
+          _('Choose a GPG key that you own for signing pyspread save files.\n'
+            'Pressing Cancel creates a new key.'),
+          _('Choose key'),
+            uid_strings, wx.CHOICEDLG_STYLE,
+            )
+
+    dlg.SetBestFittingSize()
+
+    if dlg.ShowModal() == wx.ID_OK:
+        uid = dlg.GetStringSelection()
+        key = uid_string2key[uid]
+
+    else:
+        uid = None
+        key = None
+
+    dlg.Destroy()
+
+    return uid, key
+
+
 def genkey():
     """Creates a new standard GPG key"""
 
@@ -137,82 +171,55 @@ def genkey():
 
     # Check if standard key is already present
 
-    private_keys = gpg.list_keys(True)
-    print private_keys
+    pyspread_key_uid = str(config["gpg_key_uid"])
+    gpg_private_keylist = gpg.list_keys(True)
 
+    pyspread_key = None
 
-    # Initialize our context.
-    core.check_version(None)
+    for private_key in gpg_private_keylist:
+        if pyspread_key_uid in private_key["uids"]:
+            pyspread_key = private_key
 
-    context = core.Context()
-    context.set_armor(1)
-
-    # Check if standard key is already present
-    keyname = str(config["gpg_key_uid"])
-    context.op_keylist_start(keyname, 0)
-    key = context.op_keylist_next()
-
-    # If no key is chosen generate one
-
-    no_key = key is None or not key or not keyname
-
-    if no_key:
+    if pyspread_key is None:
         # If no GPG key is set in config, choose one
+        pyspread_key_uid, pyspread_key = choose_uid_key(gpg_private_keylist)
 
-        uid = choose_uid(context)
-
-    if no_key and uid is not None:
+    if pyspread_key:
         # A key has been chosen
+        config["gpg_key_uid"] = repr(pyspread_key_uid)
 
-        config["gpg_key_uid"] = repr(uid)
-        stored = config["gpg_key_passphrase_isstored"]
-        passwd = get_gpg_passwd_from_user(stored=stored, uid=uid)
-
-        if passwd is None:
-            sys.exit()
-        else:
-            config["gpg_key_passphrase"] = repr(passwd)
-
-    elif no_key and uid is None:
+    else:
         # No key has been chosen --> Create new one
-
-        # Show progress dialog
-
-        dlg_msg = _("Generating new GPG key {}.\nThis may take some time.\n \n"
-                    "Progress bar may stall. Please wait.").format(keyname)
-        dlg = wx.ProgressDialog(_("GPG key generation"), dlg_msg,
-                               maximum=200,
-                               parent=None,
-                               style=wx.PD_ELAPSED_TIME)
-
-        class CBFs(object):
-            """Callback functions for pyme"""
-
-            progress = 0
-
-            def cbf(self, what=None, type=None, current=None, total=None,
-                    hook=None):
-                """Callback function that updates progress dialog"""
-
-                dlg.Update(self.progress % 199)
-                self.progress += 1
-
-        cbfs = CBFs()
-
         gpg_key_parameters = get_key_params_from_user()
 
-        config["gpg_key_uid"] = repr(str(
-            [val for key, val in gpg_key_parameters if key == 'Name-Real'][0]))
-        config["gpg_key_passphrase"] = repr(str(([val
-            for key, val in gpg_key_parameters if key == 'Passphrase'][0])))
+        input_data = gpg.gen_key_input(**gpg_key_parameters)
 
-        gpg_key_parameters_string = get_key_params_string(gpg_key_parameters)
+        # Generate key
+        # ------------
 
-        context.set_progress_cb(cbfs.cbf, None)
+        # Show infor dialog
 
-        context.op_genkey(gpg_key_parameters_string, None, None)
+        style = wx.ICON_INFORMATION | wx.DIALOG_NO_PARENT | wx.OK | wx.CANCEL
+        pyspread_key_uid = gpg_key_parameters["name_real"]
+        short_message = _("New GPG key").format(pyspread_key_uid)
+        message = _("After confirming this dialog, a new GPG key ") + \
+                  _("'{}' will be generated.").format(pyspread_key_uid) + \
+                  _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
+                  _("Canceling this operation exits pyspread.")
+        dlg = GMD.GenericMessageDialog(None, message, short_message, style)
+        dlg.Centre()
 
-        dlg.Destroy()
+        if dlg.ShowModal() == wx.ID_OK:
+            dlg.Destroy()
+            fingerprint = gpg.gen_key(input_data)
+
+            for private_key in gpg.list_keys(True):
+                if str(fingerprint) == private_key['fingerprint']:
+                    config["gpg_key_uid"] = repr(private_key['uids'][0])
+
+        else:
+            dlg.Destroy()
+            sys.exit()
 
 
 def sign(filename):
