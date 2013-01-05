@@ -204,7 +204,7 @@ msgid "&Clear globals"
 msgstr ""
 
 #: src/gui/_menubars.py:202
-msgid "Deletes global veriables from memory and reloads base modules"
+msgid "Deletes global variables from memory and reloads base modules"
 msgstr ""
 
 #: src/gui/_menubars.py:205
@@ -654,7 +654,7 @@ msgid ""
 msgstr ""
 
 #: src/gui/_main_window.py:690
-msgid "File collison"
+msgid "File collision"
 msgstr ""
 
 #: src/gui/_main_window.py:694
@@ -1030,7 +1030,7 @@ msgid "Whole word"
 msgstr ""
 
 #: src/gui/_toolbars.py:182
-msgid "Search string is surronted by whitespace characters"
+msgid "Search string is surrounded by whitespace characters"
 msgstr ""
 
 #: src/gui/_toolbars.py:199

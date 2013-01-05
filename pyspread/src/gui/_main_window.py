@@ -687,7 +687,7 @@ class MainWindowEventHandlers(object):
             # There is a file with the same path
             message = _("The file {filepath} is already present.\nOverwrite?")\
                                   .format(filepath=filepath)
-            short_message = _("File collison")
+            short_message = _("File collision")
             if not self.main_window.interfaces.get_warning_choice(
                         message, short_message):
 
