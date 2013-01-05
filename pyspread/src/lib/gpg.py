@@ -46,86 +46,8 @@ import src.lib.i18n as i18n
 from src.config import config
 from src.gui._gui_interfaces import get_key_params_from_user
 
-from pyme import core, pygpgme, errors
-import pyme.errors
-
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
-
-
-def _passphrase_callback(hint='', desc='', prev_bad=''):
-    """Callback function needed by pyme"""
-
-    return str(config["gpg_key_passphrase"])
-
-
-def _get_file_data(filename):
-    """Returns pyme.core.Data object of file."""
-
-    # Required because of unicode bug in pyme
-
-    infile = open(filename, "rb")
-    infile_content = infile.read()
-    infile.close()
-
-    return core.Data(string=infile_content)
-
-
-def choose_uid(context):
-    """Displays gpg key choice and returns uid name or None on Cancel"""
-
-    gpg_uids = []
-    uid_strings = []
-
-    for key in context.op_keylist_all("", 0):
-        if key.can_sign and key.owner_trust and not key.invalid:
-            for uid in key.uids:
-                uid_data = uid.uid, uid.name, uid.email, uid.comment
-                gpg_uids.append(uid.name)
-                uid_strings.append("\t".join(uid_data))
-
-    dlg = wx.SingleChoiceDialog(
-            None,
-          _('Choose a GPG key that you own for signing pyspread save files.\n'
-            'Pressing Cancel creates a new key.'),
-          _('Choose key'),
-            uid_strings, wx.CHOICEDLG_STYLE,
-            )
-
-    sizer = dlg.GetSizer()
-    store_passwd_checkbox = wx.CheckBox(dlg, True, _("   Store passphrase"),
-                                        style=wx.ALIGN_RIGHT)
-    store_passwd_checkbox.SetValue(True)
-
-    sizer.Insert(1, store_passwd_checkbox)
-
-    dlg.SetBestFittingSize()
-
-    if dlg.ShowModal() == wx.ID_OK:
-        uid = gpg_uids[uid_strings.index(dlg.GetStringSelection())]
-        config["gpg_key_passphrase_isstored"] = \
-            repr(store_passwd_checkbox.Value)
-
-    else:
-        uid = None
-
-    dlg.Destroy()
-
-    return uid
-
-
-def get_key_params_string(params):
-    """Returns parameter string from given params dict"""
-
-    param_head = '<GnupgKeyParms format="internal">'
-    param_foot = '</GnupgKeyParms>'
-
-    param_str_list = [param_head, param_foot]
-
-    for param in params[::-1]:
-        param_str_list.insert(1, ": ".join(param))
-
-    return str("\n".join(param_str_list))
 
 
 def choose_uid_key(keylist):
@@ -225,77 +147,26 @@ def genkey():
 def sign(filename):
     """Returns detached signature for file"""
 
-    plaintext = _get_file_data(filename)
+    gpg = gnupg.GPG()
 
-    ciphertext = core.Data()
+    signfile = open(filename, "rb")
 
-    ctx = core.Context()
+    signed_data = gpg.sign_file(signfile, keyid=config["gpg_key_uid"],
+                                detach=True)
+    signfile.close()
 
-    ctx.set_armor(1)
-    ctx.set_passphrase_cb(_passphrase_callback)
-
-    ctx.op_keylist_start(str(config["gpg_key_uid"]), 0)
-    sigkey = ctx.op_keylist_next()
-    ##print sigkey.uids[0].uid
-
-    ctx.signers_clear()
-    ctx.signers_add(sigkey)
-
-    passwd_is_incorrect = None
-
-    while passwd_is_incorrect is None or passwd_is_incorrect:
-        try:
-            ctx.op_sign(plaintext, ciphertext, pygpgme.GPGME_SIG_MODE_DETACH)
-            passwd_is_incorrect = False
-
-        except errors.GPGMEError:
-            passwd_is_incorrect = True
-
-            uid = config["gpg_key_uid"]
-            stored = config["gpg_key_passphrase_isstored"]
-
-            passwd = get_gpg_passwd_from_user(stored, passwd_is_incorrect, uid)
-
-            if passwd is None:
-                return
-
-            config["gpg_key_passphrase"] = repr(passwd)
-            ctx.set_passphrase_cb(_passphrase_callback)
-
-    ciphertext.seek(0, 0)
-    signature = ciphertext.read()
-
-    return signature
+    return signed_data.data
 
 
 def verify(sigfilename, filefilename=None):
     """Verifies a signature, returns True if successful else False."""
 
-    context = core.Context()
+    gpg = gnupg.GPG()
 
-    # Create Data with signed text.
-    __signature = _get_file_data(sigfilename)
+    sigfile = open(sigfilename, "rb")
 
-    if filefilename:
-        __file = _get_file_data(filefilename)
-        __plain = None
-    else:
-        __file = None
-        __plain = core.Data()
+    verified = gpg.verify_file(sigfile, filefilename)
 
-    # Verify.
-    try:
-        context.op_verify(__signature, __file, __plain)
-    except pyme.errors.GPGMEError:
-        return False
+    sigfile.close()
 
-    result = context.op_verify_result()
-
-    # List results for all signatures. Status equal 0 means "Ok".
-    validation_sucess = False
-
-    for signature in result.signatures:
-        if (not signature.status) and signature.validity:
-            validation_sucess = True
-
-    return validation_sucess
+    return verified
