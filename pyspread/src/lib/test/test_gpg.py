@@ -65,7 +65,7 @@ def test_sign():
 
     assert valid
 
-param_verify = [ \
+param_verify = [
     {'filename': TESTPATH + "test1.pys",
      'sigfilename': TESTPATH + "test1.pys.sig", 'valid': 1},
     {'filename': TESTPATH + "test1.pys",
@@ -79,4 +79,7 @@ param_verify = [ \
 def test_sign_verify(filename, sigfilename, valid):
     """Unit test for verify"""
 
-    assert valid == gpg.verify(sigfilename, filename)
+    if valid:
+        assert gpg.verify(sigfilename, filename)
+    else:
+        assert not gpg.verify(sigfilename, filename)
