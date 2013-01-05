@@ -29,7 +29,6 @@ GPG handling functions
 Provides
 --------
 
- * is_pyme_present: Checks if pyme is installed
  * genkey: Generates gpg key
  * sign: Returns detached signature for file
  * verify: verifies stream against signature
