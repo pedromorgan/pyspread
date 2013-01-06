@@ -664,7 +664,7 @@ msgstr ""
 "Overskriv?"
 
 #: src/gui/_main_window.py:690
-msgid "File collison"
+msgid "File collision"
 msgstr "Filkollidering"
 
 #: src/gui/_main_window.py:694
@@ -1041,7 +1041,7 @@ msgid "Whole word"
 msgstr "Helt ord"
 
 #: src/gui/_toolbars.py:182
-msgid "Search string is surronted by whitespace characters"
+msgid "Search string is surrounded by whitespace characters"
 msgstr "Søgestreng er omgivet af mellemrumstegn"
 
 #: src/gui/_toolbars.py:199
