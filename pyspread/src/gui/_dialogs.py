@@ -1067,7 +1067,8 @@ class AboutDialog(object):
                         _("Pyspread Web site"))
         info.Developers = ["Martin Manns"]
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]
-        info.Translators = ["Joe Hansen", "Mark Haanen"]
+        info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
+                            "Mario Blättermann"]
 
         license_file = open(get_program_path() + "/COPYING", "r")
         license_text = license_file.read()
