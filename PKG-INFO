@@ -11,7 +11,8 @@ Description: Pyspread is a spreadsheet application that is based on and written 
 Keywords: spreadsheet,pyspread
 Requires: numpy (>=1.1)
 Requires: wx (>=2.8.10)
-Requires: pyme (>=0.8)
+Requires: matplotlib (>=1.1.1)
+Requires: python-gnupg (>=0.3.0)
 Classifier: Development Status :: 4 - Beta
 Classifier: Environment :: X11 Applications :: GTK
 Classifier: Intended Audience :: End Users/Desktop

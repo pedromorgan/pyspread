@@ -34,6 +34,7 @@ setup(name='pyspread',
       scripts=['pyspread/pyspread'],
       package_data={'pyspread':
         ['*.py',
+         '../pyspread.sh',
          'src/*.py',
          'src/pyspread',
          'src/*/*.py',
