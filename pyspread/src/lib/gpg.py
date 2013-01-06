@@ -62,8 +62,9 @@ def choose_uid_key(keylist):
 
     dlg = wx.SingleChoiceDialog(
             None,
-          _('Choose a GPG key that you own for signing pyspread save files.\n'
-            'Pressing Cancel creates a new key.'),
+          _('Choose a GPG key for signing pyspread save files.\n') +
+          _('The GPG key must not have a passphrase set. \n') +
+          _('Pressing Cancel creates a new key.'),
           _('Choose key'),
             uid_strings, wx.CHOICEDLG_STYLE,
             )
@@ -94,6 +95,7 @@ def genkey():
 
     pyspread_key_uid = str(config["gpg_key_uid"])
     gpg_private_keylist = gpg.list_keys(True)
+    print gpg_private_keylist
 
     pyspread_key = None
 
