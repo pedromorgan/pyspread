@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-05 18:04+0100\n"
+"POT-Creation-Date: 2013-01-06 18:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,28 +34,34 @@ msgid "Fallback type {} unknown."
 msgstr ""
 
 #: src/lib/gpg.py:65
-msgid ""
-"Choose a GPG key that you own for signing pyspread save files.\n"
-"Pressing Cancel creates a new key."
+msgid "Choose a GPG key for signing pyspread save files.\n"
+msgstr ""
+
+#: src/lib/gpg.py:66
+msgid "The GPG key must not have a passphrase set. \n"
 msgstr ""
 
 #: src/lib/gpg.py:67
+msgid "Pressing Cancel creates a new key."
+msgstr ""
+
+#: src/lib/gpg.py:68
 msgid "Choose key"
 msgstr ""
 
-#: src/lib/gpg.py:125
+#: src/lib/gpg.py:126
 msgid "New GPG key"
 msgstr ""
 
-#: src/lib/gpg.py:126
+#: src/lib/gpg.py:127
 msgid "After confirming this dialog, a new GPG key "
 msgstr ""
 
-#: src/lib/gpg.py:127
+#: src/lib/gpg.py:128
 msgid "'{}' will be generated."
 msgstr ""
 
-#: src/lib/gpg.py:128
+#: src/lib/gpg.py:129
 msgid ""
 " \n"
 " \n"
@@ -64,7 +70,7 @@ msgid ""
 " \n"
 msgstr ""
 
-#: src/lib/gpg.py:129
+#: src/lib/gpg.py:130
 msgid "Canceling this operation exits pyspread."
 msgstr ""
 
@@ -623,7 +629,7 @@ msgstr ""
 msgid "&About"
 msgstr ""
 
-#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1083
+#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1084
 msgid "About pyspread"
 msgstr ""
 
@@ -1181,73 +1187,73 @@ msgstr ""
 msgid "Pyspread Web site"
 msgstr ""
 
-#: src/gui/_dialogs.py:1085
+#: src/gui/_dialogs.py:1086
 msgid ""
 "pyspread {}\n"
 "Copyright Martin Manns"
 msgstr ""
 
-#: src/gui/_dialogs.py:1136
+#: src/gui/_dialogs.py:1137
 msgid "Max. undo steps"
 msgstr ""
 
-#: src/gui/_dialogs.py:1137
+#: src/gui/_dialogs.py:1138
 msgid "Maximum number of undo steps"
 msgstr ""
 
-#: src/gui/_dialogs.py:1143
+#: src/gui/_dialogs.py:1144
 msgid "Grid rows"
 msgstr ""
 
-#: src/gui/_dialogs.py:1144
+#: src/gui/_dialogs.py:1145
 msgid "Number of grid rows when starting pyspread"
 msgstr ""
 
-#: src/gui/_dialogs.py:1150
+#: src/gui/_dialogs.py:1151
 msgid "Grid columns"
 msgstr ""
 
-#: src/gui/_dialogs.py:1151
+#: src/gui/_dialogs.py:1152
 msgid "Number of grid columns when starting pyspread"
 msgstr ""
 
-#: src/gui/_dialogs.py:1157
+#: src/gui/_dialogs.py:1158
 msgid "Grid tables"
 msgstr ""
 
-#: src/gui/_dialogs.py:1158
+#: src/gui/_dialogs.py:1159
 msgid "Number of grid tables when starting pyspread"
 msgstr ""
 
-#: src/gui/_dialogs.py:1164
+#: src/gui/_dialogs.py:1165
 msgid "Max. result length"
 msgstr ""
 
-#: src/gui/_dialogs.py:1165
+#: src/gui/_dialogs.py:1166
 msgid "Maximum length of cell result string"
 msgstr ""
 
-#: src/gui/_dialogs.py:1171
+#: src/gui/_dialogs.py:1172
 msgid "GPG key name"
 msgstr ""
 
-#: src/gui/_dialogs.py:1172
+#: src/gui/_dialogs.py:1173
 msgid "Name of the GPG key for signing files"
 msgstr ""
 
-#: src/gui/_dialogs.py:1180
+#: src/gui/_dialogs.py:1181
 msgid "Preferences"
 msgstr ""
 
-#: src/gui/_dialogs.py:1243
+#: src/gui/_dialogs.py:1244
 msgid "GPG key data"
 msgstr ""
 
-#: src/gui/_dialogs.py:1260
+#: src/gui/_dialogs.py:1261
 msgid "Starts key generation."
 msgstr ""
 
-#: src/gui/_dialogs.py:1265
+#: src/gui/_dialogs.py:1266
 msgid "Exits pyspread."
 msgstr ""
 
