@@ -199,7 +199,7 @@ class MainMenu(_filledMenu, EventMixin):
                     _("Approve, unfreeze and sign the current file")]],
                 ["Separator"],
                 [item, [self.ClearGobalsMsg, _("&Clear globals"),
-                    _("Deletes global veriables from memory and reloads "
+                    _("Deletes global variables from memory and reloads "
                       "base modules"), wx.ID_CLEAR]],
                 ["Separator"],
                 [item, [self.PageSetupMsg, _("Page setup"),
