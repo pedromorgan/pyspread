@@ -13,7 +13,7 @@
       align="CENTER"></p>
     <p style="margin-top: 0.17in; page-break-after: avoid;"
       align="CENTER"><font face="Liberation Sans"><font size="4"><i>by
-            Martin Manns 2011</i></font></font></p>
+            Martin Manns</i></font></font></p>
     <p style="text-align: center;" class="western" lang="en-US"><img
         style="width: 44px; height: 57px;" alt="" title="Pyspread logo"
         src="images/pyspread-logo.png"><br>
@@ -44,15 +44,11 @@
       grid data. Therefore, tables with many filled cells may require
       considerable amounts of RAM.</p>
     <h1 class="western" lang="en-US">Current limitations</h1>
-    <p class="western" lang="en-US">External libraries such as
-      matplotlib that set states in several steps may be unusable or
-      hard to use because cell execution order is not guaranteed. They
-      should be used from within a macro.</p>
+    <p class="western" lang="en-US">External libraries such as rpy2 that
+      set states in several steps may be unusable or hard to use because
+      cell execution order is not guaranteed. They should be used from
+      within a macro.</p>
     <ul>
-      <li>
-        <p class="western" lang="en-US">There is no chart creation GUI
-          interface.</p>
-      </li>
       <li>
         <p class="western" lang="en-US">There is no cell auto-fill
           functionality.</p>
@@ -61,10 +57,6 @@
         <p class="western" lang="en-US">Cell execution cannot be
           interrupted or terminated if slow and therefore may block
           pyspread.</p>
-      </li>
-      <li>
-        <p class="western" lang="en-US">Toolbar positions are not saved
-          in the config file.</p>
       </li>
       <li>
         <p class="western" lang="en-US">Cycle detection can be tricked.
@@ -98,7 +90,8 @@
       </li>
       <li>
         <p class="western" style="margin-bottom: 0in;" lang="en-US"><a
-            href="http://pyme.sourceforge.net/">PyMe</a> &gt;=0.8.1</p>
+            href="https://code.google.com/p/python-gnupg/"><span
+              itemprop="name">python-gnupg</span></a> &gt;=0.3.0</p>
       </li>
     </ul>
     <h2 class="western" lang="en-US">Installation from source</h2>
@@ -196,7 +189,7 @@
     <p class="code-western" lang="en-US">from xx import yy </p>
     <p class="western" lang="en-US">is no expression. Therefore, the
       expression </p>
-    <p class="code-western" lang="en-US">xx = __import__(“xx”) </p>
+    <p class="code-western" lang="en-US">xx = __import__("xx") </p>
     <p class="western" lang="en-US">has to be used.</p>
     <h2 class="western" lang="en-US">Python code as cell language</h2>
     <p class="western" lang="en-US">Pyspread uses Python expressions in
@@ -258,6 +251,7 @@
     <p class="western" lang="en-US">Table movement is described in the
       next paragraph</p>
     <h3 style="font-weight: bold;" class="western" lang="en-US">Switching
+
 
       tables</h3>
     <p class="western" lang="en-US">Tables can be switched by changing
@@ -657,10 +651,10 @@
     <p class="western" lang="en-US">Grid formatting changes cell
       attributes for all cells in a selection. All formatting is
       considered to be done consecutively.</p>
-    <p class="western" lang="en-US">Note that in v. 0.2.0, all format
-      change history is stored in a save file. This may change in future
-      versions in order to conserve memory and gain speed for documents
-      with formats that are changed a lot of times.</p>
+    <p class="western" lang="en-US">Note that starting in v. 0.2.0, all
+      format change history is stored in a save file. This may change in
+      future versions in order to conserve memory and gain speed for
+      documents with formats that are changed a lot of times.</p>
     <h2 class="western" lang="en-US">Fonts and font attributes</h2>
     <p class="western" lang="en-US">Fonts can be assigned by selection
       cells and choosing a font from the attribute toolbar. Fonts are <b>not</b>
@@ -747,13 +741,18 @@
       cannot be created. Therefore, the file has to approved each time,
       which may lead to blind “o.&nbsp;k.” clicking behavior.</p>
     <h1 class="western" lang="en-US">Charts</h1>
-    <p class="western" lang="en-US">Pyspread is still missing a charting
-      toolbar. This chapter explains how to work with some popular
-      Python charting libraries from within pyspread.</p>
     <h2 class="western" lang="en-US">Charts with matplotlib</h2>
+    <p>Starting in v. 0.2.3, pyspread supports matplotlib charts. Each
+      cell that returns a matplotlib figure renders this figure. Since
+      matplotlib figures are difficult to set up without macros, a chart
+      dialog was added in the Macro menu and the Macro toolbar. This
+      dialog allows using global variables such as the S object.
+      Therefore, grid content can be used directly as data input. The
+      chart dialog creates a code string inside the current cell that
+      returns a matplotlib figure. This code string is parsed if the
+      chart dialog is re-opened with the same current figure. However,
+      this may fail if the code has been altered before.</p>
     <h1 class="western" lang="en-US">Advanced topics</h1>
-    <h2 class="western" lang="en-US">Drawing cell content with a cell
-      formula</h2>
     <h2 class="western" lang="en-US">Handling large amounts of data</h2>
     <p class="western" lang="en-US">While the pyspread main grid may be
       large, filling many cells may consume considerable amounts of
@@ -761,8 +760,8 @@
       within one cell saves memory, Therefore, load all your data in a
       numpy array that is situated within a cell and work from there.</p>
     <h2 class="western" lang="en-US">Substituting pivot tables</h2>
-    <p class="western" lang="en-US"><br>
-      <br>
+    <p class="western" lang="en-US">In the examples directory, a Pivot
+      table replacement is shown using list comprehensions.<br>
     </p>
   </body>
 </html>

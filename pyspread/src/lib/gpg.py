@@ -95,7 +95,6 @@ def genkey():
 
     pyspread_key_uid = str(config["gpg_key_uid"])
     gpg_private_keylist = gpg.list_keys(True)
-    print gpg_private_keylist
 
     pyspread_key = None
 
