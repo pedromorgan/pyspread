@@ -5,10 +5,10 @@
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: pyspread 0.2.2.99\n"
+"Project-Id-Version: pyspread 0.2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-01 11:00+0100\n"
-"PO-Revision-Date: 2013-01-06 19:57+0100\n"
+"POT-Creation-Date: 2013-01-06 18:10+0100\n"
+"PO-Revision-Date: 2013-01-07 21:48+0100\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -34,37 +34,54 @@ msgstr "Datentyp {} ist unbekannt"
 msgid "Fallback type {} unknown."
 msgstr "Fallback-Typ {} ist unbekannt."
 
-#: src/lib/gpg.py:88
-msgid ""
-"Choose a GPG key that you own for signing pyspread save files.\n"
-"Pressing Cancel creates a new key."
+#: src/lib/gpg.py:65
+#, fuzzy
+msgid "Choose a GPG key for signing pyspread save files.\n"
 msgstr ""
 "Wählen Sie einen eigenen GPG-Schlüssel, mit dem Sie pyspread-Dateien signieren wollen.\n"
 "Klicken Sie auf Abbrechen, um einen neuen Schlüssel zu erzeugen."
 
-#: src/lib/gpg.py:90
+#: src/lib/gpg.py:66
+msgid "The GPG key must not have a passphrase set. \n"
+msgstr ""
+
+#: src/lib/gpg.py:67
+msgid "Pressing Cancel creates a new key."
+msgstr ""
+
+#: src/lib/gpg.py:68
 msgid "Choose key"
 msgstr "Schlüssel wählen"
 
-#: src/lib/gpg.py:95
-msgid "   Store passphrase"
-msgstr "   Passphrase speichern"
+#: src/lib/gpg.py:126
+msgid "New GPG key"
+msgstr "Neuer GPG-Schlüssel"
 
-#: src/lib/gpg.py:170
+#: src/lib/gpg.py:127
+msgid "After confirming this dialog, a new GPG key "
+msgstr "Nachdem Sie diesen Dialog bestätigt haben,"
+
+#: src/lib/gpg.py:128
+msgid "'{}' will be generated."
+msgstr "»{}« wird erzeugt."
+
+#: src/lib/gpg.py:129
 msgid ""
-"Generating new GPG key {}.\n"
+" \n"
+" \n"
 "This may take some time.\n"
+"Please wait.\n"
 " \n"
-"Progress bar may stall. Please wait."
 msgstr ""
-"Ein neuer GPG-Schlüssel wird erzeugt {}.\n"
-"Dies kann einige Zeit dauern.\n"
 " \n"
-"Der Fortschrittsbalken kann stehen bleiben. Bitte warten Sie."
+" \n"
+"Dies kann einige Zeit dauern.\n"
+"Bitte warten Sie.\n"
+" \n"
 
-#: src/lib/gpg.py:172
-msgid "GPG key generation"
-msgstr "GPG-Schlüsselerzeugung"
+#: src/lib/gpg.py:130
+msgid "Canceling this operation exits pyspread."
+msgstr "Durch Abbruch dieses Vorgangs wird pyspread beendet."
 
 #: src/pyspread.py:91
 msgid "usage: %prog [options] [filename]"
@@ -155,7 +172,7 @@ msgstr "&Datei"
 msgid "&New\tCtrl+n"
 msgstr "&Neu\tStrg+n"
 
-#: src/gui/_menubars.py:184 src/gui/_toolbars.py:109
+#: src/gui/_menubars.py:184
 msgid "Create a new, empty spreadsheet"
 msgstr "Ein neues, leeres Tabellendokument anlegen"
 
@@ -163,7 +180,7 @@ msgstr "Ein neues, leeres Tabellendokument anlegen"
 msgid "&Open"
 msgstr "Ö&ffnen"
 
-#: src/gui/_menubars.py:186 src/gui/_toolbars.py:111
+#: src/gui/_menubars.py:186
 msgid "Open spreadsheet from file"
 msgstr "Tabellendokument aus einer Datei öffnen"
 
@@ -171,7 +188,7 @@ msgstr "Tabellendokument aus einer Datei öffnen"
 msgid "&Save\tCtrl+s"
 msgstr "&Speichern\tStrg+s"
 
-#: src/gui/_menubars.py:189 src/gui/_toolbars.py:112
+#: src/gui/_menubars.py:189
 msgid "Save spreadsheet"
 msgstr "Tabellendokument speichern"
 
@@ -212,7 +229,7 @@ msgid "&Clear globals"
 msgstr "Globale Variablen &leeren"
 
 #: src/gui/_menubars.py:202
-msgid "Deletes global veriables from memory and reloads base modules"
+msgid "Deletes global variables from memory and reloads base modules"
 msgstr "Löscht globale Variablen aus dem Speicher und lädt Basismodule neu"
 
 #: src/gui/_menubars.py:205
@@ -227,7 +244,7 @@ msgstr "Seite für den Druck einrichten"
 msgid "Print preview\tShift+Ctrl+p"
 msgstr "Druckvorschau\tUmschalt+Strg+p"
 
-#: src/gui/_menubars.py:208 src/actions/_main_window_actions.py:180
+#: src/gui/_menubars.py:208 src/actions/_main_window_actions.py:184
 msgid "Print preview"
 msgstr "Druckvorschau"
 
@@ -275,7 +292,7 @@ msgstr "&Wiederholen\tUmschalt+Strg+z"
 msgid "Redo last undone step"
 msgstr "Den letzten rückgängig gemachten Schritt wiederholen"
 
-#: src/gui/_menubars.py:227 src/gui/_toolbars.py:128
+#: src/gui/_menubars.py:227
 msgid "Copy the input strings of the cells to clipboard"
 msgstr "Die Eingabe-Zeichenketten der Zellen in die Zwischenablage kopieren"
 
@@ -283,7 +300,7 @@ msgstr "Die Eingabe-Zeichenketten der Zellen in die Zwischenablage kopieren"
 msgid "Copy &Results\tShift+Ctrl+c"
 msgstr "E&rgebnisse kopieren\tUmschalt+Strg+c"
 
-#: src/gui/_menubars.py:230 src/gui/_toolbars.py:131
+#: src/gui/_menubars.py:230
 msgid "Copy the result strings of the cells to the clipboard"
 msgstr "Die Ergebnis-Zeichenketten der Zellen in die Zwischenablage kopieren"
 
@@ -291,7 +308,7 @@ msgstr "Die Ergebnis-Zeichenketten der Zellen in die Zwischenablage kopieren"
 msgid "&Find\tCtrl+f"
 msgstr "&Suchen\tStrg+f"
 
-#: src/gui/_menubars.py:235 src/gui/_toolbars.py:121
+#: src/gui/_menubars.py:235
 msgid "Find cell by content"
 msgstr "Zellen anhand des Inhalts suchen"
 
@@ -299,7 +316,7 @@ msgstr "Zellen anhand des Inhalts suchen"
 msgid "Replace...\tCtrl+Shift+f"
 msgstr "Ersetzen …\tStrg+Umschalt+f"
 
-#: src/gui/_menubars.py:237 src/gui/_toolbars.py:123
+#: src/gui/_menubars.py:237
 msgid "Replace strings in cells"
 msgstr "Zeichenketten in Zellen ersetzen"
 
@@ -439,7 +456,7 @@ msgstr "Schrift …"
 msgid "Launch font dialog."
 msgstr "Den Schriftauswahldialog öffnen."
 
-#: src/gui/_menubars.py:298 src/gui/_toolbars.py:404
+#: src/gui/_menubars.py:298 src/gui/_toolbars.py:407
 msgid "Underline"
 msgstr "Unterstreichen"
 
@@ -447,7 +464,7 @@ msgstr "Unterstreichen"
 msgid "Toggles underline."
 msgstr "Schaltet die Unterstreichung ein oder aus."
 
-#: src/gui/_menubars.py:300 src/gui/_toolbars.py:406
+#: src/gui/_menubars.py:300 src/gui/_toolbars.py:409
 msgid "Strikethrough"
 msgstr "Durchstreichen"
 
@@ -467,7 +484,7 @@ msgstr "Schaltet den eingefrorenen Zustand einer Zelle ein oder aus."
 msgid "Frozen cells are updated only when F5 is pressed."
 msgstr "Eingefrorene Zellen werden nur durch Drücken von F5 aktualisiert."
 
-#: src/gui/_menubars.py:306 src/gui/_toolbars.py:497
+#: src/gui/_menubars.py:306 src/gui/_toolbars.py:501
 msgid "Merge cells"
 msgstr "Zellen zusammenführen"
 
@@ -527,55 +544,55 @@ msgstr "Drehung …"
 msgid "Set text rotation."
 msgstr "Die Drehung des Texts angeben."
 
-#: src/gui/_menubars.py:333
+#: src/gui/_menubars.py:332
 msgid "&Macro"
 msgstr "&Makro"
 
-#: src/gui/_menubars.py:334
+#: src/gui/_menubars.py:333
 msgid "&Macro list\tCtrl+m"
 msgstr "&Makroliste\tStrg+m"
 
-#: src/gui/_menubars.py:335
+#: src/gui/_menubars.py:334
 msgid "Choose, fill in, manage, and create macros"
 msgstr "Makros wählen, eintragen, verwalten und erzeugen"
 
-#: src/gui/_menubars.py:336
+#: src/gui/_menubars.py:335
 msgid "&Load macro list"
 msgstr "Makroliste &laden"
 
-#: src/gui/_menubars.py:337
+#: src/gui/_menubars.py:336
 msgid "Load macro list"
 msgstr "Makroliste laden"
 
-#: src/gui/_menubars.py:338
+#: src/gui/_menubars.py:337
 msgid "&Save macro list"
 msgstr "Makroliste &speichern"
 
-#: src/gui/_menubars.py:339
+#: src/gui/_menubars.py:338
 msgid "Save macro list"
 msgstr "Makroliste speichern"
 
-#: src/gui/_menubars.py:341
+#: src/gui/_menubars.py:340
 msgid "Insert bitmap..."
 msgstr "Bitmap einfügen …"
 
-#: src/gui/_menubars.py:342
+#: src/gui/_menubars.py:341
 msgid "Insert bitmap from file into cell"
 msgstr "Bitmap-Grafik aus einer Datei in die Zelle einfügen"
 
-#: src/gui/_menubars.py:343
+#: src/gui/_menubars.py:342
 msgid "Link bitmap..."
 msgstr "Bitmap verknüpfen …"
 
-#: src/gui/_menubars.py:344
+#: src/gui/_menubars.py:343
 msgid "Link bitmap from file into cell"
 msgstr "Bitmap-Grafik aus einer Datei mit der Zelle verknüpfen"
 
-#: src/gui/_menubars.py:345
+#: src/gui/_menubars.py:344
 msgid "Insert chart..."
 msgstr "Diagramm einfügen …"
 
-#: src/gui/_menubars.py:346 src/gui/_toolbars.py:151
+#: src/gui/_menubars.py:345
 msgid "Insert chart into cell"
 msgstr "Ein Diagramm in eine Zelle einfügen"
 
@@ -619,7 +636,7 @@ msgstr "Python-Tutorial für Coding-Informationen (online)"
 msgid "&About"
 msgstr "&Info"
 
-#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1083
+#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1084
 msgid "About pyspread"
 msgstr "Info zu pyspread"
 
@@ -660,7 +677,7 @@ msgstr ""
 "Überschreiben?"
 
 #: src/gui/_main_window.py:690
-msgid "File collison"
+msgid "File collision"
 msgstr "Dateikonflikt"
 
 #: src/gui/_main_window.py:694
@@ -840,8 +857,7 @@ msgstr "+"
 msgid "Series"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:801 src/gui/_toolbars.py:150
-#: src/gui/_toolbars.py:151
+#: src/gui/_chart_dialog.py:801 src/gui/_toolbars.py:176
 msgid "Insert chart"
 msgstr "Diagramm einfügen"
 
@@ -849,11 +865,11 @@ msgstr "Diagramm einfügen"
 msgid "Axes"
 msgstr "Achsen"
 
-#: src/gui/_gui_interfaces.py:69
+#: src/gui/_gui_interfaces.py:67
 msgid "Currently, only 3D grids are supported."
 msgstr "Derzeit werden nur 3D-Gitter unterstützt."
 
-#: src/gui/_gui_interfaces.py:102
+#: src/gui/_gui_interfaces.py:100
 msgid ""
 "There are unsaved changes.\n"
 "Do you want to save?"
@@ -861,11 +877,11 @@ msgstr ""
 "Es gibt ungespeicherte Änderungen.\n"
 "Wollen Sie diese speichern?"
 
-#: src/gui/_gui_interfaces.py:105
+#: src/gui/_gui_interfaces.py:103
 msgid "Unsaved changes"
 msgstr "Ungespeicherte Änderungen"
 
-#: src/gui/_gui_interfaces.py:204
+#: src/gui/_gui_interfaces.py:202
 msgid ""
 "'{}' does not seem to be a valid CSV file.\n"
 " \n"
@@ -877,71 +893,47 @@ msgstr ""
 "Das Öffnen verursachte folgende Fehlermeldung:\n"
 "{}"
 
-#: src/gui/_gui_interfaces.py:206 src/actions/_main_window_actions.py:123
+#: src/gui/_gui_interfaces.py:204 src/actions/_main_window_actions.py:127
 msgid "Error reading CSV file"
 msgstr "Fehler beim Lesen der CSV-Datei"
 
-#: src/gui/_gui_interfaces.py:340
+#: src/gui/_gui_interfaces.py:335
 msgid "Real name"
 msgstr "Echter Name"
 
-#: src/gui/_gui_interfaces.py:341
-msgid "Passphrase"
-msgstr "Passphrase"
+#: src/gui/_gui_interfaces.py:355
+msgid "Please enter a value in each field."
+msgstr "Bitte geben Sie in jedem Feld einen Wert ein."
 
-#: src/gui/_gui_interfaces.py:342
-msgid "E-mail"
-msgstr "E-Mail"
-
-#: src/gui/_gui_interfaces.py:343
-msgid "Comment"
-msgstr "Kommentar"
-
-#: src/gui/_gui_interfaces.py:367
+#: src/gui/_gui_interfaces.py:357
 msgid "Missing value"
 msgstr "Fehlender Wert"
 
-#: src/gui/_gui_interfaces.py:389
-msgid "Please enter your GPG key passphrase for {}."
-msgstr "Bitte geben Sie Ihre GPG-Passphrase für {} ein."
+#: src/gui/_grid.py:356 src/gui/_grid.py:376
+msgid "Select bitmap for current cell"
+msgstr "Bitmap-Grafik für die aktuelle Zelle wählen"
 
-#: src/gui/_gui_interfaces.py:392
-msgid ""
-"\n"
-"The password will be stored in your config file."
-msgstr ""
-"\n"
-"Dass Passwort wird in Ihrer Konfigurationsdatei gespeichert."
-
-#: src/gui/_gui_interfaces.py:395
-msgid "Wrong password!\n"
-msgstr "Falsches Passwort!\n"
-
-#: src/gui/_gui_interfaces.py:397 src/gui/_dialogs.py:1178
-msgid "GPG key passphrase"
-msgstr "Passphrase des GPG-Schlüssels"
-
-#: src/gui/_grid.py:392
+#: src/gui/_grid.py:435
 msgid "Weight {} unknown"
 msgstr ""
 
-#: src/gui/_grid.py:412
+#: src/gui/_grid.py:455
 msgid "Style {} unknown"
 msgstr "Stil {} ist unbekannt"
 
-#: src/gui/_grid.py:514
+#: src/gui/_grid.py:557
 msgid "Enter text angle in degrees."
 msgstr "Geben Sie den Textwinkel in Grad ein."
 
-#: src/gui/_grid.py:801
+#: src/gui/_grid.py:844
 msgid "'{}' not found."
 msgstr "»{}« nicht gefunden."
 
-#: src/gui/_grid.py:808
+#: src/gui/_grid.py:851
 msgid "Found '{}' in cell {}."
 msgstr "»{}« gefunden in Zelle {}."
 
-#: src/gui/_grid.py:981
+#: src/gui/_grid.py:1024
 msgid "Grid dimensions changed to {}."
 msgstr "Gitterabmessungen wurde auf {} geändert."
 
@@ -949,131 +941,95 @@ msgstr "Gitterabmessungen wurde auf {} geändert."
 msgid "Page: {}"
 msgstr "Seite: {}"
 
-#: src/gui/_toolbars.py:108
+#: src/gui/_toolbars.py:141
 msgid "New"
 msgstr "Neu"
 
-#: src/gui/_toolbars.py:108
-msgid "New spreadsheet"
-msgstr "Neues Tabellendokument"
-
-#: src/gui/_toolbars.py:110
+#: src/gui/_toolbars.py:142
 msgid "Open"
 msgstr "Öffnen"
 
-#: src/gui/_toolbars.py:110
-msgid "Open spreadsheet"
-msgstr "Tabellendokument öffnen"
-
-#: src/gui/_toolbars.py:112
+#: src/gui/_toolbars.py:143
 msgid "Save"
 msgstr "Speichern"
 
-#: src/gui/_toolbars.py:113
-msgid "Save spreadsheet to file"
-msgstr "Tabellendokument in eine Datei speichern"
-
-#: src/gui/_toolbars.py:115
+#: src/gui/_toolbars.py:145
 msgid "Undo"
 msgstr "Rückgängig"
 
-#: src/gui/_toolbars.py:116
-msgid "Undo last operation"
-msgstr "Den letzten Vorgang rückgängig machen"
-
-#: src/gui/_toolbars.py:117
+#: src/gui/_toolbars.py:146
 msgid "Redo"
 msgstr "Wiederholen"
 
-#: src/gui/_toolbars.py:118
-msgid "Redo next operation"
-msgstr "Den nächsten Vorgang wiederholen"
-
-#: src/gui/_toolbars.py:120
+#: src/gui/_toolbars.py:148
 msgid "Find"
 msgstr "Suchen"
 
-#: src/gui/_toolbars.py:122
+#: src/gui/_toolbars.py:149
 msgid "Replace"
 msgstr "Ersetzen"
 
-#: src/gui/_toolbars.py:125
+#: src/gui/_toolbars.py:151
 msgid "Cut"
 msgstr "Ausschneiden"
 
-#: src/gui/_toolbars.py:126
-msgid "Cut cells to clipboard"
-msgstr "Zellen in die Zwischenablage ausschneiden"
-
-#: src/gui/_toolbars.py:127
+#: src/gui/_toolbars.py:152
 msgid "Copy"
 msgstr "Kopieren"
 
-#: src/gui/_toolbars.py:129 src/gui/_toolbars.py:130
+#: src/gui/_toolbars.py:153
 msgid "Copy Results"
 msgstr "Ergebnisse kopieren"
 
-#: src/gui/_toolbars.py:132
+#: src/gui/_toolbars.py:154
 msgid "Paste"
 msgstr "Einfügen"
 
-#: src/gui/_toolbars.py:133
-msgid "Paste cell from clipboard"
-msgstr "Zelle aus der Zwischenablage einfügen"
-
-#: src/gui/_toolbars.py:135
+#: src/gui/_toolbars.py:156
 msgid "Print"
 msgstr "Drucken"
 
-#: src/gui/_toolbars.py:136
-msgid "Print spreadsheet"
-msgstr "Tabellendokument drucken"
-
-#: src/gui/_toolbars.py:167
-msgid "Case sensitive"
-msgstr "Groß-/Kleinschreibung"
-
-#: src/gui/_toolbars.py:168
-msgid "Case sensitive search"
-msgstr "Groß-/Kleinschreibung bei der Suche berücksichtigen"
-
 #: src/gui/_toolbars.py:174
-msgid "Regular expression"
-msgstr "Regulärer Ausdruck"
+msgid "Insert bitmap"
+msgstr "Bitmap einfügen"
 
 #: src/gui/_toolbars.py:175
-msgid "Treat search string as regular expression"
-msgstr "Die zu suchende Zeichenkette als regulären Ausdruck verarbeiten"
+msgid "Link bitmap"
+msgstr "Bitmap verknüpfen"
 
-#: src/gui/_toolbars.py:181
-msgid "Whole word"
-msgstr "Ganzes Wort"
+#: src/gui/_toolbars.py:201
+msgid "Find in code and results"
+msgstr "In Code und Ergebnissen suchen "
 
-#: src/gui/_toolbars.py:182
-msgid "Search string is surronted by whitespace characters"
-msgstr "Die Suchzeichenkette wird von Leerzeichen eingefasst"
-
-#: src/gui/_toolbars.py:199
-msgid "Searches in grid cell source code and grid cell results."
-msgstr "Sucht im Quellcode und den Ergebnissen der Zelle."
-
-#: src/gui/_toolbars.py:238
+#: src/gui/_toolbars.py:209
 msgid "Search direction"
 msgstr "Suchrichtung"
 
-#: src/gui/_toolbars.py:294
+#: src/gui/_toolbars.py:221
+msgid "Case sensitive"
+msgstr "Groß-/Kleinschreibung"
+
+#: src/gui/_toolbars.py:222
+msgid "Regular expression"
+msgstr "Regulärer Ausdruck"
+
+#: src/gui/_toolbars.py:223
+msgid "Surrounded by whitespace"
+msgstr ""
+
+#: src/gui/_toolbars.py:296
 msgid "Neither UP nor DOWN in search_flags"
 msgstr "Weder UP noch DOWN in search_flags"
 
-#: src/gui/_toolbars.py:400
+#: src/gui/_toolbars.py:403
 msgid "Bold"
 msgstr "Fett"
 
-#: src/gui/_toolbars.py:402
+#: src/gui/_toolbars.py:405
 msgid "Italics"
 msgstr "Kursiv"
 
-#: src/gui/_toolbars.py:407
+#: src/gui/_toolbars.py:410
 msgid "Freeze"
 msgstr "Einfrieren"
 
@@ -1259,7 +1215,7 @@ msgstr ""
 msgid "Pyspread Web site"
 msgstr "Webseite von Pyspread"
 
-#: src/gui/_dialogs.py:1085
+#: src/gui/_dialogs.py:1086
 msgid ""
 "pyspread {}\n"
 "Copyright Martin Manns"
@@ -1267,83 +1223,67 @@ msgstr ""
 "pyspread {}\n"
 "Copyright Martin Manns"
 
-#: src/gui/_dialogs.py:1136
+#: src/gui/_dialogs.py:1137
 msgid "Max. undo steps"
 msgstr "Maximale Rückgängig-Schritte"
 
-#: src/gui/_dialogs.py:1137
+#: src/gui/_dialogs.py:1138
 msgid "Maximum number of undo steps"
 msgstr "Maximale Rückgängig-Schritte"
 
-#: src/gui/_dialogs.py:1143
+#: src/gui/_dialogs.py:1144
 msgid "Grid rows"
 msgstr "Gitterzeilen"
 
-#: src/gui/_dialogs.py:1144
+#: src/gui/_dialogs.py:1145
 msgid "Number of grid rows when starting pyspread"
 msgstr "Anzahl der Zeilen des Gitters beim Start von pyspread"
 
-#: src/gui/_dialogs.py:1150
+#: src/gui/_dialogs.py:1151
 msgid "Grid columns"
 msgstr "Gitterspalten"
 
-#: src/gui/_dialogs.py:1151
+#: src/gui/_dialogs.py:1152
 msgid "Number of grid columns when starting pyspread"
 msgstr "Anzahl der Spalten des Gitters beim Start von pyspread"
 
-#: src/gui/_dialogs.py:1157
+#: src/gui/_dialogs.py:1158
 msgid "Grid tables"
 msgstr "Gittertabellen"
 
-#: src/gui/_dialogs.py:1158
+#: src/gui/_dialogs.py:1159
 msgid "Number of grid tables when starting pyspread"
 msgstr "Anzahl der Tabellen des Gitters beim Start von pyspread"
 
-#: src/gui/_dialogs.py:1164
+#: src/gui/_dialogs.py:1165
 msgid "Max. result length"
 msgstr "Maximale Ergebnislänge"
 
-#: src/gui/_dialogs.py:1165
+#: src/gui/_dialogs.py:1166
 msgid "Maximum length of cell result string"
 msgstr "Maximale Länge der Ergebniszeichenkette der Zelle"
 
-#: src/gui/_dialogs.py:1171
+#: src/gui/_dialogs.py:1172
 msgid "GPG key name"
 msgstr "GPG-Schlüsselname"
 
-#: src/gui/_dialogs.py:1172
+#: src/gui/_dialogs.py:1173
 msgid "Name of the GPG key for signing files"
 msgstr "Name des GPG-Schlüssels zum Signieren von Dateien"
 
-#: src/gui/_dialogs.py:1179
-msgid "Passphrase of the GPG key for signing files"
-msgstr "Passphrase des GPG-Schlüssels zum Signieren von Dateien"
-
-#: src/gui/_dialogs.py:1185
-msgid "Store passphrase in config file"
-msgstr "Passphrase in der Konfigurationsdatei speichern"
-
-#: src/gui/_dialogs.py:1186
-msgid "If False then the passprase is not stored on exit"
-msgstr "Wenn deaktiviert, wird die Passphrase beim Beenden nicht gespeichert"
-
-#: src/gui/_dialogs.py:1194
+#: src/gui/_dialogs.py:1181
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: src/gui/_dialogs.py:1257
+#: src/gui/_dialogs.py:1244
 msgid "GPG key data"
 msgstr "GPG-Schlüsseldaten"
 
-#: src/gui/_dialogs.py:1277
-msgid "Store passphrase in keyring"
-msgstr "Passphrase im Schlüsselbund speichern"
-
-#: src/gui/_dialogs.py:1284
+#: src/gui/_dialogs.py:1261
 msgid "Starts key generation."
 msgstr "Startet die Schlüsselerzeugung."
 
-#: src/gui/_dialogs.py:1289
+#: src/gui/_dialogs.py:1266
 msgid "Exits pyspread."
 msgstr "Beendet pyspread."
 
@@ -1372,8 +1312,8 @@ msgid "File loading aborted."
 msgstr "Laden der Datei abgebrochen."
 
 #: src/actions/_grid_actions.py:270 src/actions/_grid_actions.py:337
-#: src/actions/_grid_actions.py:437 src/actions/_main_window_actions.py:85
-#: src/actions/_main_window_actions.py:452
+#: src/actions/_grid_actions.py:437 src/actions/_main_window_actions.py:89
+#: src/actions/_main_window_actions.py:456
 msgid "Error opening file {}."
 msgstr "Fehler beim Öffnen der Datei {}."
 
@@ -1469,11 +1409,11 @@ msgstr "ref_type muss »absolute« oder »relative« sein."
 msgid "Freezing selections is not supported."
 msgstr "Das Einfrieren von Auswahlen wird nicht unterstützt."
 
-#: src/actions/_main_window_actions.py:122
+#: src/actions/_main_window_actions.py:126
 msgid "Unknown import choice {}."
 msgstr "Unbekannte Importauswahl {}."
 
-#: src/actions/_main_window_actions.py:151
+#: src/actions/_main_window_actions.py:155
 msgid ""
 "The file {} could not be fully written\n"
 " \n"
@@ -1485,6 +1425,99 @@ msgstr ""
 "Fehlermeldung:\n"
 "{}"
 
-#: src/actions/_main_window_actions.py:153
+#: src/actions/_main_window_actions.py:157
 msgid "Error writing CSV file"
 msgstr "Fehler beim Schreiben der CSV-Datei"
+
+#~ msgid "   Store passphrase"
+#~ msgstr "   Passphrase speichern"
+
+#~ msgid ""
+#~ "Generating new GPG key {}.\n"
+#~ "This may take some time.\n"
+#~ " \n"
+#~ "Progress bar may stall. Please wait."
+#~ msgstr ""
+#~ "Ein neuer GPG-Schlüssel wird erzeugt {}.\n"
+#~ "Dies kann einige Zeit dauern.\n"
+#~ " \n"
+#~ "Der Fortschrittsbalken kann stehen bleiben. Bitte warten Sie."
+
+#~ msgid "GPG key generation"
+#~ msgstr "GPG-Schlüsselerzeugung"
+
+#~ msgid "Passphrase"
+#~ msgstr "Passphrase"
+
+#~ msgid "E-mail"
+#~ msgstr "E-Mail"
+
+#~ msgid "Comment"
+#~ msgstr "Kommentar"
+
+#~ msgid "Please enter your GPG key passphrase for {}."
+#~ msgstr "Bitte geben Sie Ihre GPG-Passphrase für {} ein."
+
+#~ msgid ""
+#~ "\n"
+#~ "The password will be stored in your config file."
+#~ msgstr ""
+#~ "\n"
+#~ "Dass Passwort wird in Ihrer Konfigurationsdatei gespeichert."
+
+#~ msgid "Wrong password!\n"
+#~ msgstr "Falsches Passwort!\n"
+
+#~ msgid "GPG key passphrase"
+#~ msgstr "Passphrase des GPG-Schlüssels"
+
+#~ msgid "New spreadsheet"
+#~ msgstr "Neues Tabellendokument"
+
+#~ msgid "Open spreadsheet"
+#~ msgstr "Tabellendokument öffnen"
+
+#~ msgid "Save spreadsheet to file"
+#~ msgstr "Tabellendokument in eine Datei speichern"
+
+#~ msgid "Undo last operation"
+#~ msgstr "Den letzten Vorgang rückgängig machen"
+
+#~ msgid "Redo next operation"
+#~ msgstr "Den nächsten Vorgang wiederholen"
+
+#~ msgid "Cut cells to clipboard"
+#~ msgstr "Zellen in die Zwischenablage ausschneiden"
+
+#~ msgid "Paste cell from clipboard"
+#~ msgstr "Zelle aus der Zwischenablage einfügen"
+
+#~ msgid "Print spreadsheet"
+#~ msgstr "Tabellendokument drucken"
+
+#~ msgid "Case sensitive search"
+#~ msgstr "Groß-/Kleinschreibung bei der Suche berücksichtigen"
+
+#~ msgid "Treat search string as regular expression"
+#~ msgstr "Die zu suchende Zeichenkette als regulären Ausdruck verarbeiten"
+
+#~ msgid "Whole word"
+#~ msgstr "Ganzes Wort"
+
+#~ msgid "Search string is surronted by whitespace characters"
+#~ msgstr "Die Suchzeichenkette wird von Leerzeichen eingefasst"
+
+#~ msgid "Searches in grid cell source code and grid cell results."
+#~ msgstr "Sucht im Quellcode und den Ergebnissen der Zelle."
+
+#~ msgid "Passphrase of the GPG key for signing files"
+#~ msgstr "Passphrase des GPG-Schlüssels zum Signieren von Dateien"
+
+#~ msgid "Store passphrase in config file"
+#~ msgstr "Passphrase in der Konfigurationsdatei speichern"
+
+#~ msgid "If False then the passprase is not stored on exit"
+#~ msgstr "Wenn deaktiviert, wird die Passphrase beim Beenden nicht gespeichert"
+
+#~ msgid "Store passphrase in keyring"
+#~ msgstr "Passphrase im Schlüsselbund speichern"

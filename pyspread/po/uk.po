@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: pyspread 0.2.2.99\n"
+"Project-Id-Version: pyspread 0.2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-01 11:00+0100\n"
-"PO-Revision-Date: 2013-01-05 20:50+0200\n"
+"POT-Creation-Date: 2013-01-06 18:10+0100\n"
+"PO-Revision-Date: 2013-01-07 22:14+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -34,37 +34,51 @@ msgstr "Невідомий тип даних, {}"
 msgid "Fallback type {} unknown."
 msgstr "Невідомий резервний тип {}."
 
-#: src/lib/gpg.py:88
-msgid ""
-"Choose a GPG key that you own for signing pyspread save files.\n"
-"Pressing Cancel creates a new key."
-msgstr ""
-"Виберіть ваш ключ GPG для підписування збережених pyspread файлів.\n"
-"Натисніть Cancel, щоб створити новий ключ."
+#: src/lib/gpg.py:65
+msgid "Choose a GPG key for signing pyspread save files.\n"
+msgstr "Виберіть ваш ключ GPG для підписування збережених pyspread файлів.\n"
 
-#: src/lib/gpg.py:90
+#: src/lib/gpg.py:66
+msgid "The GPG key must not have a passphrase set. \n"
+msgstr "Для ключа GPG не повинно бути встановлено пароля. \n"
+
+#: src/lib/gpg.py:67
+msgid "Pressing Cancel creates a new key."
+msgstr "Натискання кнопки «Скасувати» призведе до створення нового ключа."
+
+#: src/lib/gpg.py:68
 msgid "Choose key"
 msgstr "Виберіть ключ"
 
-#: src/lib/gpg.py:95
-msgid "   Store passphrase"
-msgstr "   Зберегти пароль"
+#: src/lib/gpg.py:126
+msgid "New GPG key"
+msgstr "Новий ключ GPG"
 
-#: src/lib/gpg.py:170
+#: src/lib/gpg.py:127
+msgid "After confirming this dialog, a new GPG key "
+msgstr "Після натискання кнопки підтвердження у цьому вікні, "
+
+#: src/lib/gpg.py:128
+msgid "'{}' will be generated."
+msgstr "буде створено новий ключ GPG «{}»."
+
+#: src/lib/gpg.py:129
 msgid ""
-"Generating new GPG key {}.\n"
+" \n"
+" \n"
 "This may take some time.\n"
+"Please wait.\n"
 " \n"
-"Progress bar may stall. Please wait."
 msgstr ""
-"Створення нового ключа GPG {}.\n"
-"Дія може бути доволі тривалою.\n"
 " \n"
-"Показ поступу може призупинитися. Будь ласка, зачекайте."
+" \n"
+"Це доволі тривала дія.\n"
+"Будь ласка, зачекайте.\n"
+" \n"
 
-#: src/lib/gpg.py:172
-msgid "GPG key generation"
-msgstr "Створення ключа GPG"
+#: src/lib/gpg.py:130
+msgid "Canceling this operation exits pyspread."
+msgstr "Скасування цієї дії призведе до завершення роботи pyspread."
 
 #: src/pyspread.py:91
 msgid "usage: %prog [options] [filename]"
@@ -155,7 +169,7 @@ msgstr "&Файл"
 msgid "&New\tCtrl+n"
 msgstr "&Створити\tCtrl+N"
 
-#: src/gui/_menubars.py:184 src/gui/_toolbars.py:109
+#: src/gui/_menubars.py:184
 msgid "Create a new, empty spreadsheet"
 msgstr "Створити нову порожню електронну таблицю"
 
@@ -163,7 +177,7 @@ msgstr "Створити нову порожню електронну табли
 msgid "&Open"
 msgstr "&Відкрити"
 
-#: src/gui/_menubars.py:186 src/gui/_toolbars.py:111
+#: src/gui/_menubars.py:186
 msgid "Open spreadsheet from file"
 msgstr "Відкрити електронну таблицю з файла"
 
@@ -171,7 +185,7 @@ msgstr "Відкрити електронну таблицю з файла"
 msgid "&Save\tCtrl+s"
 msgstr "З&берегти\tCtrl+S"
 
-#: src/gui/_menubars.py:189 src/gui/_toolbars.py:112
+#: src/gui/_menubars.py:189
 msgid "Save spreadsheet"
 msgstr "Зберегти електронну таблицю"
 
@@ -212,7 +226,7 @@ msgid "&Clear globals"
 msgstr "С&порожнити загальні змінні"
 
 #: src/gui/_menubars.py:202
-msgid "Deletes global veriables from memory and reloads base modules"
+msgid "Deletes global variables from memory and reloads base modules"
 msgstr "Вилучити вміст загальних змінних з пам’яті і перезавантажити базові модулі"
 
 #: src/gui/_menubars.py:205
@@ -227,7 +241,7 @@ msgstr "Сторінка налаштовування параметрів др�
 msgid "Print preview\tShift+Ctrl+p"
 msgstr "Попередній перегляд сторінки\tShift+Ctrl+P"
 
-#: src/gui/_menubars.py:208 src/actions/_main_window_actions.py:180
+#: src/gui/_menubars.py:208 src/actions/_main_window_actions.py:184
 msgid "Print preview"
 msgstr "Попередній перегляд друку"
 
@@ -275,7 +289,7 @@ msgstr "&Повторити\tShift+Ctrl+Z"
 msgid "Redo last undone step"
 msgstr "Повторити останній скасований крок"
 
-#: src/gui/_menubars.py:227 src/gui/_toolbars.py:128
+#: src/gui/_menubars.py:227
 msgid "Copy the input strings of the cells to clipboard"
 msgstr "Копіювати рядки вхідних даних у комірках до буфера обміну даними"
 
@@ -283,7 +297,7 @@ msgstr "Копіювати рядки вхідних даних у комірк�
 msgid "Copy &Results\tShift+Ctrl+c"
 msgstr "Копіювати &результати\tShift+Ctrl+C"
 
-#: src/gui/_menubars.py:230 src/gui/_toolbars.py:131
+#: src/gui/_menubars.py:230
 msgid "Copy the result strings of the cells to the clipboard"
 msgstr "Копіювати рядки результатів у комірках до буфера обміну даними"
 
@@ -291,7 +305,7 @@ msgstr "Копіювати рядки результатів у комірках
 msgid "&Find\tCtrl+f"
 msgstr "З&найти\tCtrl+F"
 
-#: src/gui/_menubars.py:235 src/gui/_toolbars.py:121
+#: src/gui/_menubars.py:235
 msgid "Find cell by content"
 msgstr "Знайти комірку за вмістом"
 
@@ -299,7 +313,7 @@ msgstr "Знайти комірку за вмістом"
 msgid "Replace...\tCtrl+Shift+f"
 msgstr "Замінити…\tCtrl+Shift+F"
 
-#: src/gui/_menubars.py:237 src/gui/_toolbars.py:123
+#: src/gui/_menubars.py:237
 msgid "Replace strings in cells"
 msgstr "Замінити рядки у комірках"
 
@@ -439,7 +453,7 @@ msgstr "Шрифт…"
 msgid "Launch font dialog."
 msgstr "Відкрити діалогове вікно вибору шрифту."
 
-#: src/gui/_menubars.py:298 src/gui/_toolbars.py:404
+#: src/gui/_menubars.py:298 src/gui/_toolbars.py:407
 msgid "Underline"
 msgstr "Підкреслення"
 
@@ -447,7 +461,7 @@ msgstr "Підкреслення"
 msgid "Toggles underline."
 msgstr "Увімкнути або вимкнути підкреслення."
 
-#: src/gui/_menubars.py:300 src/gui/_toolbars.py:406
+#: src/gui/_menubars.py:300 src/gui/_toolbars.py:409
 msgid "Strikethrough"
 msgstr "Перекреслення"
 
@@ -467,7 +481,7 @@ msgstr "Увімкнути або вимкнути заморожений ста
 msgid "Frozen cells are updated only when F5 is pressed."
 msgstr "Вміст заморожених комірок оновлюється, лише якщо натиснути F5."
 
-#: src/gui/_menubars.py:306 src/gui/_toolbars.py:497
+#: src/gui/_menubars.py:306 src/gui/_toolbars.py:501
 msgid "Merge cells"
 msgstr "Об’єднати комірки"
 
@@ -527,55 +541,55 @@ msgstr "Обертання…"
 msgid "Set text rotation."
 msgstr "Встановити параметри обертання тексту."
 
-#: src/gui/_menubars.py:333
+#: src/gui/_menubars.py:332
 msgid "&Macro"
 msgstr "&Макро"
 
-#: src/gui/_menubars.py:334
+#: src/gui/_menubars.py:333
 msgid "&Macro list\tCtrl+m"
 msgstr "Список &макросів\tCtrl+M"
 
-#: src/gui/_menubars.py:335
+#: src/gui/_menubars.py:334
 msgid "Choose, fill in, manage, and create macros"
 msgstr "Вибір, додавання, керування та створення макросів"
 
-#: src/gui/_menubars.py:336
+#: src/gui/_menubars.py:335
 msgid "&Load macro list"
 msgstr "&Завантажити список макросів"
 
-#: src/gui/_menubars.py:337
+#: src/gui/_menubars.py:336
 msgid "Load macro list"
 msgstr "Завантажити список макросів"
 
-#: src/gui/_menubars.py:338
+#: src/gui/_menubars.py:337
 msgid "&Save macro list"
 msgstr "З&берегти список макросів"
 
-#: src/gui/_menubars.py:339
+#: src/gui/_menubars.py:338
 msgid "Save macro list"
 msgstr "Зберегти список макросів"
 
-#: src/gui/_menubars.py:341
+#: src/gui/_menubars.py:340
 msgid "Insert bitmap..."
 msgstr "Вставити зображення…"
 
-#: src/gui/_menubars.py:342
+#: src/gui/_menubars.py:341
 msgid "Insert bitmap from file into cell"
 msgstr "Вставити до комірки растрове зображення з файла"
 
-#: src/gui/_menubars.py:343
+#: src/gui/_menubars.py:342
 msgid "Link bitmap..."
 msgstr "Пов’язати зображення…"
 
-#: src/gui/_menubars.py:344
+#: src/gui/_menubars.py:343
 msgid "Link bitmap from file into cell"
 msgstr "Пов’язати з коміркою растрове зображення з файла"
 
-#: src/gui/_menubars.py:345
+#: src/gui/_menubars.py:344
 msgid "Insert chart..."
 msgstr "Вставити діаграму…"
 
-#: src/gui/_menubars.py:346 src/gui/_toolbars.py:151
+#: src/gui/_menubars.py:345
 msgid "Insert chart into cell"
 msgstr "Вставити до комірки діаграму"
 
@@ -619,7 +633,7 @@ msgstr "Підручник щодо програмування мовою Python
 msgid "&About"
 msgstr "Пр&о програму"
 
-#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1083
+#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1084
 msgid "About pyspread"
 msgstr "Про pyspread"
 
@@ -660,7 +674,7 @@ msgstr ""
 "Перезаписати його?"
 
 #: src/gui/_main_window.py:690
-msgid "File collison"
+msgid "File collision"
 msgstr "Назви файлів збігаються"
 
 #: src/gui/_main_window.py:694
@@ -841,8 +855,7 @@ msgstr "+"
 msgid "Series"
 msgstr "Послідовність"
 
-#: src/gui/_chart_dialog.py:801 src/gui/_toolbars.py:150
-#: src/gui/_toolbars.py:151
+#: src/gui/_chart_dialog.py:801 src/gui/_toolbars.py:176
 msgid "Insert chart"
 msgstr "Вставити діаграму"
 
@@ -850,11 +863,11 @@ msgstr "Вставити діаграму"
 msgid "Axes"
 msgstr "Вісі"
 
-#: src/gui/_gui_interfaces.py:69
+#: src/gui/_gui_interfaces.py:67
 msgid "Currently, only 3D grids are supported."
 msgstr "У поточній версії передбачено лише просторові сітки."
 
-#: src/gui/_gui_interfaces.py:102
+#: src/gui/_gui_interfaces.py:100
 msgid ""
 "There are unsaved changes.\n"
 "Do you want to save?"
@@ -862,11 +875,11 @@ msgstr ""
 "Виявлено незбережені зміни.\n"
 "Хочете їх зберегти?"
 
-#: src/gui/_gui_interfaces.py:105
+#: src/gui/_gui_interfaces.py:103
 msgid "Unsaved changes"
 msgstr "Незбережені зміни"
 
-#: src/gui/_gui_interfaces.py:204
+#: src/gui/_gui_interfaces.py:202
 msgid ""
 "'{}' does not seem to be a valid CSV file.\n"
 " \n"
@@ -878,71 +891,47 @@ msgstr ""
 "Під час спроби його відкрити сталася помилка:\n"
 "{}"
 
-#: src/gui/_gui_interfaces.py:206 src/actions/_main_window_actions.py:123
+#: src/gui/_gui_interfaces.py:204 src/actions/_main_window_actions.py:127
 msgid "Error reading CSV file"
 msgstr "Помилка під час спроби читання файла CSV"
 
-#: src/gui/_gui_interfaces.py:340
+#: src/gui/_gui_interfaces.py:335
 msgid "Real name"
 msgstr "Справжнє ім’я"
 
-#: src/gui/_gui_interfaces.py:341
-msgid "Passphrase"
-msgstr "Пароль"
+#: src/gui/_gui_interfaces.py:355
+msgid "Please enter a value in each field."
+msgstr "Будь ласка, заповніть всі поля."
 
-#: src/gui/_gui_interfaces.py:342
-msgid "E-mail"
-msgstr "Ел. пошта"
-
-#: src/gui/_gui_interfaces.py:343
-msgid "Comment"
-msgstr "Коментар"
-
-#: src/gui/_gui_interfaces.py:367
+#: src/gui/_gui_interfaces.py:357
 msgid "Missing value"
 msgstr "Не вистачає значення"
 
-#: src/gui/_gui_interfaces.py:389
-msgid "Please enter your GPG key passphrase for {}."
-msgstr "Будь ласка, вкажіть пароль до ключа GPG до {}."
+#: src/gui/_grid.py:356 src/gui/_grid.py:376
+msgid "Select bitmap for current cell"
+msgstr "Вибір растрового зображення для поточної комірки"
 
-#: src/gui/_gui_interfaces.py:392
-msgid ""
-"\n"
-"The password will be stored in your config file."
-msgstr ""
-"\n"
-"Пароль буде збережено у вашому файлі налаштувань програми."
-
-#: src/gui/_gui_interfaces.py:395
-msgid "Wrong password!\n"
-msgstr "Помилковий пароль!\n"
-
-#: src/gui/_gui_interfaces.py:397 src/gui/_dialogs.py:1178
-msgid "GPG key passphrase"
-msgstr "Пароль до ключа GPG"
-
-#: src/gui/_grid.py:392
+#: src/gui/_grid.py:435
 msgid "Weight {} unknown"
 msgstr "Невідома вага {}"
 
-#: src/gui/_grid.py:412
+#: src/gui/_grid.py:455
 msgid "Style {} unknown"
 msgstr "Невідомий стиль {}"
 
-#: src/gui/_grid.py:514
+#: src/gui/_grid.py:557
 msgid "Enter text angle in degrees."
 msgstr "Вкажіть кут нахилу тексту у градусах."
 
-#: src/gui/_grid.py:801
+#: src/gui/_grid.py:844
 msgid "'{}' not found."
 msgstr "«{}» не знайдено."
 
-#: src/gui/_grid.py:808
+#: src/gui/_grid.py:851
 msgid "Found '{}' in cell {}."
 msgstr "Виявлено «{}» у комірці {}."
 
-#: src/gui/_grid.py:981
+#: src/gui/_grid.py:1024
 msgid "Grid dimensions changed to {}."
 msgstr "Розміри сітки змінено на {}."
 
@@ -950,131 +939,95 @@ msgstr "Розміри сітки змінено на {}."
 msgid "Page: {}"
 msgstr "Сторінка: {}"
 
-#: src/gui/_toolbars.py:108
+#: src/gui/_toolbars.py:141
 msgid "New"
 msgstr "Створити"
 
-#: src/gui/_toolbars.py:108
-msgid "New spreadsheet"
-msgstr "Нова електронна таблиця"
-
-#: src/gui/_toolbars.py:110
+#: src/gui/_toolbars.py:142
 msgid "Open"
 msgstr "Відкрити"
 
-#: src/gui/_toolbars.py:110
-msgid "Open spreadsheet"
-msgstr "Відкрити електронну таблицю"
-
-#: src/gui/_toolbars.py:112
+#: src/gui/_toolbars.py:143
 msgid "Save"
 msgstr "Зберегти"
 
-#: src/gui/_toolbars.py:113
-msgid "Save spreadsheet to file"
-msgstr "Зберегти електронну таблицю до файла"
-
-#: src/gui/_toolbars.py:115
+#: src/gui/_toolbars.py:145
 msgid "Undo"
 msgstr "Вернути"
 
-#: src/gui/_toolbars.py:116
-msgid "Undo last operation"
-msgstr "Скасувати попередню дію"
-
-#: src/gui/_toolbars.py:117
+#: src/gui/_toolbars.py:146
 msgid "Redo"
 msgstr "Повторити"
 
-#: src/gui/_toolbars.py:118
-msgid "Redo next operation"
-msgstr "Повторити скасовану дію"
-
-#: src/gui/_toolbars.py:120
+#: src/gui/_toolbars.py:148
 msgid "Find"
 msgstr "Знайти"
 
-#: src/gui/_toolbars.py:122
+#: src/gui/_toolbars.py:149
 msgid "Replace"
 msgstr "Замінити"
 
-#: src/gui/_toolbars.py:125
+#: src/gui/_toolbars.py:151
 msgid "Cut"
 msgstr "Вирізати"
 
-#: src/gui/_toolbars.py:126
-msgid "Cut cells to clipboard"
-msgstr "Вирізати комірки до буфера обміну даними"
-
-#: src/gui/_toolbars.py:127
+#: src/gui/_toolbars.py:152
 msgid "Copy"
 msgstr "Копіювати"
 
-#: src/gui/_toolbars.py:129 src/gui/_toolbars.py:130
+#: src/gui/_toolbars.py:153
 msgid "Copy Results"
 msgstr "Копіювати результати"
 
-#: src/gui/_toolbars.py:132
+#: src/gui/_toolbars.py:154
 msgid "Paste"
 msgstr "Вставити"
 
-#: src/gui/_toolbars.py:133
-msgid "Paste cell from clipboard"
-msgstr "Вставити комірку з буфера обміну даними"
-
-#: src/gui/_toolbars.py:135
+#: src/gui/_toolbars.py:156
 msgid "Print"
 msgstr "Друк"
 
-#: src/gui/_toolbars.py:136
-msgid "Print spreadsheet"
-msgstr "Надрукувати електронну таблицю"
-
-#: src/gui/_toolbars.py:167
-msgid "Case sensitive"
-msgstr "З врахуванням регістру"
-
-#: src/gui/_toolbars.py:168
-msgid "Case sensitive search"
-msgstr "Пошук з урахуванням регістру"
-
 #: src/gui/_toolbars.py:174
-msgid "Regular expression"
-msgstr "Формальний вираз"
+msgid "Insert bitmap"
+msgstr "Вставити зображення"
 
 #: src/gui/_toolbars.py:175
-msgid "Treat search string as regular expression"
-msgstr "Вважати рядок для пошуку формальним виразом"
+msgid "Link bitmap"
+msgstr "Пов’язати зображення"
 
-#: src/gui/_toolbars.py:181
-msgid "Whole word"
-msgstr "Цілі слова"
+#: src/gui/_toolbars.py:201
+msgid "Find in code and results"
+msgstr "Знайти у коді і результатах"
 
-#: src/gui/_toolbars.py:182
-msgid "Search string is surronted by whitespace characters"
-msgstr "Вважати, що рядок обмежено пробільними символами"
-
-#: src/gui/_toolbars.py:199
-msgid "Searches in grid cell source code and grid cell results."
-msgstr "Шукати у початковому коді комірок сітки і результатах комірок сітки."
-
-#: src/gui/_toolbars.py:238
+#: src/gui/_toolbars.py:209
 msgid "Search direction"
 msgstr "Напрямок пошуку"
 
-#: src/gui/_toolbars.py:294
+#: src/gui/_toolbars.py:221
+msgid "Case sensitive"
+msgstr "З врахуванням регістру"
+
+#: src/gui/_toolbars.py:222
+msgid "Regular expression"
+msgstr "Формальний вираз"
+
+#: src/gui/_toolbars.py:223
+msgid "Surrounded by whitespace"
+msgstr "Оточено пробілами"
+
+#: src/gui/_toolbars.py:296
 msgid "Neither UP nor DOWN in search_flags"
 msgstr "У search_flags не вказано ні UP, ні DOWN"
 
-#: src/gui/_toolbars.py:400
+#: src/gui/_toolbars.py:403
 msgid "Bold"
 msgstr "Жирний"
 
-#: src/gui/_toolbars.py:402
+#: src/gui/_toolbars.py:405
 msgid "Italics"
 msgstr "Курсив"
 
-#: src/gui/_toolbars.py:407
+#: src/gui/_toolbars.py:410
 msgid "Freeze"
 msgstr "Заморозити"
 
@@ -1258,7 +1211,7 @@ msgstr ""
 msgid "Pyspread Web site"
 msgstr "Сайт pyspread"
 
-#: src/gui/_dialogs.py:1085
+#: src/gui/_dialogs.py:1086
 msgid ""
 "pyspread {}\n"
 "Copyright Martin Manns"
@@ -1266,83 +1219,67 @@ msgstr ""
 "pyspread {}\n"
 "© Martin Manns"
 
-#: src/gui/_dialogs.py:1136
+#: src/gui/_dialogs.py:1137
 msgid "Max. undo steps"
 msgstr "Макс. к-ть дій скасування"
 
-#: src/gui/_dialogs.py:1137
+#: src/gui/_dialogs.py:1138
 msgid "Maximum number of undo steps"
 msgstr "Максимальна кількість дій, які можна скасувати"
 
-#: src/gui/_dialogs.py:1143
+#: src/gui/_dialogs.py:1144
 msgid "Grid rows"
 msgstr "Рядків у сітці"
 
-#: src/gui/_dialogs.py:1144
+#: src/gui/_dialogs.py:1145
 msgid "Number of grid rows when starting pyspread"
 msgstr "Кількість рядків сітки після запуску pyspread"
 
-#: src/gui/_dialogs.py:1150
+#: src/gui/_dialogs.py:1151
 msgid "Grid columns"
 msgstr "Стовпчиків у сітці"
 
-#: src/gui/_dialogs.py:1151
+#: src/gui/_dialogs.py:1152
 msgid "Number of grid columns when starting pyspread"
 msgstr "Кількість стовпчиків сітки після запуску pyspread"
 
-#: src/gui/_dialogs.py:1157
+#: src/gui/_dialogs.py:1158
 msgid "Grid tables"
 msgstr "Таблиць у сітці"
 
-#: src/gui/_dialogs.py:1158
+#: src/gui/_dialogs.py:1159
 msgid "Number of grid tables when starting pyspread"
 msgstr "Кількість таблиць сітки після запуску pyspread"
 
-#: src/gui/_dialogs.py:1164
+#: src/gui/_dialogs.py:1165
 msgid "Max. result length"
 msgstr "Макс. довжина результату"
 
-#: src/gui/_dialogs.py:1165
+#: src/gui/_dialogs.py:1166
 msgid "Maximum length of cell result string"
 msgstr "Максимальна довжина результату у комірці"
 
-#: src/gui/_dialogs.py:1171
+#: src/gui/_dialogs.py:1172
 msgid "GPG key name"
 msgstr "Назва ключа GPG"
 
-#: src/gui/_dialogs.py:1172
+#: src/gui/_dialogs.py:1173
 msgid "Name of the GPG key for signing files"
 msgstr "Назва ключа GPG для підписування файлів"
 
-#: src/gui/_dialogs.py:1179
-msgid "Passphrase of the GPG key for signing files"
-msgstr "Пароль до ключа GPG для підписування файлів"
-
-#: src/gui/_dialogs.py:1185
-msgid "Store passphrase in config file"
-msgstr "Зберігати пароль у файлі налаштувань"
-
-#: src/gui/_dialogs.py:1186
-msgid "If False then the passprase is not stored on exit"
-msgstr "Якщо матиме значення False, пароль не зберігатиметься після виходу з програми"
-
-#: src/gui/_dialogs.py:1194
+#: src/gui/_dialogs.py:1181
 msgid "Preferences"
 msgstr "Параметри"
 
-#: src/gui/_dialogs.py:1257
+#: src/gui/_dialogs.py:1244
 msgid "GPG key data"
 msgstr "Дані ключа GPG"
 
-#: src/gui/_dialogs.py:1277
-msgid "Store passphrase in keyring"
-msgstr "Зберегти пароль у сховищі ключів"
-
-#: src/gui/_dialogs.py:1284
+#: src/gui/_dialogs.py:1261
 msgid "Starts key generation."
 msgstr "Розпочати створення ключа."
 
-#: src/gui/_dialogs.py:1289
+#: src/gui/_dialogs.py:1266
 msgid "Exits pyspread."
 msgstr "Завершити роботу pyspread."
 
@@ -1371,8 +1308,8 @@ msgid "File loading aborted."
 msgstr "Завантаження файла перервано."
 
 #: src/actions/_grid_actions.py:270 src/actions/_grid_actions.py:337
-#: src/actions/_grid_actions.py:437 src/actions/_main_window_actions.py:85
-#: src/actions/_main_window_actions.py:452
+#: src/actions/_grid_actions.py:437 src/actions/_main_window_actions.py:89
+#: src/actions/_main_window_actions.py:456
 msgid "Error opening file {}."
 msgstr "Помилка під час відкриття файла {}."
 
@@ -1468,11 +1405,11 @@ msgstr "Значенням ref_type має бути \"absolute\" або \"relati
 msgid "Freezing selections is not supported."
 msgstr "Підтримки заморожування позначених областей не передбачено."
 
-#: src/actions/_main_window_actions.py:122
+#: src/actions/_main_window_actions.py:126
 msgid "Unknown import choice {}."
 msgstr "Невідомий варіант імпортування {}."
 
-#: src/actions/_main_window_actions.py:151
+#: src/actions/_main_window_actions.py:155
 msgid ""
 "The file {} could not be fully written\n"
 " \n"
@@ -1484,6 +1421,99 @@ msgstr ""
 "Повідомлення про помилку:\n"
 "{}"
 
-#: src/actions/_main_window_actions.py:153
+#: src/actions/_main_window_actions.py:157
 msgid "Error writing CSV file"
 msgstr "Помилка під час спроби записати файл CSV"
+
+#~ msgid "   Store passphrase"
+#~ msgstr "   Зберегти пароль"
+
+#~ msgid ""
+#~ "Generating new GPG key {}.\n"
+#~ "This may take some time.\n"
+#~ " \n"
+#~ "Progress bar may stall. Please wait."
+#~ msgstr ""
+#~ "Створення нового ключа GPG {}.\n"
+#~ "Дія може бути доволі тривалою.\n"
+#~ " \n"
+#~ "Показ поступу може призупинитися. Будь ласка, зачекайте."
+
+#~ msgid "GPG key generation"
+#~ msgstr "Створення ключа GPG"
+
+#~ msgid "Passphrase"
+#~ msgstr "Пароль"
+
+#~ msgid "E-mail"
+#~ msgstr "Ел. пошта"
+
+#~ msgid "Comment"
+#~ msgstr "Коментар"
+
+#~ msgid "Please enter your GPG key passphrase for {}."
+#~ msgstr "Будь ласка, вкажіть пароль до ключа GPG до {}."
+
+#~ msgid ""
+#~ "\n"
+#~ "The password will be stored in your config file."
+#~ msgstr ""
+#~ "\n"
+#~ "Пароль буде збережено у вашому файлі налаштувань програми."
+
+#~ msgid "Wrong password!\n"
+#~ msgstr "Помилковий пароль!\n"
+
+#~ msgid "GPG key passphrase"
+#~ msgstr "Пароль до ключа GPG"
+
+#~ msgid "New spreadsheet"
+#~ msgstr "Нова електронна таблиця"
+
+#~ msgid "Open spreadsheet"
+#~ msgstr "Відкрити електронну таблицю"
+
+#~ msgid "Save spreadsheet to file"
+#~ msgstr "Зберегти електронну таблицю до файла"
+
+#~ msgid "Undo last operation"
+#~ msgstr "Скасувати попередню дію"
+
+#~ msgid "Redo next operation"
+#~ msgstr "Повторити скасовану дію"
+
+#~ msgid "Cut cells to clipboard"
+#~ msgstr "Вирізати комірки до буфера обміну даними"
+
+#~ msgid "Paste cell from clipboard"
+#~ msgstr "Вставити комірку з буфера обміну даними"
+
+#~ msgid "Print spreadsheet"
+#~ msgstr "Надрукувати електронну таблицю"
+
+#~ msgid "Case sensitive search"
+#~ msgstr "Пошук з урахуванням регістру"
+
+#~ msgid "Treat search string as regular expression"
+#~ msgstr "Вважати рядок для пошуку формальним виразом"
+
+#~ msgid "Whole word"
+#~ msgstr "Цілі слова"
+
+#~ msgid "Search string is surronted by whitespace characters"
+#~ msgstr "Вважати, що рядок обмежено пробільними символами"
+
+#~ msgid "Searches in grid cell source code and grid cell results."
+#~ msgstr "Шукати у початковому коді комірок сітки і результатах комірок сітки."
+
+#~ msgid "Passphrase of the GPG key for signing files"
+#~ msgstr "Пароль до ключа GPG для підписування файлів"
+
+#~ msgid "Store passphrase in config file"
+#~ msgstr "Зберігати пароль у файлі налаштувань"
+
+#~ msgid "If False then the passprase is not stored on exit"
+#~ msgstr "Якщо матиме значення False, пароль не зберігатиметься після виходу з програми"
+
+#~ msgid "Store passphrase in keyring"
+#~ msgstr "Зберегти пароль у сховищі ключів"
