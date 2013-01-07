@@ -45,6 +45,8 @@ import sys
 from sysvars import get_program_path
 import optparse
 
+import wx
+
 import lib.i18n as i18n
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -218,8 +220,12 @@ def main():
 
 
 if __name__ == "__main__":
-    if DEBUG:
-        import cProfile
-        cProfile.run('main()')
+    if 'unicode' not in wx.PlatformInfo:
+        print "You need a unicode build of wxPython to run this application."
+
     else:
-        main()
+        if DEBUG:
+            import cProfile
+            cProfile.run('main()')
+        else:
+            main()
