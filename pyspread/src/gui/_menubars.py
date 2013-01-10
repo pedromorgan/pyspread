@@ -91,9 +91,9 @@ class _filledMenu(wx.Menu):
             obj = item[0]
             if obj == wx.Menu:
                 try:
-                    _, menuname, submenu, menu_id = item
+                    __, menuname, submenu, menu_id = item
                 except ValueError:
-                    _, menuname, submenu = item
+                    __, menuname, submenu = item
                     menu_id = -1
 
                 menu = obj()
@@ -120,7 +120,7 @@ class _filledMenu(wx.Menu):
 
                 parent.AppendItem(menuitem)
 
-                if "&Approve file" == shortcut:
+                if _("&Approve file") == shortcut:
                     self.approve_item = menuitem
 
                 self.ids_msgs[item_id] = msgtype

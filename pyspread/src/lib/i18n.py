@@ -28,41 +28,38 @@ This module handles internationalization
 """
 
 import os
-import locale
 import gettext
 import sys
+
+import wx
 
 #  Translation files are located in
 #  @LOCALE_DIR@/@LANGUAGE@/LC_MESSAGES/@APP_NAME@.mo
 APP_NAME = "pyspread"
 
-APP_DIR = os.path.join(sys.prefix, 'share')
+APP_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-# .mo files  are located in APP_Dir/i18n/LANGUAGECODE/LC_MESSAGES/
-LOCALE_DIR = os.path.join(APP_DIR, 'i18n')
-
+# .mo files  are located in APP_Dir/locale/LANGUAGECODE/LC_MESSAGES/
+LOCALE_DIR = os.path.join(APP_DIR, 'locale')
 
 # Choose the language
 # -------------------
 # A list is provided,gettext uses the first translation available in the list
-DEFAULT_LANGUAGES = os.environ.get('LANGUAGES', '').split(':')
-DEFAULT_LANGUAGES += ['en_US']
+DEFAULT_LANGUAGES = ['en_US']
 
-lc, encoding = locale.getdefaultlocale()
-if lc:
-    languages = [lc]
-else:
-    languages = []
+langid = wx.LANGUAGE_DEFAULT
+languages = [wx.Locale(langid).GetCanonicalName()]
 
 # Languages and locations of translations are in env + default locale
 
-languages += DEFAULT_LANGUAGES
+#languages += DEFAULT_LANGUAGES
+
 mo_location = LOCALE_DIR
 
 # gettext initialization
 # ----------------------
 
-gettext.install(True, localedir=None, unicode=1)
+gettext.install(True, localedir=LOCALE_DIR, unicode=1)
 
 gettext.find(APP_NAME, mo_location)
 
