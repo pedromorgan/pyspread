@@ -48,7 +48,8 @@ LOCALE_DIR = os.path.join(APP_DIR, 'locale')
 DEFAULT_LANGUAGES = ['en_US']
 
 langid = wx.LANGUAGE_DEFAULT
-languages = [wx.Locale(langid).GetCanonicalName()]
+wxlocale = wx.Locale(langid)
+languages = [wxlocale.GetCanonicalName()]
 
 # Languages and locations of translations are in env + default locale
 

@@ -37,23 +37,23 @@ Provides
 
 """
 
-# Patch for using with PyScripter thanks to Colin J. Williams
-# If wx exists in sys,modules, we dont need to import wx version.
-# wx is already imported if the PyScripter wx engine is used.
-
 import sys
 from sysvars import get_program_path
 import optparse
 
-import wx
-
 import lib.i18n as i18n
+
+import wx
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 sys.setrecursionlimit(10000)
 sys.path.insert(0, get_program_path())
+
+# Patch for using with PyScripter thanks to Colin J. Williams
+# If wx exists in sys,modules, we dont need to import wx version.
+# wx is already imported if the PyScripter wx engine is used.
 
 try:
     sys.modules['wx']
