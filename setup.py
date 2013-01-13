@@ -24,6 +24,9 @@ from distutils.core import setup
 setup(name='pyspread',
       version='0.2.3',
       description='Python spreadsheet',
+      long_description='Pyspread is a non-traditional spreadsheet application'
+                       ' that is based on and written in the programming '
+                       'language Python.',
       license='GPL v3 :: GNU General Public License',
       keywords=['spreadsheet', 'pyspread'],
       author='Martin Manns',
