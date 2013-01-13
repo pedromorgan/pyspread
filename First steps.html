@@ -204,45 +204,26 @@ h3 {
           <td style="vertical-align: top;">
             <style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }h2 { margin-top: 0.07in; margin-bottom: 0.07in; text-decoration: underline; }h2.western { font-family: "Liberation Sans"; font-size: 12pt; font-style: normal; }h2.cjk { font-size: 14pt; font-style: italic; font-weight: normal; }h2.ctl { font-family: "FreeSans"; font-size: 14pt; font-style: italic; }a:link {  }</style>
             <h2 class="western" lang="en-US">Requirements</h2>
-            <p class="western" style="margin-bottom: 0in;">Linux and
-              *nix platforms with GTK+ support.<br>
+            <p class="western" lang="en-US">Linux and *nix platforms
+              with GTK+ support.<br>
               <br>
-              <u>Dependencies </u> </p>
+              <u>Dependencies</u><br>
+            </p>
             <ul>
-              <li>
-                <p class="western" style="margin-bottom: 0in;"
-                  lang="en-US"><a href="http://www.python.org/">Python</a>
-                  &gt;=2.7 &lt;3.0 </p>
-              </li>
-              <li>
-                <p class="western" style="margin-bottom: 0in;"
-                  lang="en-US"><a href="http://numpy.scipy.org/">numpy</a>
-                  &gt;=1.1.0</p>
-              </li>
-              <li>
-                <p class="western" lang="en-US"><a
-                    href="http://www.wxpython.org/">wxPython</a>
-                  &gt;=2.8.10.1 (unicode version required). </p>
-              </li>
-              <li>
-                <p class="western" style="margin-bottom: 0in;"
-                  lang="en-US"><a href="http://pyme.sourceforge.net/">PyMe</a>
-                  &gt;=0.8.1</p>
-              </li>
+              <li><a href="http://www.python.org/">Python</a> (&gt;=2.7,
+                &lt;3.0)</li>
+              <li><a href="http://numpy.scipy.org/">numpy</a>
+                (&gt;=1.1.0)</li>
+              <li><a href="http://www.wxpython.org/">wxPython</a>
+                (&gt;=2.8.10.1, Unicode version required)</li>
+              <li><a href="http://matplotlib.org/">matplotlib</a>
+                (&gt;=1.1.1)</li>
+              <li><a href="http://code.google.com/p/python-gnupg/">python-gnupg</a>
+                (&gt;=0.3.0)</li>
             </ul>
-            <p class="western" lang="en-US"><u>Highly recommended for
-                full functionality </u> </p>
+            <p class="western" lang="en-US">
+            </p>
             <ul>
-              <li>
-                <p class="western" style="margin-bottom: 0in;"
-                  lang="en-US"><a href="http://code.google.com/p/gmpy/">gmpy</a>
-                  &gt;=1.1.0</p>
-              </li>
-              <li>
-                <p class="western" lang="en-US"><a
-                    href="http://rpy.sourceforge.net/">rpy</a>
-                  &gt;=1.0.3. </p>
-              </li>
             </ul>
           </td>
           <td style="vertical-align: top;"><br>
@@ -953,9 +934,6 @@ h3 {
               access is called absolute because the targeted cell does
               not change when the code is copied to another cell similar
               to a call $A$1 in a common spreadsheet.</p>
-            <p class="western" lang="en-US">Absolute cell addresses can
-              be inserted into cell code with &lt;Shift&gt; +
-              &lt;Ctrl&gt; + &lt;LeftClick&gt; on a cell.</p>
             <p class="western" lang="en-US">Note that each time that a
               cell calls another cell result, the called cell is
               re-evaluated. No dependency tracking of cells is done.
@@ -985,9 +963,6 @@ h3 {
               called relative because the targeted cell changes when the
               code is copied to another cell similar to a call A1 in a
               common spreadsheet.</p>
-            <p class="western" lang="en-US">Relative cell addresses can
-              be inserted into cell code with &lt;Alt&gt; + &lt;Ctrl&gt;
-              + &lt;LeftClick&gt; on a cell.</p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -1268,9 +1243,9 @@ h3 {
             <p class="western" lang="en-US">Border width of a selection
               of cells can be changed from the attributes menu.</p>
             <p class="western" lang="en-US">Border width is allied to
-              borders dependent on the settings of the border dropbox in
-              the attribute toolbar. In order to get only outer borders
-              of your selection a different color choose the
+              borders dependent on the settings of the border choice box
+              in the attribute toolbar. In order to get only outer
+              borders of your selection a different color choose the
               corresponding border setting.</p>
             <h2 class="western" lang="en-US">Row height and column width</h2>
             <p class="western" lang="en-US">Row heights and column
@@ -1314,13 +1289,20 @@ h3 {
             <p class="western" lang="en-US">In order to make working
               with pyspread as safe as possible, all save-files (pys
               files) are signed by the current user with a gpg signature
-              file. Only a user with the private key pyspread_&lt;user
-              name&gt; can open the file without approving it. That
-              should ensure that when loading a pys file, only the code
-              that a user has written him- or herself is executed. Pys
-              files without a valid signatures are opened in safe mode,
-              i. e. the code is displayed and not executed. However, it
-              can be approved after inspection.</p>
+              file. Only a user with a private key can open the file
+              without approving it. That should ensure that when loading
+              a pys file, only the code that a user has written him- or
+              herself is executed. Pys files without a valid signatures
+              are opened in safe mode, i. e. the code is displayed and
+              not executed. However, it can be approved after
+              inspection.<br>
+            </p>
+            <p class="western" lang="en-US">Please note that in version
+              0.2.3, keys with passwords are no longer supported. Since
+              gpg should only make sure that the file that you are
+              trying to open is your own file, password-less key pairs
+              should provide sufficient security.<br>
+            </p>
             <p class="western" lang="en-US">Therefore, never approve
               foreign pys-files unless you have <b>checked thoroughly
                 each cell</b>. One cell may delete you hard drive. And
@@ -1371,10 +1353,32 @@ h3 {
           </th>
           <td style="vertical-align: top;">
             <style type="text/css">p { margin-bottom: 0.08in; }p.western {  }p.cjk { font-size: 10pt; }h2 { margin-top: 0.07in; margin-bottom: 0.07in; text-decoration: underline; }h2.western { font-family: "Liberation Sans"; font-size: 12pt; font-style: normal; }h2.cjk { font-size: 14pt; font-style: italic; font-weight: normal; }h2.ctl { font-family: "FreeSans"; font-size: 14pt; font-style: italic; }</style>
-            <p class="western" lang="en-US">Pyspread is still missing a
-              charting toolbar. This chapter explains how to work with
-              some popular Python charting libraries from within
-              pyspread.</p>
+            <p class="western" lang="en-US">With version 0.2.3, <a
+                href="http://matplotlib.org/">matplotlib</a> charts are
+              supported. Each cell, which yields a matplotlib figure
+              displays this figure. The bitmap is stretched to the
+              cell's extents.<br>
+            </p>
+            <p class="western" lang="en-US">The "Insert chart" option in
+              the Macros menu provides an easy way of generating
+              matplotlib figures. They generate code of a special class
+              charts.ChartFigure that is provided by pyspread. This
+              class subclasses the matplotlib Figure class. The subclass
+              takes matplotlib arguments and creates a figure in one
+              step. The dialog creates the code for doing that. It also
+              parses any code starting with charts.ChartFigure and
+              figures out, which choice had been made last time. This
+              may very well fail if you changed the cell code manually.<br>
+            </p>
+            <p class="western" lang="en-US">Currently, two chart types
+              are supported: Plots, i.e. line charts and bar charts.
+              Please suggest other chart types by posting at <a
+                href="mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.
+            </p>
+            <p class="western" lang="en-US">Matplotlib figures can also
+              be used to display LaTeX equations. However, pyspread has
+              not yet an interface dialog for equations.<br>
+            </p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -1382,33 +1386,35 @@ h3 {
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><br>
-          </td>
+          <th style="vertical-align: top;">Images<br>
+          </th>
           <td style="vertical-align: top;">
-            <h2 class="western" lang="en-US">Charts with matplotlib</h2>
-            To be done</td>
-          <td style="vertical-align: top;"><br>
+            <p class="western" lang="en-US">With version 0.2.3, images
+              can be displayed in cells. Each cell, which yields a
+              wx.Bitmap object, displays the bitmap. The bitmap is
+              stretched to the cell's extents.<br>
+            </p>
+            <p class="western" lang="en-US">Images can be inserted via
+              copy and paste. This creates cell code, which contains a
+              serialized string that represents the bitmap. Since
+              maximum cell size currently is 64000 characters, images
+              will be compressed until they fit in. This normally means
+              quality loss especially with true color images. In future
+              versions, this limit may be removed.<br>
+            </p>
+            <p class="western" lang="en-US">The "Insert bitmap" option
+              in the Macros menu is Identical to the copy and paste
+              functionality.<br>
+            </p>
+            <p class="western" lang="en-US">Lining an image with the
+              "Link bitmap" option in the Macros menu generates code
+              that refers to an image on the file system. This method
+              allows displaying high resolution images in a pyspread
+              grid. Please not that the image path is currently
+              absolute. You can replace it manually with a relative
+              path.<br>
+            </p>
           </td>
-          <td style="vertical-align: top;"><br>
-          </td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td style="vertical-align: top;">
-            <h2 class="western" lang="en-US">Charts with rpy2</h2>
-            To be done</td>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td style="vertical-align: top;"><br>
-          </td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td style="vertical-align: top;">
-            <h2 class="western" lang="en-US">Charts with pychart</h2>
-            To be done </td>
           <td style="vertical-align: top;"><br>
           </td>
           <td style="vertical-align: top;"><br>
@@ -1451,6 +1457,9 @@ h3 {
           </td>
           <td style="vertical-align: top;">
             <h2 class="western" lang="en-US">Substituting pivot tables</h2>
+            <br>
+            See example file.<br>
+            <br>
             To be done </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -1462,11 +1471,12 @@ h3 {
     <p><span style="font-style: italic;"><small>C<font size="-1">opyright
 2008-2012
 
+
             Martin Manns</font></small><font size="-1"><br>
           Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br
             style="font-style: italic;">
         </font> </span><font size="-1"><span style="font-style:
-          italic;">Last changed: 19. April 2012 </span></font></p>
+          italic;">Last changed: 13. January 2013 </span></font></p>
     <p><span style="font-style: italic;"><small></small></span></p>
   </body>
 </html>
