@@ -204,17 +204,11 @@ class MainApplication(App, GridActionEventMixin):
             cmdp.config["grid_tables"] = str(tables)
 
 
-def __main__():
-    """Compatibility hack"""
-
-    pass
-
-
 def main():
     """Parses command line and starts pyspread"""
 
     # Initialize main application
-    app = MainApplication(redirect=True)
+    app = MainApplication(redirect=False)
 
     app.MainLoop()
 
