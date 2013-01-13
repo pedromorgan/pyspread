@@ -23,13 +23,14 @@ from distutils.core import setup
 
 setup(name='pyspread',
       version='0.2.3',
-      description='Python Spreadsheet',
+      description='Python spreadsheet',
       license='GPL v3 :: GNU General Public License',
       keywords=['spreadsheet', 'pyspread'],
       author='Martin Manns',
       author_email='mmanns@gmx.net',
       url='http://manns.github.com/pyspread/',
-      requires=['numpy (>=1.1)', 'wx (>=2.8.10)', 'matplotlib (>=1.1.1)'],
+      requires=['numpy (>=1.1)', 'wx (>=2.8.10)', 'matplotlib (>=1.1.1)',
+                'python_gnupg (>=0.3.0)'],
       packages=['pyspread'],
       scripts=['pyspread/pyspread'],
       package_data={'pyspread':
