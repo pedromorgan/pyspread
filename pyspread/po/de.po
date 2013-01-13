@@ -1,14 +1,14 @@
 # German translation of pyspread
 # Copyright (C) 2012 Free Software Foundation, Inc.
 # This file is distributed under the same license as the pyspread package.
-#
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2013.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: pyspread 0.2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-06 18:10+0100\n"
-"PO-Revision-Date: 2013-01-07 21:48+0100\n"
+"PO-Revision-Date: 2013-01-13 17:23+0100\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Gtranslator 2.91.5\n"
 
 #: src/lib/clipboard.py:90 src/lib/clipboard.py:124
 msgid "Can't open the clipboard"
@@ -35,19 +35,18 @@ msgid "Fallback type {} unknown."
 msgstr "Fallback-Typ {} ist unbekannt."
 
 #: src/lib/gpg.py:65
-#, fuzzy
 msgid "Choose a GPG key for signing pyspread save files.\n"
 msgstr ""
-"Wählen Sie einen eigenen GPG-Schlüssel, mit dem Sie pyspread-Dateien signieren wollen.\n"
-"Klicken Sie auf Abbrechen, um einen neuen Schlüssel zu erzeugen."
+"Wählen Sie einen eigenen GPG-Schlüssel, mit dem Sie pyspread-Dateien "
+"signieren wollen.\n"
 
 #: src/lib/gpg.py:66
 msgid "The GPG key must not have a passphrase set. \n"
-msgstr ""
+msgstr "Der GPG-Schlüssel darf kein Passwort besitzen. \n"
 
 #: src/lib/gpg.py:67
 msgid "Pressing Cancel creates a new key."
-msgstr ""
+msgstr "Klicken Sie auf Abbrechen, um einen neuen Schlüssel zu erzeugen."
 
 #: src/lib/gpg.py:68
 msgid "Choose key"
@@ -93,8 +92,12 @@ msgstr "%prog {}"
 
 #: src/pyspread.py:103
 #, python-format
-msgid "Dimensions of empty grid (works only without filename) rows, cols, tables [default: %default]"
+msgid ""
+"Dimensions of empty grid (works only without filename) rows, cols, tables "
+"[default: %default]"
 msgstr ""
+"Größe der leeren Tabelle (funktioniert nur ohne Dateiname) Zeilen, Spalten, "
+"Tabellen [standard: %default]"
 
 #: src/pyspread.py:119
 msgid "Cell dimension must be > 0."
@@ -110,7 +113,7 @@ msgstr "Menüeintrag ist unbekannt"
 
 #: src/gui/_menubars.py:153 src/gui/_menubars.py:224
 msgid "Cu&t\tCtrl+x"
-msgstr "&Ausschneiden\tStrg+x"
+msgstr "&Ausschneiden\tCtrl+x"
 
 #: src/gui/_menubars.py:153 src/gui/_menubars.py:225
 msgid "Cut cell to clipboard"
@@ -118,7 +121,7 @@ msgstr "Zelle in die Zwischenablage ausschneiden"
 
 #: src/gui/_menubars.py:155 src/gui/_menubars.py:226
 msgid "&Copy\tCtrl+c"
-msgstr "&Kopieren\tStrg+c"
+msgstr "&Kopieren\tCtrl+c"
 
 #: src/gui/_menubars.py:156
 msgid "Copy input strings to clipboard"
@@ -126,7 +129,7 @@ msgstr "Ausgewählte Zeichenketten in die Zwischenablage kopieren"
 
 #: src/gui/_menubars.py:157 src/gui/_menubars.py:231
 msgid "&Paste\tCtrl+v"
-msgstr "&Einfügen\tStrg+v"
+msgstr "&Einfügen\tCtrl+v"
 
 #: src/gui/_menubars.py:158 src/gui/_menubars.py:232
 msgid "Paste cells from clipboard"
@@ -134,7 +137,7 @@ msgstr "Zellen aus der Zwischenablage einfügen"
 
 #: src/gui/_menubars.py:159
 msgid "Insert &rows\tShift+Ctrl+i"
-msgstr "&Zeilen einfügen\tUmschalt+Strg+i"
+msgstr "&Zeilen einfügen\tShift+Ctrl+i"
 
 #: src/gui/_menubars.py:160 src/gui/_menubars.py:240
 msgid "Insert rows at cursor"
@@ -142,7 +145,7 @@ msgstr "Zeilen an Cursorposition einfügen"
 
 #: src/gui/_menubars.py:161
 msgid "&Insert columns\tCtrl+i"
-msgstr "Zei&len einfügen\tStrg+i"
+msgstr "Zei&len einfügen\tCtrl+i"
 
 #: src/gui/_menubars.py:162 src/gui/_menubars.py:242
 msgid "Insert columns at cursor"
@@ -150,7 +153,7 @@ msgstr "Spalten an Cursorposition einfügen"
 
 #: src/gui/_menubars.py:163
 msgid "Delete rows\tShift+Ctrl+d"
-msgstr "Zeilen löschen\tUmschalt+Strg+d"
+msgstr "Zeilen löschen\tShift+Ctrl+d"
 
 #: src/gui/_menubars.py:164 src/gui/_menubars.py:246 src/gui/_menubars.py:247
 msgid "Delete rows"
@@ -158,7 +161,7 @@ msgstr "Zeilen löschen"
 
 #: src/gui/_menubars.py:165
 msgid "Delete columns\tCtrl+Alt+d"
-msgstr "Spalten löschen\tStrg+Alt+d"
+msgstr "Spalten löschen\tCtrl+Alt+d"
 
 #: src/gui/_menubars.py:166 src/gui/_menubars.py:248 src/gui/_menubars.py:249
 msgid "Delete columns"
@@ -170,7 +173,7 @@ msgstr "&Datei"
 
 #: src/gui/_menubars.py:183
 msgid "&New\tCtrl+n"
-msgstr "&Neu\tStrg+n"
+msgstr "&Neu\tCtrl+n"
 
 #: src/gui/_menubars.py:184
 msgid "Create a new, empty spreadsheet"
@@ -186,7 +189,7 @@ msgstr "Tabellendokument aus einer Datei öffnen"
 
 #: src/gui/_menubars.py:188
 msgid "&Save\tCtrl+s"
-msgstr "&Speichern\tStrg+s"
+msgstr "&Speichern\tCtrl+s"
 
 #: src/gui/_menubars.py:189
 msgid "Save spreadsheet"
@@ -194,7 +197,7 @@ msgstr "Tabellendokument speichern"
 
 #: src/gui/_menubars.py:190
 msgid "Save &As\tShift+Ctrl+s"
-msgstr "Speichern &unter\tumschalt+Strg+s"
+msgstr "Speichern &unter\tShift+Ctrl+s"
 
 #: src/gui/_menubars.py:191
 msgid "Save spreadsheet to a new file"
@@ -242,7 +245,7 @@ msgstr "Seite für den Druck einrichten"
 
 #: src/gui/_menubars.py:207
 msgid "Print preview\tShift+Ctrl+p"
-msgstr "Druckvorschau\tUmschalt+Strg+p"
+msgstr "Druckvorschau\tShift+Ctrl+p"
 
 #: src/gui/_menubars.py:208 src/actions/_main_window_actions.py:184
 msgid "Print preview"
@@ -250,7 +253,7 @@ msgstr "Druckvorschau"
 
 #: src/gui/_menubars.py:209
 msgid "&Print\tCtrl+p"
-msgstr "&Drucken\tStrg+p"
+msgstr "&Drucken\tCtrl+p"
 
 #: src/gui/_menubars.py:210
 msgid "Print current spreadsheet"
@@ -266,7 +269,7 @@ msgstr "Einstellungen von pyspread anpassen"
 
 #: src/gui/_menubars.py:215
 msgid "&Quit\tCtrl+q"
-msgstr "&Beenden\tStrg+q"
+msgstr "&Beenden\tCtrl+q"
 
 #: src/gui/_menubars.py:215
 msgid "Quit pyspread"
@@ -278,7 +281,7 @@ msgstr "&Bearbeiten"
 
 #: src/gui/_menubars.py:219
 msgid "&Undo\tCtrl+z"
-msgstr "&Rückgängig\tStrg+z"
+msgstr "&Rückgängig\tCtrl+z"
 
 #: src/gui/_menubars.py:219
 msgid "Undo last step"
@@ -286,7 +289,7 @@ msgstr "Den letzten Schritt rückgängig machen"
 
 #: src/gui/_menubars.py:221
 msgid "&Redo\tShift+Ctrl+z"
-msgstr "&Wiederholen\tUmschalt+Strg+z"
+msgstr "&Wiederholen\tShift+Ctrl+z"
 
 #: src/gui/_menubars.py:222
 msgid "Redo last undone step"
@@ -298,7 +301,7 @@ msgstr "Die Eingabe-Zeichenketten der Zellen in die Zwischenablage kopieren"
 
 #: src/gui/_menubars.py:229
 msgid "Copy &Results\tShift+Ctrl+c"
-msgstr "E&rgebnisse kopieren\tUmschalt+Strg+c"
+msgstr "E&rgebnisse kopieren\tShift+Ctrl+c"
 
 #: src/gui/_menubars.py:230
 msgid "Copy the result strings of the cells to the clipboard"
@@ -306,7 +309,7 @@ msgstr "Die Ergebnis-Zeichenketten der Zellen in die Zwischenablage kopieren"
 
 #: src/gui/_menubars.py:234
 msgid "&Find\tCtrl+f"
-msgstr "&Suchen\tStrg+f"
+msgstr "&Suchen\tCtrl+f"
 
 #: src/gui/_menubars.py:235
 msgid "Find cell by content"
@@ -314,7 +317,7 @@ msgstr "Zellen anhand des Inhalts suchen"
 
 #: src/gui/_menubars.py:236
 msgid "Replace...\tCtrl+Shift+f"
-msgstr "Ersetzen …\tStrg+Umschalt+f"
+msgstr "Ersetzen …\tCtrl+Shift+f"
 
 #: src/gui/_menubars.py:237
 msgid "Replace strings in cells"
@@ -406,7 +409,7 @@ msgstr "Die Tabellenauswahl anzeigen oder verbergen."
 
 #: src/gui/_menubars.py:279
 msgid "Go to cell\tCtrl+G"
-msgstr "Zu Zelle gehen\tStrg+G"
+msgstr "Zu Zelle gehen\tCtrl+G"
 
 #: src/gui/_menubars.py:280
 msgid "Moves the grid to a cell."
@@ -414,7 +417,7 @@ msgstr "Bewegt das Gitter zu einer Zelle."
 
 #: src/gui/_menubars.py:282
 msgid "Zoom in\tCtrl++"
-msgstr "Vergrößern\tStrg++"
+msgstr "Vergrößern\tCtrl++"
 
 #: src/gui/_menubars.py:283
 msgid "Zoom in grid."
@@ -422,7 +425,7 @@ msgstr "Die Ansicht des Gitters vergrößern."
 
 #: src/gui/_menubars.py:284
 msgid "Zoom out\tCtrl+-"
-msgstr "Verkleinern\tStrg+-"
+msgstr "Verkleinern\tCtrl+-"
 
 #: src/gui/_menubars.py:285
 msgid "Zoom out grid."
@@ -430,7 +433,7 @@ msgstr "Die Ansicht des Gitters verkleinern."
 
 #: src/gui/_menubars.py:286
 msgid "Normal size\tCtrl+0"
-msgstr "Normale Größe\tStrg+0"
+msgstr "Normale Größe\tCtrl+0"
 
 #: src/gui/_menubars.py:287
 msgid "Show grid in standard zoom."
@@ -550,7 +553,7 @@ msgstr "&Makro"
 
 #: src/gui/_menubars.py:333
 msgid "&Macro list\tCtrl+m"
-msgstr "&Makroliste\tStrg+m"
+msgstr "&Makroliste\tCtrl+m"
 
 #: src/gui/_menubars.py:334
 msgid "Choose, fill in, manage, and create macros"
@@ -739,7 +742,9 @@ msgstr "Abgesicherter Modus wurde deaktiviert."
 
 #: src/gui/_main_window.py:816
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
-msgstr "Das Löschen globaler Variablen und Neuladen der Module kann nicht rückgängig gemacht werden. Wollen Sie wirklich fortsetzen?"
+msgstr ""
+"Das Löschen globaler Variablen und Neuladen der Module kann nicht rückgängig "
+"gemacht werden. Wollen Sie wirklich fortsetzen?"
 
 #: src/gui/_main_window.py:818
 msgid "Really delete globals and modules?"
@@ -759,7 +764,7 @@ msgstr "Wählen Sie die Makro-Datei."
 
 #: src/gui/_chart_dialog.py:456 src/gui/_chart_dialog.py:486
 msgid "Series name"
-msgstr ""
+msgstr "Name der Datenreihe"
 
 #: src/gui/_chart_dialog.py:457
 msgid "X"
@@ -787,7 +792,7 @@ msgstr "Größe"
 
 #: src/gui/_chart_dialog.py:464
 msgid "Face color"
-msgstr ""
+msgstr "Vordergundfarbe"
 
 #: src/gui/_chart_dialog.py:465 src/gui/_chart_dialog.py:492
 msgid "Edge color"
@@ -807,7 +812,7 @@ msgstr "Marker"
 
 #: src/gui/_chart_dialog.py:487
 msgid "Left positions"
-msgstr ""
+msgstr "Balkenstart links"
 
 #: src/gui/_chart_dialog.py:488
 msgid "Bar heights"
@@ -819,7 +824,7 @@ msgstr "Balkenbreiten"
 
 #: src/gui/_chart_dialog.py:490
 msgid "Bar bottoms"
-msgstr ""
+msgstr "Balkenunterseite"
 
 #: src/gui/_chart_dialog.py:491
 msgid "Bar color"
@@ -855,7 +860,7 @@ msgstr "+"
 
 #: src/gui/_chart_dialog.py:707 src/gui/_chart_dialog.py:805
 msgid "Series"
-msgstr ""
+msgstr "Datenreihe"
 
 #: src/gui/_chart_dialog.py:801 src/gui/_toolbars.py:176
 msgid "Insert chart"
@@ -915,7 +920,7 @@ msgstr "Bitmap-Grafik für die aktuelle Zelle wählen"
 
 #: src/gui/_grid.py:435
 msgid "Weight {} unknown"
-msgstr ""
+msgstr "Dicke {} ist unbekannt"
 
 #: src/gui/_grid.py:455
 msgid "Style {} unknown"
@@ -1015,7 +1020,7 @@ msgstr "Regulärer Ausdruck"
 
 #: src/gui/_toolbars.py:223
 msgid "Surrounded by whitespace"
-msgstr ""
+msgstr "Von Leerzeichen, Tabulatoren, o. ä. umgeben"
 
 #: src/gui/_toolbars.py:296
 msgid "Neither UP nor DOWN in search_flags"
@@ -1051,7 +1056,9 @@ msgstr "Code {} ist ungültig."
 
 #: src/gui/_widgets.py:738
 msgid "For switching tables enter the table number or use the mouse wheel."
-msgstr "Um zu einer Tabelle zu wechseln, geben Sie die Tabellennummer ein oder verwenden Sie das Mausrad."
+msgstr ""
+"Um zu einer Tabelle zu wechseln, geben Sie die Tabellennummer ein oder "
+"verwenden Sie das Mausrad."
 
 #: src/gui/_dialogs.py:172
 msgid "Dialect"
@@ -1059,16 +1066,20 @@ msgstr "Dialekt"
 
 #: src/gui/_dialogs.py:173
 msgid ""
-"To make it easier to specify the format of input and output records, specific formatting parameters are grouped together into dialects.\n"
+"To make it easier to specify the format of input and output records, "
+"specific formatting parameters are grouped together into dialects.\n"
 "'excel': Defines the usual properties of an Excel-generated CSV file.\n"
 "'sniffer': Deduces the format of a CSV file\n"
-"'excel-tab': Defines the usual properties of an Excel-generated TAB-delimited file."
+"'excel-tab': Defines the usual properties of an Excel-generated TAB-"
+"delimited file."
 msgstr ""
 "Um die Angabe des Formats für Ein- und Ausgabedatensätze zu vereinfachen,\n"
 "werden spezifische Formatierungsparameter in Dialekten zusammengefasst.\n"
-"»excel«: Definiert die üblichen Eigenschaften einer durch Excel erzeugten CSV-Datei.\n"
+"»excel«: Definiert die üblichen Eigenschaften einer durch Excel erzeugten "
+"CSV-Datei.\n"
 "»sniffer«: Definiert das Format einer CSV-Datei.\n"
-"»excel-tab«: Definiert die üblichen Eigenschaften einer durch Excel erzeugten\n"
+"»excel-tab«: Definiert die üblichen Eigenschaften einer durch Excel "
+"erzeugten\n"
 "tabulatorgetrennten Datei."
 
 #: src/gui/_dialogs.py:179
@@ -1081,27 +1092,46 @@ msgstr "Ein einzelnes Zeichen zum Trennen der einzelnen Felder."
 
 #: src/gui/_dialogs.py:181
 msgid "Doublequote"
-msgstr ""
+msgstr "Doppelte Anführungsstriche"
 
 #: src/gui/_dialogs.py:182
-msgid "Controls how instances of quotechar appearing inside a field should be themselves be quoted. When True, the character is doubled. When False, the escapechar is used as a prefix to the quotechar."
+msgid ""
+"Controls how instances of quotechar appearing inside a field should be "
+"themselves be quoted. When True, the character is doubled. When False, the "
+"escapechar is used as a prefix to the quotechar."
 msgstr ""
+"Kontrolliert, wie Anführungszeichen innerhalb eines Felds angegeben werden. "
+"Wenn der Wert gesetzt ist, wird das Anführungszeichen verdoppelt. "
+"Andernfalls wird das Escape-Zeichen als Präfix des Anführungszeichens "
+"gesetzt."
 
 #: src/gui/_dialogs.py:186
 msgid "Escape character"
 msgstr "Escape-Zeichen"
 
 #: src/gui/_dialogs.py:187
-msgid "A one-character string used by the writer to escape the delimiter if quoting is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, the escapechar removes any special meaning from the following character."
+msgid ""
+"A one-character string used by the writer to escape the delimiter if quoting "
+"is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, "
+"the escapechar removes any special meaning from the following character."
 msgstr ""
+"Ein Text der Länge 1, der das Präfix  vor dem Zellbegrenzungszeichen "
+"darstellt, wenn Zitatstil auf QUOTE_NONE gesetzt ist, andernfalls das "
+"Zitatzeichen. Beim Lesen entfernt das Zellbegrenzungszeichen jede spezielle "
+"Bedeutung des Folgezeichens."
 
 #: src/gui/_dialogs.py:192
 msgid "Quote character"
 msgstr "Zitatzeichen"
 
 #: src/gui/_dialogs.py:193
-msgid "A one-character string used to quote fields containing special characters, such as the delimiter or quotechar, or which contain new-line characters."
+msgid ""
+"A one-character string used to quote fields containing special characters, "
+"such as the delimiter or quotechar, or which contain new-line characters."
 msgstr ""
+"Ein Text der Länge 1, der als Zitier-Präfix für Felder dient, die "
+"Sonderzeichen enthalten wie etwa Zellbegrenzungszeichen, Zitierzeichen oder "
+"Zeilenumbrüche."
 
 #: src/gui/_dialogs.py:196
 msgid "Quoting style"
@@ -1116,8 +1146,12 @@ msgid "Header present"
 msgstr "Kopfzeile vorhanden"
 
 #: src/gui/_dialogs.py:199
-msgid "Analyze the CSV file and treat the first row as strings if it appears to be a series of column headers."
-msgstr "Die CSV-Datei analysieren und die erste Zeile als Zeichenkette annehmen, falls sie eine Reihe von Spalten-Kopfzeilen zu sein scheint."
+msgid ""
+"Analyze the CSV file and treat the first row as strings if it appears to be "
+"a series of column headers."
+msgstr ""
+"Die CSV-Datei analysieren und die erste Zeile als Zeichenkette annehmen, "
+"falls sie eine Reihe von Spalten-Kopfzeilen zu sein scheint."
 
 #: src/gui/_dialogs.py:201
 msgid "Skip initial space"
@@ -1125,7 +1159,9 @@ msgstr "Führende Leerzeichen überspringen"
 
 #: src/gui/_dialogs.py:202
 msgid "When True, whitespace immediately following the delimiter is ignored."
-msgstr "Wenn aktiviert, werden unmittelbar auf den Trenner folgende Leerzeichen ignoriert."
+msgstr ""
+"Wenn aktiviert, werden unmittelbar auf den Trenner folgende Leerzeichen "
+"ignoriert."
 
 #: src/gui/_dialogs.py:383
 msgid "{} unknown."
@@ -1293,15 +1329,22 @@ msgstr "{nele} Elemente verarbeitet. Drücken Sie <Esc> zum Abbrechen."
 
 #: src/actions/_grid_actions.py:102
 msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
-msgstr "{nele} Elemente von {totalele} Elementen verarbeitet. Drücken Sie <Esc> zum Abbrechen."
+msgstr ""
+"{nele} Elemente von {totalele} Elementen verarbeitet. Drücken Sie <Esc> zum "
+"Abbrechen."
 
 #: src/actions/_grid_actions.py:166
 msgid "Valid signature found. File is trusted."
-msgstr "Gültige signatur gefunden. Die Datei wurde als vertrauenswürdig erkannt."
+msgstr ""
+"Gültige signatur gefunden. Die Datei wurde als vertrauenswürdig erkannt."
 
 #: src/actions/_grid_actions.py:174
-msgid "File is not properly signed. Safe mode activated. Select File -> Approve to leave safe mode."
-msgstr "Die Datei ist nicht sauber signiert. Der abgesicherte modus wurde aktiviert. Wählen Sie Datei -> Genehmigen, um den abgesicherten Modus zu verlassen."
+msgid ""
+"File is not properly signed. Safe mode activated. Select File -> Approve to "
+"leave safe mode."
+msgstr ""
+"Die Datei ist nicht sauber signiert. Der abgesicherte modus wurde aktiviert. "
+"Wählen Sie Datei -> Genehmigen, um den abgesicherten Modus zu verlassen."
 
 #: src/actions/_grid_actions.py:194
 msgid "File format unsupported."
@@ -1323,7 +1366,7 @@ msgstr "Dateiversion {} wird nicht unterstützt (nicht 0.1)."
 
 #: src/actions/_grid_actions.py:298
 msgid "No section parser present."
-msgstr ""
+msgstr "Kein Abschnitts-Parser verfügbar."
 
 #: src/actions/_grid_actions.py:367
 msgid "Error signing file. File is not signed."
@@ -1367,19 +1410,24 @@ msgstr "Spalten"
 
 #: src/actions/_grid_actions.py:698
 msgid "Import cell overflow missing"
-msgstr ""
+msgstr "Zellüberlauf beim Import fehlt"
 
 #: src/actions/_grid_actions.py:700
-msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
-msgstr "Die importierten Daten passen nicht in das Gitter {cause}. Sie wurden abgeschnitten. Verwenden Sie ein größeres Gitter für einen vollständigen Import."
+msgid ""
+"The imported data did not fit into the grid {cause}. It has been truncated. "
+"Use a larger grid for full import."
+msgstr ""
+"Die importierten Daten passen nicht in das Gitter {cause}. Sie wurden "
+"abgeschnitten. Verwenden Sie ein größeres Gitter für einen vollständigen "
+"Import."
 
 #: src/actions/_grid_actions.py:709
 msgid "s"
-msgstr "s"
+msgstr "n"
 
 #: src/actions/_grid_actions.py:711
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
-msgstr ""
+msgstr "{ncells} Zelle{plural} bei Zelle {topleft} eingefügt"
 
 #: src/actions/_grid_actions.py:746
 msgid "Pasting cells... "
@@ -1517,7 +1565,8 @@ msgstr "Fehler beim Schreiben der CSV-Datei"
 #~ msgstr "Passphrase in der Konfigurationsdatei speichern"
 
 #~ msgid "If False then the passprase is not stored on exit"
-#~ msgstr "Wenn deaktiviert, wird die Passphrase beim Beenden nicht gespeichert"
+#~ msgstr ""
+#~ "Wenn deaktiviert, wird die Passphrase beim Beenden nicht gespeichert"
 
 #~ msgid "Store passphrase in keyring"
 #~ msgstr "Passphrase im Schlüsselbund speichern"
