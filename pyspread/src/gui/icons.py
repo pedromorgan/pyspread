@@ -86,6 +86,7 @@ class _ArtProvider(wx.ArtProvider):
             "InsertChart": _action_path + "chart_line.png",
             "plot": _action_path + "chart_line.png",  # matplotlib plot chart
             "bar": _action_path + "chart_column.png",  # matplotlib bar chart
+            "pie": _action_path + "chart_pie.png",  # matplotlib pie chart
             }
 
     def CreateBitmap(self, artid, client, size):

@@ -65,11 +65,13 @@ class ChartFigure(Figure):
     plot_type_fixed_attrs = {
         "plot": ["ydata"],
         "bar": ["left", "height"],
+        "pie": ["x"],
     }
 
     plot_type_xy_mapping = {
         "plot": ["xdata", "ydata"],
         "bar": ["left", "height"],
+        "pie": ["labels", "x"],
     }
 
     def __init__(self, *attributes):

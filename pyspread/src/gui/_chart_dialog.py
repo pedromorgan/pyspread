@@ -501,6 +501,28 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     ]
 
 
+class PieAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides pie series attributes in multiple boxed panels"""
+
+    # Data for pie plot
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "name": (_("Series name"), StringEditor, ""),
+        "x": (_("Data series"), StringEditor, ""),
+        "labels": (_("Labels"), StringEditor, ""),
+        "shadow": (_("Shadow"), BoolEditor, False),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["x"]),
+        (_("Pie"), ["labels", "shadow"]),
+    ]
+
+
 class FigureAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides figure attributes in multiple boxed panels"""
 
@@ -531,6 +553,7 @@ class SeriesPanel(wx.Panel):
     plot_types = [
         {"type": "plot", "panel_class": PlotAttributesPanel},
         {"type": "bar", "panel_class": BarAttributesPanel},
+        {"type": "pie", "panel_class": PieAttributesPanel},
     ]
 
     def __init__(self, grid, series_dict):
@@ -871,10 +894,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
-                  "xlim", "ylim"]
+                  "xlim", "ylim", "x", "labels"]
 
     # String keys need to be put in "
-    string_keys = ["type", "linestyle", "marker"]
+    string_keys = ["type", "linestyle", "marker", "shadow"]
 
     def set_code(self, code):
         """Update widgets from code"""
