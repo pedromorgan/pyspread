@@ -779,6 +779,7 @@ class FigurePanel(wx.Panel):
         self.figure_canvas = self._get_figure_canvas(figure)
 
         self.figure_canvas.SetSize(self.GetSize())
+        figure.subplots_adjust()
 
         self.main_sizer.Add(self.figure_canvas, 1,
                             wx.EXPAND | wx.FIXED_MINSIZE, 0)

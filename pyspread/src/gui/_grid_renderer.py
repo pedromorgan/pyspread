@@ -556,6 +556,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
             figure.set_figwidth(width / dpi)
             figure.set_figheight(height / dpi)
+            figure.subplots_adjust()
 
             figure.set_canvas(FigureCanvas(figure))
             png_stream = StringIO()

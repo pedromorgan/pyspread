@@ -43,9 +43,12 @@ Provides:
 import base64
 import bz2
 import os
+from cStringIO import StringIO
 
 import wx
 import wx.html
+
+from matplotlib.figure import Figure
 
 import lib.i18n as i18n
 from src.sysvars import get_help_path
@@ -354,9 +357,25 @@ class ClipboardActions(Actions):
             tab = self.grid.current_table
             result = self.grid.code_array[bb_top, bb_left, tab]
 
-            if type(result) is wx._gdi.Bitmap:
-                # the result is a bitmap
+            if isinstance(result, wx._gdi.Bitmap):
+                # The result is a wx.Bitmap. Return it.
                 return result
+
+            elif isinstance(result, Figure):
+                # The result is a matplotlib figure
+                # Therefore, an svg xml string is returned
+
+                # Save svg to file like object svg_io
+                svg_io = StringIO()
+                result.savefig(svg_io, format='svg')
+
+                # Rewind the file like object
+                svg_io.seek(0)
+
+                svgdata = svg_io.getvalue()
+                svg_io.close()
+
+                return svgdata
 
         # So we have result strings to be returned
         getter = self._get_result_string
