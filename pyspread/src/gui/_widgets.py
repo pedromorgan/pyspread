@@ -649,7 +649,10 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
     """"The line for entering cell code"""
 
     def __init__(self, parent, id=-1, *args, **kwargs):
+        kwargs["style"] = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE
         wx.TextCtrl.__init__(self, parent, id, *args, **kwargs)
+
+        self.SetSize((700, 25))
 
         self.parent = parent
         self.ignore_changes = False
@@ -699,6 +702,8 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
                 # Ignore <Ctrl> + <Enter> and Quote content
                 if event.ControlDown():
                     self.SetValue('"' + self.GetValue() + '"')
+
+                return
 
         event.Skip()
 

@@ -101,7 +101,8 @@ class MainWindow(wx.Frame, EventMixin):
         self.attributes_toolbar = AttributesToolbar(self, -1)
 
         # Entry line
-        self.entry_line = EntryLine(self, style=wx.TE_PROCESS_ENTER)
+        self.entry_line = EntryLine(self, style=wx.TE_PROCESS_ENTER |
+                                                wx.TE_MULTILINE)
 
         # Main grid
 
@@ -188,36 +189,35 @@ class MainWindow(wx.Frame, EventMixin):
         # Add the toolbars to the manager
 
         self._mgr.AddPane(self.macro_toolbar, wx.aui.AuiPaneInfo().
-            Name("macro_toolbar").Caption("Macro Toolbar").
+            Name("macro_toolbar").Caption(_("Macro Toolbar")).
             ToolbarPane().Top().Row(0).CloseButton(False).
             LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.main_toolbar, wx.aui.AuiPaneInfo().
-            Name("main_window_toolbar").Caption("Main Toolbar").
+            Name("main_window_toolbar").Caption(_("Main Toolbar")).
             ToolbarPane().Top().Row(0).CloseButton(False).
             LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.find_toolbar, wx.aui.AuiPaneInfo().
-            Name("find_toolbar").Caption("Find").
+            Name("find_toolbar").Caption(_("Find")).
             ToolbarPane().Top().Row(1).MaximizeButton(False).
             LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.attributes_toolbar, wx.aui.AuiPaneInfo().
-            Name("attributes_toolbar").Caption("Cell Attributes").
+            Name("attributes_toolbar").Caption(_("Cell Attributes")).
             ToolbarPane().Top().Row(1).MaximizeButton(False).
             LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.table_choice, wx.aui.AuiPaneInfo().
-            Name("table_choice").Caption("Table choice").
+            Name("table_choice").Caption(_("Table choice")).
             ToolbarPane().MaxSize((50, 50)).Row(2).
             Top().CloseButton(False).MaximizeButton(False).
             LeftDockable(True).RightDockable(True))
 
         self._mgr.AddPane(self.entry_line, wx.aui.AuiPaneInfo().
-            Name("entry_line").Caption("Entry line").
-            ToolbarPane().MinSize((10, 10)).Row(2).
-            Top().CloseButton(False).MaximizeButton(False).
-            LeftDockable(True).RightDockable(True))
+            Name("entry_line").Caption(_("Entry line")).
+            MinSize((10, 10)).Row(2).CaptionVisible(False).Gripper(True).
+            Top().CloseButton(False).MaximizeButton(True))
 
         # Load perspective from config
         window_layout = config["window_layout"]

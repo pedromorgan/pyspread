@@ -40,8 +40,6 @@ from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
 from _chart_dialog import ChartDialog
 
-from src.config import config
-
 import src.lib.i18n as i18n
 
 import src.lib.xrect as xrect
@@ -66,6 +64,9 @@ class Grid(wx.grid.Grid, EventMixin):
         dimensions = kwargs.pop("dimensions")
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
+
+        # Set multi line editor
+        self.SetDefaultEditor(wx.grid.GridCellAutoWrapStringEditor())
 
         # Create new grid
         self.code_array = CodeArray(dimensions)
@@ -342,9 +343,9 @@ class GridCellEventHandlers(object):
     def OnCellText(self, event):
         """Text entry event handler"""
 
-        key = self.grid.actions.cursor
+        row, col, _ = self.grid.actions.cursor
 
-        self.grid.actions.set_code(key, event.code)
+        self.grid.GetTable().SetValue(row, col, event.code)
 
         event.Skip()
 
@@ -572,17 +573,9 @@ class GridCellEventHandlers(object):
     def _update_entry_line(self, key):
         """Updates the entry line"""
 
-        cell_code = self.grid.code_array(key)
+        cell_code = self.grid.GetTable().GetValue(*key)
 
-        # Do not display anything if there is no cell code, i. e. it is None
-        # Also do not display anything if there is too much code because
-        # wx.TextCtrl can only handle up to max_textctrl_length characters
-
-        if cell_code is None or \
-           len(cell_code) < int(config["max_textctrl_length"]):
-
-            post_command_event(self.grid, self.grid.EntryLineMsg,
-                               text=cell_code)
+        post_command_event(self.grid, self.grid.EntryLineMsg, text=cell_code)
 
     def _update_attribute_toolbar(self, key):
         """Updates the attribute toolbar"""
