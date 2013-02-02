@@ -50,7 +50,7 @@ def object2code(key, code):
         else:
             code = False
 
-    elif key in ["xlabel", "ylabel", "name"]:
+    elif key in ["xlabel", "ylabel", "label"]:
         code = repr(code)
 
     else:
@@ -106,13 +106,19 @@ class ChartFigure(Figure):
             if key in axes_data and axes_data[key]:
                 key2setter[key](axes_data[key])
 
+    def _setup_legend(self, axes_data):
+        """Sets up legend for drawing chart"""
+
+        if "legend" in axes_data and axes_data["legend"]:
+            self.__axes.legend()
+
     def draw_chart(self):
         """Plots chart from self.attributes"""
 
         if not hasattr(self, "attributes"):
             return
 
-        # The first element is always aaxes data
+        # The first element is always axes data
         self._setup_axes(self.attributes[0])
 
         for attribute in self.attributes[1:]:
@@ -143,3 +149,6 @@ class ChartFigure(Figure):
                 # Draw series to axes
                 chart_method = getattr(self.__axes, chart_type_string)
                 chart_method(*fixed_attrs, **series)
+
+        # The legend has to be set up after all series are drawn
+        self._setup_legend(self.attributes[0])

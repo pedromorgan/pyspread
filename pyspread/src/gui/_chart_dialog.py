@@ -453,7 +453,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "name": (_("Series name"), StringEditor, ""),
+        "label": (_("Series label"), StringEditor, ""),
         "xdata":  (_("X"), StringEditor, ""),
         "ydata":  (_("Y"), StringEditor, ""),
         "linestyle":  (_("Style"), LineStyleEditor, '-'),
@@ -469,7 +469,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Data"), ["xdata", "ydata"]),
+        (_("Data"), ["label", "xdata", "ydata"]),
         (_("Line"), ["linestyle", "linewidth", "color"]),
         (_("Marker"), ["marker", "markersize", "markerfacecolor",
                        "markeredgecolor"]),
@@ -483,7 +483,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "name": (_("Series name"), StringEditor, ""),
+        "label": (_("Series label"), StringEditor, ""),
         "left": (_("Left positions"), StringEditor, ""),
         "height": (_("Bar heights"), StringEditor, ""),
         "width": (_("Bar widths"), StringEditor, ""),
@@ -496,7 +496,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Data"), ["left", "height", "width", "bottom"]),
+        (_("Data"), ["label", "left", "height", "width", "bottom"]),
         (_("Bar"), ["color", "edgecolor"]),
     ]
 
@@ -508,7 +508,7 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "name": (_("Series name"), StringEditor, ""),
+        "label": (_("Series label"), StringEditor, ""),
         "x": (_("Data series"), StringEditor, ""),
         "labels": (_("Labels"), StringEditor, ""),
         "shadow": (_("Shadow"), BoolEditor, False),
@@ -518,7 +518,7 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Data"), ["x"]),
+        (_("Data"), ["label", "x"]),
         (_("Pie"), ["labels", "shadow"]),
     ]
 
@@ -532,10 +532,11 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
     default_data = {
         "xlabel": (_("Label"), StringEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
-        "xscale": (_("Log"), BoolEditor, False),
+        "xscale": (_("Log. scale"), BoolEditor, False),
         "ylabel": (_("Label"), StringEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
-        "yscale": (_("Log"), BoolEditor, False),
+        "yscale": (_("Log. scale"), BoolEditor, False),
+        "legend": (_("Legend"), BoolEditor, False),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -544,6 +545,7 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
     boxes = [
         (_("X-Axis"), ["xlabel", "xlim", "xscale"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
+        (_("Legend"), ["legend"]),
     ]
 
 
@@ -959,6 +961,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                         code = '"log"'
                     else:
                         code = '"linear"'
+
+                elif key in ["legend"]:
+                    if code:
+                        code = '1'
+                    else:
+                        code = '0'
 
                 if not code:
                     code = 'u""'
