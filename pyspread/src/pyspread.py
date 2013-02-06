@@ -38,12 +38,14 @@ Provides
 """
 
 import sys
-from sysvars import get_program_path
 import optparse
 
+import wx
+__ = wx.App()  # Windows Hack
+
+from sysvars import get_program_path
 import lib.i18n as i18n
 
-import wx
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
