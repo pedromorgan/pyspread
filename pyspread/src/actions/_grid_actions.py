@@ -1054,8 +1054,10 @@ class GridActions(Actions):
 
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
-            self.main_window.table_choice.SetMax(newtable + 1)
-            self.main_window.table_choice.SetValue(newtable)
+            
+            # Change value of entry_line and table choice
+            post_command_event(self.main_window, self.TableChangedMsg,
+                               table=newtable)
 
             # Reset row heights and column widths by zooming
 

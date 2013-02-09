@@ -40,7 +40,7 @@ from src.config import config
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
-from _widgets import EntryLinePanel, StatusBar, TableChoiceIntCtrl
+from _widgets import EntryLineToolbarPanel, StatusBar
 
 from src.lib.clipboard import Clipboard
 
@@ -101,7 +101,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.attributes_toolbar = AttributesToolbar(self, -1)
 
         # Entry line
-        self.entry_line_panel = EntryLinePanel(self, -1)
+        self.entry_line_panel = EntryLineToolbarPanel(self, -1)
         
         # Main grid
 
@@ -112,9 +112,6 @@ class MainWindow(wx.Frame, EventMixin):
         )
 
         self.grid = Grid(self, -1, dimensions=dimensions)
-
-        # IntCtrl for table choice
-        self.table_choice = TableChoiceIntCtrl(self, dimensions[2])
 
         # Clipboard
         self.clipboard = Clipboard()
@@ -167,7 +164,6 @@ class MainWindow(wx.Frame, EventMixin):
                                                        _("Format toolbar")),
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
             (self.entry_line_panel, "entry_line_panel", _("Entry line")),
-            (self.table_choice, "table_choice", _("Table choice")),
         ]
 
         for toolbar, pane_name, toggle_label in toggles:
@@ -206,12 +202,6 @@ class MainWindow(wx.Frame, EventMixin):
             Name("attributes_toolbar").Caption(_("Cell Attributes")).
             ToolbarPane().Top().Row(1).MaximizeButton(False).
             LeftDockable(False).RightDockable(False))
-
-        self._mgr.AddPane(self.table_choice, wx.aui.AuiPaneInfo().
-            Name("table_choice").Caption(_("Table choice")).
-            ToolbarPane().MaxSize((50, 50)).Row(2).
-            Top().CloseButton(False).MaximizeButton(False).
-            LeftDockable(True).RightDockable(True))
 
         self._mgr.AddPane(self.entry_line_panel, wx.aui.AuiPaneInfo().
             Name("entry_line_panel").Caption(_("Entry line")).
@@ -268,8 +258,6 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnFindToolbarToggle)
         self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
-        self.Bind(self.EVT_CMD_TABLECHOICE_TOGGLE,
-                  handlers.OnTableChoiceToggle)
 
         # File events
 
@@ -526,15 +514,6 @@ class MainWindowEventHandlers(object):
         entry_line_panel = self.main_window._mgr.GetPane("entry_line_panel")
 
         self._toggle_pane(entry_line_panel)
-
-        event.Skip()
-
-    def OnTableChoiceToggle(self, event):
-        """Table choice toggle event handler"""
-
-        table_choice = self.main_window._mgr.GetPane("table_choice")
-
-        self._toggle_pane(table_choice)
 
         event.Skip()
 

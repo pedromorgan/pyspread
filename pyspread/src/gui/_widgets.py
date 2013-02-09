@@ -50,6 +50,7 @@ import wx.stc as stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
 
 import src.lib.i18n as i18n
+from src.config import config
 
 from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
 from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
@@ -645,6 +646,37 @@ class BitmapToggleButton(wx.BitmapButton):
 # end of class BitmapToggleButton
 
 
+class EntryLineToolbarPanel(wx.Panel):
+    """Panel that contains an EntryLinePanel and a TableChoiceIntCtrl"""
+    
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        # Panel with EntryLine and button
+        self.entry_line_panel = EntryLinePanel(self, parent, -1)
+        
+        # IntCtrl for table choice
+        self.table_choice = TableChoiceIntCtrl(self, parent, 
+                                               config["grid_tables"])
+        
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+
+        main_sizer.Add(self.entry_line_panel, 1, wx.ALL | wx.EXPAND, 1)
+        main_sizer.Add(self.table_choice, 1, wx.ALL | wx.EXPAND, 1)
+
+        main_sizer.AddGrowableRow(0)
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+        
+# end of class EntryLineToolbarPanel
+
+
 class EntryLinePanel(wx.Panel):
     """Panel that contains an EntryLine and a bitmap toggle button
 
@@ -653,12 +685,12 @@ class EntryLinePanel(wx.Panel):
     
     """
     
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, main_window, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         
-        self.entry_line = EntryLine(self, parent, style=wx.TE_PROCESS_ENTER | 
-                                                        wx.TE_MULTILINE)
+        self.entry_line = EntryLine(self, main_window,
+                                style=wx.TE_PROCESS_ENTER | wx.TE_MULTILINE)
         self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1))
         self.__do_layout()
 
@@ -678,7 +710,8 @@ class EntryLinePanel(wx.Panel):
 # end of class EntryLinePanel
 
 
-class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
+class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin, 
+                GridEventMixin):
     """"The line for entering cell code"""
 
     def __init__(self, parent, main_window, id=-1, *args, **kwargs):
@@ -697,6 +730,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
 
         self.Bind(wx.EVT_TEXT, self.OnText)
         self.Bind(wx.EVT_CHAR, self.OnChar)
+        self.main_window.Bind(self.EVT_CMD_TABLE_CHANGED, self.OnTableChanged)
 
     def OnContentChange(self, event):
         """Event handler for updating the content"""
@@ -740,6 +774,19 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
                 return
 
         event.Skip()
+        
+    def OnTableChanged(self, event):
+        """Table changed event handler"""
+        
+        current_cell = self.main_window.grid.actions.cursor
+        current_cell_code = self.main_window.grid.code_array(current_cell)
+        
+        if current_cell_code is None:
+            self.SetValue(u"")
+        else:
+            self.SetValue(current_cell_code)
+        
+        event.Skip()
 
 # end of class EntryLine
 
@@ -765,8 +812,9 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin):
 class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     """ComboBox for choosing the current grid table"""
 
-    def __init__(self, parent, no_tabs):
+    def __init__(self, parent, main_window, no_tabs):
         self.parent = parent
+        self.main_window = main_window
         self.no_tabs = no_tabs
 
         IntCtrl.__init__(self, parent, limited=True, allow_long=True)
@@ -783,7 +831,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         self.Bind(EVT_INT, self.OnInt)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
-        self.parent.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
+        self.main_window.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
+        self.main_window.Bind(self.EVT_CMD_TABLE_CHANGED, self.OnTableChanged)
 
     def change_max(self, no_tabs):
         """Updates to a new number of tables
@@ -845,6 +894,13 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         self.change_max(event.shape[2])
 
+        event.Skip()
+
+    def OnTableChanged(self, event):
+        """Table changed event handler"""
+        
+        self.SetValue(event.table)        
+        
         event.Skip()
 
 # end of class TableChoiceIntCtrl
