@@ -645,19 +645,53 @@ class BitmapToggleButton(wx.BitmapButton):
 # end of class BitmapToggleButton
 
 
+class EntryLinePanel(wx.Panel):
+    """Panel that contains an EntryLine and a bitmap toggle button
+
+    The button changes the state of the grid. If pressed, a grid selection
+    is inserted into the EntryLine.    
+    
+    """
+    
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+        
+        self.entry_line = EntryLine(self, parent, style=wx.TE_PROCESS_ENTER | 
+                                                        wx.TE_MULTILINE)
+        self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1))
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+
+        main_sizer.Add(self.entry_line, 1, wx.ALL | wx.EXPAND, 1)
+        main_sizer.Add(self.selection_toggle_button, 1, wx.ALL | wx.EXPAND, 1)
+
+        main_sizer.AddGrowableRow(0)
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+        
+# end of class EntryLinePanel
+
+
 class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
     """"The line for entering cell code"""
 
-    def __init__(self, parent, id=-1, *args, **kwargs):
+    def __init__(self, parent, main_window, id=-1, *args, **kwargs):
         kwargs["style"] = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE
         wx.TextCtrl.__init__(self, parent, id, *args, **kwargs)
 
         self.SetSize((700, 25))
 
         self.parent = parent
+        self.main_window = main_window
         self.ignore_changes = False
 
-        parent.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
+        main_window.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
 
         self.SetToolTip(wx.ToolTip("Enter Python expression here."))
 
@@ -697,7 +731,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
 
             if keycode == 13:
                 # <Enter> pressed --> Focus on grid
-                self.parent.grid.SetFocus()
+                self.main_window.grid.SetFocus()
 
                 # Ignore <Ctrl> + <Enter> and Quote content
                 if event.ControlDown():

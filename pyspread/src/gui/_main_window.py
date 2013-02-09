@@ -40,7 +40,7 @@ from src.config import config
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
-from _widgets import EntryLine, StatusBar, TableChoiceIntCtrl
+from _widgets import EntryLinePanel, StatusBar, TableChoiceIntCtrl
 
 from src.lib.clipboard import Clipboard
 
@@ -101,9 +101,8 @@ class MainWindow(wx.Frame, EventMixin):
         self.attributes_toolbar = AttributesToolbar(self, -1)
 
         # Entry line
-        self.entry_line = EntryLine(self, style=wx.TE_PROCESS_ENTER |
-                                                wx.TE_MULTILINE)
-
+        self.entry_line_panel = EntryLinePanel(self, -1)
+        
         # Main grid
 
         dimensions = (
@@ -167,7 +166,7 @@ class MainWindow(wx.Frame, EventMixin):
             (self.attributes_toolbar, "attributes_toolbar",
                                                        _("Format toolbar")),
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
-            (self.entry_line, "entry_line", _("Entry line")),
+            (self.entry_line_panel, "entry_line_panel", _("Entry line")),
             (self.table_choice, "table_choice", _("Table choice")),
         ]
 
@@ -214,8 +213,8 @@ class MainWindow(wx.Frame, EventMixin):
             Top().CloseButton(False).MaximizeButton(False).
             LeftDockable(True).RightDockable(True))
 
-        self._mgr.AddPane(self.entry_line, wx.aui.AuiPaneInfo().
-            Name("entry_line").Caption(_("Entry line")).
+        self._mgr.AddPane(self.entry_line_panel, wx.aui.AuiPaneInfo().
+            Name("entry_line_panel").Caption(_("Entry line")).
             MinSize((10, 10)).Row(2).CaptionVisible(False).Gripper(True).
             Top().CloseButton(False).MaximizeButton(True))
 
@@ -524,9 +523,9 @@ class MainWindowEventHandlers(object):
     def OnEntryLineToggle(self, event):
         """Entry line toggle event handler"""
 
-        entry_line = self.main_window._mgr.GetPane("entry_line")
+        entry_line_panel = self.main_window._mgr.GetPane("entry_line_panel")
 
-        self._toggle_pane(entry_line)
+        self._toggle_pane(entry_line_panel)
 
         event.Skip()
 
