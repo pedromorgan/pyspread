@@ -710,7 +710,12 @@ class GridEventHandlers(object):
 
         keycode = event.GetKeyCode()
 
-        if event.ControlDown():
+        # If in selection mode and <Enter> is pressed cancel it
+        if not self.grid.IsEditable() and keycode == 13:
+            ## TODO!
+            pass
+
+        elif event.ControlDown():
             if keycode == 388:
                 # Ctrl + + pressed
                 post_command_event(self.grid, self.grid.ZoomInMsg)

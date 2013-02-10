@@ -780,8 +780,13 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                            newtable=self.last_table)
         wx.Yield()
         sel_start, sel_stop = self.last_selection
-        self.Replace(sel_start, sel_stop, repr(event.selection))
-        self.last_selection = sel_start, sel_start + len(repr(event.selection))
+
+        shape = self.main_window.grid.code_array.shape
+        selection_string = event.selection.get_access_string(shape,
+                                                             current_table)
+
+        self.Replace(sel_start, sel_stop, selection_string)
+        self.last_selection = sel_start, sel_start + len(selection_string)
 
         post_command_event(self, self.GridActionTableSwitchMsg,
                            newtable=current_table)

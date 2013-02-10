@@ -274,3 +274,57 @@ class Selection(object):
             bb_right = shape[1]
 
         return ((bb_top, bb_left), (bb_bottom, bb_right))
+
+    def get_access_string(self, shape, table):
+        """Returns a string, with which the selection can be accessed
+
+        Parameters
+        ----------
+        shape: 3-tuple of Integer
+        \tShape of grid, for which the generated keys are valid
+        table: Integer
+        \tThird component of all returned keys. Must be in dimensions
+
+        """
+
+        rows, columns, tables = shape
+
+        # Negative dimensions cannot be
+        assert all(dim > 0 for dim in shape)
+
+        # Current table has to be in dimensions
+        assert 0 <= table < tables
+
+        string_list = []
+
+        # Block selections
+        templ = "[(r, c, {}) for r in xrange({}, {}) for c in xrange({}, {})]"
+        for (top, left), (bottom, right) in izip(self.block_tl, self.block_br):
+            string_list += [templ.format(table, top, bottom + 1,
+                                         left, right + 1)]
+
+        # Fully selected rows
+        template = "[({}, c, {}) for c in xrange({})]"
+        for row in self.rows:
+            string_list += [template.format(row, table, columns)]
+
+        # Fully selected columns
+        template = "[(r, {}, {}) for r in xrange({})]"
+        for column in self.cols:
+            string_list += [template.format(column, table, rows)]
+
+        # Single cells
+        for row, column in self.cells:
+            string_list += [repr([(row, column, table)])]
+
+        key_string = " + ".join(string_list)
+
+        if len(string_list) == 0:
+            return ""
+
+        elif len(self.cells) == 1 and len(string_list) == 1:
+            return "S[{}]".format(string_list[0][1:-1])
+
+        else:
+            template = "[S[key] for key in {} if S[key] is not None]"
+            return template.format(key_string)
