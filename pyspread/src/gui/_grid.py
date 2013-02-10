@@ -142,6 +142,7 @@ class Grid(wx.grid.Grid, EventMixin):
         self.GetGridWindow().Bind(wx.EVT_MOTION, handlers.OnMouseMotion)
         self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, handlers.OnMouseClick)
         self.Bind(wx.EVT_SCROLLWIN, handlers.OnScroll)
+        self.Bind(wx.grid.EVT_GRID_RANGE_SELECT, handlers.OnRangeSelected)
 
         # Context menu
 
@@ -189,11 +190,11 @@ class Grid(wx.grid.Grid, EventMixin):
         self.Bind(wx.grid.EVT_GRID_CMD_SELECT_CELL, c_handlers.OnCellSelected)
 
         # Grid edit mode events
-        
+
         main_window.Bind(self.EVT_CMD_ENTER_SELECTION_MODE,
                          handlers.OnEnterSelectionMode)
         main_window.Bind(self.EVT_CMD_EXIT_SELECTION_MODE,
-                         handlers.OnExitSelectionMode)          
+                         handlers.OnExitSelectionMode)
 
         # Grid view events
 
@@ -602,6 +603,11 @@ class GridCellEventHandlers(object):
     def OnCellSelected(self, event):
         """Cell selection event handler"""
 
+        # If in selection mode do nothing
+        # This prevents the current cell from changing
+        if not self.grid.IsEditable():
+            return
+
         key = row, col, tab = event.Row, event.Col, self.grid.current_table
 
         # Is the cell merged then go to merging cell
@@ -758,6 +764,14 @@ class GridEventHandlers(object):
 
         event.Skip()
 
+    def OnRangeSelected(self, event):
+        """Event handler for grid selection"""
+
+        # If grid editing is disabled then pyspread is in selection mode
+        if not self.grid.IsEditable():
+            post_command_event(self.grid, self.grid.SelectionMsg,
+                               selection=self.grid.selection)
+
     # Grid view events
 
     def OnDisplayGoToCellDialog(self, event):
@@ -779,14 +793,14 @@ class GridEventHandlers(object):
 
     def OnEnterSelectionMode(self, event):
         """Event handler for entering selection mode, disables cell edits"""
-        
+
         self.grid.EnableEditing(False)
 
     def OnExitSelectionMode(self, event):
         """Event handler for leaving selection mode, enables cell edits"""
-        
+
         self.grid.EnableEditing(True)
-        
+
     def OnRefreshSelectedCells(self, event):
         """Event handler for refreshing the selected cells via menu"""
 

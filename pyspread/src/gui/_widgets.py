@@ -42,6 +42,7 @@ Provides:
 """
 
 import keyword
+from copy import copy
 
 import wx
 import wx.grid
@@ -648,17 +649,17 @@ class BitmapToggleButton(wx.BitmapButton):
 
 class EntryLineToolbarPanel(wx.Panel):
     """Panel that contains an EntryLinePanel and a TableChoiceIntCtrl"""
-    
+
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         # Panel with EntryLine and button
         self.entry_line_panel = EntryLinePanel(self, parent, -1)
-        
+
         # IntCtrl for table choice
-        self.table_choice = TableChoiceIntCtrl(self, parent, 
+        self.table_choice = TableChoiceIntCtrl(self, parent,
                                                config["grid_tables"])
-        
+
         self.__do_layout()
 
     def __do_layout(self):
@@ -673,29 +674,29 @@ class EntryLineToolbarPanel(wx.Panel):
         self.SetSizer(main_sizer)
 
         self.Layout()
-        
+
 # end of class EntryLineToolbarPanel
 
 
-class EntryLinePanel(wx.Panel, GridEventMixin):
+class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
     """Panel that contains an EntryLine and a bitmap toggle button
 
     The button changes the state of the grid. If pressed, a grid selection
-    is inserted into the EntryLine.    
-    
+    is inserted into the EntryLine.
+
     """
-    
+
     def __init__(self, parent, main_window, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.main_window = main_window
-        
+
         self.entry_line = EntryLine(self, main_window,
                                 style=wx.TE_PROCESS_ENTER | wx.TE_MULTILINE)
         self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1))
-        
-        self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)        
-        
+
+        self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)
+
         self.__do_layout()
 
     def __do_layout(self):
@@ -710,27 +711,29 @@ class EntryLinePanel(wx.Panel, GridEventMixin):
         self.SetSizer(main_sizer)
 
         self.Layout()
-        
+
     def OnToggle(self, event):
         """Toggle button event handler"""
 
         if self.selection_toggle_button.GetValue():
+            self.entry_line.last_selection = self.entry_line.GetSelection()
+            self.entry_line.last_selection_string = \
+                                    self.entry_line.GetStringSelection()
+            self.entry_line.last_table = self.main_window.grid.current_table
             self.entry_line.Disable()
             post_command_event(self, self.EnterSelectionModeMsg)
 
         else:
             self.entry_line.Enable()
+            post_command_event(self, self.GridActionTableSwitchMsg,
+                               newtable=self.entry_line.last_table)
             post_command_event(self, self.ExitSelectionModeMsg)
-            
-            selection = self.main_window.grid.selection
-            
-            print selection
-        
+
 # end of class EntryLinePanel
 
 
-class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin, 
-                GridEventMixin):
+class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
+                GridEventMixin, GridActionEventMixin):
     """"The line for entering cell code"""
 
     def __init__(self, parent, main_window, id=-1, *args, **kwargs):
@@ -743,7 +746,14 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
         self.main_window = main_window
         self.ignore_changes = False
 
+        # Store last text selection of self before going into selection mode
+        self.last_selection = None
+        self.last_selection_string = None
+        # The current table has to be stored on entering selection mode
+        self.last_table = None
+
         main_window.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
+        main_window.Bind(self.EVT_CMD_SELECTION, self.OnGridSelection)
 
         self.SetToolTip(wx.ToolTip("Enter Python expression here."))
 
@@ -760,6 +770,21 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
             self.SetValue(event.text)
 
         event.Skip()
+
+    def OnGridSelection(self, event):
+        """Event handler for grid selection in selection mode adds text"""
+
+        current_table = copy(self.main_window.grid.current_table)
+
+        post_command_event(self, self.GridActionTableSwitchMsg,
+                           newtable=self.last_table)
+        wx.Yield()
+        sel_start, sel_stop = self.last_selection
+        self.Replace(sel_start, sel_stop, repr(event.selection))
+        self.last_selection = sel_start, sel_start + len(repr(event.selection))
+
+        post_command_event(self, self.GridActionTableSwitchMsg,
+                           newtable=current_table)
 
     def OnText(self, event):
         """Text event method evals the cell and updates the grid"""
@@ -793,18 +818,18 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 return
 
         event.Skip()
-        
+
     def OnTableChanged(self, event):
         """Table changed event handler"""
-        
+
         current_cell = self.main_window.grid.actions.cursor
         current_cell_code = self.main_window.grid.code_array(current_cell)
-        
+
         if current_cell_code is None:
             self.SetValue(u"")
         else:
             self.SetValue(current_cell_code)
-        
+
         event.Skip()
 
 # end of class EntryLine
@@ -917,9 +942,9 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
     def OnTableChanged(self, event):
         """Table changed event handler"""
-        
-        self.SetValue(event.table)        
-        
+
+        self.SetValue(event.table)
+
         event.Skip()
 
 # end of class TableChoiceIntCtrl

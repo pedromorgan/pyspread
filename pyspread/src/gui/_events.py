@@ -164,9 +164,10 @@ class GridEventMixin(object):
     PasteMsg, EVT_CMD_PASTE = new_command_event()
 
     # Grid edit mode events
-    
+
     EnterSelectionModeMsg, EVT_CMD_ENTER_SELECTION_MODE = new_command_event()
     ExitSelectionModeMsg, EVT_CMD_EXIT_SELECTION_MODE = new_command_event()
+    SelectionMsg, EVT_CMD_SELECTION = new_command_event()
 
     # Grid view events
 
@@ -197,7 +198,7 @@ class GridEventMixin(object):
                                                     new_command_event()
 
     TableChangedMsg, EVT_CMD_TABLE_CHANGED = new_command_event()
-    
+
     InsertBitmapMsg, EVT_CMD_INSERT_BMP = new_command_event()
     LinkBitmapMsg, EVT_CMD_LINK_BMP = new_command_event()
     InsertChartMsg, EVT_CMD_INSERT_CHART = new_command_event()
