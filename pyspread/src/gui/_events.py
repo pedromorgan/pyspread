@@ -163,6 +163,11 @@ class GridEventMixin(object):
     CopyResultMsg, EVT_CMD_COPY_RESULT = new_command_event()
     PasteMsg, EVT_CMD_PASTE = new_command_event()
 
+    # Grid edit mode events
+    
+    EnterSelectionModeMsg, EVT_CMD_ENTER_SELECTION_MODE = new_command_event()
+    ExitSelectionModeMsg, EVT_CMD_EXIT_SELECTION_MODE = new_command_event()
+
     # Grid view events
 
     RefreshSelectionMsg, EVT_CMD_REFRESH_SELECTION = new_command_event()

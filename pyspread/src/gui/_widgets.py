@@ -677,7 +677,7 @@ class EntryLineToolbarPanel(wx.Panel):
 # end of class EntryLineToolbarPanel
 
 
-class EntryLinePanel(wx.Panel):
+class EntryLinePanel(wx.Panel, GridEventMixin):
     """Panel that contains an EntryLine and a bitmap toggle button
 
     The button changes the state of the grid. If pressed, a grid selection
@@ -688,10 +688,14 @@ class EntryLinePanel(wx.Panel):
     def __init__(self, parent, main_window, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.main_window = main_window
         
         self.entry_line = EntryLine(self, main_window,
                                 style=wx.TE_PROCESS_ENTER | wx.TE_MULTILINE)
         self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1))
+        
+        self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)        
+        
         self.__do_layout()
 
     def __do_layout(self):
@@ -706,6 +710,21 @@ class EntryLinePanel(wx.Panel):
         self.SetSizer(main_sizer)
 
         self.Layout()
+        
+    def OnToggle(self, event):
+        """Toggle button event handler"""
+
+        if self.selection_toggle_button.GetValue():
+            self.entry_line.Disable()
+            post_command_event(self, self.EnterSelectionModeMsg)
+
+        else:
+            self.entry_line.Enable()
+            post_command_event(self, self.ExitSelectionModeMsg)
+            
+            selection = self.main_window.grid.selection
+            
+            print selection
         
 # end of class EntryLinePanel
 

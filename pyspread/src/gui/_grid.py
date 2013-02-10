@@ -188,6 +188,13 @@ class Grid(wx.grid.Grid, EventMixin):
 
         self.Bind(wx.grid.EVT_GRID_CMD_SELECT_CELL, c_handlers.OnCellSelected)
 
+        # Grid edit mode events
+        
+        main_window.Bind(self.EVT_CMD_ENTER_SELECTION_MODE,
+                         handlers.OnEnterSelectionMode)
+        main_window.Bind(self.EVT_CMD_EXIT_SELECTION_MODE,
+                         handlers.OnExitSelectionMode)          
+
         # Grid view events
 
         main_window.Bind(self.EVT_CMD_REFRESH_SELECTION,
@@ -770,6 +777,16 @@ class GridEventHandlers(object):
 
         event.Skip()
 
+    def OnEnterSelectionMode(self, event):
+        """Event handler for entering selection mode, disables cell edits"""
+        
+        self.grid.EnableEditing(False)
+
+    def OnExitSelectionMode(self, event):
+        """Event handler for leaving selection mode, enables cell edits"""
+        
+        self.grid.EnableEditing(True)
+        
     def OnRefreshSelectedCells(self, event):
         """Event handler for refreshing the selected cells via menu"""
 
