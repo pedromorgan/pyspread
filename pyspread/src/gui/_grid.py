@@ -65,6 +65,9 @@ class Grid(wx.grid.Grid, EventMixin):
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
 
+        # Cursor position on entering selection mode
+        self.sel_mode_cursor = None
+
         # Set multi line editor
         self.SetDefaultEditor(wx.grid.GridCellAutoWrapStringEditor())
 
@@ -606,6 +609,7 @@ class GridCellEventHandlers(object):
         # If in selection mode do nothing
         # This prevents the current cell from changing
         if not self.grid.IsEditable():
+            event.Skip()
             return
 
         key = row, col, tab = event.Row, event.Col, self.grid.current_table
@@ -710,7 +714,7 @@ class GridEventHandlers(object):
 
         keycode = event.GetKeyCode()
 
-        # If in selection mode and <Enter> is pressed cancel it
+        # If in selection mode and <Enter> is pressed end it
         if not self.grid.IsEditable() and keycode == 13:
             ## TODO!
             pass
@@ -774,8 +778,14 @@ class GridEventHandlers(object):
 
         # If grid editing is disabled then pyspread is in selection mode
         if not self.grid.IsEditable():
-            post_command_event(self.grid, self.grid.SelectionMsg,
-                               selection=self.grid.selection)
+            selection = self.grid.selection
+            row, col, __ = self.grid.sel_mode_cursor
+            if (row, col) in selection:
+                self.grid.ClearSelection()
+            else:
+                self.grid.SetGridCursor(row, col)
+                post_command_event(self.grid, self.grid.SelectionMsg,
+                                   selection=selection)
 
     # Grid view events
 
@@ -799,11 +809,15 @@ class GridEventHandlers(object):
     def OnEnterSelectionMode(self, event):
         """Event handler for entering selection mode, disables cell edits"""
 
+        self.grid.sel_mode_cursor = list(self.grid.actions.cursor)
+        self.grid.EnableDragGridSize(False)
         self.grid.EnableEditing(False)
 
     def OnExitSelectionMode(self, event):
         """Event handler for leaving selection mode, enables cell edits"""
 
+        self.grid.sel_mode_cursor = None
+        self.grid.EnableDragGridSize(True)
         self.grid.EnableEditing(True)
 
     def OnRefreshSelectedCells(self, event):
