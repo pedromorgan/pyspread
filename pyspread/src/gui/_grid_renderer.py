@@ -31,7 +31,6 @@ Provides
 
 """
 
-from cStringIO import StringIO
 from math import pi, sin, cos
 import types
 
@@ -40,10 +39,9 @@ import wx.grid
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+from src.lib.charts import fig2bmp
 import src.lib.i18n as i18n
-
 from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
@@ -416,7 +414,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         key = row, col, grid.current_table
         rect = grid.CellToRect(row, col)
-        rect = self._get_merged_rect(grid, key, rect)
+        rect = self.get_merged_rect(grid, key, rect)
 
         # Check if cell is invisible
         if rect is None:
@@ -477,7 +475,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                          pen=wx.WHITE_PEN, brush=wx.WHITE_BRUSH)
         self._draw_cursor(dc, grid, row, col)
 
-    def _get_merged_rect(self, grid, key, rect):
+    def get_merged_rect(self, grid, key, rect):
         """Returns cell rect for normal or merged cells and None for merged"""
 
         row, col, tab = key
@@ -536,37 +534,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         """
 
-        def fig2bmp(figure, width, height, dpi, zoom):
-            """Returns wx.Bitmap from matplotlib chart
-
-            Parameters
-            ----------
-            fig: Object
-            \tMatplotlib figure
-            width: Integer
-            \tImage width in pixels
-            height: Integer
-            \tImage height in pixels
-            dpi = Float
-            \tDC resolution
-
-            """
-
-            dpi *= float(zoom)
-
-            figure.set_figwidth(width / dpi)
-            figure.set_figheight(height / dpi)
-            figure.subplots_adjust()
-
-            figure.set_canvas(FigureCanvas(figure))
-            png_stream = StringIO()
-            figure.savefig(png_stream, format='png', dpi=(dpi))
-
-            png_stream.seek(0)
-            img = wx.ImageFromStream(png_stream, type=wx.BITMAP_TYPE_PNG)
-
-            return wx.BitmapFromImage(img)
-
         crop_rect = wx.Rect(rect.x, rect.y, rect.width - 1, rect.height - 1)
 
         width, height = crop_rect.width, crop_rect.height
@@ -581,7 +548,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         key = (row, col, grid.current_table)
 
-        rect = self._get_merged_rect(grid, key, rect)
+        rect = self.get_merged_rect(grid, key, rect)
         if rect is None:
             # Merged cell --> Draw nothing
             return

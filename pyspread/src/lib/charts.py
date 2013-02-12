@@ -28,14 +28,20 @@ Provides matplotlib figure that are chart templates
 Provides
 --------
 
+* object2code: Returns code for widget from dict object
+* fig2bmp: Returns wx.Bitmap from matplotlib chart
 * ChartFigure: Main chart class
 
 """
 
 from copy import copy
+from cStringIO import StringIO
 import i18n
 
+import wx
+
 from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -57,6 +63,54 @@ def object2code(key, code):
         code = str(code)
 
     return code
+
+
+def fig2bmp(figure, width, height, dpi, zoom):
+    """Returns wx.Bitmap from matplotlib chart
+
+    Parameters
+    ----------
+    fig: Object
+    \tMatplotlib figure
+    width: Integer
+    \tImage width in pixels
+    height: Integer
+    \tImage height in pixels
+    dpi = Float
+    \tDC resolution
+
+    """
+
+    dpi *= float(zoom)
+
+    figure.set_figwidth(width / dpi)
+    figure.set_figheight(height / dpi)
+    figure.subplots_adjust()
+
+    figure.set_canvas(FigureCanvas(figure))
+    png_stream = StringIO()
+    figure.savefig(png_stream, format='png', dpi=(dpi))
+
+    png_stream.seek(0)
+    img = wx.ImageFromStream(png_stream, type=wx.BITMAP_TYPE_PNG)
+
+    return wx.BitmapFromImage(img)
+
+
+def fig2svg(figure):
+    """Returns svg from matplotlib chart"""
+
+    # Save svg to file like object svg_io
+    svg_io = StringIO()
+    figure.savefig(svg_io, format='svg')
+
+    # Rewind the file like object
+    svg_io.seek(0)
+
+    svgdata = svg_io.getvalue()
+    svg_io.close()
+
+    return svgdata
 
 
 class ChartFigure(Figure):

@@ -43,7 +43,6 @@ Provides:
 import base64
 import bz2
 import os
-from cStringIO import StringIO
 
 import wx
 import wx.html
@@ -55,8 +54,8 @@ from src.sysvars import get_help_path
 
 from src.config import config
 from src.lib.__csv import CsvInterface, TxtGenerator
+from src.lib.charts import fig2bmp
 from src.gui._printout import PrintCanvas, Printout
-
 from src.gui._events import post_command_event, EventMixin
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -363,19 +362,16 @@ class ClipboardActions(Actions):
 
             elif isinstance(result, Figure):
                 # The result is a matplotlib figure
-                # Therefore, an svg xml string is returned
+                # Therefore, a wx.Bitmap is returned
+                key = bb_top, bb_left, tab
+                rect = self.grid.CellToRect(bb_top, bb_left)
+                merged_rect = self.grid.grid_renderer.get_merged_rect(
+                                self.grid, key, rect)
+                dpi = float(wx.ScreenDC().GetPPI()[0])
+                zoom = self.grid.grid_renderer.zoom
 
-                # Save svg to file like object svg_io
-                svg_io = StringIO()
-                result.savefig(svg_io, format='svg')
-
-                # Rewind the file like object
-                svg_io.seek(0)
-
-                svgdata = svg_io.getvalue()
-                svg_io.close()
-
-                return svgdata
+                return fig2bmp(result, merged_rect.width, merged_rect.height,
+                               dpi, zoom)
 
         # So we have result strings to be returned
         getter = self._get_result_string
