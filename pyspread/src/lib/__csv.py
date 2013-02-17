@@ -59,9 +59,11 @@ def sniff(filepath):
 
     """
 
-    csvfile = open(filepath, "rb")
-    sample = csvfile.read(config["sniff_size"])
-    csvfile.close()
+    try:
+        csvfile = open(filepath, "rb")
+        sample = csvfile.read(config["sniff_size"])
+    finally:
+        csvfile.close()
 
     sniffer = csv.Sniffer()
     dialect = sniffer.sniff(sample)()
@@ -73,13 +75,15 @@ def sniff(filepath):
 def get_first_line(filepath, dialect):
     """Returns List of first line items of file filepath"""
 
-    csvfile = open(filepath, "rb")
-    csvreader = csv.reader(csvfile, dialect=dialect)
-
-    for first_line in csvreader:
-        break
-
-    csvfile.close()
+    try:    
+        csvfile = open(filepath, "rb")
+        csvreader = csv.reader(csvfile, dialect=dialect)
+    
+        for first_line in csvreader:
+            break
+        
+    finally:
+        csvfile.close()
 
     return first_line
 
@@ -98,34 +102,35 @@ def csv_digest_gen(filepath, dialect, has_header, digest_types):
 
     """
 
-    csvfile = open(filepath, "rb")
-    csvreader = csv.reader(csvfile, dialect=dialect)
-
-    if has_header:
-        # Ignore first line
+    try:
+        csvfile = open(filepath, "rb")
+        csvreader = csv.reader(csvfile, dialect=dialect)
+    
+        if has_header:
+            # Ignore first line
+            for line in csvreader:
+                break
+    
         for line in csvreader:
-            break
-
-    for line in csvreader:
-        digested_line = []
-        for i, ele in enumerate(line):
-            try:
-                digest_key = digest_types[i]
-
-            except IndexError:
-                digest_key = digest_types[0]
-
-            digest = Digest(acceptable_types=[digest_key])
-
-            try:
-                digested_line.append(repr(digest(ele)))
-
-            except Exception, err:
-                digested_line.append(str(err))
-
-        yield digested_line
-
-    csvfile.close()
+            digested_line = []
+            for i, ele in enumerate(line):
+                try:
+                    digest_key = digest_types[i]
+    
+                except IndexError:
+                    digest_key = digest_types[0]
+    
+                digest = Digest(acceptable_types=[digest_key])
+    
+                try:
+                    digested_line.append(repr(digest(ele)))
+    
+                except Exception, err:
+                    digested_line.append(str(err))
+    
+            yield digested_line
+    finally:
+        csvfile.close()
 
 
 def cell_key_val_gen(iterable, shape, topleft=(0, 0)):
@@ -385,13 +390,15 @@ class CsvInterface(StatusBarEventMixin):
     def write(self, iterable):
         """Writes values from iterable into CSV file"""
 
-        csvfile = open(self.path, "wb")
-        csv_writer = csv.writer(csvfile, self.dialect)
-
-        for line in iterable:
-            csv_writer.writerow(line)
-
-        csvfile.close()
+        try:        
+            csvfile = open(self.path, "wb")
+            csv_writer = csv.writer(csvfile, self.dialect)
+    
+            for line in iterable:
+                csv_writer.writerow(line)
+                
+        finally:
+            csvfile.close()
 
 
 class TxtGenerator(StatusBarEventMixin):

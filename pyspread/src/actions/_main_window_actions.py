@@ -54,7 +54,7 @@ from src.sysvars import get_help_path
 
 from src.config import config
 from src.lib.__csv import CsvInterface, TxtGenerator
-from src.lib.charts import fig2bmp
+from src.lib.charts import fig2bmp, fig2svg
 from src.gui._printout import PrintCanvas, Printout
 from src.gui._events import post_command_event, EventMixin
 
@@ -131,7 +131,17 @@ class ExchangeActions(Actions):
             self.main_window.interfaces.display_warning(msg, short_msg)
 
     def _export_csv(self, filepath, data):
-        """CSV import workflow"""
+        """CSV export of code_array results
+        
+        Parameters
+        ----------
+        filepath: String
+        \tPath of export file
+        data: Object
+        \tCode array result object slice, i. e. one object or iterable of
+        \tsuch objects
+        
+        """
 
         # Get csv info
 
@@ -159,10 +169,53 @@ class ExchangeActions(Actions):
             short_msg = _('Error writing CSV file')
             self.main_window.interfaces.display_warning(msg, short_msg)
 
-    def export_file(self, filepath, filterindex, data):
-        """Exports external file. Only CSV supported yet."""
+    def _export_svg_figure(self, filepath, data):
+        """SVG export of single cell that contains a matplotlib figure
+        
+        Parameters
+        ----------
+        filepath: String
+        \tPath of export file
+        data: Matplotlib Figure
+        \tMatplotlib figure that is eported
+        
+        """
+        
+        svg_data = fig2svg(data)
+        
+        try:
+            outfile = open(filepath, "wb")
+            outfile.write(svg_data)
+            
+        except IOError, err:
+            msg = _("The file {} could not be fully written\n \n"
+                    "Error message:\n{}").format(filepath, err)
+            short_msg = _('Error writing SVG file')
+            self.main_window.interfaces.display_warning(msg, short_msg)
+            
+        finally:
+            outfile.close()
 
-        self._export_csv(filepath, data)
+    def export_file(self, filepath, filterindex, data):
+        """Export data for other applications
+        
+        Parameters
+        ----------
+        filepath: String
+        \tPath of export file
+        filterindex: Integer
+        \tIndex of the import filter
+        data: Object
+        \tCode array result object slice, i. e. one object or iterable of
+        \tsuch objects
+        
+        """
+        
+        if filterindex == 0:
+            self._export_csv(filepath, data)
+            
+        elif filterindex == 1:
+            self._export_svg_figure(filepath, data)
 
 
 class PrintActions(Actions):

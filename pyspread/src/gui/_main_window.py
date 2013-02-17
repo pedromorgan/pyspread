@@ -35,6 +35,8 @@ import os
 import wx
 import wx.aui
 
+from matplotlib.figure import Figure
+
 import src.lib.i18n as i18n
 from src.config import config
 
@@ -589,7 +591,8 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
+        wildcard = _("Pyspread file") + " (*.pys)|*.pys|" + \
+                   _("All files") + " (*.*)|*.*"
         message = _("Choose pyspread file to open.")
         style = wx.OPEN | wx.CHANGE_DIR
         filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
@@ -643,7 +646,8 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
+        wildcard = _("Pyspread file") + " (*.pys)|*.pys|" + \
+                   _("All files") + " (*.*)|*.*"
         message = _("Choose filename for saving.")
         style = wx.SAVE | wx.CHANGE_DIR
         filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
@@ -695,7 +699,8 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Csv file (*.*)|*.*|Tab delimited text file (*.*)|*.*")
+        wildcard = _("CSV file") + " (*.*)|*.*|" + \
+                   _("Tab delimited text file") + " (*.*)|*.*"
         message = _("Choose file to import.")
         style = wx.OPEN | wx.CHANGE_DIR
         filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
@@ -731,13 +736,16 @@ class MainWindowEventHandlers(object):
         # Check if no selection is present
 
         selection_bbox = selection.get_bbox()
-
+        
+        wildcard = _("CSV file") + " (*.*)|*.*"
+        
         if selection_bbox is None:
-            # No selection --> Use current screen
-
-            selection_bbox = self.main_window.grid.actions.get_visible_area()
-
-        (top, left), (bottom, right) = selection_bbox
+            # No selection --> Use current screen for csv export
+            (top, left), (bottom, right) = \
+                self.main_window.grid.actions.get_visible_area()
+            
+        else:
+            (top, left), (bottom, right) = selection_bbox
 
         # Generator of row and column keys in correct order
 
@@ -747,12 +755,24 @@ class MainWindowEventHandlers(object):
         data = code_array[top:bottom + 1, left:right + 1, tab]
 
         # Get target filepath from user
-
-        wildcard = _("CSV file (*.*)|*.*")
+            
+        # No selection --> Provide svg export of current cell
+        # if current cell is a matplotlib figure
+        if selection_bbox is None:
+            cursor = self.main_window.grid.actions.cursor
+            figure = code_array[cursor]
+            if isinstance(figure, Figure):
+                wildcard += " |" + _("SVG file") + " (*.svg)|*.svg"            
+            
         message = _("Choose filename for export.")
         style = wx.OPEN | wx.CHANGE_DIR
         path, filterindex = self.interfaces.get_filepath_findex_from_user(
                                     wildcard, message, style)
+
+        # If an svg is exported then the selection bbox
+        # has to be changed to the current cell
+        if filterindex == 1:
+            data = figure
 
         # Export file
         # -----------
@@ -1021,7 +1041,8 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Macro file (*.py)|*.py|All files (*.*)|*.*")
+        wildcard = _("Macro file") + " (*.py)|*.py|" + \
+                   _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
         style = wx.OPEN | wx.CHANGE_DIR
@@ -1046,7 +1067,8 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Macro file (*.py)|*.py|All files (*.*)|*.*")
+        wildcard = _("Macro file") + " (*.py)|*.py|" + \
+                   _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
         style = wx.SAVE | wx.CHANGE_DIR
