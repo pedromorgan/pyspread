@@ -132,7 +132,7 @@ class ExchangeActions(Actions):
 
     def _export_csv(self, filepath, data):
         """CSV export of code_array results
-        
+
         Parameters
         ----------
         filepath: String
@@ -140,7 +140,7 @@ class ExchangeActions(Actions):
         data: Object
         \tCode array result object slice, i. e. one object or iterable of
         \tsuch objects
-        
+
         """
 
         # Get csv info
@@ -171,34 +171,34 @@ class ExchangeActions(Actions):
 
     def _export_svg_figure(self, filepath, data):
         """SVG export of single cell that contains a matplotlib figure
-        
+
         Parameters
         ----------
         filepath: String
         \tPath of export file
         data: Matplotlib Figure
         \tMatplotlib figure that is eported
-        
+
         """
-        
+
         svg_data = fig2svg(data)
-        
+
         try:
             outfile = open(filepath, "wb")
             outfile.write(svg_data)
-            
+
         except IOError, err:
             msg = _("The file {} could not be fully written\n \n"
                     "Error message:\n{}").format(filepath, err)
             short_msg = _('Error writing SVG file')
             self.main_window.interfaces.display_warning(msg, short_msg)
-            
+
         finally:
             outfile.close()
 
     def export_file(self, filepath, filterindex, data):
         """Export data for other applications
-        
+
         Parameters
         ----------
         filepath: String
@@ -208,12 +208,12 @@ class ExchangeActions(Actions):
         data: Object
         \tCode array result object slice, i. e. one object or iterable of
         \tsuch objects
-        
+
         """
-        
+
         if filterindex == 0:
             self._export_csv(filepath, data)
-            
+
         elif filterindex == 1:
             self._export_svg_figure(filepath, data)
 

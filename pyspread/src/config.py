@@ -38,6 +38,11 @@ class DefaultConfig(object):
     """Contains default config for starting pyspread without resource file"""
 
     def __init__(self):
+        # Config file version
+        # -------------------
+
+        self.config_version = VERSION
+
         # User defined paths
         # ------------------
 
@@ -129,6 +134,9 @@ class Config(object):
 
         self.cfg_file = wx.Config(self.config_filename)
 
+        # Config keys to be resetted to default value on version upgrades
+        self.reset_on_version_change = ["window_layout"]
+
         self.load()
 
     def __getitem__(self, key):
@@ -147,6 +155,9 @@ class Config(object):
     def load(self):
         """Loads configuration file"""
 
+        # Config files prior to 0.2.4 dor not have config version keys
+        old_config = not self.cfg_file.Exists("config_version")
+
         # Reset data
         self.data.__dict__.update(self.defaults.__dict__)
 
@@ -154,15 +165,24 @@ class Config(object):
             if self.cfg_file.Exists(key):
                 setattr(self.data, key, self.cfg_file.Read(key))
 
+        # Reset keys that should be reset on version upgrades
+        if old_config or self.version != self.data.config_version:
+            for key in self.reset_on_version_change:
+                setattr(self.data, key, getattr(DefaultConfig(), key))
+            self.data.config_version = self.version
+
+        # Reset GPG key if version prior 0.2.4
+        # because of pyme -> gnupg migration
+
+        if old_config:
+            key = "gpg_key_uid"
+            setattr(self.data, key, getattr(DefaultConfig(), key))
+
     def save(self):
         """Saves configuration file"""
 
         for key in self.defaults.__dict__:
             data = getattr(self.data, key)
-
-            if key == "gpg_key_passphrase" and \
-               not self["gpg_key_passphrase_isstored"]:
-                data = "''"
 
             self.cfg_file.Write(key, data)
 
