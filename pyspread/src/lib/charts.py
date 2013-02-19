@@ -148,6 +148,7 @@ class ChartFigure(Figure):
         self.__axes.clear()
 
         key2setter = {
+            "title": self.__axes.set_title,
             "xlabel": self.__axes.set_xlabel,
             "ylabel": self.__axes.set_ylabel,
             "xscale": self.__axes.set_xscale,

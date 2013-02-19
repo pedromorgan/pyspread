@@ -530,6 +530,7 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
+        "title": (_("Title"), StringEditor, ""),
         "xlabel": (_("Label"), StringEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
@@ -543,9 +544,9 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
+        (_("Figure"), ["title", "legend"]),
         (_("X-Axis"), ["xlabel", "xlim", "xscale"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
-        (_("Legend"), ["legend"]),
     ]
 
 
