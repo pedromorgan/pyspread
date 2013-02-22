@@ -1207,13 +1207,17 @@ class PreferencesDialog(wx.Dialog):
 
             self.textctrls.append(ctrl)
 
-            self.grid_sizer.Add(self.labels[-1], 0, 0, 0)
-            self.grid_sizer.Add(self.textctrls[-1], 0, wx.EXPAND, 0)
+            self.grid_sizer.Add(self.labels[-1], 0,
+                                wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
+            self.grid_sizer.Add(self.textctrls[-1], 0,
+                            wx.EXPAND | wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
 
         self.ok_button = wx.Button(self, wx.ID_OK)
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
-        self.grid_sizer.Add(self.ok_button, 0, 0, 0)
-        self.grid_sizer.Add(self.cancel_button, 0, 0, 0)
+        self.grid_sizer.Add(self.ok_button, 0,
+                            wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
+        self.grid_sizer.Add(self.cancel_button, 0,
+                            wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
 
         self.SetSizer(self.grid_sizer)
 
