@@ -1189,7 +1189,7 @@ class PreferencesDialog(wx.Dialog):
         # Controls for entering parameters, NOT only TextCtrls
         self.textctrls = []
 
-        self.grid_sizer = wx.FlexGridSizer(len(self.parameters), 2, 2, 2)
+        self.grid_sizer = wx.FlexGridSizer(0, 2, 2, 2)
 
         for parameter, info in self.parameters:
             label = info["label"]
@@ -1208,16 +1208,16 @@ class PreferencesDialog(wx.Dialog):
             self.textctrls.append(ctrl)
 
             self.grid_sizer.Add(self.labels[-1], 0,
-                                wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
+                                wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
             self.grid_sizer.Add(self.textctrls[-1], 0,
-                            wx.EXPAND | wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
+                            wx.EXPAND | wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
 
         self.ok_button = wx.Button(self, wx.ID_OK)
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.grid_sizer.Add(self.ok_button, 0,
-                            wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
+                            wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
         self.grid_sizer.Add(self.cancel_button, 0,
-                            wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
+                            wx.ALL | wx.ALIGN_CENTER_VERTICAL, 2)
 
         self.SetSizer(self.grid_sizer)
 
