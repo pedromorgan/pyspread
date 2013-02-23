@@ -699,6 +699,8 @@ class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
         self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1),
                                                        label=u"\u25F0")
 
+        self.selection_toggle_button.SetToolTip(wx.ToolTip(
+                            _("Toggles link insertion mode.")))
         self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)
 
         self.__do_layout()
@@ -759,7 +761,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
         main_window.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
         main_window.Bind(self.EVT_CMD_SELECTION, self.OnGridSelection)
 
-        self.SetToolTip(wx.ToolTip("Enter Python expression here."))
+        self.SetToolTip(wx.ToolTip(_("Enter Python expression here.")))
 
         self.Bind(wx.EVT_TEXT, self.OnText)
         self.Bind(wx.EVT_CHAR, self.OnChar)
