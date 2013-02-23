@@ -245,7 +245,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         # Text color attributes
 
-        textcolor = wx.Color()
+        textcolor = wx.Colour()
         textcolor.SetRGB(cell_attributes["textcolor"])
 
         # Get font from font attribute strings
