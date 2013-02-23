@@ -217,7 +217,7 @@ def main():
 
 if __name__ == "__main__":
     if 'unicode' not in wx.PlatformInfo:
-        print "You need a unicode build of wxPython to run this application."
+        print _("You need a unicode build of wxPython to run pyspread.")
 
     else:
         if DEBUG:

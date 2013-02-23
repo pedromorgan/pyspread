@@ -362,9 +362,11 @@ class FileActions(Actions):
     def sign_file(self, filepath):
         """Signs file if possible"""
 
-        signature = sign(filepath)
-        if signature is None:
-            statustext = _('Error signing file. File is not signed.')
+        signed_data = sign(filepath)
+        signature = signed_data.data
+
+        if signature is None or not signature:
+            statustext = _('Error signing file. ') + signed_data.stderr
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
                                    text=statustext)
@@ -517,8 +519,18 @@ class FileActions(Actions):
             pass
 
         # Sign so that the new file may be retrieved without safe mode
+        if self.code_array.safe_mode:
+            msg = _("File saved but not signed because it is unapproved.")
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=msg)
+            except TypeError:
+                # The main window does not exist any more
+                pass
 
-        self.sign_file(filepath)
+        else:
+            print filepath
+            self.sign_file(filepath)
 
 
 class TableRowActionsMixin(Actions):
@@ -1054,7 +1066,7 @@ class GridActions(Actions):
 
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
-            
+
             # Change value of entry_line and table choice
             post_command_event(self.main_window, self.TableChangedMsg,
                                table=newtable)

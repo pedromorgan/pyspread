@@ -155,7 +155,7 @@ def sign(filename):
                                 detach=True)
     signfile.close()
 
-    return signed_data.data
+    return signed_data
 
 
 def verify(sigfilename, filefilename=None):

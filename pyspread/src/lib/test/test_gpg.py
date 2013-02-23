@@ -46,7 +46,7 @@ from src.lib.testlib import params, pytest_generate_tests
 def _set_sig(filename, sigfilename):
     """Creates a signature sigfilename for file filename"""
 
-    signature = gpg.sign(filename)
+    signature = gpg.sign(filename).data
 
     sigfile = open(sigfilename, "w")
     sigfile.write(signature)

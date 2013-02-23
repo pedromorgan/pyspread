@@ -46,8 +46,6 @@ from src.lib.selection import Selection
 from src.lib.testlib import params, pytest_generate_tests
 from src.lib.testlib import basic_setup_test, restore_basic_grid
 
-from src.lib.gpg import sign
-
 from src.gui._events import *
 
 
@@ -64,7 +62,7 @@ class TestFileActions(object):
 
         # File with valid signature
         self.filename_valid_sig = TESTPATH + "test1.pys"
-        sign(self.filename_valid_sig)
+        self.grid.actions.sign_file(self.filename_valid_sig)
 
         # File without signature
         self.filename_no_sig = TESTPATH + "test2.pys"
@@ -74,7 +72,7 @@ class TestFileActions(object):
 
         # File for self.grid size test
         self.filename_gridsize = TESTPATH + "test4.pys"
-        sign(self.filename_gridsize)
+        self.grid.actions.sign_file(self.filename_gridsize)
 
         # Empty file
         self.filename_empty = TESTPATH + "test5.pys"
@@ -258,7 +256,7 @@ class TestFileActions(object):
         assert new_shape == (1000, 100, 10)
 
         # Test self.grid content for valid file
-
+        assert not self.grid.code_array.safe_mode
         assert self.grid.GetTable().data_array[0, 0, 0] == "test4"
 
     def test_save(self):
