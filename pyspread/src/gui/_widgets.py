@@ -699,8 +699,8 @@ class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
         self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1),
                                                        label=u"\u25F0")
 
-        self.selection_toggle_button.SetToolTip(wx.ToolTip(
-                            _("Toggles link insertion mode.")))
+        tooltip = wx.ToolTip(_("Toggles link insertion mode."))
+        self.selection_toggle_button.SetToolTip(tooltip)
         self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)
 
         self.__do_layout()
@@ -851,8 +851,6 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin):
 
     def __init__(self, parent):
         wx.StatusBar.__init__(self, parent, -1)
-
-        self.SetToolTip(wx.ToolTip("Watch the status bar."))
 
         parent.Bind(self.EVT_STATUSBAR_MSG, self.OnMessage)
 
