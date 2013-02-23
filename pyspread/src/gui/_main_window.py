@@ -104,7 +104,7 @@ class MainWindow(wx.Frame, EventMixin):
 
         # Entry line
         self.entry_line_panel = EntryLineToolbarPanel(self, -1)
-        
+
         # Main grid
 
         dimensions = (
@@ -207,7 +207,7 @@ class MainWindow(wx.Frame, EventMixin):
 
         self._mgr.AddPane(self.entry_line_panel, wx.aui.AuiPaneInfo().
             Name("entry_line_panel").Caption(_("Entry line")).
-            MinSize((10, 10)).Row(2).CaptionVisible(False).Gripper(True).
+            MinSize((10, 20)).Row(2).CaptionVisible(False).Gripper(True).
             Top().CloseButton(False).MaximizeButton(True))
 
         # Load perspective from config
@@ -736,14 +736,14 @@ class MainWindowEventHandlers(object):
         # Check if no selection is present
 
         selection_bbox = selection.get_bbox()
-        
+
         wildcard = _("CSV file") + " (*.*)|*.*"
-        
+
         if selection_bbox is None:
             # No selection --> Use current screen for csv export
             (top, left), (bottom, right) = \
                 self.main_window.grid.actions.get_visible_area()
-            
+
         else:
             (top, left), (bottom, right) = selection_bbox
 
@@ -755,15 +755,15 @@ class MainWindowEventHandlers(object):
         data = code_array[top:bottom + 1, left:right + 1, tab]
 
         # Get target filepath from user
-            
+
         # No selection --> Provide svg export of current cell
         # if current cell is a matplotlib figure
         if selection_bbox is None:
             cursor = self.main_window.grid.actions.cursor
             figure = code_array[cursor]
             if isinstance(figure, Figure):
-                wildcard += " |" + _("SVG file") + " (*.svg)|*.svg"            
-            
+                wildcard += " |" + _("SVG file") + " (*.svg)|*.svg"
+
         message = _("Choose filename for export.")
         style = wx.OPEN | wx.CHANGE_DIR
         path, filterindex = self.interfaces.get_filepath_findex_from_user(
