@@ -52,6 +52,7 @@ from wx.lib.intctrl import IntCtrl, EVT_INT
 
 import src.lib.i18n as i18n
 from src.config import config
+from src.sysvars import get_default_font
 
 from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
 from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
@@ -548,10 +549,12 @@ class FontChoiceCombobox(ImageComboBox):
         __rect.Deflate(3, 5)
 
         font_string = self.GetString(item)
-        font = wx.Font(wx.DEFAULT, wx.DEFAULT, wx.NORMAL, wx.NORMAL,
-                       False, font_string)
-        font.SetPointSize(font.GetPointSize() - 2)
+
+        font = get_default_font()
+        font.SetFaceName(font_string)
+        font.SetFamily(wx.FONTFAMILY_SWISS)
         dc.SetFont(font)
+
         text_width, text_height = dc.GetTextExtent(font_string)
         text_x = __rect.x
         text_y = __rect.y + int((__rect.height - text_height) / 2.0)
