@@ -696,7 +696,8 @@ class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
 
         self.entry_line = EntryLine(self, main_window,
                                 style=wx.TE_PROCESS_ENTER | wx.TE_MULTILINE)
-        self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1))
+        self.selection_toggle_button = wx.ToggleButton(self, -1, size=(24, -1),
+                                                       label=u"\u25F0")
 
         self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)
 
