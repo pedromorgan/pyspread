@@ -581,8 +581,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 bg = self.backgrounds[bg_key] = \
                         Background(grid, rect, self.data_array, *key)
 
-        if any(p in wx.PlatformInfo for p in ["__WXGTK__", "__WXMAC__"]) \
-           and not printing:
+        if "__WXGTK__" in wx.PlatformInfo and not printing:
             mask_type = wx.AND
         else:
             mask_type = wx.COPY
