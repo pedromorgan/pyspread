@@ -123,6 +123,11 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
             else:
                 raise ValueError("Unknown tooltype " + str(data[0]))
 
+        self.Realize()
+
+        # Adjust Toolbar size
+        self.SetSize(self.DoGetBestSize())
+
     def OnTool(self, event):
         """Toolbar event handler"""
 
@@ -158,8 +163,6 @@ class MainToolbar(ToolbarBase):
 
         self.add_tools()
 
-        self.Realize()
-
 # end of class MainToolbar
 
 
@@ -177,8 +180,6 @@ class MacroToolbar(ToolbarBase):
         ]
 
         self.add_tools()
-
-        self.Realize()
 
 # end of class MainToolbar
 
@@ -229,8 +230,6 @@ class FindToolbar(ToolbarBase):
         # -------------------
 
         self._bindings()
-
-        self.Realize()
 
     def _bindings(self):
         self.Bind(wx.EVT_SEARCHCTRL_SEARCH_BTN, self.OnSearch, self.search)
@@ -368,6 +367,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         self._create_textrotation_spinctrl()
 
         self.Realize()
+
+        # Adjust Toolbar size
+        self.SetSize(self.DoGetBestSize())
 
     # Create toolbar widgets
     # ----------------------
