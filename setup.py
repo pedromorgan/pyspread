@@ -56,7 +56,7 @@ setup(name='pyspread',
          'doc/help/images/*.png',
          'locale/*/*/*.mo',
          'examples/*',
-         'COPYING', 'thanks', 'faq', '*.tr',
+         'COPYING', 'thanks', 'faq', '*.1',
          'authors', '../pyspread.pth', '../README', '../changelog']},
       classifiers=[
         'Development Status :: 4 - Beta',
