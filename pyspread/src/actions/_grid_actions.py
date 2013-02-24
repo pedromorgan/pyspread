@@ -530,7 +530,6 @@ class FileActions(Actions):
                 pass
 
         else:
-            print filepath
             self.sign_file(filepath)
 
 
