@@ -26,7 +26,7 @@ _grid_renderer
 Provides
 --------
 
-1) TextRenderer: Draws the grid
+1) GridRenderer: Draws the grid
 2) Background: Background drawing
 
 """
@@ -212,6 +212,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         """Draws text label of cell
 
         Text is truncated at config["max_result_length"]
+
         """
 
         result_length = config["max_result_length"]
