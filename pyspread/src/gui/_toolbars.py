@@ -68,6 +68,9 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
 
     def __init__(self, parent, *args, **kwargs):
 
+        # Toolbars should be able to overflow
+        kwargs["agwStyle"] = aui.AUI_TB_OVERFLOW
+
         aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
         self.SetToolBitmapSize(icons.icon_size)
@@ -348,7 +351,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
     }
 
     def __init__(self, parent, *args, **kwargs):
-        kwargs["style"] = wx.TB_FLAT | wx.TB_NODIVIDER
+        kwargs["style"] = aui.AUI_TB_OVERFLOW
         aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
         self.parent = parent
