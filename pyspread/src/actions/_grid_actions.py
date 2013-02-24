@@ -53,6 +53,7 @@ import os
 import wx
 
 from src.config import config
+from src.sysvars import get_default_font
 
 from src.gui._grid_table import GridTable
 from src.lib.parsers import get_font_from_data
@@ -950,8 +951,7 @@ class GridActions(Actions):
         """Adjust grid label font to zoom factor"""
 
         labelfont = self.grid.GetLabelFont()
-        default_fontsize = \
-            get_font_from_data(config["font"]).GetPointSize() - 2
+        default_fontsize = get_default_font().GetPointSize()
         labelfont.SetPointSize(max(1, int(round(default_fontsize * zoom))))
         self.grid.SetLabelFont(labelfont)
 
