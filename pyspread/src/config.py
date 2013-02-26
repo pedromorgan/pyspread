@@ -181,6 +181,8 @@ class Config(object):
     def save(self):
         """Saves configuration file"""
 
+        ## TODO: Set permissions here, SetUmask
+
         for key in self.defaults.__dict__:
             data = getattr(self.data, key)
 
