@@ -145,6 +145,16 @@ class MainApplication(App, GridActionEventMixin):
     options = {}
     filename = None
 
+    def __init__(self, *args, **kwargs):
+
+        try:
+            self.S = kwargs.pop("S")
+        except KeyError:
+            self.S = None
+
+        # call parent class initializer
+        wx.App.__init__(self, *args, **kwargs)
+
     def OnInit(self):
         """Init class that is automatically run on __init__"""
 
@@ -157,9 +167,7 @@ class MainApplication(App, GridActionEventMixin):
         # Main window creation
         from src.gui._main_window import MainWindow
 
-        self.main_window = MainWindow(None, title="pyspread")
-
-        ## Set dimensions
+        self.main_window = MainWindow(None, title="pyspread", S=self.S)
 
         ## Initialize file loading via event
 
@@ -206,11 +214,11 @@ class MainApplication(App, GridActionEventMixin):
             cmdp.config["grid_tables"] = str(tables)
 
 
-def main():
+def pyspread(S=None):
     """Parses command line and starts pyspread"""
 
     # Initialize main application
-    app = MainApplication(redirect=False)
+    app = MainApplication(S=S, redirect=False)
 
     app.MainLoop()
 
@@ -222,6 +230,6 @@ if __name__ == "__main__":
     else:
         if DEBUG:
             import cProfile
-            cProfile.run('main()')
+            cProfile.run('pyspread()')
         else:
-            main()
+            pyspread()

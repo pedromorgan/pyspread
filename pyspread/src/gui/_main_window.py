@@ -63,6 +63,7 @@ class MainWindow(wx.Frame, EventMixin):
     """Main window of pyspread"""
 
     def __init__(self, parent, *args, **kwargs):
+        S = kwargs.pop("S")
         wx.Frame.__init__(self, parent, *args, **kwargs)
 
         self.interfaces = GuiInterfaces(self)
@@ -113,7 +114,7 @@ class MainWindow(wx.Frame, EventMixin):
             config["grid_tables"],
         )
 
-        self.grid = Grid(self, -1, dimensions=dimensions)
+        self.grid = Grid(self, -1, S=S, dimensions=dimensions)
 
         # Clipboard
         self.clipboard = Clipboard()

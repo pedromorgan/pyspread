@@ -55,13 +55,19 @@ class Grid(wx.grid.Grid, EventMixin):
     """Pyspread's main grid"""
 
     def __init__(self, main_window, *args, **kwargs):
+        S = kwargs.pop("S")
+
         self.main_window = main_window
 
         self._states()
 
         self.interfaces = GuiInterfaces(self.main_window)
 
-        dimensions = kwargs.pop("dimensions")
+        if S is None:
+            dimensions = kwargs.pop("dimensions")
+        else:
+            dimensions = S.shape
+            kwargs.pop("dimensions")
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
 
@@ -72,8 +78,11 @@ class Grid(wx.grid.Grid, EventMixin):
         self.SetDefaultEditor(wx.grid.GridCellAutoWrapStringEditor())
 
         # Create new grid
-        self.code_array = CodeArray(dimensions)
-        post_command_event(self, self.GridActionNewMsg, shape=dimensions)
+        if S is None:
+            self.code_array = CodeArray(dimensions)
+            post_command_event(self, self.GridActionNewMsg, shape=dimensions)
+        else:
+            self.code_array = S
 
         _grid_table = GridTable(self, self.code_array)
         self.SetTable(_grid_table, True)
