@@ -129,6 +129,9 @@ class WindowsArtProvider(GtkArtProvider):
             wx.ART_PASTE: action_path + "edit-paste.png",
             wx.ART_UNDO: action_path + "edit-undo.png",
             wx.ART_REDO: action_path + "edit-redo.png",
+            wx.ART_FIND: action_path + "edit-find.png",
+            wx.ART_FIND_AND_REPLACE: action_path + "edit-find-replace.png",
+
         }
 
         self.extra_icons.update(windows_icons)
