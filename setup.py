@@ -22,7 +22,7 @@
 from distutils.core import setup
 
 setup(name='pyspread',
-      version='0.2.3',
+      version='0.2.4',
       description='Python spreadsheet',
       long_description='Pyspread is a non-traditional spreadsheet application'
                        ' that is based on and written in the programming '
