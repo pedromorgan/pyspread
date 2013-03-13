@@ -61,13 +61,16 @@ def choose_uid_key(keylist):
             uid_string2key[uid_string] = key
 
     msg = _('Choose a GPG key for signing pyspread save files.\n'
-            'The GPG key must not have a passphrase set. \n'
-            'Pressing Cancel creates a key.')
+            'The GPG key must not have a passphrase set.')
 
     dlg = wx.SingleChoiceDialog(None, msg, _('Choose key'), uid_strings,
                                 wx.CHOICEDLG_STYLE)
 
     dlg.SetBestFittingSize()
+
+    childlist = list(dlg.GetChildren())
+    childlist[-3].SetLabel(_("Use chosen key"))
+    childlist[-2].SetLabel(_("Create new key"))
 
     if dlg.ShowModal() == wx.ID_OK:
         uid = dlg.GetStringSelection()
