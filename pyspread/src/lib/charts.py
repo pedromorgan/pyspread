@@ -97,20 +97,20 @@ def fig2bmp(figure, width, height, dpi, zoom):
     return wx.BitmapFromImage(img)
 
 
-def fig2svg(figure):
+def fig2x(figure, format):
     """Returns svg from matplotlib chart"""
 
     # Save svg to file like object svg_io
-    svg_io = StringIO()
-    figure.savefig(svg_io, format='svg')
+    io = StringIO()
+    figure.savefig(io, format=format)
 
     # Rewind the file like object
-    svg_io.seek(0)
+    io.seek(0)
 
-    svgdata = svg_io.getvalue()
-    svg_io.close()
+    data = io.getvalue()
+    io.close()
 
-    return svgdata
+    return data
 
 
 class ChartFigure(Figure):

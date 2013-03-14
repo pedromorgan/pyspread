@@ -54,7 +54,7 @@ from src.sysvars import get_help_path
 
 from src.config import config
 from src.lib.__csv import CsvInterface, TxtGenerator
-from src.lib.charts import fig2bmp, fig2svg
+from src.lib.charts import fig2bmp, fig2x
 from src.gui._printout import PrintCanvas, Printout
 from src.gui._events import post_command_event, EventMixin
 
@@ -169,8 +169,8 @@ class ExchangeActions(Actions):
             short_msg = _('Error writing CSV file')
             self.main_window.interfaces.display_warning(msg, short_msg)
 
-    def _export_svg_figure(self, filepath, data):
-        """SVG export of single cell that contains a matplotlib figure
+    def _export_figure(self, filepath, data, format):
+        """Export of single cell that contains a matplotlib figure
 
         Parameters
         ----------
@@ -178,14 +178,18 @@ class ExchangeActions(Actions):
         \tPath of export file
         data: Matplotlib Figure
         \tMatplotlib figure that is eported
+        format: String in ["png", "pdf", "ps", "eps", "svg"]
 
         """
 
-        svg_data = fig2svg(data)
+        formats = ["svg", "eps", "ps", "pdf", "png"]
+        assert format in formats
+
+        data = fig2x(data, format)
 
         try:
             outfile = open(filepath, "wb")
-            outfile.write(svg_data)
+            outfile.write(data)
 
         except IOError, err:
             msg = _("The file {} could not be fully written\n \n"
@@ -211,11 +215,13 @@ class ExchangeActions(Actions):
 
         """
 
+        formats = ["csv", "svg", "eps", "ps", "pdf", "png"]
+
         if filterindex == 0:
             self._export_csv(filepath, data)
 
-        elif filterindex == 1:
-            self._export_svg_figure(filepath, data)
+        elif filterindex >= 1:
+            self._export_figure(filepath, data, formats[filterindex])
 
 
 class PrintActions(Actions):
@@ -332,7 +338,7 @@ class ClipboardActions(Actions):
         else:
             replace_none = self.main_window.grid.actions._replace_bbox_none
             (bb_top, bb_left), (bb_bottom, bb_right) = \
-                            replace_none(selection.get_bbox())
+                replace_none(selection.get_bbox())
 
         data = []
 
@@ -419,7 +425,7 @@ class ClipboardActions(Actions):
                 key = bb_top, bb_left, tab
                 rect = self.grid.CellToRect(bb_top, bb_left)
                 merged_rect = self.grid.grid_renderer.get_merged_rect(
-                                self.grid, key, rect)
+                    self.grid, key, rect)
                 dpi = float(wx.ScreenDC().GetPPI()[0])
                 zoom = self.grid.grid_renderer.zoom
 

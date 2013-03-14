@@ -164,7 +164,7 @@ class MainWindow(wx.Frame, EventMixin):
             (self.main_toolbar, "main_window_toolbar", _("Main toolbar")),
             (self.macro_toolbar, "macro_toolbar", _("Macro toolbar")),
             (self.attributes_toolbar, "attributes_toolbar",
-                                                       _("Format toolbar")),
+             _("Format toolbar")),
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
             (self.entry_line_panel, "entry_line_panel", _("Entry line")),
         ]
@@ -187,29 +187,32 @@ class MainWindow(wx.Frame, EventMixin):
         # Add the toolbars to the manager
 
         self._mgr.AddPane(self.macro_toolbar, wx.aui.AuiPaneInfo().
-            Name("macro_toolbar").Caption(_("Macro Toolbar")).
-            ToolbarPane().Top().Row(0).CloseButton(False).
-            LeftDockable(False).RightDockable(False))
+                          Name("macro_toolbar").Caption(_("Macro Toolbar")).
+                          ToolbarPane().Top().Row(0).CloseButton(False).
+                          LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.main_toolbar, wx.aui.AuiPaneInfo().
-            Name("main_window_toolbar").Caption(_("Main Toolbar")).
-            ToolbarPane().Top().Row(0).CloseButton(False).
-            LeftDockable(False).RightDockable(False))
+                          Name("main_window_toolbar").
+                          Caption(_("Main Toolbar")).
+                          ToolbarPane().Top().Row(0).CloseButton(False).
+                          LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.find_toolbar, wx.aui.AuiPaneInfo().
-            Name("find_toolbar").Caption(_("Find")).
-            ToolbarPane().Top().Row(1).MaximizeButton(False).
-            LeftDockable(False).RightDockable(False))
+                          Name("find_toolbar").Caption(_("Find")).
+                          ToolbarPane().Top().Row(1).MaximizeButton(False).
+                          LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.attributes_toolbar, wx.aui.AuiPaneInfo().
-            Name("attributes_toolbar").Caption(_("Cell Attributes")).
-            ToolbarPane().Top().Row(1).MaximizeButton(False).
-            LeftDockable(False).RightDockable(False))
+                          Name("attributes_toolbar").
+                          Caption(_("Cell Attributes")).
+                          ToolbarPane().Top().Row(1).MaximizeButton(False).
+                          LeftDockable(False).RightDockable(False))
 
         self._mgr.AddPane(self.entry_line_panel, wx.aui.AuiPaneInfo().
-            Name("entry_line_panel").Caption(_("Entry line")).
-            MinSize((10, 20)).Row(2).CaptionVisible(False).Gripper(True).
-            Top().CloseButton(False).MaximizeButton(True))
+                          Name("entry_line_panel").Caption(_("Entry line")).
+                          MinSize((10, 20)).Row(2).CaptionVisible(False).
+                          Gripper(True).Top().CloseButton(False).
+                          MaximizeButton(True))
 
         # Load perspective from config
         window_layout = config["window_layout"]
@@ -592,12 +595,14 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Pyspread file") + " (*.pys)|*.pys|" + \
-                   _("All files") + " (*.*)|*.*"
+        wildcard = \
+            _("Pyspread file") + " (*.pys)|*.pys|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose pyspread file to open.")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return
@@ -647,12 +652,14 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Pyspread file") + " (*.pys)|*.pys|" + \
-                   _("All files") + " (*.*)|*.*"
+        wildcard = \
+            _("Pyspread file") + " (*.pys)|*.pys|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose filename for saving.")
         style = wx.SAVE | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return 0
@@ -668,11 +675,13 @@ class MainWindowEventHandlers(object):
                 return 0
 
             # There is a file with the same path
-            message = _("The file {filepath} is already present.\nOverwrite?")\
-                                  .format(filepath=filepath)
-            short_message = _("File collision")
-            if not self.main_window.interfaces.get_warning_choice(
-                        message, short_message):
+            message = \
+                _("The file {filepath} is already present.\nOverwrite?")\
+                .format(filepath=filepath)
+            short_msg = _("File collision")
+
+            if not self.main_window.interfaces.get_warning_choice(message,
+                                                                  short_msg):
 
                 statustext = _("File present. Save aborted by user.")
                 post_command_event(self.main_window,
@@ -700,12 +709,14 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("CSV file") + " (*.*)|*.*|" + \
-                   _("Tab delimited text file") + " (*.*)|*.*"
+        wildcard = \
+            _("CSV file") + " (*.*)|*.*|" + \
+            _("Tab delimited text file") + " (*.*)|*.*"
         message = _("Choose file to import.")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return
@@ -763,16 +774,22 @@ class MainWindowEventHandlers(object):
             cursor = self.main_window.grid.actions.cursor
             figure = code_array[cursor]
             if isinstance(figure, Figure):
-                wildcard += " |" + _("SVG file") + " (*.svg)|*.svg"
+                wildcard += \
+                    " |" + _("SVG file") + " (*.svg)|*.svg" + \
+                    " |" + _("EPS file") + " (*.eps)|*.eps" + \
+                    " |" + _("PS file") + " (*.ps)|*.ps" + \
+                    " |" + _("PDF file") + " (*.pdf)|*.pdf" + \
+                    " |" + _("PNG file") + " (*.png)|*.png"
 
         message = _("Choose filename for export.")
         style = wx.OPEN | wx.CHANGE_DIR
-        path, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        path, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         # If an svg is exported then the selection bbox
         # has to be changed to the current cell
-        if filterindex == 1:
+        if filterindex >= 1:
             data = figure
 
         # Export file
@@ -813,7 +830,7 @@ class MainWindowEventHandlers(object):
         """Clear globals event handler"""
 
         msg = _("Deleting globals and reloading modules cannot be undone."
-                    " Proceed?")
+                " Proceed?")
         short_msg = _("Really delete globals and modules?")
 
         choice = self.main_window.interfaces.get_warning_choice(msg, short_msg)
@@ -886,8 +903,8 @@ class MainWindowEventHandlers(object):
             focus.Copy()
 
         else:
-            data = self.main_window.actions.copy(
-                       self.main_window.grid.selection)
+            selection = self.main_window.grid.selection
+            data = self.main_window.actions.copy(selection)
             self.main_window.clipboard.set_clipboard(data)
 
         event.Skip()
@@ -895,8 +912,8 @@ class MainWindowEventHandlers(object):
     def OnCopyResult(self, event):
         """Clipboard copy results event handler"""
 
-        data = self.main_window.actions.copy_result(
-                            self.main_window.grid.selection)
+        selection = self.main_window.grid.selection
+        data = self.main_window.actions.copy_result(selection)
 
         # Check if result is a bitmap
         if type(data) is wx._gdi.Bitmap:
@@ -950,8 +967,9 @@ class MainWindowEventHandlers(object):
         cursor = self.main_window.grid.actions.cursor
         attr = self.main_window.grid.code_array.cell_attributes[cursor]
 
-        size, style, weight, font = [attr[name] for name in
-            ["pointsize", "fontstyle", "fontweight", "textfont"]]
+        size, style, weight, font = \
+            [attr[name] for name in ["pointsize", "fontstyle", "fontweight",
+                                     "textfont"]]
         current_font = wx.Font(int(size), -1, style, weight, 0, font)
 
         # Get Font from dialog
@@ -1042,13 +1060,15 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Macro file") + " (*.py)|*.py|" + \
-                   _("All files") + " (*.*)|*.*"
+        wildcard = \
+            _("Macro file") + " (*.py)|*.py|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return
@@ -1068,13 +1088,15 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Macro file") + " (*.py)|*.py|" + \
-                   _("All files") + " (*.*)|*.*"
+        wildcard = \
+            _("Macro file") + " (*.py)|*.py|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
         style = wx.SAVE | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         # Save macros to file
 
@@ -1089,7 +1111,7 @@ class MainWindowEventHandlers(object):
         """Manual launch event handler"""
 
         self.main_window.actions.launch_help("First steps in pyspread",
-            "First steps in pyspread.html")
+                                             "First steps in pyspread.html")
 
     def OnTutorial(self, event):
         """Tutorial launch event handler"""
