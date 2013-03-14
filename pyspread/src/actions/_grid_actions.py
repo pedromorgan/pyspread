@@ -56,8 +56,14 @@ from src.config import config
 from src.sysvars import get_default_font
 
 from src.gui._grid_table import GridTable
-from src.lib.parsers import get_font_from_data
-from src.lib.gpg import sign, verify
+
+try:
+    from src.lib.gpg import sign, verify
+    GPG_PRESENT = True
+
+except ImportError:
+    GPG_PRESENT = False
+
 from src.lib.selection import Selection
 
 from src.actions._main_window_actions import Actions
@@ -127,6 +133,9 @@ class FileActions(Actions):
     def validate_signature(self, filename):
         """Returns True if a valid signature is present for filename"""
 
+        if not GPG_PRESENT:
+            return False
+
         sigfilename = filename + '.sig'
 
         try:
@@ -172,8 +181,9 @@ class FileActions(Actions):
             self.enter_safe_mode()
             post_command_event(self.main_window, self.SafeModeEntryMsg)
 
-            statustext = _("File is not properly signed. Safe mode "
-                "activated. Select File -> Approve to leave safe mode.")
+            statustext = \
+                _("File is not properly signed. Safe mode "
+                  "activated. Select File -> Approve to leave safe mode.")
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=statustext)
 
@@ -363,6 +373,9 @@ class FileActions(Actions):
     def sign_file(self, filepath):
         """Signs file if possible"""
 
+        if not GPG_PRESENT:
+            return
+
         signed_data = sign(filepath)
         signature = signed_data.data
 
@@ -390,7 +403,7 @@ class FileActions(Actions):
 
         try:
             post_command_event(self.main_window, self.StatusBarMsg,
-                           text=statustext)
+                               text=statustext)
         except TypeError:
             # The main window does not exist any more
             pass
@@ -709,9 +722,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         else:
             raise AssertionError(_("Import cell overflow missing"))
 
-        statustext = _("The imported data did not fit into the grid {cause}. "
-            "It has been truncated. Use a larger grid for full import.").\
-                format(cause=overflow_cause)
+        statustext = \
+            _("The imported data did not fit into the grid {cause}. "
+              "It has been truncated. Use a larger grid for full import.").\
+            format(cause=overflow_cause)
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
@@ -1083,7 +1097,7 @@ class GridActions(Actions):
         """Returns current grid cursor cell (row, col, tab)"""
 
         return self.grid.GetGridCursorRow(), self.grid.GetGridCursorCol(), \
-               self.grid.current_table
+            self.grid.current_table
 
     def set_cursor(self, value):
         """Changes the grid cursor cell.
@@ -1178,8 +1192,8 @@ class SelectionActions(Actions):
 
         selection = self.get_selection()
 
-        del_keys = [key for key in self.grid.code_array
-                        if key[:2] in selection]
+        del_keys = \
+            [key for key in self.grid.code_array if key[:2] in selection]
 
         for key in del_keys:
             self.grid.actions.delete_cell(key)
@@ -1254,8 +1268,8 @@ class FindActions(Actions):
         self.grid.code_array[findpos] = new_code
         self.grid.actions.cursor = findpos
 
-        statustext = _("Replaced {} with {} in cell {}.").format(\
-                        old_code, new_code, findpos)
+        statustext = _("Replaced {} with {} in cell {}.").format(
+            old_code, new_code, findpos)
 
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)

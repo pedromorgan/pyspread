@@ -173,9 +173,12 @@ class MainApplication(App, GridActionEventMixin):
 
         # Create GPG key if not present
 
-        from src.lib.gpg import genkey
+        try:
+            from src.lib.gpg import genkey
+            genkey()
 
-        genkey()
+        except ImportError:
+            pass
 
         # Show application window
         self.SetTopWindow(self.main_window)

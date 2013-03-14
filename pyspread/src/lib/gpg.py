@@ -126,9 +126,9 @@ def genkey():
         pyspread_key_uid = gpg_key_parameters["name_real"]
         short_message = _("New GPG key").format(pyspread_key_uid)
         message = _("After confirming this dialog, a new GPG key ") + \
-                  _("'{}' will be generated.").format(pyspread_key_uid) + \
-                  _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
-                  _("Canceling this operation exits pyspread.")
+            _("'{}' will be generated.").format(pyspread_key_uid) + \
+            _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
+            _("Canceling this operation exits pyspread.")
         dlg = GMD.GenericMessageDialog(None, message, short_message, style)
         dlg.Centre()
 
