@@ -388,6 +388,8 @@ class MainWindowEventHandlers(object):
         self.main_window.main_menu.enable_file_approve(True)
 
         self.main_window.grid.Refresh()
+        
+        event.Skip()
 
     def OnSafeModeExit(self, event):
         """Safe mode exit event handler"""
@@ -401,6 +403,8 @@ class MainWindowEventHandlers(object):
         self.main_window.main_menu.enable_file_approve(False)
 
         self.main_window.grid.Refresh()
+        
+        event.Skip()
 
     def OnClose(self, event):
         """Program exit event handler"""

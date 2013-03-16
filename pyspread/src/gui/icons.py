@@ -83,6 +83,7 @@ class GtkArtProvider(wx.ArtProvider):
             "plot": action_path + "chart_line.png",  # matplotlib plot chart
             "bar": action_path + "chart_column.png",  # matplotlib bar chart
             "pie": action_path + "chart_pie.png",  # matplotlib pie chart
+            "safe_mode": icon_path + "status/dialog-warning.png",
             }
 
     def get_paths(self, theme, icon_size):

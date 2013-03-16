@@ -56,6 +56,7 @@ from src.sysvars import get_default_font
 
 from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
 from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
+from _events import MainWindowEventMixin
 
 from icons import icons
 
@@ -846,19 +847,74 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
 # end of class EntryLine
 
 
-class StatusBar(wx.StatusBar, StatusBarEventMixin):
+class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
     """Main window statusbar"""
 
     def __init__(self, parent):
         wx.StatusBar.__init__(self, parent, -1)
+        
+        self.SetFieldsCount(2)
+        
+        self.size_changed = False
+
+        safemode_bmp = icons["safe_mode"]
+        
+        self.safemode_staticbmp = wx.StaticBitmap(self, 1001, safemode_bmp)
+        tooltip = wx.ToolTip(\
+            _("Pyspread is in safe mode.\nExpressions are not evaluated."))
+        self.safemode_staticbmp.SetToolTip(tooltip)
+            
+        self.SetStatusWidths([-1, safemode_bmp.GetWidth() + 4])
+        
+        self.safemode_staticbmp.Hide()
 
         parent.Bind(self.EVT_STATUSBAR_MSG, self.OnMessage)
+        parent.Bind(self.EVT_CMD_SAFE_MODE_ENTRY, self.OnSafeModeEntry)
+        parent.Bind(self.EVT_CMD_SAFE_MODE_EXIT, self.OnSafeModeExit)
+        self.Bind(wx.EVT_SIZE, self.OnSize)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
+        
 
     def OnMessage(self, event):
         """Statusbar message event handler"""
 
         self.SetStatusText(event.text)
+        
+    def OnSize(self, evt):
+        self.Reposition()  # for normal size events
 
+        # Set a flag so the idle time handler will also do the repositioning.
+        # It is done this way to get around a buglet where GetFieldRect is not
+        # accurate during the EVT_SIZE resulting from a frame maximize.
+        self.size_changed = True
+
+
+    def OnIdle(self, event):
+        if self.size_changed:
+            self.Reposition()
+
+    def Reposition(self):
+        """Reposition the checkbox"""
+        
+        rect = self.GetFieldRect(1)
+        self.safemode_staticbmp.SetPosition((rect.x, rect.y))
+        self.size_changed = False
+        
+    def OnSafeModeEntry(self, event):
+        """Safe mode entry event handler"""
+        
+        self.safemode_staticbmp.Show(True)
+        
+        event.Skip()
+        
+
+    def OnSafeModeExit(self, event):
+        """Safe mode exit event handler"""
+        
+        self.safemode_staticbmp.Hide()
+        
+        event.Skip()
+        
 # end of class StatusBar
 
 
