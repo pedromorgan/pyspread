@@ -37,6 +37,7 @@ Provides:
   - AboutDialog
   - ConfigDialog
   - GPGParamsDialog
+  - PasteAsDialog
 
 """
 
@@ -1267,3 +1268,21 @@ class GPGParamsDialog(wx.Dialog):
 
         self.SetSizer(sizer)
         sizer.Fit(self)
+
+# end of class GPGParamsDialog
+
+
+class PasteAsDialog(wx.Dialog):
+    """Gets paste as parameters from user
+
+    Parameters
+    ----------
+    dim: Integer in [1, 2, 3]
+    \tDimensionality of data
+
+    """
+
+    def __init__(self, parent, id, dim, *args, **kwargs):
+        self.dim = dim
+        title = _("Paste as")
+        wx.Dialog.__init__(self, parent, id, title, *args, **kwargs)

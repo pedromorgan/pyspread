@@ -41,7 +41,7 @@ import src.lib.i18n as i18n
 
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
-from _dialogs import PreferencesDialog, GPGParamsDialog
+from _dialogs import PreferencesDialog, GPGParamsDialog, PasteAsDialog
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -99,7 +99,8 @@ class ModalDialogInterfaceMixin(object):
 
         msg = _("There are unsaved changes.\nDo you want to save?")
 
-        dlg = GMD.GenericMessageDialog(self.main_window, msg,
+        dlg = GMD.GenericMessageDialog(
+            self.main_window, msg,
             _("Unsaved changes"), wx.YES_NO | wx.ICON_QUESTION | wx.CANCEL)
 
         save_choice = dlg.ShowModal()
@@ -139,7 +140,7 @@ class ModalDialogInterfaceMixin(object):
         return filepath, filter_index
 
     def display_warning(self, message, short_message,
-                              style=wx.OK | wx.ICON_WARNING):
+                        style=wx.OK | wx.ICON_WARNING):
         """Displays a warning message"""
 
         dlg = GMD.GenericMessageDialog(self.main_window, message,
@@ -148,7 +149,7 @@ class ModalDialogInterfaceMixin(object):
         dlg.Destroy()
 
     def get_warning_choice(self, message, short_message,
-                        style=wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING):
+                           style=wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING):
         """Launches proceeding dialog and returns True if ok to proceed"""
 
         dlg = GMD.GenericMessageDialog(self.main_window, message,
@@ -286,6 +287,21 @@ class ModalDialogInterfaceMixin(object):
                 pass
 
         return integer
+
+    def get_pasteas_options_from_user(self, dim):
+        """Opens a PasteAsDialog and returns options dict
+
+        Parameters
+        ----------
+        dim: Integer in [1, 2, 3]
+        \tDimensionality of data
+
+        """
+
+        dlg = PasteAsDialog(None, -1, dim=2)
+        dlg.ShowModal()
+
+        return {}
 
 
 class DialogInterfaceMixin(object):

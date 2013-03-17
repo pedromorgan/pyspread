@@ -389,7 +389,7 @@ class MainWindowEventHandlers(object):
         self.main_window.main_menu.enable_file_approve(True)
 
         self.main_window.grid.Refresh()
-        
+
         event.Skip()
 
     def OnSafeModeExit(self, event):
@@ -404,7 +404,7 @@ class MainWindowEventHandlers(object):
         self.main_window.main_menu.enable_file_approve(False)
 
         self.main_window.grid.Refresh()
-        
+
         event.Skip()
 
     def OnClose(self, event):
@@ -958,6 +958,8 @@ class MainWindowEventHandlers(object):
 
     def OnPasteAs(self, event):
         """Clipboard paste as event handler"""
+
+        self.main_window.interfaces.get_pasteas_options_from_user(dim=2)
 
         event.Skip()
 
