@@ -296,6 +296,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_COPY, handlers.OnCopy)
         self.Bind(self.EVT_CMD_COPY_RESULT, handlers.OnCopyResult)
         self.Bind(self.EVT_CMD_PASTE, handlers.OnPaste)
+        self.Bind(self.EVT_CMD_PASTE_AS, handlers.OnPasteAs)
 
         # Help events
 
@@ -952,6 +953,11 @@ class MainWindowEventHandlers(object):
             self.main_window.actions.paste(key, data)
 
         self.main_window.grid.ForceRefresh()
+
+        event.Skip()
+
+    def OnPasteAs(self, event):
+        """Clipboard paste as event handler"""
 
         event.Skip()
 

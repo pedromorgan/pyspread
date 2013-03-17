@@ -162,6 +162,7 @@ class GridEventMixin(object):
     CopyMsg, EVT_CMD_COPY = new_command_event()
     CopyResultMsg, EVT_CMD_COPY_RESULT = new_command_event()
     PasteMsg, EVT_CMD_PASTE = new_command_event()
+    PasteAsMsg, EVT_CMD_PASTE_AS = new_command_event()
 
     # Grid edit mode events
 
