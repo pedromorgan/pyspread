@@ -387,7 +387,16 @@ class ClipboardActions(Actions):
 
         row, col, tab = key
 
-        return unicode(self.grid.code_array[row, col, tab])
+        result_obj = self.grid.code_array[row, col, tab]
+
+        try:
+            # Numpy object arrays are converted because of numpy repr bug
+            result_obj = result_obj.tolist()
+
+        except AttributeError:
+            pass
+
+        return unicode(result_obj)
 
     def copy_result(self, selection):
         """Returns result

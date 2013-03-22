@@ -175,27 +175,27 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_FONTSIZE, c_handlers.OnCellFontSize)
         main_window.Bind(self.EVT_CMD_FONTBOLD, c_handlers.OnCellFontBold)
         main_window.Bind(self.EVT_CMD_FONTITALICS,
-                    c_handlers.OnCellFontItalics)
+                         c_handlers.OnCellFontItalics)
         main_window.Bind(self.EVT_CMD_FONTUNDERLINE,
-                    c_handlers.OnCellFontUnderline)
+                         c_handlers.OnCellFontUnderline)
         main_window.Bind(self.EVT_CMD_FONTSTRIKETHROUGH,
-                    c_handlers.OnCellFontStrikethrough)
+                         c_handlers.OnCellFontStrikethrough)
         main_window.Bind(self.EVT_CMD_FROZEN, c_handlers.OnCellFrozen)
         main_window.Bind(self.EVT_CMD_MERGE, c_handlers.OnMerge)
         main_window.Bind(self.EVT_CMD_JUSTIFICATION,
-                    c_handlers.OnCellJustification)
+                         c_handlers.OnCellJustification)
         main_window.Bind(self.EVT_CMD_ALIGNMENT, c_handlers.OnCellAlignment)
         main_window.Bind(self.EVT_CMD_BORDERWIDTH,
-                    c_handlers.OnCellBorderWidth)
+                         c_handlers.OnCellBorderWidth)
         main_window.Bind(self.EVT_CMD_BORDERCOLOR,
-                    c_handlers.OnCellBorderColor)
+                         c_handlers.OnCellBorderColor)
         main_window.Bind(self.EVT_CMD_BACKGROUNDCOLOR,
-                    c_handlers.OnCellBackgroundColor)
+                         c_handlers.OnCellBackgroundColor)
         main_window.Bind(self.EVT_CMD_TEXTCOLOR, c_handlers.OnCellTextColor)
         main_window.Bind(self.EVT_CMD_ROTATIONDIALOG,
-                    c_handlers.OnTextRotationDialog)
+                         c_handlers.OnTextRotationDialog)
         main_window.Bind(self.EVT_CMD_TEXTROTATATION,
-                    c_handlers.OnCellTextRotation)
+                         c_handlers.OnCellTextRotation)
 
         # Cell selection events
 
@@ -211,9 +211,9 @@ class Grid(wx.grid.Grid, EventMixin):
         # Grid view events
 
         main_window.Bind(self.EVT_CMD_REFRESH_SELECTION,
-                    handlers.OnRefreshSelectedCells)
+                         handlers.OnRefreshSelectedCells)
         main_window.Bind(self.EVT_CMD_DISPLAY_GOTO_CELL_DIALOG,
-                    handlers.OnDisplayGoToCellDialog)
+                         handlers.OnDisplayGoToCellDialog)
         main_window.Bind(self.EVT_CMD_GOTO_CELL, handlers.OnGoToCell)
         main_window.Bind(self.EVT_CMD_ZOOM_IN, handlers.OnZoomIn)
         main_window.Bind(self.EVT_CMD_ZOOM_OUT, handlers.OnZoomOut)
@@ -239,7 +239,7 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_DELETE_TABS, handlers.OnDeleteTabs)
 
         main_window.Bind(self.EVT_CMD_SHOW_RESIZE_GRID_DIALOG,
-                                                  handlers.OnResizeGridDialog)
+                         handlers.OnResizeGridDialog)
 
         main_window.Bind(wx.grid.EVT_GRID_ROW_SIZE, handlers.OnRowSize)
         main_window.Bind(wx.grid.EVT_GRID_COL_SIZE, handlers.OnColSize)
@@ -376,8 +376,9 @@ class GridCellEventHandlers(object):
         wildcard = "*"
         message = _("Select bitmap for current cell")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, __ = self.grid.interfaces.get_filepath_findex_from_user(
-                                                    wildcard, message, style)
+        filepath, __ = \
+            self.grid.interfaces.get_filepath_findex_from_user(wildcard,
+                                                               message, style)
 
         bmp = wx.Bitmap(filepath)
         if bmp.Size == (-1, -1):
@@ -396,8 +397,9 @@ class GridCellEventHandlers(object):
         wildcard = "*"
         message = _("Select bitmap for current cell")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, __ = self.grid.interfaces.get_filepath_findex_from_user(
-                                                    wildcard, message, style)
+        filepath, __ = \
+            self.grid.interfaces.get_filepath_findex_from_user(wildcard,
+                                                               message, style)
 
         bmp = wx.Bitmap(filepath)
         if bmp.Size == (-1, -1):
@@ -539,16 +541,16 @@ class GridCellEventHandlers(object):
     def OnCellBorderWidth(self, event):
         """Cell border width event handler"""
 
-        self.grid.actions.set_border_attr("borderwidth", event.width,
-                                                         event.borders)
+        self.grid.actions.set_border_attr("borderwidth",
+                                          event.width, event.borders)
 
         event.Skip()
 
     def OnCellBorderColor(self, event):
         """Cell border color event handler"""
 
-        self.grid.actions.set_border_attr("bordercolor", event.color,
-                                                         event.borders)
+        self.grid.actions.set_border_attr("bordercolor",
+                                          event.color, event.borders)
 
         event.Skip()
 

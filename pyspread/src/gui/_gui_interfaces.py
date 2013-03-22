@@ -288,20 +288,21 @@ class ModalDialogInterfaceMixin(object):
 
         return integer
 
-    def get_pasteas_options_from_user(self, dim):
-        """Opens a PasteAsDialog and returns options dict
+    def get_pasteas_parameters_from_user(self, obj):
+        """Opens a PasteAsDialog and returns parameters dict"""
 
-        Parameters
-        ----------
-        dim: Integer in [1, 2, 3]
-        \tDimensionality of data
+        dlg = PasteAsDialog(None, -1, obj)
+        dlg_choice = dlg.ShowModal()
 
-        """
+        if dlg_choice != wx.ID_OK:
+            dlg.Destroy()
+            return None
 
-        dlg = PasteAsDialog(None, -1, dim=2)
-        dlg.ShowModal()
+        parameters = {}
+        parameters.update(dlg.parameters)
+        dlg.Destroy()
 
-        return {}
+        return parameters
 
 
 class DialogInterfaceMixin(object):

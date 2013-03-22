@@ -373,9 +373,9 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if ptype is types.StringType:
+            if isinstance(ptype, types.StringType):
                 parameters[pname] = str(widget.GetValue())
-            elif ptype is types.BooleanType:
+            elif isinstance(ptype, types.BooleanType):
                 parameters[pname] = widget.GetValue()
             elif pname == 'quoting':
                 choice = self.choices['quoting'][widget.GetSelection()]
@@ -503,8 +503,8 @@ class CSVPreviewGrid(wx.grid.Grid):
         # Add Choices
         for col in xrange(self.shape[1]):
             choice_renderer = ChoiceRenderer(self)
-            choice_editor = wx.grid.GridCellChoiceEditor(
-                                self.digest_types.keys(), False)
+            choice_editor = \
+                wx.grid.GridCellChoiceEditor(self.digest_types.keys(), False)
             self.SetCellRenderer(has_header, col, choice_renderer)
             self.SetCellEditor(has_header, col, choice_editor)
             self.SetCellValue(has_header, col, digest_keys[col])
@@ -540,7 +540,7 @@ class CSVPreviewGrid(wx.grid.Grid):
         """Returns a list of the target types"""
 
         return [self.digest_types[digest_key]
-                    for digest_key in self.get_digest_keys()]
+                for digest_key in self.get_digest_keys()]
 
 
 class CSVPreviewTextCtrl(wx.TextCtrl):
@@ -764,11 +764,12 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.upper_panel = wx.Panel(self.splitter, -1)
         self.lower_panel = wx.Panel(self.splitter, -1)
 
-        self.codetext_ctrl = PythonSTC(self.upper_panel, -1, style=wx.EXPAND |
-            wx.TE_PROCESS_ENTER | wx.TE_PROCESS_TAB | wx.TE_MULTILINE)
+        style = wx.EXPAND | wx.TE_PROCESS_ENTER | wx.TE_PROCESS_TAB | \
+            wx.TE_MULTILINE
+        self.codetext_ctrl = PythonSTC(self.upper_panel, -1, style=style)
 
-        self.result_ctrl = wx.TextCtrl(self.lower_panel, -1,
-          style=wx.TE_MULTILINE | wx.TE_READONLY)
+        style = wx.TE_MULTILINE | wx.TE_READONLY
+        self.result_ctrl = wx.TextCtrl(self.lower_panel, -1, style=style)
 
         self.ok_button = wx.Button(self.lower_panel, wx.ID_OK)
         self.apply_button = wx.Button(self.lower_panel, wx.ID_APPLY)
@@ -1277,12 +1278,55 @@ class PasteAsDialog(wx.Dialog):
 
     Parameters
     ----------
-    dim: Integer in [1, 2, 3]
-    \tDimensionality of data
+    obj: Object
+    \tObject that shall be pasted
 
     """
 
-    def __init__(self, parent, id, dim, *args, **kwargs):
-        self.dim = dim
+    def __init__(self, parent, id, obj, *args, **kwargs):
         title = _("Paste as")
         wx.Dialog.__init__(self, parent, id, title, *args, **kwargs)
+
+        sizer = wx.FlexGridSizer(3, 2, 5, 5)
+
+        self.dim_label = wx.StaticText(self, -1, _("Dimension of object"))
+        self.dim_spinctrl = wx.SpinCtrl(self, -1, "Dim", (30, 50))
+        self.dim_spinctrl.SetRange(0, self.get_max_dim(obj))
+
+        ok_button = wx.Button(self, wx.ID_OK)
+        cancel_button = wx.Button(self, wx.ID_CANCEL)
+
+        sizer.Add(self.dim_label)
+        sizer.Add(self.dim_spinctrl)
+
+        sizer.Add(ok_button)
+        sizer.Add(cancel_button)
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+
+    def get_max_dim(self, obj):
+        """Returns maximum dimensionality over which obj is iterable <= 2"""
+
+        try:
+            iter(obj)
+
+        except TypeError:
+            return 0
+
+        try:
+            for o in obj:
+                iter(o)
+                break
+
+        except TypeError:
+            return 1
+
+        return 2
+
+    def get_parameters(self):
+        """Returns dict of dialog content"""
+
+        return {"dim": self.dim_spinctrl.GetValue()}
+
+    parameters = property(get_parameters)

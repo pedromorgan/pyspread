@@ -945,10 +945,7 @@ class MainWindowEventHandlers(object):
 
         else:
             # We got a grid selection
-            grid = self.main_window.grid
-            key = (grid.GetGridCursorRow(),
-                   grid.GetGridCursorCol(),
-                   grid.current_table)
+            key = self.main_window.grid.actions.cursor
 
             self.main_window.actions.paste(key, data)
 
@@ -959,7 +956,22 @@ class MainWindowEventHandlers(object):
     def OnPasteAs(self, event):
         """Clipboard paste as event handler"""
 
-        self.main_window.interfaces.get_pasteas_options_from_user(dim=2)
+        obj = ast.literal_eval(self.main_window.clipboard.get_clipboard())
+        parameters = \
+            self.main_window.interfaces.get_pasteas_parameters_from_user(obj)
+
+        key = self.main_window.grid.actions.cursor
+        print parameters["dim"]
+        if parameters["dim"] == 0:
+            data = [[repr(obj)]]
+        elif parameters["dim"] == 1:
+            data = [[repr(o)] for o in obj]
+        elif parameters["dim"] == 2:
+            data = [map(repr, o) for o in obj]
+
+        self.main_window.grid.actions.paste(key, data)
+
+        self.main_window.grid.ForceRefresh()
 
         event.Skip()
 
