@@ -953,6 +953,25 @@ class MainWindowEventHandlers(object):
 
         event.Skip()
 
+    def get_data(self, dim, obj):
+        """Returns list of lists of obj than has dimensionality dim
+
+        Parameters
+        ----------
+        dim: Integer
+        \tDimensionality of obj
+        obj: Object
+        \tIterable object of dimensionality dim
+
+        """
+
+        if dim == 0:
+            return [[repr(obj)]]
+        elif dim == 1:
+            return [[repr(o)] for o in obj]
+        elif dim == 2:
+            return [map(repr, o) for o in obj]
+
     def OnPasteAs(self, event):
         """Clipboard paste as event handler"""
 
@@ -961,13 +980,11 @@ class MainWindowEventHandlers(object):
             self.main_window.interfaces.get_pasteas_parameters_from_user(obj)
 
         key = self.main_window.grid.actions.cursor
-        print parameters["dim"]
-        if parameters["dim"] == 0:
-            data = [[repr(obj)]]
-        elif parameters["dim"] == 1:
-            data = [[repr(o)] for o in obj]
-        elif parameters["dim"] == 2:
-            data = [map(repr, o) for o in obj]
+
+        data = self.get_data(parameters["dim"], obj)
+
+        if parameters["transpose"]:
+            data = zip(*data)
 
         self.main_window.grid.actions.paste(key, data)
 

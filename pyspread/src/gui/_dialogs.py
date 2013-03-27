@@ -1293,11 +1293,17 @@ class PasteAsDialog(wx.Dialog):
         self.dim_spinctrl = wx.SpinCtrl(self, -1, "Dim", (30, 50))
         self.dim_spinctrl.SetRange(0, self.get_max_dim(obj))
 
+        self.transpose_label = wx.StaticText(self, -1, _("Transpose"))
+        self.transpose_checkbox = wx.CheckBox(self, -1)
+
         ok_button = wx.Button(self, wx.ID_OK)
         cancel_button = wx.Button(self, wx.ID_CANCEL)
 
         sizer.Add(self.dim_label)
         sizer.Add(self.dim_spinctrl)
+
+        sizer.Add(self.transpose_label)
+        sizer.Add(self.transpose_checkbox)
 
         sizer.Add(ok_button)
         sizer.Add(cancel_button)
@@ -1327,6 +1333,9 @@ class PasteAsDialog(wx.Dialog):
     def get_parameters(self):
         """Returns dict of dialog content"""
 
-        return {"dim": self.dim_spinctrl.GetValue()}
+        return {
+            "dim": self.dim_spinctrl.GetValue(),
+            "transpose": self.transpose_checkbox.GetValue()
+        }
 
     parameters = property(get_parameters)
