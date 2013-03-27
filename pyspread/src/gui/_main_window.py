@@ -329,7 +329,7 @@ class MainWindow(wx.Frame, EventMixin):
 # End of class MainWindow
 
 
-class MainWindowEventHandlers(object):
+class MainWindowEventHandlers(EventMixin):
     """Contains main window event handlers"""
 
     def __init__(self, parent):
@@ -975,7 +975,14 @@ class MainWindowEventHandlers(object):
     def OnPasteAs(self, event):
         """Clipboard paste as event handler"""
 
-        obj = ast.literal_eval(self.main_window.clipboard.get_clipboard())
+        try:
+            obj = ast.literal_eval(self.main_window.clipboard.get_clipboard())
+        except ValueError, err:
+            msg = _("Error evaluating data: ") + str(err)
+            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
+            event.Skip()
+            return
+
         parameters = \
             self.main_window.interfaces.get_pasteas_parameters_from_user(obj)
 
