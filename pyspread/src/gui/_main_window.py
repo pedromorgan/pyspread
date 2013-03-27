@@ -953,7 +953,7 @@ class MainWindowEventHandlers(object):
 
         event.Skip()
 
-    def get_data(self, dim, obj):
+    def get_pasteas_data(self, dim, obj):
         """Returns list of lists of obj than has dimensionality dim
 
         Parameters
@@ -981,7 +981,7 @@ class MainWindowEventHandlers(object):
 
         key = self.main_window.grid.actions.cursor
 
-        data = self.get_data(parameters["dim"], obj)
+        data = self.get_pasteas_data(parameters["dim"], obj)
 
         if parameters["transpose"]:
             data = zip(*data)
