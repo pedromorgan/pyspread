@@ -119,12 +119,14 @@ class ChartFigure(Figure):
     plot_type_fixed_attrs = {
         "plot": ["ydata"],
         "bar": ["left", "height"],
+        "boxplot": ["x"],
         "pie": ["x"],
     }
 
     plot_type_xy_mapping = {
         "plot": ["xdata", "ydata"],
         "bar": ["left", "height"],
+        "boxplot": ["x", "x"],
         "pie": ["labels", "x"],
     }
 
@@ -178,6 +180,7 @@ class ChartFigure(Figure):
         self._setup_axes(self.attributes[0])
 
         for attribute in self.attributes[1:]:
+
             series = copy(attribute)
             # Extract chart type
             chart_type_string = series.pop("type")
@@ -200,7 +203,7 @@ class ChartFigure(Figure):
                 except KeyError:
                     fixed_attrs.append(())
 
-            if all(fixed_attrs):
+            if not fixed_attrs or all(fixed_attrs):
 
                 # Draw series to axes
                 chart_method = getattr(self.__axes, chart_type_string)

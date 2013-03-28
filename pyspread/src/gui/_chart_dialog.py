@@ -454,13 +454,13 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
 
     default_data = {
         "label": (_("Series label"), StringEditor, ""),
-        "xdata":  (_("X"), StringEditor, ""),
-        "ydata":  (_("Y"), StringEditor, ""),
-        "linestyle":  (_("Style"), LineStyleEditor, '-'),
-        "linewidth":  (_("Width"), IntegerEditor, "1"),
-        "color":  (_("Color"), ColorEditor, "(0, 0, 0)"),
-        "marker":  (_("Style"), MarkerStyleEditor, ""),
-        "markersize":  (_("Size"), IntegerEditor, "5"),
+        "xdata": (_("X"), StringEditor, ""),
+        "ydata": (_("Y"), StringEditor, ""),
+        "linestyle": (_("Style"), LineStyleEditor, '-'),
+        "linewidth": (_("Width"), IntegerEditor, "1"),
+        "color": (_("Color"), ColorEditor, "(0, 0, 0)"),
+        "marker": (_("Style"), MarkerStyleEditor, ""),
+        "markersize": (_("Size"), IntegerEditor, "5"),
         "markerfacecolor": (_("Face color"), ColorEditor, "(0, 0, 0)"),
         "markeredgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
     }
@@ -501,6 +501,29 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     ]
 
 
+class BoxplotAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides bar series attributes in multiple boxplot panels"""
+
+    # Data for boxplot
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "x": (_("Series"), StringEditor, ""),
+        "widths": (_("Box widths"), StringEditor, "0.5"),
+        "vert": (_("Vertical"), BoolEditor, True),
+        "sym":  (_("Flier"), MarkerStyleEditor, "+"),
+        "notch": (_("Notch"), BoolEditor, False),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["x"]),
+        (_("Box plot"), ["widths", "vert", "sym", "notch"]),
+    ]
+
+
 class PieAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides pie series attributes in multiple boxed panels"""
 
@@ -508,7 +531,7 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "x": (_("Data series"), StringEditor, ""),
+        "x": (_("Series"), StringEditor, ""),
         "labels": (_("Labels"), StringEditor, ""),
         "colors": (_("Colors"), StringEditor, ""),
         "shadow": (_("Shadow"), BoolEditor, False),
@@ -557,6 +580,7 @@ class SeriesPanel(wx.Panel):
     plot_types = [
         {"type": "plot", "panel_class": PlotAttributesPanel},
         {"type": "bar", "panel_class": BarAttributesPanel},
+        {"type": "boxplot", "panel_class": BoxplotAttributesPanel},
         {"type": "pie", "panel_class": PieAttributesPanel},
     ]
 
@@ -900,7 +924,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                   "xlim", "ylim", "x", "labels", "colors"]
 
     # String keys need to be put in "
-    string_keys = ["type", "linestyle", "marker", "shadow", "grid"]
+    string_keys = ["type", "linestyle", "marker", "shadow", "grid", "vert",
+                   "notch", "sym"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors"]

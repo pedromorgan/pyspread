@@ -47,7 +47,7 @@ class GtkArtProvider(wx.ArtProvider):
         wx.ArtProvider.__init__(self)
 
         theme_path, icon_path, action_path, toggle_path = \
-                                self.get_paths(theme, icon_size)
+            self.get_paths(theme, icon_size)
 
         self.extra_icons = {
             "PyspreadLogo": theme_path + "pyspread.png",
@@ -82,9 +82,10 @@ class GtkArtProvider(wx.ArtProvider):
             "InsertChart": action_path + "chart_line.png",
             "plot": action_path + "chart_line.png",  # matplotlib plot chart
             "bar": action_path + "chart_column.png",  # matplotlib bar chart
+            "boxplot": action_path + "chart_boxplot.png",  # matplotlib boxplot
             "pie": action_path + "chart_pie.png",  # matplotlib pie chart
             "safe_mode": icon_path + "status/dialog-warning.png",
-            }
+        }
 
     def get_paths(self, theme, icon_size):
         """Returns tuple of theme, icon, action and toggle paths"""
@@ -115,7 +116,7 @@ class WindowsArtProvider(GtkArtProvider):
         GtkArtProvider.__init__(self, theme, icon_size)
 
         theme_path, icon_path, action_path, toggle_path = \
-                                self.get_paths(theme, icon_size)
+            self.get_paths(theme, icon_size)
 
         windows_icons = {
             wx.ART_NEW: action_path + "document-new.png",
@@ -173,7 +174,7 @@ class Icons(object):
         "GoDown": wx.ART_GO_DOWN,
         "Add": wx.ART_ADD_BOOKMARK,
         "Remove": wx.ART_DEL_BOOKMARK,
-        }
+    }
 
     def __init__(self, icon_set=wx.ART_OTHER, icon_theme="Tango",
                  icon_size=(24, 24)):
@@ -203,6 +204,6 @@ class Icons(object):
             icon_name = self.icons[icon_name]
 
         return wx.ArtProvider.GetBitmap(icon_name, self.icon_set,
-                                       self.icon_size)
+                                        self.icon_size)
 
 icons = Icons()
