@@ -508,9 +508,9 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "label": (_("Series label"), StringEditor, ""),
         "x": (_("Data series"), StringEditor, ""),
         "labels": (_("Labels"), StringEditor, ""),
+        "colors": (_("Colors"), StringEditor, ""),
         "shadow": (_("Shadow"), BoolEditor, False),
     }
 
@@ -518,8 +518,8 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Data"), ["label", "x"]),
-        (_("Pie"), ["labels", "shadow"]),
+        (_("Data"), ["x"]),
+        (_("Pie"), ["labels", "colors", "shadow"]),
     ]
 
 
@@ -646,8 +646,7 @@ class AllSeriesPanel(wx.Panel, ChartDialogEventMixin):
     """Panel that holds series panels for all series of the chart"""
 
     def __init__(self, grid):
-        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
-                        wx.THICK_FRAME
+        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
 
         self.grid = grid
 
@@ -833,10 +832,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __do_layout(self):
         main_sizer = wx.FlexGridSizer(2, 3, 2, 2)
-        figure_attributes_box_sizer = wx.StaticBoxSizer(
-                        self.figure_attributes_staticbox, wx.HORIZONTAL)
-        series_box_sizer = wx.StaticBoxSizer(
-                        self.series_staticbox, wx.VERTICAL)
+        figure_attributes_box_sizer = \
+            wx.StaticBoxSizer(self.figure_attributes_staticbox, wx.HORIZONTAL)
+        series_box_sizer = \
+            wx.StaticBoxSizer(self.series_staticbox, wx.VERTICAL)
         button_sizer = wx.FlexGridSizer(1, 3, 0, 3)
 
         main_sizer.Add(figure_attributes_box_sizer, 1, wx.EXPAND, 0)
@@ -852,10 +851,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                                         1, wx.EXPAND, 0)
         series_box_sizer.Add(self.all_series_panel, 1, wx.EXPAND, 0)
 
-        button_sizer.Add(self.ok_button, 0,
-            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
-        button_sizer.Add(self.cancel_button, 0,
-            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
+        style = wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL
+        button_sizer.Add(self.ok_button, 0, style, 3)
+        button_sizer.Add(self.cancel_button, 0, style, 3)
         button_sizer.AddGrowableCol(2)
 
         self.SetSizer(main_sizer)
@@ -898,10 +896,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
-                  "xlim", "ylim", "x", "labels"]
+                  "xlim", "ylim", "x", "labels", "colors"]
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow"]
+
+    # Keys, which have to be None if empty
+    empty_none_keys = ["colors"]
 
     def set_code(self, code):
         """Update widgets from code"""
@@ -955,6 +956,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
                 elif code and key in self.tuple_keys and \
                      not (code[0] in ["[", "("] and code[-1] in ["]", ")"]):
+
                     code = "(" + code + ")"
 
                 elif key in ["xscale", "yscale"]:
@@ -970,7 +972,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                         code = '0'
 
                 if not code:
-                    code = 'u""'
+                    if key in self.empty_none_keys:
+                        code = "None"
+                    else:
+                        code = 'u""'
 
                 result += repr(key) + ": " + code + ", "
 
