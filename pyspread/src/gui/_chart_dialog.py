@@ -537,6 +537,7 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
         "ylabel": (_("Label"), StringEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
+        "grid": (_("Grid"), BoolEditor, False),
         "legend": (_("Legend"), BoolEditor, False),
     }
 
@@ -544,7 +545,7 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Figure"), ["title", "legend"]),
+        (_("Figure"), ["title", "grid", "legend"]),
         (_("X-Axis"), ["xlabel", "xlim", "xscale"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
     ]
@@ -899,7 +900,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                   "xlim", "ylim", "x", "labels", "colors"]
 
     # String keys need to be put in "
-    string_keys = ["type", "linestyle", "marker", "shadow"]
+    string_keys = ["type", "linestyle", "marker", "shadow", "grid"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors"]

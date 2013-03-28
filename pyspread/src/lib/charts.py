@@ -155,6 +155,7 @@ class ChartFigure(Figure):
             "yscale": self.__axes.set_yscale,
             "xlim": self.__axes.set_xlim,
             "ylim": self.__axes.set_ylim,
+            "grid": self.__axes.grid,
         }
 
         for key in key2setter:
