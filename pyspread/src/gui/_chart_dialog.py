@@ -952,7 +952,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                   "xlim", "ylim", "x", "labels", "colors"]
 
     # String keys need to be put in "
-    string_keys = ["type", "linestyle", "marker", "shadow", "grid", "vert",
+    string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",
                    "notch", "sym", "normed", "cumulative"]
 
     # Keys, which have to be None if empty
