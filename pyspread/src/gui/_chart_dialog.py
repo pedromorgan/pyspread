@@ -453,7 +453,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "label": (_("Series label"), StringEditor, ""),
+        "label": (_("Label"), StringEditor, ""),
         "xdata": (_("X"), StringEditor, ""),
         "ydata": (_("Y"), StringEditor, ""),
         "linestyle": (_("Style"), LineStyleEditor, '-'),
@@ -483,7 +483,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "label": (_("Series label"), StringEditor, ""),
+        "label": (_("Label"), StringEditor, ""),
         "left": (_("Left positions"), StringEditor, ""),
         "height": (_("Bar heights"), StringEditor, ""),
         "width": (_("Bar widths"), StringEditor, ""),
@@ -531,7 +531,7 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "label": (_("Series label"), StringEditor, ""),
+        "label": (_("Label"), StringEditor, ""),
         "x": (_("Series"), StringEditor, ""),
         "bins": (_("Bins"), IntegerEditor, "10"),
         "normed": (_("Normed"), BoolEditor, False),
@@ -626,7 +626,8 @@ class SeriesPanel(wx.Panel):
 
             series_data = {}
             if plot_type == series_dict["type"]:
-                series_data.update(series_dict)
+                for key in series_dict:
+                    series_data[key] = charts.object2code(key, series_dict[key])
 
             plot_panel = PlotPanelClass(self, series_data, -1)
 
