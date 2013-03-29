@@ -870,7 +870,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         main_sizer.AddGrowableRow(0)
         main_sizer.SetItemMinSize(1, (300, 300))
-        main_sizer.AddGrowableCol(2)
+        main_sizer.AddGrowableCol(0, proportion=1)
+        main_sizer.AddGrowableCol(1, proportion=1)
+        main_sizer.AddGrowableCol(2, proportion=1.5)
 
         figure_attributes_box_sizer.Add(self.figure_attributes_panel,
                                         1, wx.EXPAND, 0)
