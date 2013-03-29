@@ -120,6 +120,7 @@ class ChartFigure(Figure):
         "plot": ["ydata"],
         "bar": ["left", "height"],
         "boxplot": ["x"],
+        "hist": ["x"],
         "pie": ["x"],
     }
 
@@ -127,6 +128,7 @@ class ChartFigure(Figure):
         "plot": ["xdata", "ydata"],
         "bar": ["left", "height"],
         "boxplot": ["x", "x"],
+        "hist": ["label", "x"],
         "pie": ["labels", "x"],
     }
 

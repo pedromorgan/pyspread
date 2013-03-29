@@ -524,6 +524,30 @@ class BoxplotAttributesPanel(SeriesAttributesPanelBase):
     ]
 
 
+class HistogramAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides bar series attributes in histogram panels"""
+
+    # Data for histogram
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "label": (_("Series label"), StringEditor, ""),
+        "x": (_("Series"), StringEditor, ""),
+        "bins": (_("Bins"), IntegerEditor, "10"),
+        "normed": (_("Normed"), BoolEditor, False),
+        "cumulative": (_("Cumulative"), BoolEditor, False),
+        "color": (_("Color"), ColorEditor, "(0, 0, 1)"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["label", "x"]),
+        (_("Histogram"), ["bins", "normed", "cumulative", "color"]),
+    ]
+
+
 class PieAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides pie series attributes in multiple boxed panels"""
 
@@ -580,6 +604,7 @@ class SeriesPanel(wx.Panel):
     plot_types = [
         {"type": "plot", "panel_class": PlotAttributesPanel},
         {"type": "bar", "panel_class": BarAttributesPanel},
+        {"type": "hist", "panel_class": HistogramAttributesPanel},
         {"type": "boxplot", "panel_class": BoxplotAttributesPanel},
         {"type": "pie", "panel_class": PieAttributesPanel},
     ]
@@ -927,10 +952,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "grid", "vert",
-                   "notch", "sym"]
+                   "notch", "sym", "normed", "cumulative"]
 
     # Keys, which have to be None if empty
-    empty_none_keys = ["colors"]
+    empty_none_keys = ["colors", "color"]
 
     def set_code(self, code):
         """Update widgets from code"""
