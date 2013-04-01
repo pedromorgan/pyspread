@@ -118,6 +118,9 @@ class Grid(wx.grid.Grid, EventMixin):
         # The currently visible table
         self.current_table = 0
 
+        # The cell that has been selected before the latest selection
+        self._last_selected_cell = 0, 0, 0
+
     def _layout(self):
         """Initial layout of grid"""
 
@@ -611,7 +614,7 @@ class GridCellEventHandlers(object):
         """Sets grid cursor to key"""
 
         self.grid.SetGridCursor(row, col)
-        self._last_selected_cell = row, col, tab
+        self.grid._last_selected_cell = row, col, tab
         return
 
     def OnCellSelected(self, event):
@@ -630,7 +633,7 @@ class GridCellEventHandlers(object):
 
         if merge_area is not None:
             top, left, bottom, right = merge_area
-            if self._last_selected_cell == (top, left, tab):
+            if self.grid._last_selected_cell == (top, left, tab):
                 if row == top + 1:
                     self.set_cursor(bottom + 1, left, tab)
                     return
@@ -650,7 +653,7 @@ class GridCellEventHandlers(object):
         # Update attribute toolbar
         self._update_attribute_toolbar(key)
 
-        self._last_selected_cell = key
+        self.grid._last_selected_cell = key
 
         event.Skip()
 

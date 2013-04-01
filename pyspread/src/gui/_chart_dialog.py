@@ -627,7 +627,8 @@ class SeriesPanel(wx.Panel):
             series_data = {}
             if plot_type == series_dict["type"]:
                 for key in series_dict:
-                    series_data[key] = charts.object2code(key, series_dict[key])
+                    series_data[key] = charts.object2code(key,
+                                                          series_dict[key])
 
             plot_panel = PlotPanelClass(self, series_data, -1)
 
@@ -846,7 +847,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __init__(self, grid, code):
         style = wx.RESIZE_BORDER | wx.CLOSE_BOX
-        wx.Dialog.__init__(self, grid, -1, style=style)
+        wx.Dialog.__init__(self, grid.main_window, -1, style=style)
 
         self.grid = grid
         self.key = self.grid.actions.cursor
