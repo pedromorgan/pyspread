@@ -422,7 +422,7 @@ class GridCellEventHandlers(object):
         if cell_code is None:
             cell_code = u""
 
-        chart_dialog = ChartDialog(self.grid, cell_code)
+        chart_dialog = ChartDialog(self.grid.main_window, cell_code)
 
         if chart_dialog.ShowModal() == wx.ID_OK:
             code = chart_dialog.get_code()
