@@ -1,0 +1,1542 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-04-08 01:05+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/lib/clipboard.py:90 src/lib/clipboard.py:124
+msgid "Can't open the clipboard"
+msgstr ""
+
+#: src/lib/clipboard.py:90 src/lib/clipboard.py:124
+msgid "Error"
+msgstr ""
+
+#: src/lib/clipboard.py:118
+msgid "Datatype {} unknown"
+msgstr ""
+
+#: src/lib/__csv.py:269
+msgid "Fallback type {} unknown."
+msgstr ""
+
+#: src/lib/gpg.py:63
+msgid ""
+"Choose a GPG key for signing pyspread save files.\n"
+"The GPG key must not have a passphrase set."
+msgstr ""
+
+#: src/lib/gpg.py:66
+msgid "Choose key"
+msgstr ""
+
+#: src/lib/gpg.py:72
+msgid "Use chosen key"
+msgstr ""
+
+#: src/lib/gpg.py:73
+msgid "Create new key"
+msgstr ""
+
+#: src/lib/gpg.py:127
+msgid "New GPG key"
+msgstr ""
+
+#: src/lib/gpg.py:128
+msgid "After confirming this dialog, a new GPG key "
+msgstr ""
+
+#: src/lib/gpg.py:129
+msgid "'{}' will be generated."
+msgstr ""
+
+#: src/lib/gpg.py:130
+msgid ""
+" \n"
+" \n"
+"This may take some time.\n"
+"Please wait.\n"
+" \n"
+msgstr ""
+
+#: src/lib/gpg.py:131
+msgid "Canceling this operation exits pyspread."
+msgstr ""
+
+#: src/pyspread.py:95
+msgid "usage: %prog [options] [filename]"
+msgstr ""
+
+#: src/pyspread.py:96
+msgid "%prog {}"
+msgstr ""
+
+#: src/pyspread.py:107
+#, python-format
+msgid ""
+"Dimensions of empty grid (works only without filename) rows, cols, tables "
+"[default: %default]"
+msgstr ""
+
+#: src/pyspread.py:123
+msgid "Cell dimension must be > 0."
+msgstr ""
+
+#: src/pyspread.py:128
+msgid "Only one file may be opened at a time."
+msgstr ""
+
+#: src/pyspread.py:231
+msgid "You need a unicode build of wxPython to run pyspread."
+msgstr ""
+
+#: src/gui/_menubars.py:123 src/gui/_menubars.py:196
+msgid "&Approve file"
+msgstr ""
+
+#: src/gui/_menubars.py:134
+msgid "Menu item unknown"
+msgstr ""
+
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:222
+msgid "Cu&t"
+msgstr ""
+
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:223
+msgid "Cut cell to clipboard"
+msgstr ""
+
+#: src/gui/_menubars.py:155 src/gui/_menubars.py:224
+msgid "&Copy"
+msgstr ""
+
+#: src/gui/_menubars.py:155
+msgid "Copy input strings to clipboard"
+msgstr ""
+
+#: src/gui/_menubars.py:157 src/gui/_menubars.py:230
+msgid "&Paste"
+msgstr ""
+
+#: src/gui/_menubars.py:157 src/gui/_menubars.py:231
+msgid "Paste cells from clipboard"
+msgstr ""
+
+#: src/gui/_menubars.py:159 src/gui/_menubars.py:240
+msgid "Insert &rows"
+msgstr ""
+
+#: src/gui/_menubars.py:160 src/gui/_menubars.py:241
+msgid "Insert rows at cursor"
+msgstr ""
+
+#: src/gui/_menubars.py:161 src/gui/_menubars.py:242
+msgid "&Insert columns"
+msgstr ""
+
+#: src/gui/_menubars.py:162 src/gui/_menubars.py:243
+msgid "Insert columns at cursor"
+msgstr ""
+
+#: src/gui/_menubars.py:163 src/gui/_menubars.py:247 src/gui/_menubars.py:248
+msgid "Delete rows"
+msgstr ""
+
+#: src/gui/_menubars.py:164 src/gui/_menubars.py:249 src/gui/_menubars.py:250
+msgid "Delete columns"
+msgstr ""
+
+#: src/gui/_menubars.py:180
+msgid "&File"
+msgstr ""
+
+#: src/gui/_menubars.py:181
+msgid "&New"
+msgstr ""
+
+#: src/gui/_menubars.py:182
+msgid "Create a new, empty spreadsheet"
+msgstr ""
+
+#: src/gui/_menubars.py:183
+msgid "&Open"
+msgstr ""
+
+#: src/gui/_menubars.py:184
+msgid "Open spreadsheet from file"
+msgstr ""
+
+#: src/gui/_menubars.py:186
+msgid "&Save"
+msgstr ""
+
+#: src/gui/_menubars.py:187
+msgid "Save spreadsheet"
+msgstr ""
+
+#: src/gui/_menubars.py:188
+msgid "Save &As"
+msgstr ""
+
+#: src/gui/_menubars.py:189
+msgid "Save spreadsheet to a new file"
+msgstr ""
+
+#: src/gui/_menubars.py:191
+msgid "&Import"
+msgstr ""
+
+#: src/gui/_menubars.py:192
+msgid "Import a file and paste it into current grid"
+msgstr ""
+
+#: src/gui/_menubars.py:193
+msgid "&Export"
+msgstr ""
+
+#: src/gui/_menubars.py:194
+msgid "Export selection to file (Supported formats: CSV)"
+msgstr ""
+
+#: src/gui/_menubars.py:197
+msgid "Approve, unfreeze and sign the current file"
+msgstr ""
+
+#: src/gui/_menubars.py:199
+msgid "&Clear globals"
+msgstr ""
+
+#: src/gui/_menubars.py:200
+msgid "Deletes global variables from memory and reloads base modules"
+msgstr ""
+
+#: src/gui/_menubars.py:203
+msgid "Page setup"
+msgstr ""
+
+#: src/gui/_menubars.py:204
+msgid "Setup printer page"
+msgstr ""
+
+#: src/gui/_menubars.py:205 src/gui/_menubars.py:206
+#: src/actions/_main_window_actions.py:245
+msgid "Print preview"
+msgstr ""
+
+#: src/gui/_menubars.py:207
+msgid "&Print"
+msgstr ""
+
+#: src/gui/_menubars.py:208
+msgid "Print current spreadsheet"
+msgstr ""
+
+#: src/gui/_menubars.py:210
+msgid "Preferences..."
+msgstr ""
+
+#: src/gui/_menubars.py:211
+msgid "Change preferences of pyspread"
+msgstr ""
+
+#: src/gui/_menubars.py:213
+msgid "&Quit"
+msgstr ""
+
+#: src/gui/_menubars.py:214
+msgid "Quit pyspread"
+msgstr ""
+
+#: src/gui/_menubars.py:216
+msgid "&Edit"
+msgstr ""
+
+#: src/gui/_menubars.py:217
+msgid "&Undo"
+msgstr ""
+
+#: src/gui/_menubars.py:218
+msgid "Undo last step"
+msgstr ""
+
+#: src/gui/_menubars.py:219
+msgid "&Redo"
+msgstr ""
+
+#: src/gui/_menubars.py:220
+msgid "Redo last undone step"
+msgstr ""
+
+#: src/gui/_menubars.py:225
+msgid "Copy the input strings of the cells to clipboard"
+msgstr ""
+
+#: src/gui/_menubars.py:228
+msgid "Copy &Results"
+msgstr ""
+
+#: src/gui/_menubars.py:229
+msgid "Copy the result strings of the cells to the clipboard"
+msgstr ""
+
+#: src/gui/_menubars.py:232
+msgid "Paste &As..."
+msgstr ""
+
+#: src/gui/_menubars.py:233
+msgid "Transform clipboard and paste cells into grid"
+msgstr ""
+
+#: src/gui/_menubars.py:235
+msgid "&Find"
+msgstr ""
+
+#: src/gui/_menubars.py:236
+msgid "Find cell by content"
+msgstr ""
+
+#: src/gui/_menubars.py:237
+msgid "Replace..."
+msgstr ""
+
+#: src/gui/_menubars.py:238
+msgid "Replace strings in cells"
+msgstr ""
+
+#: src/gui/_menubars.py:244
+msgid "Insert &table"
+msgstr ""
+
+#: src/gui/_menubars.py:245
+msgid "Insert table before current table"
+msgstr ""
+
+#: src/gui/_menubars.py:251
+msgid "Delete table"
+msgstr ""
+
+#: src/gui/_menubars.py:252
+msgid "Delete current table"
+msgstr ""
+
+#: src/gui/_menubars.py:254 src/gui/_menubars.py:255
+msgid "Resize grid"
+msgstr ""
+
+#: src/gui/_menubars.py:257
+msgid "&View"
+msgstr ""
+
+#: src/gui/_menubars.py:258
+msgid "Toolbars"
+msgstr ""
+
+#: src/gui/_menubars.py:259 src/gui/_main_window.py:164
+msgid "Main toolbar"
+msgstr ""
+
+#: src/gui/_menubars.py:260
+msgid "Shows and hides the main toolbar."
+msgstr ""
+
+#: src/gui/_menubars.py:262 src/gui/_main_window.py:165
+msgid "Macro toolbar"
+msgstr ""
+
+#: src/gui/_menubars.py:263
+msgid "Shows and hides the macro toolbar."
+msgstr ""
+
+#: src/gui/_menubars.py:266 src/gui/_main_window.py:167
+msgid "Format toolbar"
+msgstr ""
+
+#: src/gui/_menubars.py:267
+msgid "Shows and hides the format toolbar."
+msgstr ""
+
+#: src/gui/_menubars.py:269 src/gui/_main_window.py:168
+msgid "Find toolbar"
+msgstr ""
+
+#: src/gui/_menubars.py:270
+msgid "Shows and hides the find toolbar."
+msgstr ""
+
+#: src/gui/_menubars.py:274 src/gui/_main_window.py:169
+#: src/gui/_main_window.py:212
+msgid "Entry line"
+msgstr ""
+
+#: src/gui/_menubars.py:275
+msgid "Shows and hides the entry line."
+msgstr ""
+
+#: src/gui/_menubars.py:276
+msgid "Table choice"
+msgstr ""
+
+#: src/gui/_menubars.py:277
+msgid "Shows and hides the table choice."
+msgstr ""
+
+#: src/gui/_menubars.py:281
+msgid "Go to cell"
+msgstr ""
+
+#: src/gui/_menubars.py:282
+msgid "Moves the grid to a cell."
+msgstr ""
+
+#: src/gui/_menubars.py:284
+msgid "Zoom in"
+msgstr ""
+
+#: src/gui/_menubars.py:285
+msgid "Zoom in grid."
+msgstr ""
+
+#: src/gui/_menubars.py:286
+msgid "Zoom out"
+msgstr ""
+
+#: src/gui/_menubars.py:287
+msgid "Zoom out grid."
+msgstr ""
+
+#: src/gui/_menubars.py:288
+msgid "Normal size"
+msgstr ""
+
+#: src/gui/_menubars.py:289
+msgid "Show grid in standard zoom."
+msgstr ""
+
+#: src/gui/_menubars.py:292
+msgid "Refresh selected cells"
+msgstr ""
+
+#: src/gui/_menubars.py:293
+msgid "Refresh selected cells even when frozen"
+msgstr ""
+
+#: src/gui/_menubars.py:297
+msgid "F&ormat"
+msgstr ""
+
+#: src/gui/_menubars.py:298
+msgid "Font..."
+msgstr ""
+
+#: src/gui/_menubars.py:299
+msgid "Launch font dialog."
+msgstr ""
+
+#: src/gui/_menubars.py:300 src/gui/_toolbars.py:413
+msgid "Underline"
+msgstr ""
+
+#: src/gui/_menubars.py:301
+msgid "Toggles underline."
+msgstr ""
+
+#: src/gui/_menubars.py:302 src/gui/_toolbars.py:415
+msgid "Strikethrough"
+msgstr ""
+
+#: src/gui/_menubars.py:303
+msgid "Toggles strikethrough."
+msgstr ""
+
+#: src/gui/_menubars.py:305
+msgid "Frozen"
+msgstr ""
+
+#: src/gui/_menubars.py:306
+msgid "Toggles frozen state of cell. "
+msgstr ""
+
+#: src/gui/_menubars.py:307
+msgid "Frozen cells are updated only when F5 is pressed."
+msgstr ""
+
+#: src/gui/_menubars.py:308 src/gui/_toolbars.py:509
+msgid "Merge cells"
+msgstr ""
+
+#: src/gui/_menubars.py:309
+msgid "Merges / unmerges selected cells. "
+msgstr ""
+
+#: src/gui/_menubars.py:312
+msgid "Justification"
+msgstr ""
+
+#: src/gui/_menubars.py:313
+msgid "Left"
+msgstr ""
+
+#: src/gui/_menubars.py:315 src/gui/_menubars.py:322
+msgid "Center"
+msgstr ""
+
+#: src/gui/_menubars.py:317
+msgid "Right"
+msgstr ""
+
+#: src/gui/_menubars.py:320
+msgid "Alignment"
+msgstr ""
+
+#: src/gui/_menubars.py:322
+msgid "Top"
+msgstr ""
+
+#: src/gui/_menubars.py:322
+msgid "Bottom"
+msgstr ""
+
+#: src/gui/_menubars.py:325
+msgid "Text color..."
+msgstr ""
+
+#: src/gui/_menubars.py:326
+msgid "Launch color dialog to specify text color."
+msgstr ""
+
+#: src/gui/_menubars.py:327
+msgid "Background color..."
+msgstr ""
+
+#: src/gui/_menubars.py:328
+msgid "Launch color dialog to specify background color."
+msgstr ""
+
+#: src/gui/_menubars.py:330
+msgid "Rotation..."
+msgstr ""
+
+#: src/gui/_menubars.py:331
+msgid "Set text rotation."
+msgstr ""
+
+#: src/gui/_menubars.py:334
+msgid "&Macro"
+msgstr ""
+
+#: src/gui/_menubars.py:335
+msgid "&Macro list"
+msgstr ""
+
+#: src/gui/_menubars.py:336
+msgid "Choose, fill in, manage, and create macros"
+msgstr ""
+
+#: src/gui/_menubars.py:337
+msgid "&Load macro list"
+msgstr ""
+
+#: src/gui/_menubars.py:338
+msgid "Load macro list"
+msgstr ""
+
+#: src/gui/_menubars.py:339
+msgid "&Save macro list"
+msgstr ""
+
+#: src/gui/_menubars.py:340
+msgid "Save macro list"
+msgstr ""
+
+#: src/gui/_menubars.py:342
+msgid "Insert bitmap..."
+msgstr ""
+
+#: src/gui/_menubars.py:343
+msgid "Insert bitmap from file into cell"
+msgstr ""
+
+#: src/gui/_menubars.py:344
+msgid "Link bitmap..."
+msgstr ""
+
+#: src/gui/_menubars.py:345
+msgid "Link bitmap from file into cell"
+msgstr ""
+
+#: src/gui/_menubars.py:346
+msgid "Insert chart..."
+msgstr ""
+
+#: src/gui/_menubars.py:347
+msgid "Insert chart into cell"
+msgstr ""
+
+#: src/gui/_menubars.py:350
+msgid "&Help"
+msgstr ""
+
+#: src/gui/_menubars.py:351
+msgid "First &Steps"
+msgstr ""
+
+#: src/gui/_menubars.py:352
+msgid "Launch First Steps in pyspread"
+msgstr ""
+
+#: src/gui/_menubars.py:353
+msgid "&Tutorial"
+msgstr ""
+
+#: src/gui/_menubars.py:354
+msgid "Launch tutorial"
+msgstr ""
+
+#: src/gui/_menubars.py:355
+msgid "&FAQ"
+msgstr ""
+
+#: src/gui/_menubars.py:356
+msgid "Frequently asked questions"
+msgstr ""
+
+#: src/gui/_menubars.py:358
+msgid "&Python tutorial"
+msgstr ""
+
+#: src/gui/_menubars.py:359
+msgid "Python tutorial for coding information (online)"
+msgstr ""
+
+#: src/gui/_menubars.py:361
+msgid "&About"
+msgstr ""
+
+#: src/gui/_menubars.py:361 src/gui/_dialogs.py:1081
+msgid "About pyspread"
+msgstr ""
+
+#: src/gui/_main_window.py:97
+msgid "Welcome to pyspread."
+msgstr ""
+
+#: src/gui/_main_window.py:177
+msgid "View"
+msgstr ""
+
+#: src/gui/_main_window.py:190
+msgid "Macro Toolbar"
+msgstr ""
+
+#: src/gui/_main_window.py:196
+msgid "Main Toolbar"
+msgstr ""
+
+#: src/gui/_main_window.py:201 src/gui/_toolbars.py:156
+msgid "Find"
+msgstr ""
+
+#: src/gui/_main_window.py:207
+msgid "Cell Attributes"
+msgstr ""
+
+#: src/gui/_main_window.py:579
+msgid "New grid with dimensions {} created."
+msgstr ""
+
+#: src/gui/_main_window.py:604 src/gui/_main_window.py:661
+msgid "Pyspread file"
+msgstr ""
+
+#: src/gui/_main_window.py:605 src/gui/_main_window.py:662
+#: src/gui/_main_window.py:1113 src/gui/_main_window.py:1141
+msgid "All files"
+msgstr ""
+
+#: src/gui/_main_window.py:606
+msgid "Choose pyspread file to open."
+msgstr ""
+
+#: src/gui/_main_window.py:663
+msgid "Choose filename for saving."
+msgstr ""
+
+#: src/gui/_main_window.py:676
+msgid "Directory present. Save aborted."
+msgstr ""
+
+#: src/gui/_main_window.py:684
+msgid ""
+"The file {filepath} is already present.\n"
+"Overwrite?"
+msgstr ""
+
+#: src/gui/_main_window.py:686
+msgid "File collision"
+msgstr ""
+
+#: src/gui/_main_window.py:691
+msgid "File present. Save aborted by user."
+msgstr ""
+
+#: src/gui/_main_window.py:718 src/gui/_main_window.py:757
+msgid "CSV file"
+msgstr ""
+
+#: src/gui/_main_window.py:719
+msgid "Tab delimited text file"
+msgstr ""
+
+#: src/gui/_main_window.py:720
+msgid "Choose file to import."
+msgstr ""
+
+#: src/gui/_main_window.py:783
+msgid "SVG file"
+msgstr ""
+
+#: src/gui/_main_window.py:784
+msgid "EPS file"
+msgstr ""
+
+#: src/gui/_main_window.py:785
+msgid "PS file"
+msgstr ""
+
+#: src/gui/_main_window.py:786
+msgid "PDF file"
+msgstr ""
+
+#: src/gui/_main_window.py:787
+msgid "PNG file"
+msgstr ""
+
+#: src/gui/_main_window.py:789
+msgid "Choose filename for export."
+msgstr ""
+
+#: src/gui/_main_window.py:811
+msgid ""
+"You are going to approve and trust a file that\n"
+"you have received from an untrusted source.\n"
+"After proceeding, the file is executed.\n"
+"It can harm your system as any program can.\n"
+"Unless you took precautions, it can delete your\n"
+"files or send them away over the Internet.\n"
+"CHECK EACH CELL BEFORE PROCEEDING.\n"
+" \n"
+"Do not forget cells outside the visible range.\n"
+"You have been warned.\n"
+" \n"
+"Proceed and sign this file as trusted?"
+msgstr ""
+
+#: src/gui/_main_window.py:822
+msgid "Security warning"
+msgstr ""
+
+#: src/gui/_main_window.py:830
+msgid "Safe mode deactivated."
+msgstr ""
+
+#: src/gui/_main_window.py:837
+msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
+msgstr ""
+
+#: src/gui/_main_window.py:839
+msgid "Really delete globals and modules?"
+msgstr ""
+
+#: src/gui/_main_window.py:846
+msgid "Globals cleared and base modules reloaded."
+msgstr ""
+
+#: src/gui/_main_window.py:981
+msgid "Error evaluating data: "
+msgstr ""
+
+#: src/gui/_main_window.py:1112 src/gui/_main_window.py:1140
+msgid "Macro file"
+msgstr ""
+
+#: src/gui/_main_window.py:1114 src/gui/_main_window.py:1142
+msgid "Choose macro file."
+msgstr ""
+
+#: src/gui/_chart_dialog.py:456 src/gui/_chart_dialog.py:486
+#: src/gui/_chart_dialog.py:534 src/gui/_chart_dialog.py:581
+#: src/gui/_chart_dialog.py:584
+msgid "Label"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:457
+msgid "X"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:458
+msgid "Y"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:459 src/gui/_chart_dialog.py:462
+msgid "Style"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:460
+msgid "Width"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:461 src/gui/_chart_dialog.py:539
+msgid "Color"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:463
+msgid "Size"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:464
+msgid "Face color"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:465 src/gui/_chart_dialog.py:492
+msgid "Edge color"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:472 src/gui/_chart_dialog.py:499
+#: src/gui/_chart_dialog.py:522 src/gui/_chart_dialog.py:546
+#: src/gui/_chart_dialog.py:568
+msgid "Data"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:473
+msgid "Line"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:474
+msgid "Marker"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:487
+msgid "Left positions"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:488
+msgid "Bar heights"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:489
+msgid "Bar widths"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:490
+msgid "Bar bottoms"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:491
+msgid "Bar color"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:500
+msgid "Bar"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:511 src/gui/_chart_dialog.py:535
+#: src/gui/_chart_dialog.py:558 src/gui/_chart_dialog.py:784
+#: src/gui/_chart_dialog.py:883
+msgid "Series"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:512
+msgid "Box widths"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:513
+msgid "Vertical"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:514
+msgid "Flier"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:515
+msgid "Notch"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:523
+msgid "Box plot"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:536
+msgid "Bins"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:537
+msgid "Normed"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:538
+msgid "Cumulative"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:547
+msgid "Histogram"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:559
+msgid "Labels"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:560
+msgid "Colors"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:561
+msgid "Shadow"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:569
+msgid "Pie"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:580
+msgid "Title"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:582 src/gui/_chart_dialog.py:585
+msgid "Limits"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:583 src/gui/_chart_dialog.py:586
+msgid "Log. scale"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:587
+msgid "Grid"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:588
+msgid "Legend"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:595
+msgid "Figure"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:596
+msgid "X-Axis"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:597
+msgid "Y-Axis"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:752 src/gui/_chart_dialog.py:768
+msgid "+"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:879 src/gui/_toolbars.py:182
+msgid "Insert chart"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:882
+msgid "Axes"
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:67
+msgid "Currently, only 3D grids are supported."
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:100
+msgid ""
+"There are unsaved changes.\n"
+"Do you want to save?"
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:104
+msgid "Unsaved changes"
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:203
+msgid ""
+"'{}' does not seem to be a valid CSV file.\n"
+" \n"
+"Opening it yielded the error:\n"
+"{}"
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:205 src/actions/_main_window_actions.py:129
+msgid "Error reading CSV file"
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:352
+msgid "Real name"
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:372
+msgid "Please enter a value in each field."
+msgstr ""
+
+#: src/gui/_gui_interfaces.py:374
+msgid "Missing value"
+msgstr ""
+
+#: src/gui/_grid.py:380 src/gui/_grid.py:401
+msgid "Select bitmap for current cell"
+msgstr ""
+
+#: src/gui/_grid.py:461
+msgid "Weight {} unknown"
+msgstr ""
+
+#: src/gui/_grid.py:481
+msgid "Style {} unknown"
+msgstr ""
+
+#: src/gui/_grid.py:583
+msgid "Enter text angle in degrees."
+msgstr ""
+
+#: src/gui/_grid.py:901
+msgid "'{}' not found."
+msgstr ""
+
+#: src/gui/_grid.py:908
+msgid "Found '{}' in cell {}."
+msgstr ""
+
+#: src/gui/_grid.py:1081
+msgid "Grid dimensions changed to {}."
+msgstr ""
+
+#: src/gui/_printout.py:198
+msgid "Page: {}"
+msgstr ""
+
+#: src/gui/_toolbars.py:149
+msgid "New"
+msgstr ""
+
+#: src/gui/_toolbars.py:150
+msgid "Open"
+msgstr ""
+
+#: src/gui/_toolbars.py:151
+msgid "Save"
+msgstr ""
+
+#: src/gui/_toolbars.py:153
+msgid "Undo"
+msgstr ""
+
+#: src/gui/_toolbars.py:154
+msgid "Redo"
+msgstr ""
+
+#: src/gui/_toolbars.py:157
+msgid "Replace"
+msgstr ""
+
+#: src/gui/_toolbars.py:159
+msgid "Cut"
+msgstr ""
+
+#: src/gui/_toolbars.py:160
+msgid "Copy"
+msgstr ""
+
+#: src/gui/_toolbars.py:161
+msgid "Copy Results"
+msgstr ""
+
+#: src/gui/_toolbars.py:162
+msgid "Paste"
+msgstr ""
+
+#: src/gui/_toolbars.py:164
+msgid "Print"
+msgstr ""
+
+#: src/gui/_toolbars.py:180
+msgid "Insert bitmap"
+msgstr ""
+
+#: src/gui/_toolbars.py:181
+msgid "Link bitmap"
+msgstr ""
+
+#: src/gui/_toolbars.py:205
+msgid "Find in code and results"
+msgstr ""
+
+#: src/gui/_toolbars.py:213
+msgid "Search direction"
+msgstr ""
+
+#: src/gui/_toolbars.py:225
+msgid "Case sensitive"
+msgstr ""
+
+#: src/gui/_toolbars.py:226
+msgid "Regular expression"
+msgstr ""
+
+#: src/gui/_toolbars.py:227
+msgid "Surrounded by whitespace"
+msgstr ""
+
+#: src/gui/_toolbars.py:298
+msgid "Neither UP nor DOWN in search_flags"
+msgstr ""
+
+#: src/gui/_toolbars.py:409
+msgid "Bold"
+msgstr ""
+
+#: src/gui/_toolbars.py:411
+msgid "Italics"
+msgstr ""
+
+#: src/gui/_toolbars.py:416
+msgid "Freeze"
+msgstr ""
+
+#: src/gui/_grid_renderer.py:379
+msgid "Vertical alignment {} not in (top, middle, bottom)"
+msgstr ""
+
+#: src/gui/_grid_renderer.py:406
+msgid "Cell justification {} not in (left, center, right)"
+msgstr ""
+
+#: src/gui/_widgets.py:475
+msgid "Label {} is invalid."
+msgstr ""
+
+#: src/gui/_widgets.py:493
+msgid "Code {} is invalid."
+msgstr ""
+
+#: src/gui/_widgets.py:703
+msgid "Toggles link insertion mode."
+msgstr ""
+
+#: src/gui/_widgets.py:765
+msgid "Enter Python expression here."
+msgstr ""
+
+#: src/gui/_widgets.py:864
+msgid ""
+"Pyspread is in safe mode.\n"
+"Expressions are not evaluated."
+msgstr ""
+
+#: src/gui/_widgets.py:934
+msgid "For switching tables enter the table number or use the mouse wheel."
+msgstr ""
+
+#: src/gui/_dialogs.py:173
+msgid "Dialect"
+msgstr ""
+
+#: src/gui/_dialogs.py:174
+msgid ""
+"To make it easier to specify the format of input and output records, "
+"specific formatting parameters are grouped together into dialects.\n"
+"'excel': Defines the usual properties of an Excel-generated CSV file.\n"
+"'sniffer': Deduces the format of a CSV file\n"
+"'excel-tab': Defines the usual properties of an Excel-generated TAB-"
+"delimited file."
+msgstr ""
+
+#: src/gui/_dialogs.py:180
+msgid "Delimiter"
+msgstr ""
+
+#: src/gui/_dialogs.py:181
+msgid "A one-character string used to separate fields."
+msgstr ""
+
+#: src/gui/_dialogs.py:182
+msgid "Doublequote"
+msgstr ""
+
+#: src/gui/_dialogs.py:183
+msgid ""
+"Controls how instances of quotechar appearing inside a field should be "
+"themselves be quoted. When True, the character is doubled. When False, the "
+"escapechar is used as a prefix to the quotechar."
+msgstr ""
+
+#: src/gui/_dialogs.py:187
+msgid "Escape character"
+msgstr ""
+
+#: src/gui/_dialogs.py:188
+msgid ""
+"A one-character string used by the writer to escape the delimiter if quoting "
+"is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, "
+"the escapechar removes any special meaning from the following character."
+msgstr ""
+
+#: src/gui/_dialogs.py:193
+msgid "Quote character"
+msgstr ""
+
+#: src/gui/_dialogs.py:194
+msgid ""
+"A one-character string used to quote fields containing special characters, "
+"such as the delimiter or quotechar, or which contain new-line characters."
+msgstr ""
+
+#: src/gui/_dialogs.py:197
+msgid "Quoting style"
+msgstr ""
+
+#: src/gui/_dialogs.py:198
+msgid "Controls when quotes should be recognised."
+msgstr ""
+
+#: src/gui/_dialogs.py:199
+msgid "Header present"
+msgstr ""
+
+#: src/gui/_dialogs.py:200
+msgid ""
+"Analyze the CSV file and treat the first row as strings if it appears to be "
+"a series of column headers."
+msgstr ""
+
+#: src/gui/_dialogs.py:202
+msgid "Skip initial space"
+msgstr ""
+
+#: src/gui/_dialogs.py:203
+msgid "When True, whitespace immediately following the delimiter is ignored."
+msgstr ""
+
+#: src/gui/_dialogs.py:384
+msgid "{} unknown."
+msgstr ""
+
+#: src/gui/_dialogs.py:392
+msgid ""
+"The dialect is invalid. \n"
+" \n"
+"Error message:\n"
+"{}"
+msgstr ""
+
+#: src/gui/_dialogs.py:615
+msgid "CSV Import: {}"
+msgstr ""
+
+#: src/gui/_dialogs.py:819
+msgid "Macro list"
+msgstr ""
+
+#: src/gui/_dialogs.py:821
+msgid "Enter python code here."
+msgstr ""
+
+#: src/gui/_dialogs.py:822
+msgid "Accept all changes"
+msgstr ""
+
+#: src/gui/_dialogs.py:823
+msgid "Apply changes to current macro"
+msgstr ""
+
+#: src/gui/_dialogs.py:824
+msgid "Remove current macro"
+msgstr ""
+
+#: src/gui/_dialogs.py:866
+msgid "Rows"
+msgstr ""
+
+#: src/gui/_dialogs.py:869
+msgid "Columns"
+msgstr ""
+
+#: src/gui/_dialogs.py:872
+msgid "Tables"
+msgstr ""
+
+#: src/gui/_dialogs.py:980
+msgid "Goto cell:"
+msgstr ""
+
+#: src/gui/_dialogs.py:985
+msgid "Row: "
+msgstr ""
+
+#: src/gui/_dialogs.py:994
+msgid "Column: "
+msgstr ""
+
+#: src/gui/_dialogs.py:1002
+msgid "Table: "
+msgstr ""
+
+#: src/gui/_dialogs.py:1010
+msgid "OK"
+msgstr ""
+
+#: src/gui/_dialogs.py:1013
+msgid "Cancel"
+msgstr ""
+
+#: src/gui/_dialogs.py:1059
+msgid ""
+"A non-traditional Python spreadsheet application.\n"
+"Pyspread is based on and written in the programming language Python."
+msgstr ""
+
+#: src/gui/_dialogs.py:1063
+msgid "Pyspread Web site"
+msgstr ""
+
+#: src/gui/_dialogs.py:1083
+msgid ""
+"pyspread {}\n"
+"Copyright Martin Manns"
+msgstr ""
+
+#: src/gui/_dialogs.py:1133
+msgid "Max. undo steps"
+msgstr ""
+
+#: src/gui/_dialogs.py:1134
+msgid "Maximum number of undo steps"
+msgstr ""
+
+#: src/gui/_dialogs.py:1140
+msgid "Grid rows"
+msgstr ""
+
+#: src/gui/_dialogs.py:1141
+msgid "Number of grid rows when starting pyspread"
+msgstr ""
+
+#: src/gui/_dialogs.py:1147
+msgid "Grid columns"
+msgstr ""
+
+#: src/gui/_dialogs.py:1148
+msgid "Number of grid columns when starting pyspread"
+msgstr ""
+
+#: src/gui/_dialogs.py:1154
+msgid "Grid tables"
+msgstr ""
+
+#: src/gui/_dialogs.py:1155
+msgid "Number of grid tables when starting pyspread"
+msgstr ""
+
+#: src/gui/_dialogs.py:1161
+msgid "Max. result length"
+msgstr ""
+
+#: src/gui/_dialogs.py:1162
+msgid "Maximum length of cell result string"
+msgstr ""
+
+#: src/gui/_dialogs.py:1168
+msgid "GPG key name"
+msgstr ""
+
+#: src/gui/_dialogs.py:1169
+msgid "Name of the GPG key for signing files"
+msgstr ""
+
+#: src/gui/_dialogs.py:1177
+msgid "Preferences"
+msgstr ""
+
+#: src/gui/_dialogs.py:1245
+msgid "GPG key data"
+msgstr ""
+
+#: src/gui/_dialogs.py:1262
+msgid "Starts key generation."
+msgstr ""
+
+#: src/gui/_dialogs.py:1267
+msgid "Exits pyspread."
+msgstr ""
+
+#: src/gui/_dialogs.py:1287
+msgid "Paste as"
+msgstr ""
+
+#: src/gui/_dialogs.py:1292
+msgid "Dimension of object"
+msgstr ""
+
+#: src/gui/_dialogs.py:1296
+msgid "Transpose"
+msgstr ""
+
+#: src/actions/_grid_actions.py:107
+msgid "{nele} elements processed. Press <Esc> to abort."
+msgstr ""
+
+#: src/actions/_grid_actions.py:109
+msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
+msgstr ""
+
+#: src/actions/_grid_actions.py:176
+msgid "Valid signature found. File is trusted."
+msgstr ""
+
+#: src/actions/_grid_actions.py:185
+msgid ""
+"File is not properly signed. Safe mode activated. Select File -> Approve to "
+"leave safe mode."
+msgstr ""
+
+#: src/actions/_grid_actions.py:205
+msgid "File format unsupported."
+msgstr ""
+
+#: src/actions/_grid_actions.py:214
+msgid "File loading aborted."
+msgstr ""
+
+#: src/actions/_grid_actions.py:281 src/actions/_grid_actions.py:348
+#: src/actions/_grid_actions.py:453 src/actions/_main_window_actions.py:91
+#: src/actions/_main_window_actions.py:522
+msgid "Error opening file {}."
+msgstr ""
+
+#: src/actions/_grid_actions.py:295
+msgid "File version {} unsupported (not 0.1)."
+msgstr ""
+
+#: src/actions/_grid_actions.py:309
+msgid "No section parser present."
+msgstr ""
+
+#: src/actions/_grid_actions.py:383
+msgid "Error signing file. "
+msgstr ""
+
+#: src/actions/_grid_actions.py:400
+msgid "File saved and signed"
+msgstr ""
+
+#: src/actions/_grid_actions.py:402
+msgid "File signed"
+msgstr ""
+
+#: src/actions/_grid_actions.py:414
+msgid "Save aborted."
+msgstr ""
+
+#: src/actions/_grid_actions.py:446
+msgid "Error writing to file {}."
+msgstr ""
+
+#: src/actions/_grid_actions.py:537
+msgid "File saved but not signed because it is unapproved."
+msgstr ""
+
+#: src/actions/_grid_actions.py:701
+msgid "Key length {}  not in (2, 3)"
+msgstr ""
+
+#: src/actions/_grid_actions.py:706
+msgid "Paste aborted."
+msgstr ""
+
+#: src/actions/_grid_actions.py:717
+msgid "rows and columns"
+msgstr ""
+
+#: src/actions/_grid_actions.py:719
+msgid "rows"
+msgstr ""
+
+#: src/actions/_grid_actions.py:721
+msgid "columns"
+msgstr ""
+
+#: src/actions/_grid_actions.py:723
+msgid "Import cell overflow missing"
+msgstr ""
+
+#: src/actions/_grid_actions.py:726
+msgid ""
+"The imported data did not fit into the grid {cause}. It has been truncated. "
+"Use a larger grid for full import."
+msgstr ""
+
+#: src/actions/_grid_actions.py:735
+msgid "s"
+msgstr ""
+
+#: src/actions/_grid_actions.py:737
+msgid "{ncells} cell{plural} pasted at cell {topleft}"
+msgstr ""
+
+#: src/actions/_grid_actions.py:772
+msgid "Pasting cells... "
+msgstr ""
+
+#: src/actions/_grid_actions.py:993
+msgid "Zoomed to {0:.2f}."
+msgstr ""
+
+#: src/actions/_grid_actions.py:1091
+msgid "Switched to table {}."
+msgstr ""
+
+#: src/actions/_grid_actions.py:1271
+msgid "Replaced {} with {} in cell {}."
+msgstr ""
+
+#: src/actions/_grid_cell_actions.py:116
+msgid "{} seems to be no Integer"
+msgstr ""
+
+#: src/actions/_grid_cell_actions.py:152
+msgid "ref_type has to be \"absolute\" or \"relative\"."
+msgstr ""
+
+#: src/actions/_grid_cell_actions.py:300
+msgid "Freezing selections is not supported."
+msgstr ""
+
+#: src/actions/_main_window_actions.py:128
+msgid "Unknown import choice {}."
+msgstr ""
+
+#: src/actions/_main_window_actions.py:167
+#: src/actions/_main_window_actions.py:195
+msgid ""
+"The file {} could not be fully written\n"
+" \n"
+"Error message:\n"
+"{}"
+msgstr ""
+
+#: src/actions/_main_window_actions.py:169
+msgid "Error writing CSV file"
+msgstr ""
+
+#: src/actions/_main_window_actions.py:197
+msgid "Error writing SVG file"
+msgstr ""
