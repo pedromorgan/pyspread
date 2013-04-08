@@ -102,10 +102,12 @@ class Commandlineparser(object):
             config["grid_tables"],
         )
 
-        self.parser.add_option("-d", "--dimensions", type="int", nargs=3,
+        self.parser.add_option(
+            "-d", "--dimensions", type="int", nargs=3,
             dest="dimensions", default=grid_shape,
             help=_("Dimensions of empty grid (works only without filename) "
-                   "rows, cols, tables [default: %default]"))
+                   "rows, cols, tables [default: %default]")
+        )
 
     def parse(self):
         """

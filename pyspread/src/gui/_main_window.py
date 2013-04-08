@@ -63,7 +63,12 @@ class MainWindow(wx.Frame, EventMixin):
     """Main window of pyspread"""
 
     def __init__(self, parent, *args, **kwargs):
-        S = kwargs.pop("S")
+        try:
+            S = kwargs.pop("S")
+
+        except KeyError:
+            S = None
+
         wx.Frame.__init__(self, parent, *args, **kwargs)
 
         self.interfaces = GuiInterfaces(self)

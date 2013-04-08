@@ -155,6 +155,38 @@ class CellAttributes(list):
 
         return result_dict
 
+    def get_merging_cell(self, key):
+        """Returns key of cell that merges the cell key
+
+        or None if cell key not merged
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer
+        \tThe key of the cell that is merged
+
+        """
+
+        row, col, tab = key
+
+        merging_cell = None
+
+        def is_in_merge_area(row, col, merge_area):
+            top, left, bottom, right = merge_area
+            return top <= row <= bottom and left <= col <= right
+
+        for selection, table, attr_dict in self:
+            try:
+                merge_area = attr_dict["merge_area"]
+                if table == tab and merge_area is not None:
+                    # We have a merge area in the cell's table
+                    if is_in_merge_area(row, col, merge_area):
+                        merging_cell = merge_area[0], merge_area[1], tab
+            except KeyError:
+                pass
+
+        return merging_cell
+
 # End of class CellAttributes
 
 
@@ -886,10 +918,10 @@ class CodeArray(DataArray):
 
     """
 
-    operators = ["+", "-", "*", "**", "/", "//",
-             "%", "<<", ">>", "&", "|", "^", "~",
-             "<", ">", "<=", ">=", "==", "!=", "<>",
-            ]
+    operators = (
+        "+", "-", "*", "**", "/", "//", "%", "<<", ">>", "&", "|", "^", "~",
+        "<", ">", "<=", ">=", "==", "!=", "<>",
+    )
 
     # Cache for results from __getitem__ calls
     result_cache = {}
