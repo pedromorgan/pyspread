@@ -47,6 +47,12 @@ def get_help_path():
 
     return get_program_path() + "doc/help/"
 
+
+def get_python_tutorial_path():
+    """Returns the Python tutorial path"""
+
+    return "http://docs.python.org/2/tutorial/"
+
 # System settings
 
 

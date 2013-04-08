@@ -39,6 +39,7 @@ from matplotlib.figure import Figure
 
 import src.lib.i18n as i18n
 from src.config import config
+from src.sysvars import get_python_tutorial_path
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
@@ -1180,7 +1181,7 @@ class MainWindowEventHandlers(EventMixin):
         """Python tutorial launch event handler"""
 
         self.main_window.actions.launch_help("Python tutorial",
-            "http://docs.python.org/tutorial/")
+                                             get_python_tutorial_path())
 
     def OnAbout(self, event):
         """About dialog event handler"""
