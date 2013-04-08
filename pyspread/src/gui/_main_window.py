@@ -33,7 +33,7 @@ import ast
 import os
 
 import wx
-import wx.aui
+import wx.lib.agw.aui as aui
 
 from matplotlib.figure import Figure
 
@@ -68,7 +68,7 @@ class MainWindow(wx.Frame, EventMixin):
 
         self.interfaces = GuiInterfaces(self)
 
-        self._mgr = wx.aui.AuiManager(self)
+        self._mgr = aui.AuiManager(self)
 
         self.parent = parent
 
@@ -182,36 +182,32 @@ class MainWindow(wx.Frame, EventMixin):
             toggle_item.Check(pane.IsShown())
 
     def _do_layout(self):
-        """Adds widgets to the wx.aui manager and controls the layout"""
+        """Adds widgets to the aui manager and controls the layout"""
 
         # Add the toolbars to the manager
 
-        self._mgr.AddPane(self.macro_toolbar, wx.aui.AuiPaneInfo().
-                          Name("macro_toolbar").Caption(_("Macro Toolbar")).
-                          ToolbarPane().Top().Row(0).CloseButton(False).
-                          LeftDockable(False).RightDockable(False))
-
-        self._mgr.AddPane(self.main_toolbar, wx.aui.AuiPaneInfo().
+        self._mgr.AddPane(self.main_toolbar, aui.AuiPaneInfo().
                           Name("main_window_toolbar").
                           Caption(_("Main Toolbar")).
-                          ToolbarPane().Top().Row(0).CloseButton(False).
-                          LeftDockable(False).RightDockable(False))
+                          ToolbarPane().Top().Row(0))
 
-        self._mgr.AddPane(self.find_toolbar, wx.aui.AuiPaneInfo().
+        self._mgr.AddPane(self.find_toolbar, aui.AuiPaneInfo().
                           Name("find_toolbar").Caption(_("Find")).
-                          ToolbarPane().Top().Row(1).MaximizeButton(False).
-                          LeftDockable(False).RightDockable(False))
+                          ToolbarPane().Top().Row(0))
 
-        self._mgr.AddPane(self.attributes_toolbar, wx.aui.AuiPaneInfo().
+        self._mgr.AddPane(self.attributes_toolbar, aui.AuiPaneInfo().
                           Name("attributes_toolbar").
                           Caption(_("Cell Attributes")).
-                          ToolbarPane().Top().Row(1).MaximizeButton(False).
-                          LeftDockable(False).RightDockable(False))
+                          ToolbarPane().Top().Row(1))
 
-        self._mgr.AddPane(self.entry_line_panel, wx.aui.AuiPaneInfo().
+        self._mgr.AddPane(self.macro_toolbar, aui.AuiPaneInfo().
+                          Name("macro_toolbar").Caption(_("Macro Toolbar")).
+                          Gripper(True).ToolbarPane().Top().Row(1))
+
+        self._mgr.AddPane(self.entry_line_panel, aui.AuiPaneInfo().
                           Name("entry_line_panel").Caption(_("Entry line")).
                           MinSize((10, 20)).Row(2).CaptionVisible(False).
-                          Gripper(True).Top().CloseButton(False).
+                          Top().CloseButton(True).Gripper(True).
                           MaximizeButton(True))
 
         # Load perspective from config
@@ -221,9 +217,12 @@ class MainWindow(wx.Frame, EventMixin):
             self._mgr.LoadPerspective(window_layout)
 
         # Add the main grid
-        self._mgr.AddPane(self.grid, wx.CENTER)
+        self._mgr.AddPane(self.grid, aui.AuiPaneInfo().
+                          Name("grid").Caption(_("Main grid")).CentrePane())
 
         # Tell the manager to 'commit' all the changes just made
+        self._mgr.Update()
+        self._mgr.GetPane("attributes_toolbar")
         self._mgr.Update()
 
         self._set_menu_toggles()
