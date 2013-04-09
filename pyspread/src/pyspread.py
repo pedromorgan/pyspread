@@ -182,6 +182,11 @@ class MainApplication(App, GridActionEventMixin):
         except ImportError:
             pass
 
+        except ValueError:
+            # python-gnupg is installed but gnupg is not
+
+            pass
+
         # Show application window
         self.SetTopWindow(self.main_window)
         self.main_window.Show()
