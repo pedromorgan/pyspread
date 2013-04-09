@@ -137,14 +137,15 @@ class PythonSTC(stc.StyledTextCtrl):
 
         """
 
-        self.faces = {'times': 'Times',
-                      'mono': 'Courier',
-                      'helv': wx.SystemSettings.GetFont(
-                               wx.SYS_DEFAULT_GUI_FONT).GetFaceName(),
-                      'other': 'new century schoolbook',
-                      'size': 10,
-                      'size2': 8,
-                     }
+        self.faces = {
+            'times': 'Times',
+            'mono': 'Courier',
+            'helv': wx.SystemSettings.GetFont(
+                    wx.SYS_DEFAULT_GUI_FONT).GetFaceName(),
+            'other': 'new century schoolbook',
+            'size': 10,
+            'size2': 8,
+        }
 
         white = "white"
         black = "black"
@@ -404,9 +405,11 @@ class ImageComboBox(wx.combo.OwnerDrawnComboBox):
 
         if (item & 1 == 0 or flags & (wx.combo.ODCB_PAINTING_CONTROL |
                                       wx.combo.ODCB_PAINTING_SELECTED)):
-            wx.combo.OwnerDrawnComboBox.OnDrawBackground(self, dc,
-                                                         rect, item, flags)
-            return
+            try:
+                wx.combo.OwnerDrawnComboBox.OnDrawBackground(self, dc,
+                                                             rect, item, flags)
+            finally:
+                return
 
         # Otherwise, draw every other background with
         # different color.
@@ -852,20 +855,20 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
 
     def __init__(self, parent):
         wx.StatusBar.__init__(self, parent, -1)
-        
+
         self.SetFieldsCount(2)
-        
+
         self.size_changed = False
 
         safemode_bmp = icons["safe_mode"]
-        
+
         self.safemode_staticbmp = wx.StaticBitmap(self, 1001, safemode_bmp)
         tooltip = wx.ToolTip(\
             _("Pyspread is in safe mode.\nExpressions are not evaluated."))
         self.safemode_staticbmp.SetToolTip(tooltip)
-            
+
         self.SetStatusWidths([-1, safemode_bmp.GetWidth() + 4])
-        
+
         self.safemode_staticbmp.Hide()
 
         parent.Bind(self.EVT_STATUSBAR_MSG, self.OnMessage)
@@ -873,13 +876,13 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
         parent.Bind(self.EVT_CMD_SAFE_MODE_EXIT, self.OnSafeModeExit)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
-        
+
 
     def OnMessage(self, event):
         """Statusbar message event handler"""
 
         self.SetStatusText(event.text)
-        
+
     def OnSize(self, evt):
         self.Reposition()  # for normal size events
 
@@ -895,26 +898,26 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
 
     def Reposition(self):
         """Reposition the checkbox"""
-        
+
         rect = self.GetFieldRect(1)
         self.safemode_staticbmp.SetPosition((rect.x, rect.y))
         self.size_changed = False
-        
+
     def OnSafeModeEntry(self, event):
         """Safe mode entry event handler"""
-        
+
         self.safemode_staticbmp.Show(True)
-        
+
         event.Skip()
-        
+
 
     def OnSafeModeExit(self, event):
         """Safe mode exit event handler"""
-        
+
         self.safemode_staticbmp.Hide()
-        
+
         event.Skip()
-        
+
 # end of class StatusBar
 
 
