@@ -41,7 +41,7 @@ import sys
 import optparse
 
 import wx
-__ = wx.App()  # Windows Hack
+__ = wx.App(False)  # Windows Hack
 
 from sysvars import get_program_path
 import lib.i18n as i18n
