@@ -263,9 +263,9 @@ class CsvParameterWidgets(object):
                 widget.SetValue = widget.Select
 
             # Bind event handler to widget
-            if isinstance(ptype, types.StringType):
+            if ptype is types.StringType or ptype is types.UnicodeType:
                 event_type = wx.EVT_TEXT
-            elif isinstance(ptype, types.BooleanType):
+            elif ptype is types.BooleanType:
                 event_type = wx.EVT_CHECKBOX
             else:
                 event_type = wx.EVT_CHOICE
@@ -319,7 +319,7 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if isinstance(ptype, types.TupleType):
+            if ptype is types.TupleType:
                 ptype = types.ObjectType
 
             digest = Digest(acceptable_types=[ptype])
@@ -373,9 +373,9 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if isinstance(ptype, types.StringType):
+            if ptype is types.StringType or ptype is types.UnicodeType:
                 parameters[pname] = str(widget.GetValue())
-            elif isinstance(ptype, types.BooleanType):
+            elif ptype is types.BooleanType:
                 parameters[pname] = widget.GetValue()
             elif pname == 'quoting':
                 choice = self.choices['quoting'][widget.GetSelection()]
