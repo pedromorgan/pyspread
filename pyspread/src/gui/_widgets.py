@@ -610,8 +610,12 @@ class BitmapToggleButton(wx.BitmapButton):
 
         self.bitmap_list = []
         for bmp in bitmap_list:
-            mask = wx.Mask(bmp, wx.BLUE)
-            bmp.SetMask(mask)
+            if '__WXMSW__' not in wx.PlatformInfo:
+                # Setting a mask fails on Windows.
+                # Therefore transparency is set only for other platforms
+                mask = wx.Mask(bmp, wx.BLUE)
+                bmp.SetMask(mask)
+
             self.bitmap_list.append(bmp)
 
         self.state = 0
