@@ -68,10 +68,8 @@ class PythonSTC(stc.StyledTextCtrl):
     """Editor that highlights Python source code.
 
     Stolen from the wxPython demo.py
+
     """
-
-
-
 
     def __init__(self, *args, **kwargs):
         stc.StyledTextCtrl.__init__(self, *args, **kwargs)

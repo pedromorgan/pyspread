@@ -489,7 +489,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         # Check if cell is merged:
         cell_attributes = grid.code_array.cell_attributes
-        merge_area = cell_attributes[key]["merge_area"]
+        merge_area = cell_attributes[row, col, tab]["merge_area"]
 
         if merge_area is None:
             return rect
