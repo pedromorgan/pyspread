@@ -590,7 +590,8 @@ class HelpActions(Actions):
             help_file = open(filename, "r")
             help_html = help_file.read()
             help_file.close()
-            help_htmlwindow.SetPage(help_html)
+            # Decode the help html strings to unicode for non utf-8 systems
+            help_htmlwindow.SetPage(help_html.decode("utf-8"))
 
         except IOError:
 

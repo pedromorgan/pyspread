@@ -126,6 +126,7 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
             else:
                 raise ValueError("Unknown tooltype " + str(data[0]))
 
+        self.SetCustomOverflowItems([], [])
         self.Realize()
 
         # Adjust Toolbar size
