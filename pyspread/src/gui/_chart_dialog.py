@@ -846,7 +846,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
     def __init__(self, main_window, code):
-        style = wx.RESIZE_BORDER | wx.CLOSE_BOX
+        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
         wx.Dialog.__init__(self, main_window, -1, style=style)
 
         self.grid = main_window.grid
