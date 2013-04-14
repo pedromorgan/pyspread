@@ -630,7 +630,7 @@ class SeriesPanel(wx.Panel):
                     series_data[key] = charts.object2code(key,
                                                           series_dict[key])
 
-            plot_panel = PlotPanelClass(self, series_data, -1)
+            plot_panel = PlotPanelClass(self.chart_type_book, series_data, -1)
 
             self.chart_type_book.AddPage(plot_panel, plot_type, imageId=i)
             self.il.Add(icons[plot_type_dict["type"]])
