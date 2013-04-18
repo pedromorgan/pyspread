@@ -352,6 +352,54 @@ class Grid(wx.grid.Grid, EventMixin):
             else:
                 return "UP"
 
+    def is_merged_cell_drawn(self, key):
+        """True if key in merged area shall be drawn
+
+        This is the case if it is the top left most visible key of the merge
+        area on the screen.
+
+        """
+
+        row, col, tab = key
+
+        # Is key not merged? --> False
+        cell_attributes = self.code_array.cell_attributes
+
+        top, left, __ = cell_attributes.get_merging_cell(key)
+
+        # Case 1: Top left cell of merge is visible
+        # --> Only top left cell returns True
+        top_left_drawn = \
+            row == top and col == left and \
+            self.IsVisible(row, col, wholeCellVisible=False)
+
+        # Case 2: Leftmost column is visible
+        # --> Only top visible leftmost cell returns True
+
+        left_drawn = \
+            col == left and \
+            self.IsVisible(row, col, wholeCellVisible=False) and \
+            not self.IsVisible(row-1, col, wholeCellVisible=False)
+
+        # Case 3: Top row is visible
+        # --> Only left visible top cell returns True
+
+        top_drawn = \
+            row == top and \
+            self.IsVisible(row, col, wholeCellVisible=False) and \
+            not self.IsVisible(row, col-1, wholeCellVisible=False)
+
+        # Case 4: Top row and leftmost column are invisible
+        # --> Only top left visible cell returns True
+
+        middle_drawn = \
+            self.IsVisible(row, col, wholeCellVisible=False) and \
+            not self.IsVisible(row-1, col, wholeCellVisible=False) and \
+            not self.IsVisible(row, col-1, wholeCellVisible=False)
+
+        return top_left_drawn or left_drawn or top_drawn or middle_drawn
+
+
 # End of class Grid
 
 

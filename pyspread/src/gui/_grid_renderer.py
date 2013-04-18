@@ -559,9 +559,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         rect = self.get_merged_rect(grid, key, rect)
         if rect is None:
             # Merged cell
-            if grid.IsVisible(row, col, wholeCellVisible=False) and \
-               not grid.IsVisible(row-1, col-1, wholeCellVisible=False):
-                # Topleft neigbor invisible --> Draw merging cell
+            if grid.is_merged_cell_drawn(key):
                 row, col, __ = key = self.get_merging_cell(grid, key)
                 rect = grid.CellToRect(row, col)
                 rect = self.get_merged_rect(grid, key, rect)
