@@ -845,13 +845,12 @@ class FigurePanel(wx.Panel):
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
-    def __init__(self, main_window, code):
+    def __init__(self, main_window, key, code):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
         wx.Dialog.__init__(self, main_window, -1, style=style)
 
         self.grid = main_window.grid
-        self.key = self.grid.actions.cursor
-        code = self.grid.code_array(self.key)
+        self.key = key
 
         self.figure_attributes_panel = FigureAttributesPanel(self, {}, -1)
         self.all_series_panel = AllSeriesPanel(self)
