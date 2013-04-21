@@ -51,7 +51,14 @@ def get_help_path():
 def get_python_tutorial_path():
     """Returns the Python tutorial path"""
 
-    return "http://docs.python.org/2/tutorial/"
+    # If the OS has the Python tutorial installed locally, use it.
+    # the current path is for Debian
+
+    if os.path.isfile("/usr/share/doc/python-doc/html/tutorial/index.html"):
+        return "/usr/share/doc/python-doc/html/tutorial/index.html"
+
+    else:
+        return "http://docs.python.org/2/tutorial/"
 
 # System settings
 
