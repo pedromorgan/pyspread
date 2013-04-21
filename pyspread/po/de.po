@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: pyspread 0.2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-08 01:05+0200\n"
-"PO-Revision-Date: 2013-04-21 14:02+0200\n"
+"PO-Revision-Date: 2013-04-21 19:41+0200\n"
 "Last-Translator: Martin Manns <mmanns@gmx.net>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
 "Language: de\n"
@@ -230,7 +230,7 @@ msgstr "Auswahl in Datei exportieren (Unterstützte Formate: CSV)"
 
 #: src/gui/_menubars.py:197
 msgid "Approve, unfreeze and sign the current file"
-msgstr "Die aktuelle Datei genehmigen, signieren und Einfrieren beenden"
+msgstr "Die aktuelle Datei bestätigen, signieren und Einfrieren beenden"
 
 #: src/gui/_menubars.py:199
 msgid "&Clear globals"
@@ -325,7 +325,7 @@ msgstr "Einfügen und Transformieren der Zwischenablage "
 #: src/gui/_menubars.py:235
 #| msgid "Find"
 msgid "&Find"
-msgstr "Such$en"
+msgstr "Such&en"
 
 #: src/gui/_menubars.py:236
 msgid "Find cell by content"
@@ -780,7 +780,7 @@ msgid ""
 " \n"
 "Proceed and sign this file as trusted?"
 msgstr ""
-"Sie sind dabei, eine Datei zu genehmigen und als\n"
+"Sie sind dabei, eine Datei zu bestätigen und als\n"
 "vertrauenswürdig zu markieren, die Sie aus einer nicht\n"
 "vertrauenswürdigen Quelle erhalten haben.\n"
 "Wenn Sie fortsetzen, wird diese Datei ausgeführt.\n"
@@ -922,11 +922,11 @@ msgstr "Vertikal"
 
 #: src/gui/_chart_dialog.py:514
 msgid "Flier"
-msgstr ""
+msgstr "Ausreißer"
 
 #: src/gui/_chart_dialog.py:515
 msgid "Notch"
-msgstr ""
+msgstr "Kerbung"
 
 #: src/gui/_chart_dialog.py:523
 msgid "Box plot"
@@ -949,28 +949,26 @@ msgid "Histogram"
 msgstr "Histogramm"
 
 #: src/gui/_chart_dialog.py:559
-#, fuzzy
 #| msgid "Label"
 msgid "Labels"
 msgstr "Label"
 
 #: src/gui/_chart_dialog.py:560
-#, fuzzy
 #| msgid "Color"
 msgid "Colors"
-msgstr "Farbe"
+msgstr "Farben"
 
 #: src/gui/_chart_dialog.py:561
 msgid "Shadow"
-msgstr ""
+msgstr "Schatten"
 
 #: src/gui/_chart_dialog.py:569
 msgid "Pie"
-msgstr ""
+msgstr "Torte"
 
 #: src/gui/_chart_dialog.py:580
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: src/gui/_chart_dialog.py:582 src/gui/_chart_dialog.py:585
 msgid "Limits"
@@ -978,21 +976,20 @@ msgstr "Begrenzungen"
 
 #: src/gui/_chart_dialog.py:583 src/gui/_chart_dialog.py:586
 msgid "Log. scale"
-msgstr ""
+msgstr "Log. Skala"
 
 #: src/gui/_chart_dialog.py:587
-#, fuzzy
 #| msgid "Grid rows"
 msgid "Grid"
-msgstr "Gitterzeilen"
+msgstr "Tabelle"
 
 #: src/gui/_chart_dialog.py:588
 msgid "Legend"
-msgstr ""
+msgstr "Legende"
 
 #: src/gui/_chart_dialog.py:595
 msgid "Figure"
-msgstr ""
+msgstr "Diagramm"
 
 #: src/gui/_chart_dialog.py:596
 msgid "X-Axis"
@@ -1064,7 +1061,7 @@ msgstr "Bitmap-Grafik für die aktuelle Zelle wählen"
 
 #: src/gui/_grid.py:461
 msgid "Weight {} unknown"
-msgstr ""
+msgstr "Schriftstärke {} unbekannt"
 
 #: src/gui/_grid.py:481
 msgid "Style {} unknown"
@@ -1160,7 +1157,7 @@ msgstr "Regulärer Ausdruck"
 
 #: src/gui/_toolbars.py:227
 msgid "Surrounded by whitespace"
-msgstr ""
+msgstr "Von Whitespace-Zeichen umgeben"
 
 #: src/gui/_toolbars.py:298
 msgid "Neither UP nor DOWN in search_flags"
@@ -1195,22 +1192,22 @@ msgid "Code {} is invalid."
 msgstr "Code {} ist ungültig."
 
 #: src/gui/_widgets.py:703
-#, fuzzy
 #| msgid "Toggles underline."
 msgid "Toggles link insertion mode."
-msgstr "Schaltet die Unterstreichung ein oder aus."
+msgstr "Schaltet den Zell-Einfüge-Modus ein oder aus."
 
 #: src/gui/_widgets.py:765
-#, fuzzy
 #| msgid "Enter python code here."
 msgid "Enter Python expression here."
-msgstr "Hier Python-Code eingeben."
+msgstr "Hier Python-Ausdruck eingeben."
 
 #: src/gui/_widgets.py:864
 msgid ""
 "Pyspread is in safe mode.\n"
 "Expressions are not evaluated."
 msgstr ""
+"Pyspread ist im Sicherheitsmodus.\n"
+"Ausdrücke werden nicht ausgewertet."
 
 #: src/gui/_widgets.py:934
 msgid "For switching tables enter the table number or use the mouse wheel."
@@ -1250,7 +1247,7 @@ msgstr "Ein einzelnes Zeichen zum Trennen der einzelnen Felder."
 
 #: src/gui/_dialogs.py:182
 msgid "Doublequote"
-msgstr ""
+msgstr "Doppelte Anführungsstriche"
 
 #: src/gui/_dialogs.py:183
 msgid ""
@@ -1258,6 +1255,9 @@ msgid ""
 "themselves be quoted. When True, the character is doubled. When False, the "
 "escapechar is used as a prefix to the quotechar."
 msgstr ""
+"Gibt an, wie das quotechar-Zeichen innerhalb von Feldern maskiert wird. Bei "
+"True wird quotechar verdoppelt. Dagegen wird bei False das escapechar-Zeichen "
+"vor quotechar gesetzt."
 
 #: src/gui/_dialogs.py:187
 msgid "Escape character"
@@ -1269,6 +1269,9 @@ msgid ""
 "is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, "
 "the escapechar removes any special meaning from the following character."
 msgstr ""
+"String der Länge 1, der beim Schreiben Trennzeichen innerhalb von "
+"Spaltenwerten maskiert, falls quoting den Wert QUOTE_NONE hat. Beim Lesen "
+"entfernt escapechar jede spezielle Bedeutung des Folgezeichens."
 
 #: src/gui/_dialogs.py:193
 msgid "Quote character"
@@ -1279,6 +1282,8 @@ msgid ""
 "A one-character string used to quote fields containing special characters, "
 "such as the delimiter or quotechar, or which contain new-line characters."
 msgstr ""
+"String der Länge 1, mit dem Felder umschlossen werden, die Sonderzeichen wie "
+"Trennzeichen, quotechar oder Zeilenumbrüche enthalten."
 
 #: src/gui/_dialogs.py:197
 msgid "Quoting style"
@@ -1471,18 +1476,17 @@ msgid "Exits pyspread."
 msgstr "Beendet pyspread."
 
 #: src/gui/_dialogs.py:1287
-#, fuzzy
 #| msgid "Paste"
 msgid "Paste as"
-msgstr "Einfügen"
+msgstr "Inhalte einfügen"
 
 #: src/gui/_dialogs.py:1292
 msgid "Dimension of object"
-msgstr ""
+msgstr "Dimensionalität des Objekts"
 
 #: src/gui/_dialogs.py:1296
 msgid "Transpose"
-msgstr ""
+msgstr "Transponieren"
 
 #: src/actions/_grid_actions.py:107
 msgid "{nele} elements processed. Press <Esc> to abort."
@@ -1504,8 +1508,8 @@ msgid ""
 "File is not properly signed. Safe mode activated. Select File -> Approve to "
 "leave safe mode."
 msgstr ""
-"Die Datei ist nicht sauber signiert. Der abgesicherte modus wurde aktiviert. "
-"Wählen Sie Datei -> Genehmigen, um den abgesicherten Modus zu verlassen."
+"Die Datei ist nicht sauber signiert. Der abgesicherte Modus wurde aktiviert. "
+"Wählen Sie Datei -> Bestätigen, um den abgesicherten Modus zu verlassen."
 
 #: src/actions/_grid_actions.py:205
 msgid "File format unsupported."
@@ -1527,13 +1531,12 @@ msgstr "Dateiversion {} wird nicht unterstützt (nicht 0.1)."
 
 #: src/actions/_grid_actions.py:309
 msgid "No section parser present."
-msgstr ""
+msgstr "Kein Abschnitts-Parser vorhanden"
 
 #: src/actions/_grid_actions.py:383
-#, fuzzy
 #| msgid "Error opening file {}."
 msgid "Error signing file. "
-msgstr "Fehler beim Öffnen der Datei {}."
+msgstr "Fehler beim Signieren der Datei."
 
 #: src/actions/_grid_actions.py:400
 msgid "File saved and signed"
@@ -1553,7 +1556,7 @@ msgstr "Fehler beim Schreiben in Datei {}."
 
 #: src/actions/_grid_actions.py:537
 msgid "File saved but not signed because it is unapproved."
-msgstr ""
+msgstr "Datei gespeichert aber nicht signiert, da sie nicht bestätigt ist."
 
 #: src/actions/_grid_actions.py:701
 msgid "Key length {}  not in (2, 3)"
@@ -1577,7 +1580,7 @@ msgstr "Spalten"
 
 #: src/actions/_grid_actions.py:723
 msgid "Import cell overflow missing"
-msgstr ""
+msgstr "Überlauf beim Zell-Import fehlt"
 
 #: src/actions/_grid_actions.py:726
 msgid ""
@@ -1590,11 +1593,11 @@ msgstr ""
 
 #: src/actions/_grid_actions.py:735
 msgid "s"
-msgstr "s"
+msgstr "en"
 
 #: src/actions/_grid_actions.py:737
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
-msgstr ""
+msgstr "{ncells} Zell{plural} bei Zelle {topleft} eingefügt"
 
 #: src/actions/_grid_actions.py:772
 msgid "Pasting cells... "
@@ -1646,10 +1649,9 @@ msgid "Error writing CSV file"
 msgstr "Fehler beim Schreiben der CSV-Datei"
 
 #: src/actions/_main_window_actions.py:197
-#, fuzzy
 #| msgid "Error writing CSV file"
 msgid "Error writing SVG file"
-msgstr "Fehler beim Schreiben der CSV-Datei"
+msgstr "Fehler beim Schreiben der SVG-Datei"
 
 #~ msgid "Cu&t\tCtrl+x"
 #~ msgstr "&Ausschneiden\tStrg+x"
