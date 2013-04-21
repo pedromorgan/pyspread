@@ -1104,8 +1104,13 @@ class MainWindowEventHandlers(object):
     def OnPythonTutorial(self, event):
         """Python tutorial launch event handler"""
 
-        self.main_window.actions.launch_help("Python tutorial",
-            "http://docs.python.org/tutorial/")
+        if os.path.isfile("/usr/share/doc/python-doc/html/tutorial/index.html"):
+            self.main_window.actions.launch_help("Python tutorial",
+                "/usr/share/doc/python-doc/html/tutorial/index.html")
+        else:
+            self.main_window.actions.launch_help("Python tutorial",
+                "http://docs.python.org/2/tutorial/")
+
 
     def OnAbout(self, event):
         """About dialog event handler"""
