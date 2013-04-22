@@ -114,7 +114,13 @@ class BoolEditor(wx.CheckBox, ChartDialogEventMixin):
         \tCode representation of bool value
 
         """
-
+        
+        # If string representations of False are in the code
+        # then it has to be converted explicitly
+        
+        if code == "False" or code == "0":
+            code = False
+            
         self.SetValue(bool(code))
 
     # Properties
@@ -845,13 +851,12 @@ class FigurePanel(wx.Panel):
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
-    def __init__(self, main_window, code):
+    def __init__(self, main_window, key, code):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
         wx.Dialog.__init__(self, main_window, -1, style=style)
 
         self.grid = main_window.grid
-        self.key = self.grid.actions.cursor
-        code = self.grid.code_array(self.key)
+        self.key = key
 
         self.figure_attributes_panel = FigureAttributesPanel(self, {}, -1)
         self.all_series_panel = AllSeriesPanel(self)
@@ -864,7 +869,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
 
-        self.set_code(code)
+        # The code has to be set after all widgets are created
+        self.code = code
 
         self.__set_properties()
         self.__do_layout()
@@ -972,7 +978,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         if not attributes:
             return
-
+            
         # Set widgets from attributes
         # ---------------------------
 
