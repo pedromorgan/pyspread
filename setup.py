@@ -60,6 +60,7 @@ setup(name='pyspread',
           [
               '*.py',
               '../pyspread.sh',
+              '../pyspread.bat',
               'src/*.py',
               'src/pyspread',
               'src/*/*.py',
@@ -70,6 +71,7 @@ setup(name='pyspread',
               'src/*/test/*.txt',
               'src/*/test/*.pys*',
               'share/icons/*.png',
+              'share/icons/*.ico',
               'share/icons/Tango/24x24/actions/*.png',
               'share/icons/Tango/24x24/toggles/*.png',
               'share/icons/Tango/24x24/toggles/*.xpm',
@@ -92,4 +94,5 @@ setup(name='pyspread',
           'Programming Language :: Python :: 2.7',
           'Topic :: Office/Business :: Financial :: Spreadsheet',
       ],
-      cmdclass={'test': PyTest})
+      cmdclass={'test': PyTest}
+      )
