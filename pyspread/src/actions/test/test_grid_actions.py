@@ -143,6 +143,16 @@ class TestFileActions(object):
         os.chmod(self.filename_not_permitted, 0644)
         os.chmod(self.filename_not_permitted + ".sig", 0644)
 
+    def test_clear_globals_reload_modules(self):
+        """Tests clear_globals_reload_modules"""
+
+        self.grid.code_array[(0, 0, 0)] = "'Test1'"
+        self.grid.code_array[(0, 0, 0)]
+        assert self.grid.code_array.result_cache
+
+        self.grid.actions.clear_globals_reload_modules()
+        assert not self.grid.code_array.result_cache
+
     def test_get_file_version(self):
         """Tests infile version string."""
 
@@ -587,7 +597,7 @@ class TestUnRedoActions(object):
         assert self.grid.code_array((0, 0, 0)) == "Test"
 
 
-class TestgridActions(object):
+class TestGridActions(object):
     """self.grid level self.grid actions test class"""
 
     def setup_method(self, method):
@@ -649,3 +659,24 @@ class TestFindActions(object):
     # No tests yet because of close integration with selection in GUI
 
     pass
+
+
+class TestAllGridActions(object):
+    """AllGridActions test class"""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
+
+    param_replace_bbox_none = [
+        {'bbox': ((0, 0), (1, 234)), 'res': ((0, 0), (1, 234))},
+        {'bbox': ((None, None), (2, 234)), 'res': ((0, 0), (2, 234))},
+        {'bbox': ((None, None), (None, None)), 'res': ((0, 0), (999, 99))},
+    ]
+
+    @params(param_replace_bbox_none)
+    def test_replace_bbox_none(self, bbox, res):
+        """Tests for _replace_bbox_none"""
+
+        assert res == self.grid.actions._replace_bbox_none(bbox)

@@ -92,10 +92,10 @@ class FileActions(Actions):
         Parameters
         ----------
 
-        statustext: String
-        \tLeft text in statusbar to be displayed
         cycle: Integer
         \tThe current operation cycle
+        statustext: String
+        \tLeft text in statusbar to be displayed
         total_elements: Integer:
         \tThe number of elements that have to be processed
         freq: Integer, defaults to 1000
