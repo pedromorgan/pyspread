@@ -28,8 +28,10 @@ Unit tests for __csv.py
 
 """
 
+import datetime
 import os
 import sys
+import types
 
 import wx
 app = wx.App()
@@ -41,8 +43,9 @@ sys.path.insert(0, TESTPATH + "/../..")
 
 from src.lib.testlib import params, pytest_generate_tests
 import src.lib.__csv as __csv
+from src.lib.__csv import Digest
 
-param_sniff = [ \
+param_sniff = [
     {'filepath': TESTPATH + 'test1.csv', 'header': True, 'delimiter': ',',
      'doublequote': 0, 'quoting': 0, 'quotechar': '"',
      'lineterminator': "\r\n", 'skipinitialspace': 0},
@@ -64,7 +67,7 @@ def test_sniff(filepath, header, delimiter, doublequote, quoting, quotechar,
     assert dialect.skipinitialspace == skipinitialspace
 
 
-param_first_line = [ \
+param_first_line = [
     {'filepath': TESTPATH + 'test1.csv',
      'first_line': ["Text", "Number", "Float", "Date"]},
 ]
@@ -80,60 +83,53 @@ def test_get_first_line(filepath, first_line):
     assert __first_line == first_line
 
 
-def test_csv_digest_gen():
-    """Unit test for csv_digest_gen"""
+param_digested_line = [
+    {'line': "1, 3, 1",
+     'digest_types': [types.StringType, types.IntType, types.FloatType],
+     'res': ["1", 3, 1.0]},
+    {'line': "1",
+     'digest_types': [types.FloatType],
+     'res': [1.0]},
+    {'line': u"1, Gsdfjkljö",
+     'digest_types': [types.FloatType, types.UnicodeType],
+     'res': [1.0, u"Gsdfjkljö"]},
+]
 
-    pass
+
+@params(param_digested_line)
+def digested_line(line, digest_types, res):
+    """Unit test for digested_line"""
+
+    assert __csv.digested_line(line, digest_types) == res
 
 
 def test_cell_key_val_gen():
     """Unit test for cell_key_val_gen"""
 
-    pass
+    list_of_lists = [range(10), range(10)]
+    gen = __csv.cell_key_val_gen(list_of_lists, (100, 100, 10))
+    for row, col, value in gen:
+        assert col == value
 
 
 class TestDigest(object):
     """Unit tests for Digest"""
 
-    def test_make_string(self):
-        """Unit test for make_string"""
+    param_make_string = [
+        {'val': 1, 'acc_types': [types.StringType], 'res': "1"},
+        {'val': None, 'acc_types': [types.StringType], 'res': ""},
+        {'val': 1, 'acc_types': [types.UnicodeType], 'res': u"1"},
+        {'val': None, 'acc_types': [types.UnicodeType], 'res': u""},
+    ]
 
-        pass
+    @params(param_make_string)
+    def test_make(self, val, acc_types, res):
+        """Unit test for make_foo"""
 
-    def test_make_unicode(self):
-        """Unit test for make_unicode"""
+        digest = Digest(acc_types)
 
-        pass
-
-    def test_make_slice(self):
-        """Unit test for make_slice"""
-
-        pass
-
-    def test_make_date(self):
-        """Unit test for make_date"""
-
-        pass
-
-    def test_make_datetime(self):
-        """Unit test for make_datetime"""
-
-        pass
-
-    def test_make_time(self):
-        """Unit test for make_time"""
-
-        pass
-
-    def test_make_object(self):
-        """Unit test for make_object"""
-
-        pass
-
-    def test_call(self):
-        """Unit test for __call__"""
-
-        pass
+        assert digest(val) == res
+        assert type(digest(val)) is type(res)
 
 
 class TestCsvInterface(object):

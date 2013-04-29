@@ -33,7 +33,7 @@ from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.parsers import get_font_from_data, get_pen_from_data
 
-param_font = [ \
+param_font = [
     {"fontdata": "Sans 13", "face": "Sans", "size": 13},
     {"fontdata": "Serif 43", "face": "Serif", "size": 43},
 ]
@@ -48,7 +48,7 @@ def test_get_font_from_data(fontdata, face, size):
     assert font.GetFaceName() == face
     assert font.GetPointSize() == size
 
-param_pen = [ \
+param_pen = [
     {"pendata": [wx.RED.GetRGB(), 4], "width": 4,
      "color": wx.Colour(255, 0, 0, 255)},
     {"pendata": [wx.BLUE.GetRGB(), 1], "width": 1,

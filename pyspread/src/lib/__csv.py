@@ -75,17 +75,39 @@ def sniff(filepath):
 def get_first_line(filepath, dialect):
     """Returns List of first line items of file filepath"""
 
-    try:    
+    try:
         csvfile = open(filepath, "rb")
         csvreader = csv.reader(csvfile, dialect=dialect)
-    
+
         for first_line in csvreader:
             break
-        
+
     finally:
         csvfile.close()
 
     return first_line
+
+
+def digested_line(line, digest_types):
+    """Returns list of digested values in line"""
+
+    digested_line = []
+    for i, ele in enumerate(line):
+        try:
+            digest_key = digest_types[i]
+
+        except IndexError:
+            digest_key = digest_types[0]
+
+        digest = Digest(acceptable_types=[digest_key])
+
+        try:
+            digested_line.append(repr(digest(ele)))
+
+        except Exception, err:
+            digested_line.append(str(err))
+
+    return digested_line
 
 
 def csv_digest_gen(filepath, dialect, has_header, digest_types):
@@ -105,30 +127,15 @@ def csv_digest_gen(filepath, dialect, has_header, digest_types):
     try:
         csvfile = open(filepath, "rb")
         csvreader = csv.reader(csvfile, dialect=dialect)
-    
+
         if has_header:
             # Ignore first line
             for line in csvreader:
                 break
-    
+
         for line in csvreader:
-            digested_line = []
-            for i, ele in enumerate(line):
-                try:
-                    digest_key = digest_types[i]
-    
-                except IndexError:
-                    digest_key = digest_types[0]
-    
-                digest = Digest(acceptable_types=[digest_key])
-    
-                try:
-                    digested_line.append(repr(digest(ele)))
-    
-                except Exception, err:
-                    digested_line.append(str(err))
-    
-            yield digested_line
+            yield digested_line(line, digest_types)
+
     finally:
         csvfile.close()
 
@@ -266,8 +273,9 @@ class Digest(object):
         if self.fallback_type is not None and \
            self.fallback_type not in self.typehandlers:
 
-            err_msg = _("Fallback type {} unknown.").format(
-                                str(self.fallback_type))
+            err_msg = _("Fallback type {} unknown.").\
+                format(str(self.fallback_type))
+
             raise NotImplementedError(err_msg)
 
     def __call__(self, orig_obj):
@@ -390,13 +398,13 @@ class CsvInterface(StatusBarEventMixin):
     def write(self, iterable):
         """Writes values from iterable into CSV file"""
 
-        try:        
+        try:
             csvfile = open(self.path, "wb")
             csv_writer = csv.writer(csvfile, self.dialect)
-    
+
             for line in iterable:
                 csv_writer.writerow(line)
-                
+
         finally:
             csvfile.close()
 
