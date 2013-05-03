@@ -40,6 +40,7 @@ Provides:
 
 """
 
+import ast
 import base64
 import bz2
 import os
@@ -464,6 +465,19 @@ class ClipboardActions(Actions):
 
         return code_str
 
+    def _get_paste_data_gen(self, key, data):
+        """Generator for paste data
+
+        Can be used in grid.actions.paste
+
+        """
+
+        if type(data) is wx._gdi.Bitmap:
+            code_str = self.bmp2code(key, data)
+            return [[code_str]]
+        else:
+            return (line.split("\t") for line in data.split("\n"))
+
     def paste(self, key, data):
         """Pastes data into grid
 
@@ -477,15 +491,70 @@ class ClipboardActions(Actions):
         \tor paste data image
         """
 
-        if type(data) is wx._gdi.Bitmap:
-            code_str = self.bmp2code(key, data)
-            data_gen = [[code_str]]
-        else:
-            data_gen = (line.split("\t") for line in data.split("\n"))
+        data_gen = self._get_paste_data_gen(key, data)
 
         self.grid.actions.paste(key[:2], data_gen)
 
         self.main_window.grid.ForceRefresh()
+
+    def _get_pasteas_data(self, dim, obj):
+        """Returns list of lists of obj than has dimensionality dim
+
+        Parameters
+        ----------
+        dim: Integer
+        \tDimensionality of obj
+        obj: Object
+        \tIterable object of dimensionality dim
+
+        """
+
+        if dim == 0:
+            return [[repr(obj)]]
+        elif dim == 1:
+            return [[repr(o)] for o in obj]
+        elif dim == 2:
+            return [map(repr, o) for o in obj]
+
+    def paste_as(self, key, data):
+        """Paste and transform data
+
+        Data may be given as a Python code as well as a tab separated
+        multi-line strings similar to paste.
+
+        """
+
+        def error_msg(err):
+            msg = _("Error evaluating data: ") + str(err)
+            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
+
+        interfaces = self.main_window.interfaces
+        key = self.main_window.grid.actions.cursor
+
+        try:
+            obj = ast.literal_eval(data)
+
+        except (SyntaxError, AttributeError):
+            # This is no Python code so te try to interpret it as paste data
+            try:
+                obj = list(self._get_paste_data_gen(key, data))
+
+            except Exception, err:
+                error_msg(err)
+                return
+
+        except ValueError, err:
+            error_msg(err)
+            return
+
+        parameters = interfaces.get_pasteas_parameters_from_user(obj)
+
+        paste_data = self._get_pasteas_data(parameters["dim"], obj)
+
+        if parameters["transpose"]:
+            paste_data = zip(*paste_data)
+
+        self.main_window.grid.actions.paste(key, paste_data)
 
 
 class MacroActions(Actions):

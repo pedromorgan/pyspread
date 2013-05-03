@@ -958,47 +958,13 @@ class MainWindowEventHandlers(EventMixin):
 
         event.Skip()
 
-    def get_pasteas_data(self, dim, obj):
-        """Returns list of lists of obj than has dimensionality dim
-
-        Parameters
-        ----------
-        dim: Integer
-        \tDimensionality of obj
-        obj: Object
-        \tIterable object of dimensionality dim
-
-        """
-
-        if dim == 0:
-            return [[repr(obj)]]
-        elif dim == 1:
-            return [[repr(o)] for o in obj]
-        elif dim == 2:
-            return [map(repr, o) for o in obj]
-
     def OnPasteAs(self, event):
         """Clipboard paste as event handler"""
 
-        try:
-            obj = ast.literal_eval(self.main_window.clipboard.get_clipboard())
-        except ValueError, err:
-            msg = _("Error evaluating data: ") + str(err)
-            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
-            event.Skip()
-            return
-
-        parameters = \
-            self.main_window.interfaces.get_pasteas_parameters_from_user(obj)
-
+        data = self.main_window.clipboard.get_clipboard()
         key = self.main_window.grid.actions.cursor
 
-        data = self.get_pasteas_data(parameters["dim"], obj)
-
-        if parameters["transpose"]:
-            data = zip(*data)
-
-        self.main_window.grid.actions.paste(key, data)
+        self.main_window.actions.paste_as(key, data)
 
         self.main_window.grid.ForceRefresh()
 

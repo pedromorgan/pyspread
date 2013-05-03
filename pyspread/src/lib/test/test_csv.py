@@ -28,7 +28,6 @@ Unit tests for __csv.py
 
 """
 
-import datetime
 import os
 import sys
 import types
