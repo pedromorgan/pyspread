@@ -457,7 +457,7 @@ class GridCellEventHandlers(object):
             # Bitmap could not be read
             return
 
-        code = "wx.Bitmap('{}')".format(filepath)
+        code = "wx.Bitmap('{filepath}')".format(filepath=filepath)
 
         key = self.grid.actions.cursor
         self.grid.actions.set_code(key, code)
@@ -508,7 +508,8 @@ class GridCellEventHandlers(object):
             elif event.weight == "wxBOLD":
                 weight = wx.BOLD
             else:
-                raise ValueError(_("Weight {} unknown").format(event.weight))
+                msg = _("Weight {weight} unknown").format(weight=event.weight)
+                raise ValueError(msg)
 
             self.grid.actions.set_attr("fontweight", weight)
 
@@ -528,7 +529,8 @@ class GridCellEventHandlers(object):
             elif event.style == "wxITALIC":
                 style = wx.ITALIC
             else:
-                raise ValueError(_("Style {} unknown").format(event.style))
+                msg = _("Style {style} unknown").format(style=event.style)
+                raise ValueError(msg)
 
             self.grid.actions.set_attr("fontstyle", style)
 
@@ -948,14 +950,15 @@ class GridEventHandlers(object):
         if findpos is None:
             # If nothing is found mention it in the statusbar and return
 
-            statustext = _("'{}' not found.").format(text)
+            statustext = _("'{text}' not found.").format(text=text)
 
         else:
             # Otherwise select cell with next occurrence if successful
             self.grid.actions.cursor = findpos
 
             # Update statusbar
-            statustext = _(u"Found '{}' in cell {}.").format(text, findpos)
+            statustext = _(u"Found '{text}' in cell {key}.")
+            statustext = statustext.format(text=text, key=findpos)
 
         post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
                            text=statustext)
@@ -1128,7 +1131,8 @@ class GridEventHandlers(object):
 
         self.grid.GetTable().ResetView()
 
-        statustext = _("Grid dimensions changed to {}.").format(new_shape)
+        statustext = _("Grid dimensions changed to {shape}.")
+        statustext = statustext.format(shape=new_shape)
         post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
                            text=statustext)
 

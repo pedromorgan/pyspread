@@ -581,9 +581,9 @@ class MainWindowEventHandlers(EventMixin):
         self.main_window.grid.ForceRefresh()
 
         # Display grid creation in status bar
-        statustext = _("New grid with dimensions {} created.").format(shape)
+        msg = _("New grid with dimensions {dim} created.").format(dim=shape)
         post_command_event(self.main_window, self.main_window.StatusBarMsg,
-                           text=statustext)
+                           text=msg)
 
         self.main_window.grid.ForceRefresh()
 

@@ -89,9 +89,8 @@ class ExchangeActions(Actions):
                 self.main_window.interfaces.get_csv_import_info(path)
 
         except IOError:
-            statustext = _("Error opening file {}.").format(path)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            msg = _("Error opening file {filepath}.").format(filepath=path)
+            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
             return
 
         return CsvInterface(self.main_window,
@@ -126,7 +125,8 @@ class ExchangeActions(Actions):
             # TXT import option choice
             return self._import_txt(filepath)
         else:
-            msg = _("Unknown import choice {}.").format(filterindex)
+            msg = _("Unknown import choice {choice}.")
+            msg = msg.format(choice=filterindex)
             short_msg = _('Error reading CSV file')
 
             self.main_window.interfaces.display_warning(msg, short_msg)
@@ -165,8 +165,9 @@ class ExchangeActions(Actions):
             csv_interface.write(data)
 
         except IOError, err:
-            msg = _("The file {} could not be fully written\n \n"
-                    "Error message:\n{}").format(filepath, err)
+            msg = _("The file {filepath} could not be fully written\n \n"
+                    "Error message:\n{msg}")
+            msg = msg.format(filepath=filepath, msg=err)
             short_msg = _('Error writing CSV file')
             self.main_window.interfaces.display_warning(msg, short_msg)
 
@@ -193,8 +194,9 @@ class ExchangeActions(Actions):
             outfile.write(data)
 
         except IOError, err:
-            msg = _("The file {} could not be fully written\n \n"
-                    "Error message:\n{}").format(filepath, err)
+            msg = _("The file {filepath} could not be fully written\n \n"
+                    "Error message:\n{msg}")
+            msg = msg.format(filepath=filepath, msg=err)
             short_msg = _('Error writing SVG file')
             self.main_window.interfaces.display_warning(msg, short_msg)
 
@@ -589,9 +591,8 @@ class MacroActions(Actions):
             macro_infile = open(filepath, "r")
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            msg = _("Error opening file {filepath}.").format(filepath=filepath)
+            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
 
             return False
 

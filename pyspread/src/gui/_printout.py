@@ -195,6 +195,7 @@ class Printout(wx.Printout):
         #-------------------------------------------
 
         self.canvas.DoDrawing(dc)
-        dc.DrawText(_("Page: {}").format(page), marginX / 2, maxY - marginY)
+        page_text = _("Page: {page}").format(page=page)
+        dc.DrawText(page_text, marginX / 2, maxY - marginY)
 
         return True

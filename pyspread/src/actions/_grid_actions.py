@@ -278,9 +278,8 @@ class FileActions(Actions):
             infile = bz2.BZ2File(filepath, "r")
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
+            post_command_event(self.main_window, self.StatusBarMsg, text=txt)
 
             return False
 
@@ -291,10 +290,11 @@ class FileActions(Actions):
         try:
             version = self._get_file_version(infile)
             if version != "0.1":
-                statustext = \
-                    _("File version {} unsupported (not 0.1).").format(version)
+                text = _("File version {version} unsupported (not 0.1).")
+                text = text.format(version=version)
                 post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=statustext)
+                                   text=text)
+
                 return False
 
         except (IOError, ValueError), errortext:
@@ -345,9 +345,8 @@ class FileActions(Actions):
                     return False
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
+            post_command_event(self.main_window, self.StatusBarMsg, text=txt)
 
             return False
 
@@ -443,17 +442,18 @@ class FileActions(Actions):
         self.saving = True
         self.need_abort = False
 
-        io_error_text = _("Error writing to file {}.").format(filepath)
+        io_error_text = _("Error writing to file {filepath}.")
+        io_error_text = io_error_text.format(filepath=filepath)
 
         # Save file is compressed
         try:
             outfile = bz2.BZ2File(filepath, "wb")
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=statustext)
+                                   text=txt)
             except TypeError:
                 # The main window does not exist any more
                 pass
@@ -698,7 +698,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             return row, col, tab
 
         else:
-            raise ValueError(_("Key length {}  not in (2, 3)".format(length)))
+            msg = _("Key length {length}  not in (2, 3)").format(length=length)
+            raise ValueError(msg)
 
     def _abort_paste(self):
         """Aborts import"""
@@ -1088,7 +1089,7 @@ class GridActions(Actions):
 
             self.zoom()
 
-            statustext = _("Switched to table {}.").format(newtable)
+            statustext = _("Switched to table {table}.").format(table=newtable)
 
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=statustext)
@@ -1268,8 +1269,8 @@ class FindActions(Actions):
         self.grid.code_array[findpos] = new_code
         self.grid.actions.cursor = findpos
 
-        statustext = _("Replaced {} with {} in cell {}.").format(
-            old_code, new_code, findpos)
+        statustext = _("Replaced {old} with {new} in cell {key}.")
+        statustext = statustext.format(old=old_code, new=new_code, key=findpos)
 
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)

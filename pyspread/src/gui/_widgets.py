@@ -466,7 +466,8 @@ class MatplotlibStyleChoice(wx.Choice):
             if style[0] == label:
                 return style[1]
 
-        raise ValueError(_("Label {} is invalid.".format(label)))
+        msg = _("Label {label} is invalid.").format(label=label)
+        raise ValueError(msg)
 
     def get_label(self, code):
         """Returns string label for given code string
@@ -484,7 +485,8 @@ class MatplotlibStyleChoice(wx.Choice):
             if style[1] == code:
                 return style[0]
 
-        raise ValueError(_("Code {} is invalid.".format(code)))
+        msg = _("Code {code} is invalid.").format(code=code)
+        raise ValueError(msg)
 
 
 class LineStyleComboBox(MatplotlibStyleChoice):

@@ -92,9 +92,11 @@ class Commandlineparser(object):
         from src.config import config
         self.config = config
 
-        usage = _("usage: %prog [options] [filename]")
-        version = _("%prog {}").format(config["version"])
-        self.parser = optparse.OptionParser(usage=usage, version=version)
+        usage_str = _("usage: %prog [options] [filename]")
+        version = config["version"]
+        version_str = _("%prog {version}").format(version=version)
+        self.parser = optparse.OptionParser(usage=usage_str,
+                                            version=version_str)
 
         grid_shape = (
             config["grid_rows"],

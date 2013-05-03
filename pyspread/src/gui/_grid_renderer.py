@@ -377,9 +377,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             string_y = rect.y + 2
 
         else:
-            err_msg = _("Vertical alignment {} not in (top, middle, bottom)")\
-                .format(vertical_align)
-            raise ValueError(err_msg)
+            msg = _("Vertical alignment {align} not in (top, middle, bottom)")
+            msg = msg.format(align=vertical_align)
+            raise ValueError(msg)
 
         # Justification
 
@@ -404,9 +404,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             string_x = string_x - text_extent[0] * cos(rot_angle)
             string_y = string_y + text_extent[0] * sin(rot_angle)
         else:
-            err_msg = _("Cell justification {} not in (left, center, right)")\
-                .format(justification)
-            raise ValueError(err_msg)
+            msg = _("Cell justification {just} not in (left, center, right)")
+            msg = msg.format(just=justification)
+            raise ValueError(msg)
 
         return string_x, string_y
 

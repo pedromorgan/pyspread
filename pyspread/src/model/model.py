@@ -425,7 +425,8 @@ class DictGrid(KeyValueStore, ParserMixin, StringGeneratorMixin):
 
         for axis, key_ele in enumerate(key):
             if shape[axis] <= key_ele or key_ele < -shape[axis]:
-                msg = "Grid index {} outside grid shape {}.".format(key, shape)
+                msg = "Grid index {key} outside grid shape {shape}."
+                msg = msg.format(key=key, shape=shape)
                 raise IndexError(msg)
 
         return KeyValueStore.__getitem__(self, key)

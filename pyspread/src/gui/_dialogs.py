@@ -381,7 +381,7 @@ class CsvParameterWidgets(object):
                 choice = self.choices['quoting'][widget.GetSelection()]
                 parameters[pname] = getattr(csv, choice)
             else:
-                raise TypeError(_("{} unknown.").format(ptype))
+                raise TypeError(_("{type} unknown.").format(type=ptype))
 
         has_header = parameters.pop("self.has_header")
 
@@ -390,7 +390,7 @@ class CsvParameterWidgets(object):
 
         except TypeError, err:
             msg = _("The dialect is invalid. \n "
-                    "\nError message:\n{}").format(err)
+                    "\nError message:\n{msg}").format(msg=err)
             dlg = wx.MessageDialog(self.parent, msg, style=wx.ID_CANCEL)
             dlg.ShowModal()
             dlg.Destroy()
@@ -612,7 +612,8 @@ class CsvImportDialog(wx.Dialog):
     def _set_properties(self):
         """Sets dialog title and size limitations of the widgets"""
 
-        self.SetTitle(_("CSV Import: {}").format(self.csvfilename))
+        title = _("CSV Import: {filepath}").format(filepath=self.csvfilename)
+        self.SetTitle(title)
         self.SetSize((600, 600))
 
         for button in [self.button_cancel, self.button_ok]:
@@ -1080,7 +1081,8 @@ class AboutDialog(object):
 
         self.SetTitle(_("About pyspread"))
 
-        label = _("pyspread {}\nCopyright Martin Manns").format(VERSION)
+        label = _("pyspread {version}\nCopyright Martin Manns")
+        label = label.format(version=VERSION)
 
         self.about_label.SetLabel(label)
 

@@ -200,8 +200,9 @@ class ModalDialogInterfaceMixin(object):
         except csv.Error, err:
             # Display modal warning dialog
 
-            msg = _("'{}' does not seem to be a valid CSV file.\n \nOpening it"
-                    " yielded the error:\n{}").format(csvfilename, err)
+            msg = _("'{filepath}' does not seem to be a valid CSV file.\n \n"
+                    "Opening it yielded the error:\n{error}")
+            msg = msg.format(filepath=csvfilename, error=err)
             short_msg = _('Error reading CSV file')
 
             self.display_warning(msg, short_msg)
