@@ -537,7 +537,8 @@ class ClipboardActions(Actions):
         except (SyntaxError, AttributeError):
             # This is no Python code so te try to interpret it as paste data
             try:
-                obj = list(self._get_paste_data_gen(key, data))
+                obj = [map(ast.literal_eval, line.split("\t"))
+                        for line in data.split("\n")]
 
             except Exception, err:
                 error_msg(err)
