@@ -3,4 +3,5 @@ dist
 build
 MANIFEST
 *.sig
-*spyder*
+.spyderproject
+.spyderworkspace
