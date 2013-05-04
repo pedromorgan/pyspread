@@ -114,13 +114,13 @@ class BoolEditor(wx.CheckBox, ChartDialogEventMixin):
         \tCode representation of bool value
 
         """
-        
+
         # If string representations of False are in the code
         # then it has to be converted explicitly
-        
+
         if code == "False" or code == "0":
             code = False
-            
+
         self.SetValue(bool(code))
 
     # Properties
@@ -978,7 +978,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         if not attributes:
             return
-            
+
         # Set widgets from attributes
         # ---------------------------
 

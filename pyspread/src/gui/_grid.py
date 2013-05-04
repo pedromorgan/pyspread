@@ -431,7 +431,11 @@ class GridCellEventHandlers(object):
             self.grid.interfaces.get_filepath_findex_from_user(wildcard,
                                                                message, style)
 
-        bmp = wx.Bitmap(filepath)
+        try:
+            bmp = wx.Bitmap(filepath)
+        except TypeError:
+            return
+
         if bmp.Size == (-1, -1):
             # Bitmap could not be read
             return
@@ -451,8 +455,11 @@ class GridCellEventHandlers(object):
         filepath, __ = \
             self.grid.interfaces.get_filepath_findex_from_user(wildcard,
                                                                message, style)
+        try:
+            bmp = wx.Bitmap(filepath)
+        except TypeError:
+            return
 
-        bmp = wx.Bitmap(filepath)
         if bmp.Size == (-1, -1):
             # Bitmap could not be read
             return
