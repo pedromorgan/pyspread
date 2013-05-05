@@ -346,20 +346,25 @@ class SeriesBoxPanel(wx.Panel):
 
     """
 
-    def __init__(self, parent, box_label, labels, widget_clss, widget_codes):
+    def __init__(self, parent, box_label, labels, widget_clss, widget_codes,
+                 tooltips):
 
         wx.Panel.__init__(self, parent, -1)
 
         self.staticbox = wx.StaticBox(self, -1, box_label)
 
-        self.labels = labels
+        self.labels = [wx.StaticText(self, -1, label) for label in labels]
 
         self.widgets = []
 
-        for widget_cls, widget_code in zip(widget_clss, widget_codes):
+        for widget_cls, widget_code, label, tooltip in \
+                zip(widget_clss, widget_codes, self.labels, tooltips):
             widget = widget_cls(self, -1)
             widget.code = widget_code
             self.widgets.append(widget)
+            if tooltip:
+                label.SetToolTipString(tooltip)
+                widget.SetToolTipString(tooltip)
 
         self.__do_layout()
 
@@ -368,8 +373,7 @@ class SeriesBoxPanel(wx.Panel):
         grid_sizer = wx.FlexGridSizer(1, 2, 0, 0)
 
         for label, widget in zip(self.labels, self.widgets):
-            grid_sizer.Add(wx.StaticText(self, -1, label), 1,
-                           wx.ALL | wx.EXPAND, 2)
+            grid_sizer.Add(label, 1, wx.ALL | wx.EXPAND, 2)
             grid_sizer.Add(widget, 1, wx.ALL | wx.EXPAND, 2)
 
         grid_sizer.AddGrowableCol(1)
@@ -398,6 +402,7 @@ class SeriesAttributesPanelBase(wx.Panel):
             labels = []
             widget_clss = []
             widget_codes = []
+            tooltips = []
 
             for key in keys:
                 widget_label, widget_cls, widget_default = self.data[key]
@@ -405,9 +410,14 @@ class SeriesAttributesPanelBase(wx.Panel):
                 widget_clss.append(widget_cls)
                 widget_codes.append(widget_default)
                 labels.append(widget_label)
+                try:
+                    tooltips.append(self.tooltips[key])
+                except KeyError:
+                    tooltips.append("")
 
             self.box_panels.append(SeriesBoxPanel(self, box_label, labels,
-                                                  widget_clss, widget_codes))
+                                                  widget_clss, widget_codes,
+                                                  tooltips))
 
         self.__do_layout()
 
@@ -481,6 +491,17 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
                        "markeredgecolor"]),
     ]
 
+    tooltips = {
+        "label": _(u"String or anything printable with ‘%s’ conversion"),
+        "xdata": _(u"The data np.array for x\n"
+                   u"Code must eval to 1D array."),
+        "ydata": _(u"The data np.array for y\n"
+                   u"Code must eval to 1D array."),
+        "linewidth": _(u"The line width in points"),
+        "marker": _(u"The line marker"),
+        "markersize": _(u"The marker size in points"),
+    }
+
 
 class BarAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides bar series attributes in multiple boxed panels"""
@@ -506,6 +527,14 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
         (_("Bar"), ["color", "edgecolor"]),
     ]
 
+    tooltips = {
+        "label": _(u"String or anything printable with ‘%s’ conversion"),
+        "left": _(u"The x coordinates of the left sides of the bars"),
+        "height": _(u"The heights of the bars"),
+        "width": _(u"The widths of the bars"),
+        "bottom": _(u"The y coordinates of the bottom edges of the bars"),
+    }
+
 
 class BoxplotAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides bar series attributes in multiple boxplot panels"""
@@ -528,6 +557,19 @@ class BoxplotAttributesPanel(SeriesAttributesPanelBase):
         (_("Data"), ["x"]),
         (_("Box plot"), ["widths", "vert", "sym", "notch"]),
     ]
+
+    tooltips = {
+        "x": _(u"An array or a sequence of vectors"),
+        "widths": _(u"Either a scalar or a vector and sets the width of each "
+                    u"box\nThe default is 0.5, or\n0.15*(distance between "
+                    u"extreme positions)\nif that is smaller"),
+        "vert": _(u"If True then boxes are drawn vertical\n"
+                  u"If False then boxes are drawn horizontal"),
+        "sym": _(u"The symbol for flier points\nEnter an empty string (‘’)\n"
+                 u"if you don’t want to show fliers"),
+        "notch": _(u"False produces a rectangular box plot\n"
+                   u"True produces a notched box plot"),
+    }
 
 
 class HistogramAttributesPanel(SeriesAttributesPanelBase):
@@ -553,6 +595,19 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
         (_("Histogram"), ["bins", "normed", "cumulative", "color"]),
     ]
 
+    tooltips = {
+        "label": _(u"String or anything printable with ‘%s’ conversion"),
+        "x": _(u"Histogram data series\nMultiple data sets can be provided "
+               u"as a list or as a 2-D ndarray in which each column"
+               u"is a dataset. Note that the ndarray form is transposed "
+               u"relative to the list form."),
+        "bins": _(u"Either an integer number of bins or a bin sequence"),
+        "normed": _(u"If True then the first element is the counts normalized"
+                    u"to form a probability density, i.e., n/(len(x)*dbin)."),
+        "cumulative": _(u"If True then each bin gives the counts in that bin"
+                        u"\nplus all bins for smaller values."),
+    }
+
 
 class PieAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides pie series attributes in multiple boxed panels"""
@@ -574,6 +629,15 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
         (_("Data"), ["x"]),
         (_("Pie"), ["labels", "colors", "shadow"]),
     ]
+
+    tooltips = {
+        "x": _(u"Pie chart data\nThe fractional area of each wedge is given "
+               u"by x/sum(x)\nThe wedges are plotted counterclockwise"),
+        "labels": _(u"Sequence of wedge label strings"),
+        "colors": _(u"Sequence of matplotlib color args through which the pie "
+                    u"cycles"),
+        "shadow": _(u"If True then a shadow beneath the pie is drawn"),
+    }
 
 
 class FigureAttributesPanel(SeriesAttributesPanelBase):
@@ -603,6 +667,10 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
         (_("X-Axis"), ["xlabel", "xlim", "xscale", "xdate_format"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
     ]
+
+    tooltips = {
+        "": _(u""),
+    }
 
 
 class SeriesPanel(wx.Panel):
