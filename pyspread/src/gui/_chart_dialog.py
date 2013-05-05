@@ -592,6 +592,7 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
         "yscale": (_("Log. scale"), BoolEditor, False),
         "grid": (_("Grid"), BoolEditor, False),
         "legend": (_("Legend"), BoolEditor, False),
+        "xdate_format": (_("Date format"), StringEditor, ""),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -599,7 +600,7 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
 
     boxes = [
         (_("Figure"), ["title", "grid", "legend"]),
-        (_("X-Axis"), ["xlabel", "xlim", "xscale"]),
+        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xdate_format"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
     ]
 
@@ -883,7 +884,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((1000, 400))
+        self.SetSize((1000, 500))
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
         self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
@@ -960,7 +961,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",
-                   "notch", "sym", "normed", "cumulative"]
+                   "notch", "sym", "normed", "cumulative", "xdate_format"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]

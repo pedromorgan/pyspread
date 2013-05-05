@@ -36,11 +36,13 @@ Provides
 
 from copy import copy
 from cStringIO import StringIO
+import datetime
 import i18n
 
 import wx
 
 from matplotlib.figure import Figure
+from matplotlib import dates
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -89,6 +91,7 @@ def fig2bmp(figure, width, height, dpi, zoom):
 
     figure.set_canvas(FigureCanvas(figure))
     png_stream = StringIO()
+
     figure.savefig(png_stream, format='png', dpi=(dpi))
 
     png_stream.seek(0)
@@ -146,6 +149,30 @@ class ChartFigure(Figure):
 
         self.draw_chart()
 
+    def _xdate_setter(self, xdate_format='%Y-%m-%d'):
+        """Makes x axis a date axis with auto format
+
+        Parameters
+        ----------
+
+        xdate_format: String
+        \tSets date formatting
+
+        """
+
+        if xdate_format:
+            # We have to validate xdate_format. If wrong then bail out.
+            try:
+                datetime.date(2000, 1, 1).strftime(xdate_format)
+
+            except ValueError:
+                return
+
+            self.__axes.xaxis_date()
+            formatter = dates.DateFormatter(xdate_format)
+            self.__axes.xaxis.set_major_formatter(formatter)
+            self.autofmt_xdate()
+
     def _setup_axes(self, axes_data):
         """Sets up axes for drawing chart"""
 
@@ -160,6 +187,7 @@ class ChartFigure(Figure):
             "xlim": self.__axes.set_xlim,
             "ylim": self.__axes.set_ylim,
             "grid": self.__axes.grid,
+            "xdate_format": self._xdate_setter,
         }
 
         for key in key2setter:
@@ -208,6 +236,7 @@ class ChartFigure(Figure):
             if not fixed_attrs or all(fixed_attrs):
 
                 # Draw series to axes
+
                 chart_method = getattr(self.__axes, chart_type_string)
                 chart_method(*fixed_attrs, **series)
 
