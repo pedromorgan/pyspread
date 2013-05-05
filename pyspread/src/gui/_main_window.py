@@ -814,14 +814,10 @@ class MainWindowEventHandlers(EventMixin):
             return
 
         msg = _(u"You are going to approve and trust a file that\n"
-                u"you have received from an untrusted source.\n"
-                u"After proceeding, the file is executed.\n"
-                u"It can harm your system as any program can.\n"
-                u"Unless you took precautions, it can delete your\n"
-                u"files or send them away over the Internet.\n"
-                u"CHECK EACH CELL BEFORE PROCEEDING.\n \n"
-                u"Do not forget cells outside the visible range.\n"
-                u"You have been warned.\n \n"
+                u"you have not created yourself.\n"
+                u"After proceeding, the file is executed.\n \n"
+                u"It may harm your system as any program can.\n"
+                u"Please check all cells thoroughly before\nproceeding.\n \n"
                 u"Proceed and sign this file as trusted?")
 
         short_msg = _("Security warning")
