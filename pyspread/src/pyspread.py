@@ -185,7 +185,7 @@ class MainApplication(App, GridActionEventMixin):
             pass
 
         except ValueError:
-            # python-gnupg is installed but gnupg is not
+            # python-gnupg is installed but gnupg is not insatlled
 
             pass
 
