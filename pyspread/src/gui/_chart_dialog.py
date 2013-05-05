@@ -643,6 +643,35 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
 class FigureAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides figure attributes in multiple boxed panels"""
 
+    # strftime doc taken from Python documentation
+
+    strftime_doc = _(u"""
+Code 	Meaning
+%a 	Locale’s abbreviated weekday name.
+%A 	Locale’s full weekday name.
+%b 	Locale’s abbreviated month name.
+%B 	Locale’s full month name.
+%c 	Locale’s appropriate date and time representation.
+%d 	Day of the month as a decimal number [01,31].
+%f 	Microsecond as a decimal number [0,999999], zero-padded on the left
+%H 	Hour (24-hour clock) as a decimal number [00,23].
+%I 	Hour (12-hour clock) as a decimal number [01,12].
+%j 	Day of the year as a decimal number [001,366].
+%m 	Month as a decimal number [01,12].
+%M 	Minute as a decimal number [00,59].
+%p 	Locale’s equivalent of either AM or PM.
+%S 	Second as a decimal number [00,61].
+%U 	Week number (Sunday first weekday) as a decimal number [00,53].
+%w 	Weekday as a decimal number [0(Sunday),6]. 	4
+%W 	Week number (Monday first weekday) as a decimal number [00,53].
+%x 	Locale’s appropriate date representation.
+%X 	Locale’s appropriate time representation.
+%y 	Year without century as a decimal number [00,99].
+%Y 	Year with century as a decimal number.
+%z 	UTC offset in the form +HHMM or -HHMM.
+%Z 	Time zone name.
+%% 	A literal '%' character.""")
+
     # Data for figure
     # matplotlib_key, label, widget_cls, default_code
 
@@ -669,7 +698,14 @@ class FigureAttributesPanel(SeriesAttributesPanelBase):
     ]
 
     tooltips = {
-        "": _(u""),
+        "title": _(u"The figure title"),
+        "xlabel": _(u"The label for the x axis"),
+        "xlim": _(u"The data limits for the x axis\nFormat: (xmin, xmax)"),
+        "ylabel": _(u"The label for the y axis"),
+        "ylim": _(u"The data limits for the y axis\nFormat: (ymin, ymax)"),
+        "xdate_format": _(u"If non-empty then the x axis is displays dates.\n"
+                          u"Enter an unquoted strftime() format string."
+                          u"\n") + strftime_doc,
     }
 
 
