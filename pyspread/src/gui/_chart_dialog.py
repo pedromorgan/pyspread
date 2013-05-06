@@ -72,6 +72,7 @@ from wx.lib.intctrl import IntCtrl, EVT_INT
 import wx.lib.agw.flatnotebook as fnb
 
 from _widgets import LineStyleComboBox, MarkerStyleComboBox
+from _widgets import CoordinatesComboBox
 from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
@@ -327,9 +328,19 @@ class LineStyleEditor(LineStyleComboBox, ChartDialogEventMixin,
         self.bindings()
 
 
+class CoordinatesEditor(CoordinatesComboBox, ChartDialogEventMixin,
+                        StyleEditorMixin):
+    """Editor widget for line style string values"""
+
+    def __init__(self, *args, **kwargs):
+        CoordinatesComboBox.__init__(self, *args, **kwargs)
+
+        self.bindings()
+
 # -------------
 # Panel widgets
 # -------------
+
 
 class SeriesBoxPanel(wx.Panel):
     """Box panel that contains labels and widgets
@@ -363,7 +374,6 @@ class SeriesBoxPanel(wx.Panel):
             widget.code = widget_code
             self.widgets.append(widget)
             if tooltip:
-                label.SetToolTipString(tooltip)
                 widget.SetToolTipString(tooltip)
 
         self.__do_layout()
@@ -398,7 +408,6 @@ class SeriesAttributesPanelBase(wx.Panel):
         self.box_panels = []
 
         for box_label, keys in self.boxes:
-
             labels = []
             widget_clss = []
             widget_codes = []
@@ -709,6 +718,40 @@ Code 	Meaning
     }
 
 
+class AnnotateAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides annotation attributes in multiple boxed panels"""
+
+    # Data for annotation
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "s": (_("Text"), StringEditor, ""),
+        "xy": (_("Point"), StringEditor, ""),
+        "xycoords": (_("Point coordinates"), CoordinatesEditor, "data"),
+        "xytext": (_("Text location"), StringEditor, ""),
+        "textcoords": (_("Text coordinates"), CoordinatesEditor, "data"),
+        "width": (_("Arrow width"), IntegerEditor, "1"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Annotation"), ["s", "xy", "xycoords"]),
+        (_("Text"), ["xytext", "textcoords"]),
+        (_("Arrow"), ["width"]),
+    ]
+
+    tooltips = {
+        "s": _(u"Annotation text"),
+        "xy": _(u"Point that is annotated"),
+        "xycoords": _(u"String that indicates the coordinates of xy"),
+        "xytext": _(u"Location of annotation text"),
+        "textcoords": _(u"String that indicates the coordinates of xytext."),
+        "width": _(u"Width of the arrow in points"),
+    }
+
+
 class SeriesPanel(wx.Panel):
     """Panel that holds attribute information for one series of the chart"""
 
@@ -718,6 +761,7 @@ class SeriesPanel(wx.Panel):
         {"type": "hist", "panel_class": HistogramAttributesPanel},
         {"type": "boxplot", "panel_class": BoxplotAttributesPanel},
         {"type": "pie", "panel_class": PieAttributesPanel},
+        #{"type": "annotate", "panel_class": AnnotateAttributesPanel},
     ]
 
     def __init__(self, grid, series_dict):
@@ -1065,7 +1109,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",
-                   "notch", "sym", "normed", "cumulative", "xdate_format"]
+                   "notch", "sym", "normed", "cumulative", "xdate_format",
+                   "xycoords", "textcoords"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]

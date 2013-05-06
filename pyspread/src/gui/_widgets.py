@@ -530,6 +530,22 @@ class MarkerStyleComboBox(MatplotlibStyleChoice):
     ]
 
 
+class CoordinatesComboBox(MatplotlibStyleChoice):
+    """Combo box for choosing annotation coordinates for matplotlib charts"""
+
+    styles = [
+        ("Figure points", "figure points"),
+        ("Figure pixels", "figure pixels"),
+        ("Figure fraction", "figure fraction"),
+        ("Axes points", "axes points"),
+        ("Axes pixels", "axes pixels"),
+        ("Axes fraction", "axes fraction"),
+        ("Data", "data"),
+        ("Offset points", "offset points"),
+        ("Polar", "polar"),
+    ]
+
+
 # End of chart dialog widgets for matplotlib interaction
 # ------------------------------------------------------
 
