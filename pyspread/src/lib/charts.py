@@ -133,6 +133,7 @@ class ChartFigure(Figure):
         "boxplot": ["x", "x"],
         "hist": ["label", "x"],
         "pie": ["labels", "x"],
+        "annotate": ["xy", "xy"],
     }
 
     def __init__(self, *attributes):
@@ -225,13 +226,14 @@ class ChartFigure(Figure):
                 series[x_str] = tuple(series[x_str])
 
             fixed_attrs = []
-            for attr in self.plot_type_fixed_attrs[chart_type_string]:
-                # Remove attr if it is a fixed (non-kwd) attr
-                # If a fixed attr is missing, insert a dummy
-                try:
-                    fixed_attrs.append(tuple(series.pop(attr)))
-                except KeyError:
-                    fixed_attrs.append(())
+            if chart_type_string in self.plot_type_fixed_attrs:
+                for attr in self.plot_type_fixed_attrs[chart_type_string]:
+                    # Remove attr if it is a fixed (non-kwd) attr
+                    # If a fixed attr is missing, insert a dummy
+                    try:
+                        fixed_attrs.append(tuple(series.pop(attr)))
+                    except KeyError:
+                        fixed_attrs.append(())
 
             if not fixed_attrs or all(fixed_attrs):
 

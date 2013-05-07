@@ -728,9 +728,6 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
         "s": (_("Text"), StringEditor, ""),
         "xy": (_("Point"), StringEditor, ""),
         "xycoords": (_("Point coordinates"), CoordinatesEditor, "data"),
-        "xytext": (_("Text location"), StringEditor, ""),
-        "textcoords": (_("Text coordinates"), CoordinatesEditor, "data"),
-        "width": (_("Arrow width"), IntegerEditor, "1"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -738,8 +735,6 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
 
     boxes = [
         (_("Annotation"), ["s", "xy", "xycoords"]),
-        (_("Text"), ["xytext", "textcoords"]),
-        (_("Arrow"), ["width"]),
     ]
 
     tooltips = {
@@ -748,7 +743,6 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
         "xycoords": _(u"String that indicates the coordinates of xy"),
         "xytext": _(u"Location of annotation text"),
         "textcoords": _(u"String that indicates the coordinates of xytext."),
-        "width": _(u"Width of the arrow in points"),
     }
 
 
@@ -761,7 +755,7 @@ class SeriesPanel(wx.Panel):
         {"type": "hist", "panel_class": HistogramAttributesPanel},
         {"type": "boxplot", "panel_class": BoxplotAttributesPanel},
         {"type": "pie", "panel_class": PieAttributesPanel},
-        #{"type": "annotate", "panel_class": AnnotateAttributesPanel},
+        {"type": "annotate", "panel_class": AnnotateAttributesPanel},
     ]
 
     def __init__(self, grid, series_dict):
@@ -1105,12 +1099,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
-                  "xlim", "ylim", "x", "labels", "colors"]
+                  "xlim", "ylim", "x", "labels", "colors", "xy", "xytext"]
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",
                    "notch", "sym", "normed", "cumulative", "xdate_format",
-                   "xycoords", "textcoords"]
+                   "xycoords", "textcoords", "s"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]
