@@ -84,7 +84,8 @@ class GtkArtProvider(wx.ArtProvider):
             "bar": action_path + "chart_column.png",  # matplotlib bar chart
             "boxplot": action_path + "chart_boxplot.png",  # matplotlib boxplot
             "pie": action_path + "chart_pie.png",  # matplotlib pie chart
-            "hist": action_path + "chart_histogram.png",  # matplotlib histogram
+            "hist": action_path + "chart_histogram.png",  # matplotlib hist
+            "annotate": action_path + "chart_annotate.png",  # matplotlib
             "safe_mode": icon_path + "status/dialog-warning.png",
         }
 

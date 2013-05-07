@@ -273,8 +273,8 @@ class Digest(object):
         if self.fallback_type is not None and \
            self.fallback_type not in self.typehandlers:
 
-            err_msg = _("Fallback type {} unknown.").\
-                format(str(self.fallback_type))
+            err_msg = _("Fallback type {type} unknown.").\
+                format(type=str(self.fallback_type))
 
             raise NotImplementedError(err_msg)
 
