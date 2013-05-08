@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: pyspread 0.2.4-pre2\n"
+"Project-Id-Version: pyspread 0.2.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-08 01:05+0200\n"
-"PO-Revision-Date: 2013-04-10 15:37+0200\n"
+"POT-Creation-Date: 2013-05-07 21:29+0200\n"
+"PO-Revision-Date: 2013-05-08 08:23+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -18,21 +18,21 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: src/lib/clipboard.py:90 src/lib/clipboard.py:124
+#: src/lib/clipboard.py:90 src/lib/clipboard.py:125
 msgid "Can't open the clipboard"
 msgstr "Не вдалося відкрити буфер обміну даними"
 
-#: src/lib/clipboard.py:90 src/lib/clipboard.py:124
+#: src/lib/clipboard.py:90 src/lib/clipboard.py:125
 msgid "Error"
 msgstr "Помилка"
 
 #: src/lib/clipboard.py:118
-msgid "Datatype {} unknown"
-msgstr "Невідомий тип даних, {}"
+msgid "Datatype {type} unknown"
+msgstr "Невідомий тип даних, {type}"
 
-#: src/lib/__csv.py:269
-msgid "Fallback type {} unknown."
-msgstr "Невідомий резервний тип {}."
+#: src/lib/__csv.py:276
+msgid "Fallback type {type} unknown."
+msgstr "Невідомий резервний тип {type}."
 
 #: src/lib/gpg.py:63
 msgid ""
@@ -63,8 +63,8 @@ msgid "After confirming this dialog, a new GPG key "
 msgstr "Після натискання кнопки підтвердження у цьому вікні, "
 
 #: src/lib/gpg.py:129
-msgid "'{}' will be generated."
-msgstr "буде створено новий ключ GPG «{}»."
+msgid "'{key}' will be generated."
+msgstr "Буде створено ключ «{key}»."
 
 #: src/lib/gpg.py:130
 msgid ""
@@ -88,24 +88,24 @@ msgstr "Скасування цієї дії призведе до заверш�
 msgid "usage: %prog [options] [filename]"
 msgstr "користування: %prog [параметри] [назва файла]"
 
-#: src/pyspread.py:96
-msgid "%prog {}"
-msgstr "%prog {}"
+#: src/pyspread.py:97
+msgid "%prog {version}"
+msgstr "%prog {version}"
 
-#: src/pyspread.py:107
+#: src/pyspread.py:110
 #, python-format
 msgid "Dimensions of empty grid (works only without filename) rows, cols, tables [default: %default]"
 msgstr "Розміри порожньої сітки (працює лише для файлів без назви) рядки, стовпчики, таблиці [типове значення: %default]"
 
-#: src/pyspread.py:123
+#: src/pyspread.py:127
 msgid "Cell dimension must be > 0."
 msgstr "Розміри комірки мають бути > 0."
 
-#: src/pyspread.py:128
+#: src/pyspread.py:132
 msgid "Only one file may be opened at a time."
 msgstr "Одночасно можна відкривати лише один файл."
 
-#: src/pyspread.py:231
+#: src/pyspread.py:240
 msgid "You need a unicode build of wxPython to run pyspread."
 msgstr "Для роботи у pyspread вам слід встановити Unicode-збірку wxPython."
 
@@ -238,7 +238,7 @@ msgid "Setup printer page"
 msgstr "Сторінка налаштовування параметрів друку"
 
 #: src/gui/_menubars.py:205 src/gui/_menubars.py:206
-#: src/actions/_main_window_actions.py:245
+#: src/actions/_main_window_actions.py:248
 msgid "Print preview"
 msgstr "Попередній перегляд друку"
 
@@ -350,7 +350,7 @@ msgstr "П&ерегляд"
 msgid "Toolbars"
 msgstr "Панелі інструментів"
 
-#: src/gui/_menubars.py:259 src/gui/_main_window.py:164
+#: src/gui/_menubars.py:259 src/gui/_main_window.py:170
 msgid "Main toolbar"
 msgstr "Головна панель"
 
@@ -358,7 +358,7 @@ msgstr "Головна панель"
 msgid "Shows and hides the main toolbar."
 msgstr "Показати або приховати головну панель інструментів."
 
-#: src/gui/_menubars.py:262 src/gui/_main_window.py:165
+#: src/gui/_menubars.py:262 src/gui/_main_window.py:171
 msgid "Macro toolbar"
 msgstr "Панель макросів"
 
@@ -366,7 +366,7 @@ msgstr "Панель макросів"
 msgid "Shows and hides the macro toolbar."
 msgstr "Показати або приховати головну панель макросів."
 
-#: src/gui/_menubars.py:266 src/gui/_main_window.py:167
+#: src/gui/_menubars.py:266 src/gui/_main_window.py:173
 msgid "Format toolbar"
 msgstr "Панель форматування"
 
@@ -374,7 +374,7 @@ msgstr "Панель форматування"
 msgid "Shows and hides the format toolbar."
 msgstr "Показати або приховати головну панель форматування."
 
-#: src/gui/_menubars.py:269 src/gui/_main_window.py:168
+#: src/gui/_menubars.py:269 src/gui/_main_window.py:174
 msgid "Find toolbar"
 msgstr "Панель пошуку"
 
@@ -382,8 +382,8 @@ msgstr "Панель пошуку"
 msgid "Shows and hides the find toolbar."
 msgstr "Показати або приховати головну панель пошуку."
 
-#: src/gui/_menubars.py:274 src/gui/_main_window.py:169
-#: src/gui/_main_window.py:212
+#: src/gui/_menubars.py:274 src/gui/_main_window.py:175
+#: src/gui/_main_window.py:214
 msgid "Entry line"
 msgstr "Рядок введення"
 
@@ -391,300 +391,296 @@ msgstr "Рядок введення"
 msgid "Shows and hides the entry line."
 msgstr "Показати або сховати рядок введення."
 
-#: src/gui/_menubars.py:276
-msgid "Table choice"
-msgstr "Вибір таблиці"
-
-#: src/gui/_menubars.py:277
-msgid "Shows and hides the table choice."
-msgstr "Показати або сховати панель вибору таблиці."
-
-#: src/gui/_menubars.py:281
+#: src/gui/_menubars.py:278
 msgid "Go to cell"
 msgstr "Перейти до комірки"
 
-#: src/gui/_menubars.py:282
+#: src/gui/_menubars.py:279
 msgid "Moves the grid to a cell."
 msgstr "Пересуває сітку до комірки."
 
-#: src/gui/_menubars.py:284
+#: src/gui/_menubars.py:281
 msgid "Zoom in"
 msgstr "Збільшити"
 
-#: src/gui/_menubars.py:285
+#: src/gui/_menubars.py:282
 msgid "Zoom in grid."
 msgstr "Збільшити сітку."
 
-#: src/gui/_menubars.py:286
+#: src/gui/_menubars.py:283
 msgid "Zoom out"
 msgstr "Зменшити"
 
-#: src/gui/_menubars.py:287
+#: src/gui/_menubars.py:284
 msgid "Zoom out grid."
 msgstr "Зменшити сітку."
 
-#: src/gui/_menubars.py:288
+#: src/gui/_menubars.py:285
 msgid "Normal size"
 msgstr "Звичайний розмір"
 
-#: src/gui/_menubars.py:289
+#: src/gui/_menubars.py:286
 msgid "Show grid in standard zoom."
 msgstr "Показати сітку за стандартного масштабування."
 
-#: src/gui/_menubars.py:292
+#: src/gui/_menubars.py:289
 msgid "Refresh selected cells"
 msgstr "Оновити вміст позначених комірок"
 
-#: src/gui/_menubars.py:293
+#: src/gui/_menubars.py:290
 msgid "Refresh selected cells even when frozen"
 msgstr "Оновити вміст позначених комірок, навіть якщо їх заморожено"
 
-#: src/gui/_menubars.py:297
+#: src/gui/_menubars.py:294
 msgid "F&ormat"
 msgstr "Ф&ормат"
 
-#: src/gui/_menubars.py:298
+#: src/gui/_menubars.py:295
 msgid "Font..."
 msgstr "Шрифт…"
 
-#: src/gui/_menubars.py:299
+#: src/gui/_menubars.py:296
 msgid "Launch font dialog."
 msgstr "Відкрити діалогове вікно вибору шрифту."
 
-#: src/gui/_menubars.py:300 src/gui/_toolbars.py:413
+#: src/gui/_menubars.py:297 src/gui/_toolbars.py:414
 msgid "Underline"
 msgstr "Підкреслення"
 
-#: src/gui/_menubars.py:301
+#: src/gui/_menubars.py:298
 msgid "Toggles underline."
 msgstr "Увімкнути або вимкнути підкреслення."
 
-#: src/gui/_menubars.py:302 src/gui/_toolbars.py:415
+#: src/gui/_menubars.py:299 src/gui/_toolbars.py:416
 msgid "Strikethrough"
 msgstr "Перекреслення"
 
-#: src/gui/_menubars.py:303
+#: src/gui/_menubars.py:300
 msgid "Toggles strikethrough."
 msgstr "Увімкнути або вимкнути перекреслення."
 
-#: src/gui/_menubars.py:305
+#: src/gui/_menubars.py:302
 msgid "Frozen"
 msgstr "Заморожено"
 
-#: src/gui/_menubars.py:306
+#: src/gui/_menubars.py:303
 msgid "Toggles frozen state of cell. "
 msgstr "Увімкнути або вимкнути заморожений стан комірки. "
 
-#: src/gui/_menubars.py:307
+#: src/gui/_menubars.py:304
 msgid "Frozen cells are updated only when F5 is pressed."
 msgstr "Вміст заморожених комірок оновлюється, лише якщо натиснути F5."
 
-#: src/gui/_menubars.py:308 src/gui/_toolbars.py:509
+#: src/gui/_menubars.py:305 src/gui/_toolbars.py:510
 msgid "Merge cells"
 msgstr "Об’єднати комірки"
 
-#: src/gui/_menubars.py:309
+#: src/gui/_menubars.py:306
 msgid "Merges / unmerges selected cells. "
 msgstr "Об’єднати або роз’єднати позначені комірки."
 
-#: src/gui/_menubars.py:312
+#: src/gui/_menubars.py:309
 msgid "Justification"
 msgstr "Розподіл"
 
-#: src/gui/_menubars.py:313
+#: src/gui/_menubars.py:310
 msgid "Left"
 msgstr "Ліворуч"
 
-#: src/gui/_menubars.py:315 src/gui/_menubars.py:322
+#: src/gui/_menubars.py:312 src/gui/_menubars.py:319
 msgid "Center"
 msgstr "Центр"
 
-#: src/gui/_menubars.py:317
+#: src/gui/_menubars.py:314
 msgid "Right"
 msgstr "Праворуч"
 
-#: src/gui/_menubars.py:320
+#: src/gui/_menubars.py:317
 msgid "Alignment"
 msgstr "Вирівнювання"
 
-#: src/gui/_menubars.py:322
+#: src/gui/_menubars.py:319
 msgid "Top"
 msgstr "Вгору"
 
-#: src/gui/_menubars.py:322
+#: src/gui/_menubars.py:319
 msgid "Bottom"
 msgstr "Вниз"
 
-#: src/gui/_menubars.py:325
+#: src/gui/_menubars.py:322
 msgid "Text color..."
 msgstr "Колір тексту…"
 
-#: src/gui/_menubars.py:326
+#: src/gui/_menubars.py:323
 msgid "Launch color dialog to specify text color."
 msgstr "Відкрити діалогове вікно кольорів для визначення кольору тексту."
 
-#: src/gui/_menubars.py:327
+#: src/gui/_menubars.py:324
 msgid "Background color..."
 msgstr "Колір тла…"
 
-#: src/gui/_menubars.py:328
+#: src/gui/_menubars.py:325
 msgid "Launch color dialog to specify background color."
 msgstr "Відкрити діалогове вікно кольорів для визначення кольору тла."
 
-#: src/gui/_menubars.py:330
+#: src/gui/_menubars.py:327
 msgid "Rotation..."
 msgstr "Обертання…"
 
-#: src/gui/_menubars.py:331
+#: src/gui/_menubars.py:328
 msgid "Set text rotation."
 msgstr "Встановити параметри обертання тексту."
 
-#: src/gui/_menubars.py:334
+#: src/gui/_menubars.py:331
 msgid "&Macro"
 msgstr "&Макро"
 
-#: src/gui/_menubars.py:335
+#: src/gui/_menubars.py:332
 msgid "&Macro list"
 msgstr "С&писок макросів"
 
-#: src/gui/_menubars.py:336
+#: src/gui/_menubars.py:333
 msgid "Choose, fill in, manage, and create macros"
 msgstr "Вибір, додавання, керування та створення макросів"
 
-#: src/gui/_menubars.py:337
+#: src/gui/_menubars.py:334
 msgid "&Load macro list"
 msgstr "&Завантажити список макросів"
 
-#: src/gui/_menubars.py:338
+#: src/gui/_menubars.py:335
 msgid "Load macro list"
 msgstr "Завантажити список макросів"
 
-#: src/gui/_menubars.py:339
+#: src/gui/_menubars.py:336
 msgid "&Save macro list"
 msgstr "З&берегти список макросів"
 
-#: src/gui/_menubars.py:340
+#: src/gui/_menubars.py:337
 msgid "Save macro list"
 msgstr "Зберегти список макросів"
 
-#: src/gui/_menubars.py:342
+#: src/gui/_menubars.py:339
 msgid "Insert bitmap..."
 msgstr "Вставити зображення…"
 
-#: src/gui/_menubars.py:343
+#: src/gui/_menubars.py:340
 msgid "Insert bitmap from file into cell"
 msgstr "Вставити до комірки растрове зображення з файла"
 
-#: src/gui/_menubars.py:344
+#: src/gui/_menubars.py:341
 msgid "Link bitmap..."
 msgstr "Пов’язати зображення…"
 
-#: src/gui/_menubars.py:345
+#: src/gui/_menubars.py:342
 msgid "Link bitmap from file into cell"
 msgstr "Пов’язати з коміркою растрове зображення з файла"
 
-#: src/gui/_menubars.py:346
+#: src/gui/_menubars.py:343
 msgid "Insert chart..."
 msgstr "Вставити діаграму…"
 
-#: src/gui/_menubars.py:347
+#: src/gui/_menubars.py:344
 msgid "Insert chart into cell"
 msgstr "Вставити до комірки діаграму"
 
-#: src/gui/_menubars.py:350
+#: src/gui/_menubars.py:347
 msgid "&Help"
 msgstr "&Довідка"
 
-#: src/gui/_menubars.py:351
+#: src/gui/_menubars.py:348
 msgid "First &Steps"
 msgstr "Перші &кроки"
 
-#: src/gui/_menubars.py:352
+#: src/gui/_menubars.py:349
 msgid "Launch First Steps in pyspread"
 msgstr "Відкрити підручник початкового рівня у pyspread"
 
-#: src/gui/_menubars.py:353
+#: src/gui/_menubars.py:350
 msgid "&Tutorial"
 msgstr "&Підручник"
 
-#: src/gui/_menubars.py:354
+#: src/gui/_menubars.py:351
 msgid "Launch tutorial"
 msgstr "Відкрити підручник"
 
-#: src/gui/_menubars.py:355
+#: src/gui/_menubars.py:352
 msgid "&FAQ"
 msgstr "П&оширені питання"
 
-#: src/gui/_menubars.py:356
+#: src/gui/_menubars.py:353
 msgid "Frequently asked questions"
 msgstr "Поширені запитання"
 
-#: src/gui/_menubars.py:358
+#: src/gui/_menubars.py:355
 msgid "&Python tutorial"
 msgstr "Підру&чник з Python"
 
-#: src/gui/_menubars.py:359
+#: src/gui/_menubars.py:356
 msgid "Python tutorial for coding information (online)"
 msgstr "Підручник щодо програмування мовою Python (у інтернеті)"
 
-#: src/gui/_menubars.py:361
+#: src/gui/_menubars.py:358
 msgid "&About"
 msgstr "Пр&о програму"
 
-#: src/gui/_menubars.py:361 src/gui/_dialogs.py:1081
+#: src/gui/_menubars.py:358 src/gui/_dialogs.py:1082
 msgid "About pyspread"
 msgstr "Про pyspread"
 
-#: src/gui/_main_window.py:97
+#: src/gui/_main_window.py:103
 msgid "Welcome to pyspread."
 msgstr "Ласкаво просимо до pyspread."
 
-#: src/gui/_main_window.py:177
+#: src/gui/_main_window.py:183
 msgid "View"
 msgstr "Перегляд"
 
-#: src/gui/_main_window.py:190
-msgid "Macro Toolbar"
-msgstr "Панель макросів"
-
-#: src/gui/_main_window.py:196
+#: src/gui/_main_window.py:197
 msgid "Main Toolbar"
 msgstr "Головна панель"
 
-#: src/gui/_main_window.py:201 src/gui/_toolbars.py:156
+#: src/gui/_main_window.py:201 src/gui/_toolbars.py:157
 msgid "Find"
 msgstr "Знайти"
 
-#: src/gui/_main_window.py:207
+#: src/gui/_main_window.py:206
 msgid "Cell Attributes"
 msgstr "Атрибути комірки"
 
-#: src/gui/_main_window.py:579
-msgid "New grid with dimensions {} created."
-msgstr "Створено нову сітку з розмірами {}."
+#: src/gui/_main_window.py:210
+msgid "Macro Toolbar"
+msgstr "Панель макросів"
 
-#: src/gui/_main_window.py:604 src/gui/_main_window.py:661
+#: src/gui/_main_window.py:227
+msgid "Main grid"
+msgstr "Основна сітка"
+
+#: src/gui/_main_window.py:584
+msgid "New grid with dimensions {dim} created."
+msgstr "Створено нову сітку з розмірами {dim}."
+
+#: src/gui/_main_window.py:609 src/gui/_main_window.py:666
 msgid "Pyspread file"
 msgstr "файл pyspread"
 
-#: src/gui/_main_window.py:605 src/gui/_main_window.py:662
-#: src/gui/_main_window.py:1113 src/gui/_main_window.py:1141
+#: src/gui/_main_window.py:610 src/gui/_main_window.py:667
+#: src/gui/_main_window.py:1080 src/gui/_main_window.py:1108
 msgid "All files"
 msgstr "всі файли"
 
-#: src/gui/_main_window.py:606
+#: src/gui/_main_window.py:611
 msgid "Choose pyspread file to open."
 msgstr "Виберіть файл, який слід відкрити за допомогою pyspread."
 
-#: src/gui/_main_window.py:663
+#: src/gui/_main_window.py:668
 msgid "Choose filename for saving."
 msgstr "Виберіть назву файла, який слід зберегти."
 
-#: src/gui/_main_window.py:676
+#: src/gui/_main_window.py:681
 msgid "Directory present. Save aborted."
 msgstr "Існує каталог з такою назвою. Збереження перервано."
 
-#: src/gui/_main_window.py:684
+#: src/gui/_main_window.py:689
 msgid ""
 "The file {filepath} is already present.\n"
 "Overwrite?"
@@ -692,287 +688,547 @@ msgstr ""
 "Вже існує файл з назвою {filepath}.\n"
 "Перезаписати його?"
 
-#: src/gui/_main_window.py:686
+#: src/gui/_main_window.py:691
 msgid "File collision"
 msgstr "Назви файлів збігаються"
 
-#: src/gui/_main_window.py:691
+#: src/gui/_main_window.py:696
 msgid "File present. Save aborted by user."
 msgstr "Файл вже існує. Збереження перервано користувачем."
 
-#: src/gui/_main_window.py:718 src/gui/_main_window.py:757
+#: src/gui/_main_window.py:723 src/gui/_main_window.py:762
 msgid "CSV file"
 msgstr "файл CSV"
 
-#: src/gui/_main_window.py:719
+#: src/gui/_main_window.py:724
 msgid "Tab delimited text file"
 msgstr "текстовий файл, розмічений табуляціями"
 
-#: src/gui/_main_window.py:720
+#: src/gui/_main_window.py:725
 msgid "Choose file to import."
 msgstr "Вибір файла для імпортування."
 
-#: src/gui/_main_window.py:783
+#: src/gui/_main_window.py:788
 msgid "SVG file"
 msgstr "файл SVG"
 
-#: src/gui/_main_window.py:784
+#: src/gui/_main_window.py:789
 msgid "EPS file"
 msgstr "файл EPS"
 
-#: src/gui/_main_window.py:785
+#: src/gui/_main_window.py:790
 msgid "PS file"
 msgstr "файл PS"
 
-#: src/gui/_main_window.py:786
+#: src/gui/_main_window.py:791
 msgid "PDF file"
 msgstr "файл PDF"
 
-#: src/gui/_main_window.py:787
+#: src/gui/_main_window.py:792
 msgid "PNG file"
 msgstr "файл PNG"
 
-#: src/gui/_main_window.py:789
+#: src/gui/_main_window.py:794
 msgid "Choose filename for export."
 msgstr "Виберіть назву файла для експортування."
 
-#: src/gui/_main_window.py:811
+#: src/gui/_main_window.py:816
 msgid ""
 "You are going to approve and trust a file that\n"
-"you have received from an untrusted source.\n"
+"you have not created yourself.\n"
 "After proceeding, the file is executed.\n"
-"It can harm your system as any program can.\n"
-"Unless you took precautions, it can delete your\n"
-"files or send them away over the Internet.\n"
-"CHECK EACH CELL BEFORE PROCEEDING.\n"
 " \n"
-"Do not forget cells outside the visible range.\n"
-"You have been warned.\n"
+"It may harm your system as any program can.\n"
+"Please check all cells thoroughly before\n"
+"proceeding.\n"
 " \n"
 "Proceed and sign this file as trusted?"
 msgstr ""
 "Ви маєте намір наказати програмі довіритися\n"
 "даним з файла, який було отримано з ненадійного\n"
 "джерела. Після обробки програма виконає вміст\n"
-"цього файла. Виконання цього файла, як і будь-\n"
-"якої програми може завдати шкоди даним у вашій\n"
-"системі. Якщо ви не будете вживати запобіжних\n"
-"заходів, може бути вилучено цінні для вас файли\n"
-"або надіслано до інтернету цінні для вас дані.\n"
-"ПЕРШ НІЖ ПРОДОВЖУВАТИ, ПЕРЕВІРТЕ КОЖНУ КОМІРКУ.\n"
-" \n"
-"Не забудьте про комірки поза видимим діапазоном.\n"
-"Вас було попереджено.\n"
+"цього файла.\n"
+"\n"
+"Виконання цього файла, як і будь-\n"
+"якої програми, може завдати шкоди даним у вашій\n"
+"системі. Перш ніж продовжувати, перевірте\n"
+"кожну комірку.\n"
 " \n"
 "Продовжити і підписати цей файл як надійний?"
 
-#: src/gui/_main_window.py:822
+#: src/gui/_main_window.py:823
 msgid "Security warning"
 msgstr "Попередження щодо небезпеки"
 
-#: src/gui/_main_window.py:830
+#: src/gui/_main_window.py:831
 msgid "Safe mode deactivated."
 msgstr "Безпечний режим вимкнено."
 
-#: src/gui/_main_window.py:837
+#: src/gui/_main_window.py:838
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
 msgstr "Вилучення значень загальних змінних і перезавантаження модулів призведе до незворотної втрати поточних даних. Виконати цю дію?"
 
-#: src/gui/_main_window.py:839
+#: src/gui/_main_window.py:840
 msgid "Really delete globals and modules?"
 msgstr "Вилучити загальні змінні і перезавантажити модулі?"
 
-#: src/gui/_main_window.py:846
+#: src/gui/_main_window.py:847
 msgid "Globals cleared and base modules reloaded."
 msgstr "Значення загальних змінних вилучено, базові модулі перезавантажено."
 
-#: src/gui/_main_window.py:981
-msgid "Error evaluating data: "
-msgstr "Помилка під час обробки даних:"
-
-#: src/gui/_main_window.py:1112 src/gui/_main_window.py:1140
+#: src/gui/_main_window.py:1079 src/gui/_main_window.py:1107
 msgid "Macro file"
 msgstr "файл макросів"
 
-#: src/gui/_main_window.py:1114 src/gui/_main_window.py:1142
+#: src/gui/_main_window.py:1081 src/gui/_main_window.py:1109
 msgid "Choose macro file."
 msgstr "Вибір файла макросів."
 
-#: src/gui/_chart_dialog.py:456 src/gui/_chart_dialog.py:486
-#: src/gui/_chart_dialog.py:534 src/gui/_chart_dialog.py:581
-#: src/gui/_chart_dialog.py:584
+#: src/gui/_chart_dialog.py:481 src/gui/_chart_dialog.py:522
+#: src/gui/_chart_dialog.py:591 src/gui/_chart_dialog.py:689
+#: src/gui/_chart_dialog.py:692
 msgid "Label"
 msgstr "Мітка"
 
-#: src/gui/_chart_dialog.py:457
+#: src/gui/_chart_dialog.py:482
 msgid "X"
 msgstr "X"
 
-#: src/gui/_chart_dialog.py:458
+#: src/gui/_chart_dialog.py:483
 msgid "Y"
 msgstr "Y"
 
-#: src/gui/_chart_dialog.py:459 src/gui/_chart_dialog.py:462
+#: src/gui/_chart_dialog.py:484 src/gui/_chart_dialog.py:487
 msgid "Style"
 msgstr "Стиль"
 
-#: src/gui/_chart_dialog.py:460
+#: src/gui/_chart_dialog.py:485
 msgid "Width"
 msgstr "Ширина"
 
-#: src/gui/_chart_dialog.py:461 src/gui/_chart_dialog.py:539
+#: src/gui/_chart_dialog.py:486 src/gui/_chart_dialog.py:596
 msgid "Color"
 msgstr "Колір"
 
-#: src/gui/_chart_dialog.py:463
+#: src/gui/_chart_dialog.py:488
 msgid "Size"
 msgstr "Розмір"
 
-#: src/gui/_chart_dialog.py:464
+#: src/gui/_chart_dialog.py:489
 msgid "Face color"
 msgstr "Основний колір"
 
-#: src/gui/_chart_dialog.py:465 src/gui/_chart_dialog.py:492
+#: src/gui/_chart_dialog.py:490 src/gui/_chart_dialog.py:528
 msgid "Edge color"
 msgstr "Колір краю"
 
-#: src/gui/_chart_dialog.py:472 src/gui/_chart_dialog.py:499
-#: src/gui/_chart_dialog.py:522 src/gui/_chart_dialog.py:546
-#: src/gui/_chart_dialog.py:568
+#: src/gui/_chart_dialog.py:497 src/gui/_chart_dialog.py:535
+#: src/gui/_chart_dialog.py:566 src/gui/_chart_dialog.py:603
+#: src/gui/_chart_dialog.py:638
 msgid "Data"
 msgstr "Дані"
 
-#: src/gui/_chart_dialog.py:473
+#: src/gui/_chart_dialog.py:498
 msgid "Line"
 msgstr "Лінія"
 
-#: src/gui/_chart_dialog.py:474
+#: src/gui/_chart_dialog.py:499
 msgid "Marker"
 msgstr "Позначка"
 
-#: src/gui/_chart_dialog.py:487
+#: src/gui/_chart_dialog.py:504 src/gui/_chart_dialog.py:540
+#: src/gui/_chart_dialog.py:608
+#, python-format
+msgid "String or anything printable with ‘%s’ conversion"
+msgstr "Рядок або щось з придатних до друку символів з перетворенням «%s»"
+
+#: src/gui/_chart_dialog.py:505
+msgid ""
+"The data np.array for x\n"
+"Code must eval to 1D array."
+msgstr ""
+"Дані масиву для x\n"
+"Код має оброблятися як масив ідентифікаторів."
+
+#: src/gui/_chart_dialog.py:507
+msgid ""
+"The data np.array for y\n"
+"Code must eval to 1D array."
+msgstr ""
+"Дані масиву для y\n"
+"Код має оброблятися як масив ідентифікаторів."
+
+#: src/gui/_chart_dialog.py:509
+msgid "The line width in points"
+msgstr "Товщина лінії у точках"
+
+#: src/gui/_chart_dialog.py:510
+msgid "The line marker"
+msgstr "Позначка лінії"
+
+#: src/gui/_chart_dialog.py:511
+msgid "The marker size in points"
+msgstr "Розмір позначки у точках"
+
+#: src/gui/_chart_dialog.py:523
 msgid "Left positions"
 msgstr "Пункти ліворуч"
 
-#: src/gui/_chart_dialog.py:488
+#: src/gui/_chart_dialog.py:524
 msgid "Bar heights"
 msgstr "Висота стовпчиків"
 
-#: src/gui/_chart_dialog.py:489
+#: src/gui/_chart_dialog.py:525
 msgid "Bar widths"
 msgstr "Ширина стовпчиків"
 
-#: src/gui/_chart_dialog.py:490
+#: src/gui/_chart_dialog.py:526
 msgid "Bar bottoms"
 msgstr "Низ стовпчиків"
 
-#: src/gui/_chart_dialog.py:491
+#: src/gui/_chart_dialog.py:527
 msgid "Bar color"
 msgstr "Колір стовпця"
 
-#: src/gui/_chart_dialog.py:500
+#: src/gui/_chart_dialog.py:536
 msgid "Bar"
 msgstr "Стовпець"
 
-#: src/gui/_chart_dialog.py:511 src/gui/_chart_dialog.py:535
-#: src/gui/_chart_dialog.py:558 src/gui/_chart_dialog.py:784
-#: src/gui/_chart_dialog.py:883
+#: src/gui/_chart_dialog.py:541
+msgid "The x coordinates of the left sides of the bars"
+msgstr "Координати лівих меж стовпчиків за x"
+
+#: src/gui/_chart_dialog.py:542
+msgid "The heights of the bars"
+msgstr "Висоти стовпчиків"
+
+#: src/gui/_chart_dialog.py:543
+msgid "The widths of the bars"
+msgstr "Ширини стовпчиків"
+
+#: src/gui/_chart_dialog.py:544
+msgid "The y coordinates of the bottom edges of the bars"
+msgstr "Координати нижніх меж стовпчиків за y"
+
+#: src/gui/_chart_dialog.py:555 src/gui/_chart_dialog.py:592
+#: src/gui/_chart_dialog.py:628 src/gui/_chart_dialog.py:933
+#: src/gui/_chart_dialog.py:1032
 msgid "Series"
 msgstr "Послідовність"
 
-#: src/gui/_chart_dialog.py:512
+#: src/gui/_chart_dialog.py:556
 msgid "Box widths"
 msgstr "Ширина блоків"
 
-#: src/gui/_chart_dialog.py:513
+#: src/gui/_chart_dialog.py:557
 msgid "Vertical"
 msgstr "Вертикальна"
 
-#: src/gui/_chart_dialog.py:514
+#: src/gui/_chart_dialog.py:558
 msgid "Flier"
 msgstr "Експрес"
 
-#: src/gui/_chart_dialog.py:515
+#: src/gui/_chart_dialog.py:559
 msgid "Notch"
 msgstr "Відмітка"
 
-#: src/gui/_chart_dialog.py:523
+#: src/gui/_chart_dialog.py:567
 msgid "Box plot"
 msgstr "Блокова"
 
-#: src/gui/_chart_dialog.py:536
+#: src/gui/_chart_dialog.py:571
+msgid "An array or a sequence of vectors"
+msgstr "Масив або послідовність векторів"
+
+#: src/gui/_chart_dialog.py:572
+msgid ""
+"Either a scalar or a vector and sets the width of each box\n"
+"The default is 0.5, or\n"
+"0.15*(distance between extreme positions)\n"
+"if that is smaller"
+msgstr ""
+"Скалярне або векторне значення, що встановлює ширину кожного зі стовпчиків\n"
+"Типовим значенням є 0.5, або\n"
+"0.15*(відстані між межами ділянки),\n"
+"якщо це значення є меншим."
+
+#: src/gui/_chart_dialog.py:575
+msgid ""
+"If True then boxes are drawn vertical\n"
+"If False then boxes are drawn horizontal"
+msgstr ""
+"Якщо True, стовпчики буде намальовано вертикально.\n"
+"Якщо False, стовпчики буде намальовано горизонтально."
+
+#: src/gui/_chart_dialog.py:577
+msgid ""
+"The symbol for flier points\n"
+"Enter an empty string (‘’)\n"
+"if you don’t want to show fliers"
+msgstr ""
+"Символ для експрес-точок\n"
+"Вкажіть порожній рядок (‘’),\n"
+"якщо експрес-точки не слід показувати."
+
+#: src/gui/_chart_dialog.py:579
+msgid ""
+"False produces a rectangular box plot\n"
+"True produces a notched box plot"
+msgstr ""
+"False — прямокутний стовпчик\n"
+"True — стовпчик з позначками"
+
+#: src/gui/_chart_dialog.py:593
 msgid "Bins"
 msgstr "Пункти"
 
-#: src/gui/_chart_dialog.py:537
+#: src/gui/_chart_dialog.py:594
 msgid "Normed"
 msgstr "Нормована"
 
-#: src/gui/_chart_dialog.py:538
+#: src/gui/_chart_dialog.py:595
 msgid "Cumulative"
 msgstr "Накопичувальна"
 
-#: src/gui/_chart_dialog.py:547
+#: src/gui/_chart_dialog.py:604
 msgid "Histogram"
 msgstr "Гістограма"
 
-#: src/gui/_chart_dialog.py:559
+#: src/gui/_chart_dialog.py:609
+msgid ""
+"Histogram data series\n"
+"Multiple data sets can be provided as a list or as a 2-D ndarray in which each columnis a dataset. Note that the ndarray form is transposed relative to the list form."
+msgstr ""
+"Послідовність даних гістограми\n"
+"Декілька наборів даних можна вказати у форматі списку або двовимірного масиву, у якому кожний зі стовпчиків є набором даних. Зауважте, що дані у форматі масиву буде транспоновано відносно даних у форматі списку."
+
+#: src/gui/_chart_dialog.py:613
+msgid "Either an integer number of bins or a bin sequence"
+msgstr "Ціле число проміжків або послідовність проміжків"
+
+#: src/gui/_chart_dialog.py:614
+msgid "If True then the first element is the counts normalizedto form a probability density, i.e., n/(len(x)*dbin)."
+msgstr "Якщо має значення True, перший елемент — це кількість, поділена так, щоб отримати щільність розподілу, тобто n/(len(x)*dbin)."
+
+#: src/gui/_chart_dialog.py:616
+msgid ""
+"If True then each bin gives the counts in that bin\n"
+"plus all bins for smaller values."
+msgstr ""
+"Якщо True, на кожній ділянці буде показано значення на ділянці\n"
+"плюс всі значення для лівіших ділянок."
+
+#: src/gui/_chart_dialog.py:629
 msgid "Labels"
 msgstr "Мітки"
 
-#: src/gui/_chart_dialog.py:560
+#: src/gui/_chart_dialog.py:630
 msgid "Colors"
 msgstr "Кольори"
 
-#: src/gui/_chart_dialog.py:561
+#: src/gui/_chart_dialog.py:631
 msgid "Shadow"
 msgstr "Тінь"
 
-#: src/gui/_chart_dialog.py:569
+#: src/gui/_chart_dialog.py:639
 msgid "Pie"
 msgstr "Кругова"
 
-#: src/gui/_chart_dialog.py:580
+#: src/gui/_chart_dialog.py:643
+msgid ""
+"Pie chart data\n"
+"The fractional area of each wedge is given by x/sum(x)\n"
+"The wedges are plotted counterclockwise"
+msgstr ""
+"Дані колової діаграми\n"
+"Частку для кожного з шматків буде визначено за формулою x/sum(x)\n"
+"Шматки буде розташовано за порядком проти годинникової стрілки."
+
+#: src/gui/_chart_dialog.py:645
+msgid "Sequence of wedge label strings"
+msgstr "Послідовність рядків міток"
+
+#: src/gui/_chart_dialog.py:646
+msgid "Sequence of matplotlib color args through which the pie cycles"
+msgstr "Послідовність аргументів-кольорів matplotlib, яку має бути циклічно використано на коловій діаграмі"
+
+#: src/gui/_chart_dialog.py:648
+msgid "If True then a shadow beneath the pie is drawn"
+msgstr "Якщо має значення True, під коловою діаграмою буде намальовано тінь"
+
+#: src/gui/_chart_dialog.py:657
+msgid ""
+"\n"
+"Code \tMeaning\n"
+"%a \tLocale’s abbreviated weekday name.\n"
+"%A \tLocale’s full weekday name.\n"
+"%b \tLocale’s abbreviated month name.\n"
+"%B \tLocale’s full month name.\n"
+"%c \tLocale’s appropriate date and time representation.\n"
+"%d \tDay of the month as a decimal number [01,31].\n"
+"%f \tMicrosecond as a decimal number [0,999999], zero-padded on the left\n"
+"%H \tHour (24-hour clock) as a decimal number [00,23].\n"
+"%I \tHour (12-hour clock) as a decimal number [01,12].\n"
+"%j \tDay of the year as a decimal number [001,366].\n"
+"%m \tMonth as a decimal number [01,12].\n"
+"%M \tMinute as a decimal number [00,59].\n"
+"%p \tLocale’s equivalent of either AM or PM.\n"
+"%S \tSecond as a decimal number [00,61].\n"
+"%U \tWeek number (Sunday first weekday) as a decimal number [00,53].\n"
+"%w \tWeekday as a decimal number [0(Sunday),6]. \t4\n"
+"%W \tWeek number (Monday first weekday) as a decimal number [00,53].\n"
+"%x \tLocale’s appropriate date representation.\n"
+"%X \tLocale’s appropriate time representation.\n"
+"%y \tYear without century as a decimal number [00,99].\n"
+"%Y \tYear with century as a decimal number.\n"
+"%z \tUTC offset in the form +HHMM or -HHMM.\n"
+"%Z \tTime zone name.\n"
+"%% \tA literal '%' character."
+msgstr ""
+"\n"
+"Код \tЗначення\n"
+"%a \tскорочена назва дня тижня у локалі.\n"
+"%A \tповна назва дня тижня у локалі.\n"
+"%b \tскорочена назва місяця у локалі.\n"
+"%B \tповна назва місяця у локалі.\n"
+"%c \tвідповідний до локалі запис дати і часу.\n"
+"%d \tдень місяця у форматі десяткового числа [01,31].\n"
+"%f \tкількість мікросекунд у форматі десяткового числа [0,999999], з доповненням нулями ліворуч\n"
+"%H \tдесяткове значення кількості годин (у 24-годинному форматі) [00,23].\n"
+"%I \tдесяткове значення кількості годин (у 12-годинному форматі) [01,12].\n"
+"%j \tдень року у форматі десяткового числа [001,366].\n"
+"%m \tмісяць у форматі десяткового числа [01,12].\n"
+"%M \tкількість хвилин у форматі десяткового числа [00,59].\n"
+"%p \tеквівалент англомовних позначень AM і PM у локалі.\n"
+"%S \tкількість секунд у форматі десяткового числа [00,61].\n"
+"%U \tномер тижня (перший тиждень починається з першої неділі) у форматі десяткового числа [00,53].\n"
+"%w \tдень тижня у форматі десяткового числа [0(неділя),6].\n"
+"%W \tномер тижня (перший тиждень починається з першої неділі) у форматі десяткового числа [00,53].\n"
+"%x \tвідповідне до локалі представлення дати.\n"
+"%X \tвідповідне до локалі представлення часу.\n"
+"%y \tрік без століття у десятковому форматі [00,99].\n"
+"%Y \tрік зі столліттям у десятковому форматі.\n"
+"%z \tчасовий пояс у форматі +ГГХХ або -ГГХХ.\n"
+"%Z \tназва часового поясу.\n"
+"%% \tсимвол «%»."
+
+#: src/gui/_chart_dialog.py:688
 msgid "Title"
 msgstr "Заголовок"
 
-#: src/gui/_chart_dialog.py:582 src/gui/_chart_dialog.py:585
+#: src/gui/_chart_dialog.py:690 src/gui/_chart_dialog.py:693
 msgid "Limits"
 msgstr "Обмеження"
 
-#: src/gui/_chart_dialog.py:583 src/gui/_chart_dialog.py:586
+#: src/gui/_chart_dialog.py:691 src/gui/_chart_dialog.py:694
 msgid "Log. scale"
 msgstr "Лог. масштаб"
 
-#: src/gui/_chart_dialog.py:587
+#: src/gui/_chart_dialog.py:695
 msgid "Grid"
 msgstr "Сітка"
 
-#: src/gui/_chart_dialog.py:588
+#: src/gui/_chart_dialog.py:696
 msgid "Legend"
 msgstr "Умовні позначення"
 
-#: src/gui/_chart_dialog.py:595
+#: src/gui/_chart_dialog.py:697
+msgid "Date format"
+msgstr "Формат дати"
+
+#: src/gui/_chart_dialog.py:704
 msgid "Figure"
 msgstr "Рисунок"
 
-#: src/gui/_chart_dialog.py:596
+#: src/gui/_chart_dialog.py:705
 msgid "X-Axis"
 msgstr "Вісь X"
 
-#: src/gui/_chart_dialog.py:597
+#: src/gui/_chart_dialog.py:706
 msgid "Y-Axis"
 msgstr "Вісь Y"
 
-#: src/gui/_chart_dialog.py:752 src/gui/_chart_dialog.py:768
+#: src/gui/_chart_dialog.py:710
+msgid "The figure title"
+msgstr "Заголовок рисунка"
+
+#: src/gui/_chart_dialog.py:711
+msgid "The label for the x axis"
+msgstr "Мітка вісі x"
+
+#: src/gui/_chart_dialog.py:712
+msgid ""
+"The data limits for the x axis\n"
+"Format: (xmin, xmax)"
+msgstr ""
+"Діапазон значень за віссю x\n"
+"Формат: (xmin, xmax)"
+
+#: src/gui/_chart_dialog.py:713
+msgid "The label for the y axis"
+msgstr "Мітка вісі y"
+
+#: src/gui/_chart_dialog.py:714
+msgid ""
+"The data limits for the y axis\n"
+"Format: (ymin, ymax)"
+msgstr ""
+"Діапазон значень за віссю yx\n"
+"Формат: (ymin, ymax)"
+
+#: src/gui/_chart_dialog.py:715
+msgid ""
+"If non-empty then the x axis is displays dates.\n"
+"Enter an unquoted strftime() format string.\n"
+msgstr ""
+"Якщо має непорожнє значення, за віссю x слід показувати дати.\n"
+"Дата задається рядком у форматі strftime() без лапок.\n"
+
+#: src/gui/_chart_dialog.py:728
+msgid "Text"
+msgstr "Текст"
+
+#: src/gui/_chart_dialog.py:729
+msgid "Point"
+msgstr "Точка"
+
+#: src/gui/_chart_dialog.py:730
+msgid "Point coordinates"
+msgstr "Координати точки"
+
+#: src/gui/_chart_dialog.py:737
+msgid "Annotation"
+msgstr "Анотація"
+
+#: src/gui/_chart_dialog.py:741
+msgid "Annotation text"
+msgstr "Текст анотації"
+
+#: src/gui/_chart_dialog.py:742
+msgid "Point that is annotated"
+msgstr "Точка, з якою пов’язано анотацію"
+
+#: src/gui/_chart_dialog.py:743
+msgid "String that indicates the coordinates of xy"
+msgstr "Рядок, що позначає координати xy"
+
+#: src/gui/_chart_dialog.py:744
+msgid "Location of annotation text"
+msgstr "Позиція тексту анотації"
+
+#: src/gui/_chart_dialog.py:745
+msgid "String that indicates the coordinates of xytext."
+msgstr "Рядок, що позначає координати xytext."
+
+#: src/gui/_chart_dialog.py:901 src/gui/_chart_dialog.py:917
 msgid "+"
 msgstr "+"
 
-#: src/gui/_chart_dialog.py:879 src/gui/_toolbars.py:182
+#: src/gui/_chart_dialog.py:1028 src/gui/_toolbars.py:183
 msgid "Insert chart"
 msgstr "Вставити діаграму"
 
-#: src/gui/_chart_dialog.py:882
+#: src/gui/_chart_dialog.py:1031
 msgid "Axes"
 msgstr "Вісі"
 
@@ -994,177 +1250,177 @@ msgstr "Незбережені зміни"
 
 #: src/gui/_gui_interfaces.py:203
 msgid ""
-"'{}' does not seem to be a valid CSV file.\n"
+"'{filepath}' does not seem to be a valid CSV file.\n"
 " \n"
 "Opening it yielded the error:\n"
-"{}"
+"{error}"
 msgstr ""
-"Здається, файл «{}» не є коректним файлом CSV.\n"
+"Здається, файл «{filepath}» не є коректним файлом CSV.\n"
 " \n"
 "Під час спроби його відкрити сталася помилка:\n"
-"{}"
+"{error}"
 
-#: src/gui/_gui_interfaces.py:205 src/actions/_main_window_actions.py:129
+#: src/gui/_gui_interfaces.py:206 src/actions/_main_window_actions.py:130
 msgid "Error reading CSV file"
 msgstr "Помилка під час спроби читання файла CSV"
 
-#: src/gui/_gui_interfaces.py:352
+#: src/gui/_gui_interfaces.py:353
 msgid "Real name"
 msgstr "Справжнє ім’я"
 
-#: src/gui/_gui_interfaces.py:372
+#: src/gui/_gui_interfaces.py:373
 msgid "Please enter a value in each field."
 msgstr "Будь ласка, заповніть всі поля."
 
-#: src/gui/_gui_interfaces.py:374
+#: src/gui/_gui_interfaces.py:375
 msgid "Missing value"
 msgstr "Не вистачає значення"
 
-#: src/gui/_grid.py:380 src/gui/_grid.py:401
+#: src/gui/_grid.py:428 src/gui/_grid.py:453
 msgid "Select bitmap for current cell"
 msgstr "Вибір растрового зображення для поточної комірки"
 
-#: src/gui/_grid.py:461
-msgid "Weight {} unknown"
-msgstr "Невідома вага {}"
+#: src/gui/_grid.py:518
+msgid "Weight {weight} unknown"
+msgstr "Невідома вага {weight}"
 
-#: src/gui/_grid.py:481
-msgid "Style {} unknown"
-msgstr "Невідомий стиль {}"
+#: src/gui/_grid.py:539
+msgid "Style {style} unknown"
+msgstr "Невідомий стиль {style}"
 
-#: src/gui/_grid.py:583
+#: src/gui/_grid.py:642
 msgid "Enter text angle in degrees."
 msgstr "Вкажіть кут нахилу тексту у градусах."
 
-#: src/gui/_grid.py:901
-msgid "'{}' not found."
-msgstr "«{}» не знайдено."
+#: src/gui/_grid.py:960
+msgid "'{text}' not found."
+msgstr "«{text}» не знайдено."
 
-#: src/gui/_grid.py:908
-msgid "Found '{}' in cell {}."
-msgstr "Виявлено «{}» у комірці {}."
+#: src/gui/_grid.py:967
+msgid "Found '{text}' in cell {key}."
+msgstr "Виявлено «{text}» у комірці {key}."
 
-#: src/gui/_grid.py:1081
-msgid "Grid dimensions changed to {}."
-msgstr "Розміри сітки змінено на {}."
+#: src/gui/_grid.py:1141
+msgid "Grid dimensions changed to {shape}."
+msgstr "Розміри сітки змінено на {shape}."
 
 #: src/gui/_printout.py:198
-msgid "Page: {}"
-msgstr "Сторінка: {}"
+msgid "Page: {page}"
+msgstr "Сторінка: {page}"
 
-#: src/gui/_toolbars.py:149
+#: src/gui/_toolbars.py:150
 msgid "New"
 msgstr "Створити"
 
-#: src/gui/_toolbars.py:150
+#: src/gui/_toolbars.py:151
 msgid "Open"
 msgstr "Відкрити"
 
-#: src/gui/_toolbars.py:151
+#: src/gui/_toolbars.py:152
 msgid "Save"
 msgstr "Зберегти"
 
-#: src/gui/_toolbars.py:153
+#: src/gui/_toolbars.py:154
 msgid "Undo"
 msgstr "Вернути"
 
-#: src/gui/_toolbars.py:154
+#: src/gui/_toolbars.py:155
 msgid "Redo"
 msgstr "Повторити"
 
-#: src/gui/_toolbars.py:157
+#: src/gui/_toolbars.py:158
 msgid "Replace"
 msgstr "Замінити"
 
-#: src/gui/_toolbars.py:159
+#: src/gui/_toolbars.py:160
 msgid "Cut"
 msgstr "Вирізати"
 
-#: src/gui/_toolbars.py:160
+#: src/gui/_toolbars.py:161
 msgid "Copy"
 msgstr "Копіювати"
 
-#: src/gui/_toolbars.py:161
+#: src/gui/_toolbars.py:162
 msgid "Copy Results"
 msgstr "Копіювати результати"
 
-#: src/gui/_toolbars.py:162
+#: src/gui/_toolbars.py:163
 msgid "Paste"
 msgstr "Вставити"
 
-#: src/gui/_toolbars.py:164
+#: src/gui/_toolbars.py:165
 msgid "Print"
 msgstr "Друк"
 
-#: src/gui/_toolbars.py:180
+#: src/gui/_toolbars.py:181
 msgid "Insert bitmap"
 msgstr "Вставити зображення"
 
-#: src/gui/_toolbars.py:181
+#: src/gui/_toolbars.py:182
 msgid "Link bitmap"
 msgstr "Пов’язати зображення"
 
-#: src/gui/_toolbars.py:205
+#: src/gui/_toolbars.py:206
 msgid "Find in code and results"
 msgstr "Знайти у коді і результатах"
 
-#: src/gui/_toolbars.py:213
+#: src/gui/_toolbars.py:214
 msgid "Search direction"
 msgstr "Напрямок пошуку"
 
-#: src/gui/_toolbars.py:225
+#: src/gui/_toolbars.py:226
 msgid "Case sensitive"
 msgstr "З врахуванням регістру"
 
-#: src/gui/_toolbars.py:226
+#: src/gui/_toolbars.py:227
 msgid "Regular expression"
 msgstr "Формальний вираз"
 
-#: src/gui/_toolbars.py:227
+#: src/gui/_toolbars.py:228
 msgid "Surrounded by whitespace"
 msgstr "Оточено пробілами"
 
-#: src/gui/_toolbars.py:298
+#: src/gui/_toolbars.py:299
 msgid "Neither UP nor DOWN in search_flags"
 msgstr "У search_flags не вказано ні UP, ні DOWN"
 
-#: src/gui/_toolbars.py:409
+#: src/gui/_toolbars.py:410
 msgid "Bold"
 msgstr "Жирний"
 
-#: src/gui/_toolbars.py:411
+#: src/gui/_toolbars.py:412
 msgid "Italics"
 msgstr "Курсив"
 
-#: src/gui/_toolbars.py:416
+#: src/gui/_toolbars.py:417
 msgid "Freeze"
 msgstr "Заморозити"
 
-#: src/gui/_grid_renderer.py:379
-msgid "Vertical alignment {} not in (top, middle, bottom)"
-msgstr "Значенням вертикального вирівнювання у {} не є одне зі значень (top, middle, bottom)"
+#: src/gui/_grid_renderer.py:380
+msgid "Vertical alignment {align} not in (top, middle, bottom)"
+msgstr "Значенням вертикального вирівнювання у {align} не є одне зі значень (top, middle, bottom)"
 
-#: src/gui/_grid_renderer.py:406
-msgid "Cell justification {} not in (left, center, right)"
-msgstr "Вирівнювання у комірці, {}, не є одним зі значень (left, center, right)"
+#: src/gui/_grid_renderer.py:407
+msgid "Cell justification {just} not in (left, center, right)"
+msgstr "Вирівнювання у комірці, {just}, не є одним зі значень (left, center, right)"
 
-#: src/gui/_widgets.py:475
-msgid "Label {} is invalid."
-msgstr "Мітка {} є некоректною."
+#: src/gui/_widgets.py:469
+msgid "Label {label} is invalid."
+msgstr "Мітка {label} є некоректною."
 
-#: src/gui/_widgets.py:493
-msgid "Code {} is invalid."
-msgstr "Код {} є некоректним."
+#: src/gui/_widgets.py:488
+msgid "Code {code} is invalid."
+msgstr "Код {code} є некоректним."
 
-#: src/gui/_widgets.py:703
+#: src/gui/_widgets.py:719
 msgid "Toggles link insertion mode."
 msgstr "Увімкнути або вимкнути режим вставлення посилання."
 
-#: src/gui/_widgets.py:765
+#: src/gui/_widgets.py:781
 msgid "Enter Python expression here."
 msgstr "Тут вкажіть код мовою Python."
 
-#: src/gui/_widgets.py:864
+#: src/gui/_widgets.py:880
 msgid ""
 "Pyspread is in safe mode.\n"
 "Expressions are not evaluated."
@@ -1172,7 +1428,7 @@ msgstr ""
 "Pyspread працює у безпечному режимі.\n"
 "Обробка виразів не виконується."
 
-#: src/gui/_widgets.py:934
+#: src/gui/_widgets.py:947
 msgid "For switching tables enter the table number or use the mouse wheel."
 msgstr "Для перемикання між таблицями вкажіть номер таблиці або скористайтеся коліщатком миші."
 
@@ -1249,82 +1505,82 @@ msgid "When True, whitespace immediately following the delimiter is ignored."
 msgstr "Якщо має значення True, пробіли одразу за роздільником пропускатимуться."
 
 #: src/gui/_dialogs.py:384
-msgid "{} unknown."
-msgstr "{} невідоме."
+msgid "{type} unknown."
+msgstr "Невідомий тип {type}."
 
 #: src/gui/_dialogs.py:392
 msgid ""
 "The dialect is invalid. \n"
 " \n"
 "Error message:\n"
-"{}"
+"{msg}"
 msgstr ""
 "Некоректний діалект. \n"
 " \n"
 "Повідомлення про помилку:\n"
-"{}"
+"{msg}"
 
 #: src/gui/_dialogs.py:615
-msgid "CSV Import: {}"
-msgstr "Імпортування CSV: {}"
+msgid "CSV Import: {filepath}"
+msgstr "Імпортування CSV: {filepath}"
 
-#: src/gui/_dialogs.py:819
+#: src/gui/_dialogs.py:820
 msgid "Macro list"
 msgstr "Список макросів"
 
-#: src/gui/_dialogs.py:821
+#: src/gui/_dialogs.py:822
 msgid "Enter python code here."
 msgstr "Тут вкажіть код мовою python."
 
-#: src/gui/_dialogs.py:822
+#: src/gui/_dialogs.py:823
 msgid "Accept all changes"
 msgstr "Прийняти всі зміни"
 
-#: src/gui/_dialogs.py:823
+#: src/gui/_dialogs.py:824
 msgid "Apply changes to current macro"
 msgstr "Застосувати зміни до поточного макросу"
 
-#: src/gui/_dialogs.py:824
+#: src/gui/_dialogs.py:825
 msgid "Remove current macro"
 msgstr "Вилучити поточний макрос"
 
-#: src/gui/_dialogs.py:866
+#: src/gui/_dialogs.py:867
 msgid "Rows"
 msgstr "Рядки"
 
-#: src/gui/_dialogs.py:869
+#: src/gui/_dialogs.py:870
 msgid "Columns"
 msgstr "Стовпчики"
 
-#: src/gui/_dialogs.py:872
+#: src/gui/_dialogs.py:873
 msgid "Tables"
 msgstr "Таблиці"
 
-#: src/gui/_dialogs.py:980
+#: src/gui/_dialogs.py:981
 msgid "Goto cell:"
 msgstr "Перейти до комірки:"
 
-#: src/gui/_dialogs.py:985
+#: src/gui/_dialogs.py:986
 msgid "Row: "
 msgstr "Рядок: "
 
-#: src/gui/_dialogs.py:994
+#: src/gui/_dialogs.py:995
 msgid "Column: "
 msgstr "Стовпчик: "
 
-#: src/gui/_dialogs.py:1002
+#: src/gui/_dialogs.py:1003
 msgid "Table: "
 msgstr "Таблиця: "
 
-#: src/gui/_dialogs.py:1010
+#: src/gui/_dialogs.py:1011
 msgid "OK"
 msgstr "Гаразд"
 
-#: src/gui/_dialogs.py:1013
+#: src/gui/_dialogs.py:1014
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: src/gui/_dialogs.py:1059
+#: src/gui/_dialogs.py:1060
 msgid ""
 "A non-traditional Python spreadsheet application.\n"
 "Pyspread is based on and written in the programming language Python."
@@ -1332,91 +1588,91 @@ msgstr ""
 "Нетрадиційні електронні таблиці мовою Python.\n"
 "Pyspread засновано на коді мовою Python і написано цієї мовою."
 
-#: src/gui/_dialogs.py:1063
+#: src/gui/_dialogs.py:1064
 msgid "Pyspread Web site"
 msgstr "Сайт pyspread"
 
-#: src/gui/_dialogs.py:1083
+#: src/gui/_dialogs.py:1084
 msgid ""
-"pyspread {}\n"
+"pyspread {version}\n"
 "Copyright Martin Manns"
 msgstr ""
-"pyspread {}\n"
+"pyspread {version}\n"
 "© Martin Manns"
 
-#: src/gui/_dialogs.py:1133
+#: src/gui/_dialogs.py:1135
 msgid "Max. undo steps"
 msgstr "Макс. к-ть дій скасування"
 
-#: src/gui/_dialogs.py:1134
+#: src/gui/_dialogs.py:1136
 msgid "Maximum number of undo steps"
 msgstr "Максимальна кількість дій, які можна скасувати"
 
-#: src/gui/_dialogs.py:1140
+#: src/gui/_dialogs.py:1142
 msgid "Grid rows"
 msgstr "Рядків у сітці"
 
-#: src/gui/_dialogs.py:1141
+#: src/gui/_dialogs.py:1143
 msgid "Number of grid rows when starting pyspread"
 msgstr "Кількість рядків сітки після запуску pyspread"
 
-#: src/gui/_dialogs.py:1147
+#: src/gui/_dialogs.py:1149
 msgid "Grid columns"
 msgstr "Стовпчиків у сітці"
 
-#: src/gui/_dialogs.py:1148
+#: src/gui/_dialogs.py:1150
 msgid "Number of grid columns when starting pyspread"
 msgstr "Кількість стовпчиків сітки після запуску pyspread"
 
-#: src/gui/_dialogs.py:1154
+#: src/gui/_dialogs.py:1156
 msgid "Grid tables"
 msgstr "Таблиць у сітці"
 
-#: src/gui/_dialogs.py:1155
+#: src/gui/_dialogs.py:1157
 msgid "Number of grid tables when starting pyspread"
 msgstr "Кількість таблиць сітки після запуску pyspread"
 
-#: src/gui/_dialogs.py:1161
+#: src/gui/_dialogs.py:1163
 msgid "Max. result length"
 msgstr "Макс. довжина результату"
 
-#: src/gui/_dialogs.py:1162
+#: src/gui/_dialogs.py:1164
 msgid "Maximum length of cell result string"
 msgstr "Максимальна довжина результату у комірці"
 
-#: src/gui/_dialogs.py:1168
+#: src/gui/_dialogs.py:1170
 msgid "GPG key name"
 msgstr "Назва ключа GPG"
 
-#: src/gui/_dialogs.py:1169
+#: src/gui/_dialogs.py:1171
 msgid "Name of the GPG key for signing files"
 msgstr "Назва ключа GPG для підписування файлів"
 
-#: src/gui/_dialogs.py:1177
+#: src/gui/_dialogs.py:1179
 msgid "Preferences"
 msgstr "Параметри"
 
-#: src/gui/_dialogs.py:1245
+#: src/gui/_dialogs.py:1247
 msgid "GPG key data"
 msgstr "Дані ключа GPG"
 
-#: src/gui/_dialogs.py:1262
+#: src/gui/_dialogs.py:1264
 msgid "Starts key generation."
 msgstr "Розпочати створення ключа."
 
-#: src/gui/_dialogs.py:1267
+#: src/gui/_dialogs.py:1269
 msgid "Exits pyspread."
 msgstr "Завершити роботу pyspread."
 
-#: src/gui/_dialogs.py:1287
+#: src/gui/_dialogs.py:1289
 msgid "Paste as"
 msgstr "Вставити як"
 
-#: src/gui/_dialogs.py:1292
+#: src/gui/_dialogs.py:1294
 msgid "Dimension of object"
 msgstr "Розмірність об’єкта"
 
-#: src/gui/_dialogs.py:1296
+#: src/gui/_dialogs.py:1298
 msgid "Transpose"
 msgstr "Транспонувати"
 
@@ -1445,311 +1701,132 @@ msgid "File loading aborted."
 msgstr "Завантаження файла перервано."
 
 #: src/actions/_grid_actions.py:281 src/actions/_grid_actions.py:348
-#: src/actions/_grid_actions.py:453 src/actions/_main_window_actions.py:91
-#: src/actions/_main_window_actions.py:522
-msgid "Error opening file {}."
-msgstr "Помилка під час відкриття файла {}."
+#: src/actions/_grid_actions.py:453 src/actions/_main_window_actions.py:92
+#: src/actions/_main_window_actions.py:594
+msgid "Error opening file {filepath}."
+msgstr "Помилка під час відкриття файла {filepath}."
 
-#: src/actions/_grid_actions.py:295
-msgid "File version {} unsupported (not 0.1)."
-msgstr "Підтримки версій файлів {} не передбачено (номер версії відмінний від 0.1)."
+#: src/actions/_grid_actions.py:293
+msgid "File version {version} unsupported (not 0.1)."
+msgstr "Підтримки версій файлів {version} не передбачено (номер версії відмінний від 0.1)."
 
 #: src/actions/_grid_actions.py:309
 msgid "No section parser present."
 msgstr "Не виявлено засобу обробки розділів."
 
-#: src/actions/_grid_actions.py:383
+#: src/actions/_grid_actions.py:382
 msgid "Error signing file. "
 msgstr "Помилка під час підписування файла. "
 
-#: src/actions/_grid_actions.py:400
+#: src/actions/_grid_actions.py:399
 msgid "File saved and signed"
 msgstr "Файл збережено і підписано"
 
-#: src/actions/_grid_actions.py:402
+#: src/actions/_grid_actions.py:401
 msgid "File signed"
 msgstr "Файл підписано"
 
-#: src/actions/_grid_actions.py:414
+#: src/actions/_grid_actions.py:413
 msgid "Save aborted."
 msgstr "Збереження перервано."
 
-#: src/actions/_grid_actions.py:446
-msgid "Error writing to file {}."
-msgstr "Помилка під час спроби запису до файла {}."
+#: src/actions/_grid_actions.py:445
+msgid "Error writing to file {filepath}."
+msgstr "Помилка під час спроби запису до файла {filepath}."
 
 #: src/actions/_grid_actions.py:537
 msgid "File saved but not signed because it is unapproved."
 msgstr "Файл збережено, але не підписано, оскільки дані файла не затверджено."
 
 #: src/actions/_grid_actions.py:701
-msgid "Key length {}  not in (2, 3)"
-msgstr "Довжина ключа {} не є числом з набору (2, 3)"
+msgid "Key length {length}  not in (2, 3)"
+msgstr "Довжина ключа {length} не є числом з набору (2, 3)"
 
-#: src/actions/_grid_actions.py:706
+#: src/actions/_grid_actions.py:707
 msgid "Paste aborted."
 msgstr "Вставлення перервано."
 
-#: src/actions/_grid_actions.py:717
+#: src/actions/_grid_actions.py:718
 msgid "rows and columns"
 msgstr "рядки і стовпчики"
 
-#: src/actions/_grid_actions.py:719
+#: src/actions/_grid_actions.py:720
 msgid "rows"
 msgstr "рядки"
 
-#: src/actions/_grid_actions.py:721
+#: src/actions/_grid_actions.py:722
 msgid "columns"
 msgstr "стовпчики"
 
-#: src/actions/_grid_actions.py:723
+#: src/actions/_grid_actions.py:724
 msgid "Import cell overflow missing"
 msgstr "Переповнення комірок під час імпортування"
 
-#: src/actions/_grid_actions.py:726
+#: src/actions/_grid_actions.py:727
 msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
 msgstr "Імпортовані дані за об’ємом перевищують можливості сітки {cause}. Імпортовано не всі дані. Скористайтеся більшою сіткою, щоб імпортувати всі дані."
 
-#: src/actions/_grid_actions.py:735
+#: src/actions/_grid_actions.py:736
 msgid "s"
 msgstr "с"
 
-#: src/actions/_grid_actions.py:737
+#: src/actions/_grid_actions.py:738
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
 msgstr "{ncells} комірок вставлено до комірки {topleft}"
 
-#: src/actions/_grid_actions.py:772
+#: src/actions/_grid_actions.py:773
 msgid "Pasting cells... "
 msgstr "Вставляємо комірки… "
 
-#: src/actions/_grid_actions.py:993
+#: src/actions/_grid_actions.py:994
 msgid "Zoomed to {0:.2f}."
 msgstr "Збільшено до масштабу {0:.2f}."
 
-#: src/actions/_grid_actions.py:1091
-msgid "Switched to table {}."
-msgstr "Перемкнено на таблицю {}."
+#: src/actions/_grid_actions.py:1092
+msgid "Switched to table {table}."
+msgstr "Перемкнено на таблицю {table}."
 
-#: src/actions/_grid_actions.py:1271
-msgid "Replaced {} with {} in cell {}."
-msgstr "Замінено {} на {} у комірці {}."
+#: src/actions/_grid_actions.py:1272
+msgid "Replaced {old} with {new} in cell {key}."
+msgstr "Замінено {old} на {new} у комірці {key}."
 
 #: src/actions/_grid_cell_actions.py:116
-msgid "{} seems to be no Integer"
-msgstr "Здається {} не є цілими числом"
+msgid "{key} seems to be no Integer"
+msgstr "Здається, {key} не є цілими числом"
 
-#: src/actions/_grid_cell_actions.py:152
+#: src/actions/_grid_cell_actions.py:153
 msgid "ref_type has to be \"absolute\" or \"relative\"."
 msgstr "Значенням ref_type має бути \"absolute\" або \"relative\"."
 
-#: src/actions/_grid_cell_actions.py:300
+#: src/actions/_grid_cell_actions.py:301
 msgid "Freezing selections is not supported."
 msgstr "Підтримки заморожування позначених областей не передбачено."
 
 #: src/actions/_main_window_actions.py:128
-msgid "Unknown import choice {}."
-msgstr "Невідомий варіант імпортування {}."
+msgid "Unknown import choice {choice}."
+msgstr "Невідомий варіант імпортування {choice}."
 
-#: src/actions/_main_window_actions.py:167
-#: src/actions/_main_window_actions.py:195
+#: src/actions/_main_window_actions.py:168
+#: src/actions/_main_window_actions.py:197
 msgid ""
-"The file {} could not be fully written\n"
+"The file {filepath} could not be fully written\n"
 " \n"
 "Error message:\n"
-"{}"
+"{msg}"
 msgstr ""
-"Не вдалося повністю записати файл {}\n"
+"Не вдалося повністю записати файл {filepath}\n"
 " \n"
 "Повідомлення про помилку:\n"
-"{}"
+"{msg}"
 
-#: src/actions/_main_window_actions.py:169
+#: src/actions/_main_window_actions.py:171
 msgid "Error writing CSV file"
 msgstr "Помилка під час спроби записати файл CSV"
 
-#: src/actions/_main_window_actions.py:197
+#: src/actions/_main_window_actions.py:200
 msgid "Error writing SVG file"
 msgstr "Помилка під час спроби записати файл SVG"
 
-#~ msgid "The GPG key must not have a passphrase set. \n"
-#~ msgstr "Для ключа GPG не повинно бути встановлено пароля. \n"
-
-#~ msgid "Pressing Cancel creates a new key."
-#~ msgstr "Натискання кнопки «Скасувати» призведе до створення нового ключа."
-
-#~ msgid "Series label"
-#~ msgstr "Мітка послідовності"
-
-#~ msgid "Data series"
-#~ msgstr "Послідовності даних"
-
-#~ msgid "Cu&t\tCtrl+x"
-#~ msgstr "&Вирізати\tCtrl+X"
-
-#~ msgid "&Copy\tCtrl+c"
-#~ msgstr "&Копіювати\tCtrl+C"
-
-#~ msgid "&Paste\tCtrl+v"
-#~ msgstr "Вст&авити\tCtrl+V"
-
-#~ msgid "Insert &rows\tShift+Ctrl+i"
-#~ msgstr "Вставити &рядки\tShift+Ctrl+I"
-
-#~ msgid "&Insert columns\tCtrl+i"
-#~ msgstr "Вс&тавити стовпчики\tCtrl+I"
-
-#~ msgid "Delete rows\tShift+Ctrl+d"
-#~ msgstr "Вилучити рядки\tShift+Ctrl+D"
-
-#~ msgid "Delete columns\tCtrl+Alt+d"
-#~ msgstr "Вилучити стовпчики\tCtrl+Alt+d"
-
-#~ msgid "&New\tCtrl+n"
-#~ msgstr "&Створити\tCtrl+N"
-
-#~ msgid "&Save\tCtrl+s"
-#~ msgstr "З&берегти\tCtrl+S"
-
-#~ msgid "Save &As\tShift+Ctrl+s"
-#~ msgstr "Зберегти &як\tShift+Ctrl+S"
-
-#~ msgid "Print preview\tShift+Ctrl+p"
-#~ msgstr "Попередній перегляд сторінки\tShift+Ctrl+P"
-
-#~ msgid "&Print\tCtrl+p"
-#~ msgstr "На&друкувати\tCtrl+P"
-
-#~ msgid "&Quit\tCtrl+q"
-#~ msgstr "Ви&йти\tCtrl+Q"
-
-#~ msgid "&Undo\tCtrl+z"
-#~ msgstr "В&ернути\tCtrl+Z"
-
-#~ msgid "&Redo\tShift+Ctrl+z"
-#~ msgstr "&Повторити\tShift+Ctrl+Z"
-
-#~ msgid "Copy &Results\tShift+Ctrl+c"
-#~ msgstr "Копіювати &результати\tShift+Ctrl+C"
-
-#~ msgid "&Find\tCtrl+f"
-#~ msgstr "З&найти\tCtrl+F"
-
-#~ msgid "Replace...\tCtrl+Shift+f"
-#~ msgstr "Замінити…\tCtrl+Shift+F"
-
-#~ msgid "Go to cell\tCtrl+G"
-#~ msgstr "Перейти до комірки\tCtrl+G"
-
-#~ msgid "Zoom in\tCtrl++"
-#~ msgstr "Збільшити\tCtrl++"
-
-#~ msgid "Zoom out\tCtrl+-"
-#~ msgstr "Зменшити\tCtrl+-"
-
-#~ msgid "&Macro list\tCtrl+m"
-#~ msgstr "Список &макросів\tCtrl+M"
-
-#~ msgid "Pyspread file (*.pys)|*.pys|All files (*.*)|*.*"
-#~ msgstr "файл Pyspread (*.pys)|*.pys|всі файли (*.*)|*.*"
-
-#~ msgid "Macro file (*.py)|*.py|All files (*.*)|*.*"
-#~ msgstr "файл макросів (*.py)|*.py|всі файли (*.*)|*.*"
-
-#~ msgid "Log"
-#~ msgstr "Журнал"
-
-#~ msgid "Error signing file. File is not signed."
-#~ msgstr "Помилка під час спроби підписати файл. Файл не підписано."
-
-#~ msgid "   Store passphrase"
-#~ msgstr "   Зберегти пароль"
-
-#~ msgid ""
-#~ "Generating new GPG key {}.\n"
-#~ "This may take some time.\n"
-#~ " \n"
-#~ "Progress bar may stall. Please wait."
-#~ msgstr ""
-#~ "Створення нового ключа GPG {}.\n"
-#~ "Дія може бути доволі тривалою.\n"
-#~ " \n"
-#~ "Показ поступу може призупинитися. Будь ласка, зачекайте."
-
-#~ msgid "GPG key generation"
-#~ msgstr "Створення ключа GPG"
-
-#~ msgid "Passphrase"
-#~ msgstr "Пароль"
-
-#~ msgid "E-mail"
-#~ msgstr "Ел. пошта"
-
-#~ msgid "Comment"
-#~ msgstr "Коментар"
-
-#~ msgid "Please enter your GPG key passphrase for {}."
-#~ msgstr "Будь ласка, вкажіть пароль до ключа GPG до {}."
-
-#~ msgid ""
-#~ "\n"
-#~ "The password will be stored in your config file."
-#~ msgstr ""
-#~ "\n"
-#~ "Пароль буде збережено у вашому файлі налаштувань програми."
-
-#~ msgid "Wrong password!\n"
-#~ msgstr "Помилковий пароль!\n"
-
-#~ msgid "GPG key passphrase"
-#~ msgstr "Пароль до ключа GPG"
-
-#~ msgid "New spreadsheet"
-#~ msgstr "Нова електронна таблиця"
-
-#~ msgid "Open spreadsheet"
-#~ msgstr "Відкрити електронну таблицю"
-
-#~ msgid "Save spreadsheet to file"
-#~ msgstr "Зберегти електронну таблицю до файла"
-
-#~ msgid "Undo last operation"
-#~ msgstr "Скасувати попередню дію"
-
-#~ msgid "Redo next operation"
-#~ msgstr "Повторити скасовану дію"
-
-#~ msgid "Cut cells to clipboard"
-#~ msgstr "Вирізати комірки до буфера обміну даними"
-
-#~ msgid "Paste cell from clipboard"
-#~ msgstr "Вставити комірку з буфера обміну даними"
-
-#~ msgid "Print spreadsheet"
-#~ msgstr "Надрукувати електронну таблицю"
-
-#~ msgid "Case sensitive search"
-#~ msgstr "Пошук з урахуванням регістру"
-
-#~ msgid "Treat search string as regular expression"
-#~ msgstr "Вважати рядок для пошуку формальним виразом"
-
-#~ msgid "Whole word"
-#~ msgstr "Цілі слова"
-
-#~ msgid "Search string is surronted by whitespace characters"
-#~ msgstr "Вважати, що рядок обмежено пробільними символами"
-
-#~ msgid "Searches in grid cell source code and grid cell results."
-#~ msgstr "Шукати у початковому коді комірок сітки і результатах комірок сітки."
-
-#~ msgid "Passphrase of the GPG key for signing files"
-#~ msgstr "Пароль до ключа GPG для підписування файлів"
-
-#~ msgid "Store passphrase in config file"
-#~ msgstr "Зберігати пароль у файлі налаштувань"
-
-#~ msgid "If False then the passprase is not stored on exit"
-#~ msgstr "Якщо матиме значення False, пароль не зберігатиметься після виходу з програми"
-
-#~ msgid "Store passphrase in keyring"
-#~ msgstr "Зберегти пароль у сховищі ключів"
+#: src/actions/_main_window_actions.py:530
+msgid "Error evaluating data: "
+msgstr "Помилка під час обробки даних:"
