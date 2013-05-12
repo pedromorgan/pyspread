@@ -1,4 +1,5 @@
 markdown: rdiscount
 pygments: true
+safe: false
 permalink: /:title
 
