@@ -1,182 +1,215 @@
-<p> </p>
-<table style="text-align: left; width: 100%; margin-left: auto;
-    margin-right: auto;" border="0" cellpadding="15" cellspacing="0">
+<p></p>
+
+<table border="0" cellpadding="15" cellspacing="0" style=
+"text-align: left; width: 100%; margin-left: auto; margin-right: auto;">
     <tbody>
-    <tr>
-        <th style="vertical-align: top; background-color: white;
-        width: 102px;">How to help<br>
-        </th>
-        <td>Thank you for wanting to help pyspread. You can help with
-        bug reports, translations, icons, coding, ideas and much
-        more.<br>
-        </td>
-        <td style="vertical-align: top;"><br>
-        </td>
-        <td style="width: 211px;"><br>
-        </td>
-    </tr>
-    <tr>
-        <th style="vertical-align: top; background-color: white;
-        width: 102px;">contact<br>
-        </th>
-        <td>For contributions, patches, development discussions and
-        ideas please post to the pyspread-dev mailing list by
-        sending an e-mail to <a href="mailto:pyspread-dev@gna.org">pyspread-dev@gna.org</a>.
-        You can <a
-            href="https://mail.gna.org/listinfo/pyspread-dev/">here</a>
-        subscribe to the list.<br>
-        </td>
-        <td style="vertical-align: top;"><br>
-        </td>
-        <td style="width: 211px;"><br>
-        </td>
-    </tr>
-    <tr>
-        <th style="vertical-align: top; width: 102px;">ideas for<br>
-        contributions<br>
-        </th>
-        <td>
-        <ul>
-            <li>Suggest additional chart types</li>
-            <li>Create an interface for multiple 3D sheets in a pys
-            file</li>
-            <li>Add attribute editing to the menu</li>
-            <li>Translation to your language (see <a
-                href="http://translationproject.org/domain/pyspread.html">translation
+        <tr>
+            <th style=
+            "vertical-align: top; background-color: white; width: 102px;">How
+            to help<br></th>
 
+            <td>Thank you for wanting to help pyspread. You can help with bug
+            reports, translations, icons, coding, ideas and much more.<br></td>
 
-                project page</a>, <a
-                href="http://translationproject.org/html/translators.html">howto</a>)<br>
-            </li>
-        </ul>
-        </td>
-        <td style="vertical-align: top;"><br>
-        </td>
-        <td style="width: 211px;"><br>
-        <a href="images/screenshot_fonts.png"><br>
-        </a> </td>
-    </tr>
-    <tr>
-        <th style="vertical-align: top; width: 102px;">Adding your
-        code<br>
-        </th>
-        <td>
-        <ol>
-            <li>Send an e-mail to <a
-                href="mailto:pyspread-dev@gna.org">pyspread-dev@gna.org</a>
-            that describes your contribution. </li>
-            <li>Get a github account.</li>
-            <li>Fork the branch that you would like to work with (see
-            <a target="_blank"
-                href="http://help.github.com/fork-a-repo/">github help</a>).<br>
-            </li>
-            <li>Issue a pull request when ready.</li>
-        </ol>
-        </td>
-        <td style="vertical-align: top;"><br>
-        </td>
-        <td style="width: 211px;"><br>
-        </td>
-    </tr>
-    <tr>
-        <th style="vertical-align: top; width: 102px;">code base<br>
-        </th>
-        <td style="vertical-align: top;">
-        <p class="western" style="margin-bottom: 0in;" lang="en-US">This
-            information refers to pyspread v. 0.2.3. The image on the
-            right refers to v. 0.2.2. Therefore, it is missing the
-            module chart_dialog.py, which implements the chart editing
-            dialog.</p>
-        <p class="western" style="margin-bottom: 0in" lang="en-US">
-            Version 0.1.2 and previous have a different structure.</p>
-        <p class="western" style="margin-bottom: 0in;" lang="en-US">The
-            code is organized in the src folder. There are the
-            following sub-folders:</p>
-        <ul>
-            <li>actions: Actions that change the model<br>
-            </li>
-        </ul>
-        <ul>
-            <li>gui: GUI elements including events<br>
-            </li>
-        </ul>
-        <ul>
-            <li>model: Core data structure<br>
-            </li>
-        </ul>
-        <ul>
-            <li>lib: Generically usable libraries<br>
-            </li>
-        </ul>
-            <p class="western" style="margin-bottom: 0in; font-weight:
-            normal;" lang="en-US">The figure on the right displays
-            class instance dependencies of the different layers.<br>
-            <br>
-        <p class="western" style="margin-bottom: 0in" lang="en-US">
-        </p>
-        <h2 class="western" lang="en-US">Relations to dependencies</h2>
-        <p class="western" style="margin-bottom: 0in" lang="en-US">wxPython related code can be found </p>
-        <ul>
-            <li>
-            <p class="western" style="margin-bottom: 0in;"
-                lang="en-US">in the action folder files,</p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in the gui folder files (including
-                events.py),</p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in lib/clipboard.py, </p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in lib/gpg.py, </p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in lib/parsers.py, </p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in config.py, </p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in pyspread.py, </p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in sysvars.py and </p>
-            </li>
-            <li>
-            <p class="western" style="margin-bottom: 0in"
-                lang="en-US">in model/model.py. </p>
-            </li>
-        </ul>
-        <p class="western" style="margin-bottom: 0in" lang="en-US">The latter is necessary in order to use the wx constants in
-            config.py</p>
-        <p class="western" style="margin-bottom: 0in" lang="en-US"><br>
-            python-gnupg related code can be found in lib/gpg.py</p>
-        <p class="western" style="margin-bottom: 0in" lang="en-US"><br>
-            numpy related code can be found in model/model.py</p>
-        </td>
-        <td style="vertical-align: top;"><br>
-        </td>
-        <td style="vertical-align: top;"><a
-            href="images/code_structure.png"><img alt="Code structure"
-            title="Code structure"
-            src="images/code_structure_small.png" style="border: 0px
-            solid; width: 200px; height: 265px;"></a><br>
-        </td>
-    </tr>
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="width: 211px;"><br></td>
+        </tr>
+
+        <tr>
+            <th style=
+            "vertical-align: top; background-color: white; width: 102px;">
+            contact<br></th>
+
+            <td>
+                For contributions, patches, development discussions and ideas
+                please post to the pyspread-dev mailing list by sending an
+                e-mail to <a href=
+                "mailto:pyspread-dev@gna.org">pyspread-dev@gna.org</a>. You can
+                <a href="https://mail.gna.org/listinfo/pyspread-dev/">here</a>
+                subscribe to the list.<br>
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="width: 211px;"><br></td>
+        </tr>
+
+        <tr>
+            <th style="vertical-align: top; width: 102px;">ideas for<br>
+            contributions<br></th>
+
+            <td>
+                <ul>
+                    <li>Suggest additional chart types</li>
+
+                    <li>Create an interface for multiple 3D sheets in a pys
+                    file</li>
+
+                    <li>Add attribute editing to the menu</li>
+
+                    <li>Translation to your language (see <a href=
+                    "http://translationproject.org/domain/pyspread.html">translation
+                    project page</a>, <a href=
+                    "http://translationproject.org/html/translators.html">howto</a>)<br>
+                        </li>
+                </ul>
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="width: 211px;">
+                <br>
+                <a href="images/screenshot_fonts.png"><br></a>
+            </td>
+        </tr>
+
+        <tr>
+            <th style="vertical-align: top; width: 102px;">Adding your
+            code<br></th>
+
+            <td>
+                <ol>
+                    <li>Send an e-mail to <a href=
+                    "mailto:pyspread-dev@gna.org">pyspread-dev@gna.org</a> that
+                    describes your contribution.
+                    </li>
+
+                    <li>Get a github account.</li>
+
+                    <li>Fork the branch that you would like to work with (see
+                    <a href="http://help.github.com/fork-a-repo/" target=
+                    "_blank">github help</a>).<br>
+                    </li>
+
+                    <li>Issue a pull request when ready.</li>
+                </ol>
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="width: 211px;"><br></td>
+        </tr>
+
+        <tr>
+            <th style="vertical-align: top; width: 102px;">code base<br></th>
+
+            <td style="vertical-align: top;">
+                <p class="western" lang="en-US" style="margin-bottom: 0in;">
+                This information refers to pyspread v. 0.2.3. The image on the
+                right refers to v. 0.2.2. Therefore, it is missing the module
+                chart_dialog.py, which implements the chart editing dialog.</p>
+
+                <p class="western" lang="en-US" style="margin-bottom: 0in">
+                Version 0.1.2 and previous have a different structure.</p>
+
+                <p class="western" lang="en-US" style="margin-bottom: 0in;">The
+                code is organized in the src folder. There are the following
+                sub-folders:</p>
+
+                <ul>
+                    <li>actions: Actions that change the model<br></li>
+                </ul>
+
+                <ul>
+                    <li>gui: GUI elements including events<br></li>
+                </ul>
+
+                <ul>
+                    <li>model: Core data structure<br></li>
+                </ul>
+
+                <ul>
+                    <li>lib: Generically usable libraries<br></li>
+                </ul>
+
+                <p class="western" lang="en-US" style=
+                "margin-bottom: 0in; font-weight: normal;">The figure on the
+                right displays class instance dependencies of the different
+                layers.<br>
+                <br></p>
+
+                <p class="western" lang="en-US" style="margin-bottom: 0in"></p>
+
+                <h2 class="western" lang="en-US">Relations to dependencies</h2>
+
+                <p class="western" lang="en-US" style="margin-bottom: 0in">
+                wxPython related code can be found</p>
+
+                <ul>
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in;">in the action folder files,</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in the gui folder files (including
+                        events.py),</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in lib/clipboard.py,</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in lib/gpg.py,</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in lib/parsers.py,</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in config.py,</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in pyspread.py,</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in sysvars.py and</p>
+                    </li>
+
+                    <li>
+                        <p class="western" lang="en-US" style=
+                        "margin-bottom: 0in">in model/model.py.</p>
+                    </li>
+                </ul>
+
+                <p class="western" lang="en-US" style="margin-bottom: 0in">The
+                latter is necessary in order to use the wx constants in
+                config.py</p>
+
+                <p class="western" lang="en-US" style="margin-bottom: 0in"><br>
+                python-gnupg related code can be found in lib/gpg.py</p>
+
+                <p class="western" lang="en-US" style="margin-bottom: 0in"><br>
+                numpy related code can be found in model/model.py</p>
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;">
+                <a href="images/code_structure.png"><img alt="Code structure"
+                src="images/code_structure_small.png" style=
+                "border: 0px solid; width: 200px; height: 265px;" title=
+                "Code structure"></a><br>
+            </td>
+        </tr>
     </tbody>
 </table>
-<p> </p>
-<p><span style="font-style: italic;"><small>Copyright Martin Manns</small><font size="-1"><br>
-        Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br
-        style="font-style: italic;">
-    </font> </span><font size="-1"><span style="font-style:
-        italic;">Last changed: 12. May 2013 </span></font></p>
 
+<p></p>
+
+<p><span style="font-style: italic;"><small>Copyright Martin Manns</small><br>
+Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br style=
+"font-style: italic;"></span> <span style="font-style: italic;">Last changed:
+12. May 2013</span></p>
