@@ -101,10 +101,10 @@ h3 {
   </style>
   </head>
   <body>
-
-    {{header}}
-    {{menu_docs}}
+    {% include header.html %}
+    {% include menu_docs.html %}
     {{content}}
+    {% include {{page.title}}.html %}
     
   </body>
 </html>
