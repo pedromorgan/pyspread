@@ -1,15 +1,20 @@
-<h1 class="title">First steps into pyspread</h1>
+<p></p>
+
+<h1>First steps into pyspread</h1>
 
 <table border="0" cellpadding="15" cellspacing="0" style=
-"text-align: left; width: 100%; margin-left: auto; margin-right: auto;">
-    <tbody>
+"text-align: left; width: 1237px; margin-left: auto; margin-right: auto; height: 13492px;vertical-align: top;">
+<tbody>
         <tr>
             <th style=
-            "vertical-align: top; background-color: white; width: 102px;">About
-            this document<br></th>
+            "vertical-align: top; background-color: white; width: 102px;">
+                <h3>About this document</h3>
+            </th>
 
             <td style="vertical-align: top;">This document shall provide a
-            quick overview over pyspread.</td>
+            quick overview over pyspread.<br>
+            Readers should have access to a Linux / BSD / *nix computer and at
+            least some experience with Python.<br></td>
 
             <td style="vertical-align: top;"><br></td>
 
@@ -17,7 +22,9 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">What is pyspread?<br></th>
+            <th style="vertical-align: top;">
+                <h3>What is pyspread?</h3>
+            </th>
 
             <td style="vertical-align: top;">Pyspread is a spreadsheet
             application that computes Python expressions in its cells. It is
@@ -43,7 +50,9 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Current limitations<br></th>
+            <th style="vertical-align: top;">
+                <h3>Current limitations</h3>
+            </th>
 
             <td style="vertical-align: top;">
                 External libraries such as matplotlib that set states in
@@ -52,15 +61,11 @@
                 within a macro.<br>
 
                 <ul>
-                    <li>There is no chart creation GUI interface.</li>
-
-                    <li>There is no cell auto-fill functionality.</li>
+                    <li>There is no cell auto-fill functionality . However,
+                    cells may be filled by pasting into selections.<br></li>
 
                     <li>Cell execution cannot be interrupted or terminated if
-                    slow and therefore may block pyspread.</li>
-
-                    <li>Toolbar positions are not saved in the config
-                    file.</li>
+                    slow. Therefore, they may block pyspread.</li>
 
                     <li>Cycle detection can be tricked. Cell results can be
                     unstable if cyclic dependencies are introduced.</li>
@@ -76,10 +81,12 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Installation<br></th>
+            <th style="vertical-align: top;">
+                <h3>Installation</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Requirements</h2>
+                <h4 class="western" lang="en-US">Requirements</h4>
 
                 <p class="western" lang="en-US">Linux and *nix platforms with
                 GTK+ support.<br>
@@ -100,14 +107,17 @@
 
                     <li>
                         <a href="http://www.wxpython.org/">wxPython</a>
-                        (&gt;=2.8.10.1, Unicode version required)
+                        (&gt;=2.8.10.1, &lt;2.9, Unicode version required)
                     </li>
 
                     <li>
                         <a href="http://matplotlib.org/">matplotlib</a>
                         (&gt;=1.1.1)
                     </li>
+                </ul><span style="text-decoration: underline">Strongly
+                recommended for improved save file security<br></span>
 
+                <ul>
                     <li>
                         <a href=
                         "http://code.google.com/p/python-gnupg/">python-gnupg</a>
@@ -116,6 +126,8 @@
                 </ul>
 
                 <p class="western" lang="en-US"></p>
+
+                <ul></ul>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -124,10 +136,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Installation from source</h2>
+                <h4 class="western" lang="en-US">Installation from source</h4>
 
                 <ol>
                     <li>
@@ -135,6 +149,9 @@
                         package into a directory of your choice:<br>
                         tar xzvf pyspread-&lt;version number&gt;.tar.gz</p>
                     </li>
+
+                    <li>Change into the new sub-directoy:<br>
+                    cd pyspread-&lt;version number&gt;</li>
 
                     <li>
                         <p class="western" lang="en-US">Run:<br>
@@ -149,11 +166,59 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Installation from .deb
-                package</h2>
+                <h4 class="western" lang="en-US">Running unit tests</h4>python
+                setup.py test<br>
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;"><br></td>
+        </tr>
+
+        <tr>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
+
+            <td style="vertical-align: top;">
+                <h4 class="western" lang="en-US">Starting pyspread without
+                installation<br></h4>
+
+                <ol>
+                    <li>
+                        <p class="western" lang="en-US">Untar the source
+                        package into a directory of your choice:<br>
+                        tar xzvf pyspread-&lt;version number&gt;.tar.gz<br></p>
+                    </li>
+
+                    <li>Change into the new sub-directoy:<br>
+                    cd pyspread-&lt;version number&gt;</li>
+
+                    <li>
+                        <p class="western" lang="en-US">*nix: ./pyspread.sh<br>
+                        Windows : pyspread.bat<br></p>
+                    </li>
+                </ol>
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;"><br></td>
+        </tr>
+
+        <tr>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
+
+            <td style="vertical-align: top;">
+                <h4 class="western" lang="en-US">Installation from .deb
+                package</h4>
 
                 <p class="western" lang="en-US">Download the deb package and
                 type</p>
@@ -168,11 +233,13 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">The pyspread workplace<br></th>
+            <th style="vertical-align: top;">
+                <h3>The pyspread workplace</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Starting and quitting
-                pyspread</h2>
+                <h4 class="western" lang="en-US">Starting and quitting
+                pyspread</h4>
 
                 <p class="western" lang="en-US">Type</p>
 
@@ -201,10 +268,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Pyspread main window</h2>
+                <h4 class="western" lang="en-US">Pyspread main window</h4>
 
                 <p class="western" lang="en-US">The main window consists of the
                 title bar, the menu, toolbars, the entry line, the table
@@ -217,10 +286,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Using menus</h2>
+                <h4 class="western" lang="en-US">Using menus</h4>
 
                 <p class="western" lang="en-US">There are two menus in
                 pyspread: The main menu and the context menu. The main menu is
@@ -242,10 +313,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Using dialogs</h2>
+                <h4 class="western" lang="en-US">Using dialogs</h4>
 
                 <p class="western" lang="en-US">Pyspread uses both modal and
                 non-modal dialogs. Modal dialogs block further usage of
@@ -266,10 +339,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Basic preferences</h2>
+                <h4 class="western" lang="en-US">Basic preferences</h4>
 
                 <p class="western" lang="en-US">Pyspread stores its
                 configuration in a file ~/.pyspreadrc</p>
@@ -287,10 +362,12 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Basic concepts<br></th>
+            <th style="vertical-align: top;">
+                <h3>Basic concepts</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">3D grid</h2>
+                <h4 class="western" lang="en-US">3D grid</h4>
 
                 <p class="western" lang="en-US">Pyspread features only one grid
                 at a time. However, this grid is 3D, i. e. there are rows,
@@ -301,7 +378,7 @@
 
                 <p class="western" lang="en-US">There are no sheets at the
                 moment, in which row operations do not affect other tabs. Sheet
-                functionality may become part of future releases.</p><br>
+                functionality may become part of future releases.</p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -310,10 +387,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Everything is accessible</h2>
+                <h4 class="western" lang="en-US">Everything is accessible</h4>
 
                 <p class="western" lang="en-US">All parts of pyspread are
                 written in Python. Therefore all objects can be accessed from
@@ -346,7 +425,7 @@
                 <p class="western" lang="en-US">is no expression. Therefore,
                 the expression</p>
 
-                <p class="code-western" lang="en-US">xx = __import__(“xx”)</p>
+                <p class="code-western" lang="en-US">xx = __import__("xx")</p>
 
                 <p class="western" lang="en-US">has to be used.</p>
             </td>
@@ -357,11 +436,13 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Python code as cell
-                language</h2>
+                <h4 class="western" lang="en-US">Python code as cell
+                language</h4>
 
                 <p class="western" lang="en-US">Pyspread uses Python
                 expressions in each cell. This is similar to typing expressions
@@ -374,8 +455,8 @@
 
                 <p class="code-western" lang="en-US">a = b = 2</p>
 
-                <p class="western" lang="en-US">is <strong>invalid</strong> in
-                pyspread.</p>
+                <p class="western" lang="en-US">is <strong style=
+                "font-weight: bold;">invalid</strong> in pyspread.</p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -384,10 +465,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Trust based security</h2>
+                <h4 class="western" lang="en-US">Trust based security</h4>
 
                 <p class="western" lang="en-US">Since Python expressions are
                 evaluated in pyspread, a spreadsheet is as powerful as any
@@ -422,10 +505,12 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Common spreadsheet tasks<br></th>
+            <th style="vertical-align: top;">
+                <h3>Common spreadsheet tasks</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Moving in the spreadsheet</h2>
+                <h4 class="western" lang="en-US">Moving in the spreadsheet</h4>
 
                 <p class="western" lang="en-US">Movement in the grid can be
                 achieved by:</p>
@@ -461,8 +546,21 @@
 
                 <p class="western" lang="en-US">Table movement is described in
                 the next paragraph</p>
+            </td>
 
-                <h3 class="western" lang="en-US">Switching tables</h3>
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;"><br></td>
+        </tr>
+
+        <tr>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
+
+            <td style="vertical-align: top;">
+                <h3 class="western" lang="en-US" style="font-weight: bold;">
+                Switching tables</h3>
 
                 <p class="western" lang="en-US">Tables can be switched by
                 changing the number in the table switch textbox that is
@@ -479,20 +577,38 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Entering data</h2>
+                <h4 class="western" lang="en-US">Entering data</h4>
 
                 <p class="western" lang="en-US">Data is entered into the grid
                 cells by selecting a cell and then typing the text. The text
                 can also be entered into the text-entry line. The text is
                 accepted and evaluated when &lt;Enter&gt; is pressed or when a
                 new cell is selected. Note that &lt;Enter&gt; does not work
-                from withing the text entry line.</p>
+                from withing the text entry line.<br></p>When data shall be
+                displayed as text, it has to be quoted so that the code
+                represents a Python string. In order to make such data entry
+                easier, quotation is automatically added if
+                &lt;Ctrl&gt;+&lt;Enter&gt; is pressed after editing a cell.<br>
+            </td>
 
-                <h3 class="western" lang="en-US">Changing and deleting cell
-                content</h3>
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;"><br></td>
+        </tr>
+
+        <tr>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
+
+            <td style="vertical-align: top;">
+                <h3 class="western" lang="en-US" style="font-weight: bold;">
+                Changing and deleting cell content</h3>
 
                 <p class="western" lang="en-US">In order to change cell content
                 double-click on the cell or select the cell and edit the text
@@ -509,11 +625,11 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Selecting cells</h2>
-
                 <p class="western" lang="en-US">Cells can be selected by the
                 following actions:</p>
 
@@ -554,10 +670,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Copy and Paste operations</h2>
+                <h4 class="western" lang="en-US">Copy and Paste operations</h4>
 
                 <p class="western" lang="en-US">Copying and pasting can be done
                 from within cells, which copies the text.</p>
@@ -578,7 +696,7 @@
                 &lt;Ctrl&gt; + C, the cell code is copied. There is a second
                 type of copy &lt;Shift&gt; + &lt;Ctrl&gt; + C, which copies
                 string representation of the results. This is useful, if for
-                exapmle the result shall be copied into an external
+                example the result shall be copied into an external
                 application.</p>
             </td>
 
@@ -588,10 +706,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Undoing work steps</h2>
+                <h4 class="western" lang="en-US">Undoing work steps</h4>
 
                 <p class="western" lang="en-US">Pyspread features undo and redo
                 functions for most user actions. Exceptions are:</p>
@@ -614,8 +734,8 @@
                 </ul>
 
                 <p class="western" lang="en-US">The undo list is limited. The
-                limit can be set in the configuration file .pyspreadrc in the
-                variable max_unredo.</p>
+                limit can be set in the File → Preferences dialog by changing
+                the variable max_unredo.</p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -624,11 +744,13 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Creating an empty
-                spreadsheet</h2>
+                <h4 class="western" lang="en-US">Creating an empty
+                spreadsheet</h4>
 
                 <p class="western" lang="en-US">An empty spreadsheet can be
                 created by File → New.</p>
@@ -639,6 +761,8 @@
                 there is a limit that is imposed by wx.Python. Therefore, grids
                 with more than 80 million rows and 30 million columns may show
                 problems and instabilities.<br></p>
+
+                <p></p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -652,11 +776,13 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Loading and saving a
-                spreadsheet</h2>
+                <h4 class="western" lang="en-US">Loading and saving a
+                spreadsheet</h4>
 
                 <p class="western" lang="en-US">Loading and saving a
                 spreadsheet from and to disk can be initiated with File → Open
@@ -678,7 +804,9 @@
                 started the first time for a user, a pgp key pair is crreated
                 for the user pyspread_&lt;user-id&gt;. This key pair is used
                 for signing pyspread save files. A correct signature file lets
-                pyspread open a file without going into safe mode.</p>
+                pyspread open a file without going into safe mode. Note that
+                the save file is <span style="font-weight: bold;">not</span>
+                encrypted in any way.<br></p>
 
                 <p class="western" lang="en-US">The pys file format has changed
                 in version 0.2.0. It now is a bzip2-ed Text file with the
@@ -728,11 +856,13 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">CSV data import and
-                export</h2>
+                <h4 class="western" lang="en-US">CSV data import and
+                export</h4>
 
                 <p class="western" lang="en-US">Pyspread can import and export
                 csv data for interacting with other applications. However, grid
@@ -754,9 +884,11 @@
                 files in order to give an impression how import data will look
                 like in pyspread.<br></p>
 
+                <p></p>
+
                 <p class="western" lang="en-US">Importing a file always
                 activates safe mode (when no signature file is created
-                manually) because code in the CSV file may be harmful.</p>
+                manually) because code in the CSV file might prove harmful.</p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -770,10 +902,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Printing</h2>
+                <h4 class="western" lang="en-US">Printing</h4>
 
                 <p class="western" lang="en-US">When selecting File → Print,
                 the grid is printed. When there is no selection, the visible
@@ -791,10 +925,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Finding and replacing</h2>
+                <h4 class="western" lang="en-US">Finding and replacing</h4>
 
                 <p class="western" lang="en-US">Cell code and cell results can
                 be searched with &lt;Ctrl&gt; + F or using the menu with Edit →
@@ -805,10 +941,12 @@
                 case sensitivity can be toggled via the search toolbar.</p>
 
                 <p class="western" lang="en-US">Replacing is done via the Find
-                &amp; Replace dialog that is accessable via &lt;Shift&gt; +
+                &amp; Replace dialog that is accessible via &lt;Shift&gt; +
                 &lt;Ctrl&gt; + F or via Edit → Replace... Strings that are
                 found are replaced with the replace string. Note that replace
-                only allows seraching in cell code and not in results.<br></p>
+                only allows searching in cell code and not in results.<br></p>
+
+                <p></p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -822,10 +960,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Sorting</h2>
+                <h4 class="western" lang="en-US">Sorting</h4>
 
                 <p class="western" lang="en-US">Pyspread dos not feature a
                 sorting button, yet. However sorting can be achieved by
@@ -843,11 +983,13 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Working with formulas<br></th>
+            <th style="vertical-align: top;">
+                <h3>Working with formulas</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Grid cells expect Python
-                expressions</h2>
+                <h4 class="western" lang="en-US">Grid cells expect Python
+                expressions</h4>
 
                 <p class="western" lang="en-US">Python expressions are terms
                 that Python evaluates to a result object. <a href=
@@ -875,6 +1017,10 @@
 
                 <p class="western" lang="en-US">are <strong>not</strong>
                 valid.</p>
+
+                <p class="western" lang="en-US">Note: Use <code>math =
+                __import__("math")</code> instead of the latter
+                example.<br></p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -883,10 +1029,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Variable assignment</h2>
+                <h4 class="western" lang="en-US">Variable assignment</h4>
 
                 <p class="western" lang="en-US">Besides Python expressions, one
                 variable assignment is accepted within a cell. The assignment
@@ -906,8 +1054,8 @@
 
                 <p class="code-western" lang="en-US">b = c = 4</p>
 
-                <p class="western" lang="en-US">is <strong>not</strong> valid
-                in a pyspread cell.</p>
+                <p class="western" lang="en-US">is <strong style=
+                "font-weight: bold;">not</strong> valid in a pyspread cell.</p>
 
                 <p class="western" lang="en-US">Note that evaluation order of
                 cells is not guaranteed. Therefore, assigning a variable twice
@@ -920,11 +1068,13 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Result strings in the
-                grid</h2>
+                <h4 class="western" lang="en-US">Result strings in the
+                grid</h4>
 
                 <p class="western" lang="en-US">Cells that contain a Python
                 expression display the string representation of the result
@@ -940,10 +1090,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Absolute cell access</h2>
+                <h4 class="western" lang="en-US">Absolute cell access</h4>
 
                 <p class="western" lang="en-US">The result objects, for which
                 string representations are displayed in the grid, can be
@@ -957,14 +1109,12 @@
                 the cell in row 3, column 2, table 1. This type of access is
                 called absolute because the targeted cell does not change when
                 the code is copied to another cell similar to a call $A$1 in a
-                common spreadsheet.</p>
-
-                <p class="western" lang="en-US">Note that each time that a cell
-                calls another cell result, the called cell is re-evaluated. No
-                dependency tracking of cells is done. Therefore, spreadsheets
-                with many references to a single, slowly calculated cell may be
-                slow. Freezing such a cell can significantly boost performance
-                .</p>
+                common spreadsheet.</p>In order to make referencing cells
+                easier, a toggle button can be pressed when editing a cell.
+                When it is toggled on, a selection is converted into its code
+                representation at the cursor. Note that selection a cell is not
+                enough. It has to be selected (blue background) so that you see
+                the selection representing code.<br>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -973,10 +1123,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Relative cell access</h2>
+                <h4 class="western" lang="en-US">Relative cell access</h4>
 
                 <p class="western" lang="en-US">In order to access a cell
                 relative to the current cell position, 3 variables X, Y and Z
@@ -1000,10 +1152,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Slicing the grid</h2>
+                <h4 class="western" lang="en-US">Slicing the grid</h4>
 
                 <p class="western" lang="en-US">Cell access can refer to
                 multiple cells by slicing similar to slicing a matrix in numpy.
@@ -1050,10 +1204,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Frozen cells</h2>
+                <h4 class="western" lang="en-US">Frozen cells</h4>
 
                 <p class="western" lang="en-US">In order to prevent cells from
                 being evaluated, cells can be marked as frozen (flurry button
@@ -1086,20 +1242,25 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Macros</h2>
+                <h4 class="western" lang="en-US">Macros</h4>
 
                 <p class="western" lang="en-US">Since cell evaluation order is
-                not guaranteed in pyspread, macros can be used for modules that
-                enforce state on importing. Furthermore, algorithms that are
+                not guaranteed in pyspread, macros can be used for operations
+                that enforce state. One example for such operations are some
+                module imports such as rpy2. Furthermore, algorithms that are
                 too complex for a single cell can be written as a macro.</p>
 
                 <p class="western" lang="en-US">Macros can be edited from
                 within the macro editor via Macro → Macro list (Figure). The
                 editor allows editing a text file that is executed when the
                 spreadsheet is opened or when its content is updated.<br></p>
+
+                <p></p>
 
                 <p class="western" lang="en-US">The scope of macro execution is
                 global. Therefore, all functions are directly accessible from
@@ -1118,16 +1279,18 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Module import</h2>
+                <h4 class="western" lang="en-US">Module import</h4>
 
                 <p class="western" lang="en-US">Python modules cannot be
-                imported with the <em>import</em> statement from within a cell
-                because this statement is no Python expression. Therefore,
-                module import from within a cell has to be realized by calling
-                the function __import__:</p>
+                imported with the import statement from within a cell because
+                this statement is no Python expression. Therefore, module
+                import from within a cell has to be realized by calling the
+                function __import__:</p>
 
                 <p class="code-western" lang="en-US">&lt;module_name&gt; =
                 __import__(“&lt;module name&gt;”)</p>
@@ -1150,10 +1313,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Cyclic references</h2>
+                <h4 class="western" lang="en-US">Cyclic references</h4>
 
                 <p class="western" lang="en-US">Cyclic references are possible
                 again in version 0.2.0. However, recursion depth is limited.
@@ -1170,10 +1335,12 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Result stability</h2>
+                <h4 class="western" lang="en-US">Result stability</h4>
 
                 <p class="western" lang="en-US">Result stability when
                 redefining global variables cannot be guaranteed because
@@ -1188,13 +1355,15 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Error handling</h2>
+                <h4 class="western" lang="en-US">Error handling</h4>
 
                 <p class="western" lang="en-US">Cells that contain expressions
-                that raise an error return this error.</p>
+                that raise an exception return the error string.</p>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -1203,15 +1372,17 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Using help<br></th>
+            <th style="vertical-align: top;">
+                <h3>Using help</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Access to this document</h2>
+                <h4 class="western" lang="en-US">Access to this document</h4>
 
                 <p class="western" lang="en-US">This document can be displayed
                 from within pyspread via the menu with Help → First Steps.</p>
 
-                <h2 class="western" lang="en-US">Python tutorial</h2>
+                <h4 class="western" lang="en-US">Python tutorial</h4>
 
                 <p class="western" lang="en-US">With Help → Python tutorial,
                 the Python tutorial is shown via the Internet. Note that a
@@ -1225,10 +1396,12 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Grid layout<br></th>
+            <th style="vertical-align: top;">
+                <h3>Grid layout</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Formatting basics</h2>
+                <h4 class="western" lang="en-US">Formatting basics</h4>
 
                 <p class="western" lang="en-US">Grid formatting changes cell
                 attributes for all cells in a selection. All formatting is
@@ -1239,7 +1412,15 @@
                 in future versions in order to conserve memory and gain speed
                 for documents with formats that are changed a lot of times.</p>
 
-                <h2 class="western" lang="en-US">Fonts and font attributes</h2>
+                <h4 class="western" lang="en-US">Fonts and font attributes</h4>
+
+                <p class="western" lang="en-US"></p>
+
+                <p></p>
+
+                <p class="western" lang="en-US"></p>
+
+                <p></p>
 
                 <p class="western" lang="en-US">Fonts can be assigned by
                 selection cells and choosing a font from the format menu and
@@ -1248,10 +1429,8 @@
                 Therefore, fonts have to be available at the target system.
                 Otherwise, the font is replaced by the default font.</p>
 
-                <p></p>
-
-                <h2 class="western" lang="en-US">Text alignment, justification
-                and rotation</h2>
+                <h4 class="western" lang="en-US">Text alignment, justification
+                and rotation</h4>
 
                 <p class="western" lang="en-US"></p>
 
@@ -1260,25 +1439,23 @@
                 format menu and from the attributes toolbar. For alignment and
                 justification, a toggle button is used i. e. when pressing the
                 button, the next setting is applied. In order to get back to
-                the original state, the button has to be pressed 3 times in
+                the original state, the button has to be pressed three times in
                 both cases.</p>
 
-                <p></p>
-
-                <h2 class="western" lang="en-US">Border and background
-                color</h2>
+                <h4 class="western" lang="en-US">Border and background
+                color</h4>
 
                 <p class="western" lang="en-US">Border and background color of
                 a selection of cells can be changed from the format menu and
                 attributes toolbar. Colors are always considered solid.</p>
 
                 <p class="western" lang="en-US">Color is allied to borders
-                dependent on the settings of the border dropbox in the
+                dependent on the settings of the border drop box in the
                 attribute toolbar. In order to get only outer borders of your
                 selection a different color choose the corresponding border
                 setting.</p>
 
-                <h2 class="western" lang="en-US">Border width</h2>
+                <h4 class="western" lang="en-US">Border width</h4>
 
                 <p class="western" lang="en-US">Border width of a selection of
                 cells can be changed from the attributes menu.</p>
@@ -1289,15 +1466,15 @@
                 your selection a different color choose the corresponding
                 border setting.</p>
 
-                <h2 class="western" lang="en-US">Row height and column
-                width</h2>
+                <h4 class="western" lang="en-US">Row height and column
+                width</h4>
 
                 <p class="western" lang="en-US">Row heights and column widths
                 can be altered by dragging the borders with the mouse.
                 Non-default widths and heights are stored in the pys file.</p>
 
-                <h2 class="western" lang="en-US">Insertion and deletion of
-                rows, columns and tables</h2>
+                <h4 class="western" lang="en-US">Insertion and deletion of
+                rows, columns and tables</h4>
 
                 <p class="western" lang="en-US">Insertion and deletion commands
                 from the main menu and the context menu insert or delete one
@@ -1316,11 +1493,13 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">pyspread and security<br></th>
+            <th style="vertical-align: top;">
+                <h3>pyspread and security</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">More than your average
-                spreadsheet</h2>
+                <h4 class="western" lang="en-US">More than your average
+                spreadsheet</h4>
 
                 <p class="western" lang="en-US">Pyspread cells contain Python
                 code. Instead of a special purpose language, you enter code in
@@ -1344,10 +1523,10 @@
                 after inspection.<br></p>
 
                 <p class="western" lang="en-US">Please note that in version
-                0.2.3, keys with passwords are no longer supported. Since gpg
-                should only make sure that the file that you are trying to open
-                is your own file, password-less key pairs should provide
-                sufficient security.<br></p>
+                0.2.3 or higher, keys with passwords are no longer supported.
+                Since gpg should only make sure that the file that you are
+                trying to open is your own file, password-less key pairs should
+                provide sufficient security.<br></p>
 
                 <p class="western" lang="en-US">Therefore, never approve
                 foreign pys-files unless you have <strong>checked thoroughly
@@ -1372,11 +1551,13 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Security risks and annoyances
-                from the save file signatures</h2>
+                <h4 class="western" lang="en-US">Security risks and annoyances
+                from the save file signatures</h4>
 
                 <p class="western" lang="en-US">The security concept has risks
                 apart from unintentionally approving malicious files.</p>
@@ -1401,13 +1582,15 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Charts<br></th>
+            <th style="vertical-align: top;">
+                <h3>Charts</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <p class="western" lang="en-US">With version 0.2.3, <a href=
-                "http://matplotlib.org/">matplotlib</a> charts are supported.
-                Each cell, which yields a matplotlib figure displays this
-                figure. The bitmap is stretched to the cell's extents.<br></p>
+                <p class="western" lang="en-US">Version 0.2.3 introduces
+                <a href="http://matplotlib.org/">matplotlib</a> charts. Each
+                cell, which yields a matplotlib figure displays this figure.
+                The bitmap is stretched to the cell's extents.<br></p>
 
                 <p class="western" lang="en-US">The "Insert chart" option in
                 the Macros menu provides an easy way of generating matplotlib
@@ -1420,9 +1603,12 @@
                 had been made last time. This may very well fail if you changed
                 the cell code manually.<br></p>
 
-                <p class="western" lang="en-US">Currently, two chart types are
-                supported: Plots, i.e. line charts and bar charts. Please
-                suggest other chart types by posting at <a href=
+                <p class="western" lang="en-US">In version 0.2.4, six chart
+                types are supported: Plots, i.e. line charts, bar charts,
+                histograms, box plots, pie charts and annotations. Note that
+                pie charts cannot be combined with other chart type yet. Please
+                suggest other chart types that you find usable by posting at
+                <a href=
                 "mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.</p>
 
                 <p class="western" lang="en-US">Matplotlib figures can also be
@@ -1432,25 +1618,26 @@
 
             <td style="vertical-align: top;"><br></td>
 
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">Chart dialog image<br></td>
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Images<br></th>
+            <th style="vertical-align: top;">&lt;&gt;h3Images</th>
 
             <td style="vertical-align: top;">
-                <p class="western" lang="en-US">With version 0.2.3, images can
-                be displayed in cells. Each cell, which yields a wx.Bitmap
-                object, displays the bitmap. The bitmap is stretched to the
-                cell's extents.<br></p>
+                <p class="western" lang="en-US">Version 0.2.3 introduces that
+                images can be displayed in cells. Each cell, which yields a
+                wx.Bitmap object, displays the bitmap. The bitmap is stretched
+                to the cell's extents.<br></p>
 
                 <p class="western" lang="en-US">Images can be inserted via copy
                 and paste. This creates cell code, which contains a serialized
-                string that represents the bitmap. Since maximum cell size
-                currently is 64000 characters, images will be compressed until
-                they fit in. This normally means quality loss especially with
-                true color images. In future versions, this limit may be
-                removed.<br></p>
+                string that represents the bitmap. The code can be of
+                considerable size. Therefore, it is normally split into
+                multiple lines. Line breaks inside a cell are ignored by
+                pyspread. Therefore, each cell behaves like one line of Python
+                code even if multiple lines are displayed in the cell
+                editor.<br></p>
 
                 <p class="western" lang="en-US">The "Insert bitmap" option in
                 the Macros menu is Identical to the copy and paste
@@ -1470,11 +1657,15 @@
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Advanced topics<br></th>
+            <th style="vertical-align: top;">
+                <h3>Advanced topics</h3>
+            </th>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Drawing cell content with a
-                cell formula</h2>To be done<br>
+                <h4 class="western" lang="en-US">Drawing cell content with a
+                cell formula</h4>Drawing with cell formulas is deprecated and
+                supported only for compatibility reasons. Please do not use it
+                in your spreadsheets.<br>
             </td>
 
             <td style="vertical-align: top;"><br></td>
@@ -1483,11 +1674,13 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Handling large amounts of
-                data</h2>
+                <h4 class="western" lang="en-US">Handling large amounts of
+                data</h4>
 
                 <p class="western" lang="en-US">While the pyspread main grid
                 may be large, filling many cells may consume considerable
@@ -1503,14 +1696,37 @@
         </tr>
 
         <tr>
-            <td style="vertical-align: top;"><br></td>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
 
             <td style="vertical-align: top;">
-                <h2 class="western" lang="en-US">Substituting pivot
-                tables</h2><br>
-                See example file.<br>
-                <br>
-                To be done
+                <h4 class="western" lang="en-US">Substituting pivot
+                tables</h4>In the examples directory, a Pivot table replacement
+                is shown using list comprehensions.
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;"><br></td>
+        </tr>
+
+        <tr>
+            <td style="vertical-align: top;">
+                <h3><br></h3>
+            </td>
+
+            <td style="vertical-align: top;">
+                <h4 class="western" lang="en-US">Images in version
+                0.2.3<br></h4>
+
+                <p>In pyspread version 0.2.3, any image is shrunk until it fits
+                into the 64k character limit of a cell. Starting from version
+                0.2.4, this limit is removed and no shrinking is
+                done.<br></p>In order to display high quality images in version
+                0.2.3, the Insert linked image command in the Macro menu and
+                the Macro toolbar can be used. Note that it creates an absolute
+                link to the image.
             </td>
 
             <td style="vertical-align: top;"><br></td>
