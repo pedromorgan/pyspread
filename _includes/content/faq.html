@@ -1,12 +1,12 @@
 <h1 class="title">pyspread FAQ</h1>
 
 <table border="0" cellpadding="15" cellspacing="0" style=
-"text-align: left; width: 100%; margin-left: auto; margin-right: auto;">
+"text-align: left; width: 100%; margin-left: auto; margin-right: auto;vertical-align: top;">
     <tbody>
         <tr>
             <th style=
-            "vertical-align: top; background-color: white; width: 102px;">What
-            kind of expressions can a cell contain?<br></th>
+            "vertical-align: top; background-color: white; width: 102px;"><h3>What
+            kind of expressions can a cell contain?</h3></th>
 
             <td style="vertical-align: top;">
                 A cell can contain any normal Python expression such as a list
@@ -44,8 +44,8 @@ def factorize(number):<br>    """Silly factorizing algorithm for demonstration p
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">What are the boundaries for the
-            number of rows/columns/sheets?</th>
+            <th style="vertical-align: top;"><h3>What are the boundaries for the
+            number of rows/columns/sheets?</h3></th>
 
             <td style="vertical-align: top;">These are limited by your memory
             (and maybe your stack restriction if any). However, the grid is
@@ -58,8 +58,8 @@ def factorize(number):<br>    """Silly factorizing algorithm for demonstration p
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Is the new file-format considered
-            stable, or will it change again?</th>
+            <th style="vertical-align: top;"><h3>Is the new file-format considered
+            stable, or will it change again?</h3></th>
 
             <td style="vertical-align: top;">The new file format is stable.
             This means that future versions of Pyspread will be able to read
@@ -71,17 +71,14 @@ def factorize(number):<br>    """Silly factorizing algorithm for demonstration p
         </tr>
 
         <tr>
-            <th style="vertical-align: top;">Can pyspread still read the old
-            format?</th>
+            <th style="vertical-align: top;"><h3>Can pyspread still read the old
+            format?</h3></th>
 
             <td style="vertical-align: top;">Unfortunately not. If you have old
             pys files, install both versions of pyspread and copy the cell
             contents via the Clipboard from the old to the new version.
             However, cell formatting cannot be preserved this way.</td>
 
-            <td style="vertical-align: top;"><br></td>
-
-            <td style="vertical-align: top;"><br></td>
         </tr>
     </tbody>
 </table>
