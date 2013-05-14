@@ -647,32 +647,38 @@ class HelpActions(Actions):
         position = config["help_window_position"]
         size = config["help_window_size"]
 
-        help_window = wx.Frame(self.main_window, -1, helpname, position, size)
-        help_htmlwindow = wx.html.HtmlWindow(help_window, -1, (0, 0), size)
+        self.help_window = wx.Frame(self.main_window, -1,
+                                    helpname, position, size)
+        self.help_htmlwindow = wx.html.HtmlWindow(self.help_window, -1,
+                                                  (0, 0), size)
 
-        help_window.Bind(wx.EVT_MOVE, self.OnHelpMove)
-        help_window.Bind(wx.EVT_SIZE, self.OnHelpSize)
+        self.help_window.Bind(wx.EVT_MOVE, self.OnHelpMove)
+        self.help_window.Bind(wx.EVT_SIZE, self.OnHelpSize)
+        self.help_htmlwindow.Bind(wx.EVT_LEFT_DOWN, self.OnHelpBack)
 
         # Get help data
         current_path = os.getcwd()
         os.chdir(get_help_path())
 
         try:
-            help_file = open(filename, "r")
-            help_html = help_file.read()
-            help_file.close()
-            # Decode the help html strings to unicode for non utf-8 systems
-            help_htmlwindow.SetPage(help_html.decode("utf-8"))
+            self.help_htmlwindow.LoadFile(filename)
 
         except IOError:
-
-            help_htmlwindow.LoadPage(filename)
+            self.help_htmlwindow.LoadPage(filename)
 
         # Show tutorial window
 
-        help_window.Show()
+        self.help_window.Show()
 
         os.chdir(current_path)
+
+    def OnHelpBack(self, event):
+        """Goes back apage if possible"""
+
+        if self.help_htmlwindow.HistoryCanBack():
+            self.help_htmlwindow.HistoryBack()
+
+        event.Skip()
 
     def OnHelpMove(self, event):
         """Help window move event handler stores position in config"""
