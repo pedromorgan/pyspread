@@ -44,6 +44,7 @@ import ast
 import base64
 import bz2
 import os
+import time
 
 import wx
 import wx.html
@@ -654,7 +655,7 @@ class HelpActions(Actions):
 
         self.help_window.Bind(wx.EVT_MOVE, self.OnHelpMove)
         self.help_window.Bind(wx.EVT_SIZE, self.OnHelpSize)
-        self.help_htmlwindow.Bind(wx.EVT_LEFT_DOWN, self.OnHelpBack)
+        self.help_htmlwindow.Bind(wx.EVT_RIGHT_DOWN, self.OnHelpBack)
 
         # Get help data
         current_path = os.getcwd()
@@ -677,8 +678,6 @@ class HelpActions(Actions):
 
         if self.help_htmlwindow.HistoryCanBack():
             self.help_htmlwindow.HistoryBack()
-
-        event.Skip()
 
     def OnHelpMove(self, event):
         """Help window move event handler stores position in config"""
