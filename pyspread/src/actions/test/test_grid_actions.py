@@ -676,9 +676,66 @@ class TestSelectionActions(object):
 class TestFindActions(object):
     """FindActions test class"""
 
-    # No tests yet because of close integration with selection in GUI
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
-    pass
+        # Content for find and replace operations
+        grid_data = {
+            (0, 0, 0): u"Test",
+            (1, 0, 0): u"Test1",
+            (2, 0, 0): u"Test2",
+        }
+
+        for key in grid_data:
+            self.grid.code_array[key] = grid_data[key]
+
+    # Search flags ["UP" xor "DOWN", "WHOLE_WORD", "MATCH_CASE", "REG_EXP"]
+
+    param_find = [
+        {'gridpos': [0, 0, 0], 'find_string': "test",
+         'flags': ["DOWN"], 'res_key': (1, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "test",
+         'flags': ["UP"], 'res_key': (2, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "test",
+         'flags': ["DOWN", "MATCH_CASE"], 'res_key': None},
+        {'gridpos': [1, 0, 0], 'find_string': "test",
+         'flags': ["DOWN"], 'res_key': (2, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "Test",
+         'flags': ["DOWN", "MATCH_CASE"], 'res_key': (1, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "Test",
+         'flags': ["DOWN", "WHOLE_WORD"], 'res_key': (0, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "Test1",
+         'flags': ["DOWN", "MATCH_CASE", "WHOLE_WORD"], 'res_key': (1, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "es*.2",
+         'flags': ["DOWN"], 'res_key': None},
+        {'gridpos': [0, 0, 0], 'find_string': "es*.2",
+         'flags': ["DOWN", "REG_EXP"], 'res_key': (2, 0, 0)},
+    ]
+
+    @params(param_find)
+    def test_find(self, gridpos, find_string, flags, res_key):
+        """Tests for find"""
+
+        res = self.grid.actions.find(gridpos, find_string, flags)
+        assert res == res_key
+
+    param_replace = [
+        {'findpos': (0, 0, 0), 'find_string': "Test",
+         'replace_string': "Hello", 'res': "Hello"},
+        {'findpos': (1, 0, 0), 'find_string': "Test",
+         'replace_string': "Hello", 'res': "Hello1"},
+        {'findpos': (1, 0, 0), 'find_string': "est",
+         'replace_string': "Hello", 'res': "THello1"},
+    ]
+
+    @params(param_replace)
+    def test_replace(self, findpos, find_string, replace_string, res):
+        """Tests for replace"""
+
+        self.grid.actions.replace(findpos, find_string, replace_string)
+        assert self.grid.code_array(findpos) == res
 
 
 class TestAllGridActions(object):

@@ -1214,8 +1214,9 @@ class FindActions(Actions):
         \tPosition at which the search starts
         find_string: String
         \tString to find in grid
-        flags: Int
-        \twx.wxEVT_COMMAND_FIND flags
+        flags: List of strings
+        \t Search flag out of
+        \t ["UP" xor "DOWN", "WHOLE_WORD", "MATCH_CASE", "REG_EXP"]
 
         """
 
