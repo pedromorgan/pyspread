@@ -233,7 +233,7 @@ class TestClipboardActions(object):
         {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "Test"},
         {'selection': Selection([], [], [], [], [(999, 0)]), 'result': "1"},
         {'selection': Selection([], [], [], [], [(999, 99)]),
-         'result': "invalid syntax (<string>, line 1)"},
+         'result': "invalid syntax (<unknown>, line 1)"},
     ]
 
     @params(param_copy_result)
