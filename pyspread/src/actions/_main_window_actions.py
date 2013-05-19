@@ -44,7 +44,6 @@ import ast
 import base64
 import bz2
 import os
-import time
 
 import wx
 import wx.html
@@ -621,7 +620,23 @@ class MacroActions(Actions):
 
         """
 
-        macro_outfile = open(filepath, "w")
+        io_error_text = _("Error writing to file {filepath}.")
+        io_error_text = io_error_text.format(filepath=filepath)
+
+        try:
+            macro_outfile = open(filepath, "w")
+
+        except IOError:
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=txt)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+            return False
+
         macro_outfile.write(macros)
         macro_outfile.close()
 

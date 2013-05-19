@@ -244,7 +244,6 @@ class TestClipboardActions(object):
 
         assert self.main_window.actions.copy_result(selection) == result
 
-## TODO: Test hangs when doing py.test for all tests in directory
     param_paste = [
         {'target': (0, 0), 'data': "1",
          'test_key': (0, 0, 0), 'test_val': "1"},
@@ -290,7 +289,7 @@ class TestMacroActions(object):
 
     def test_execute_macros(self):
 
-        # Unsure how to test since macros are not global ion py.test
+        # Unsure how to test since macros are not global in py.test
 
         pass
 
@@ -310,11 +309,25 @@ class TestMacroActions(object):
         macros = self.main_window.grid.code_array.macros
 
         assert testmacro_string == macros
+        assert self.main_window.grid.code_array.safe_mode
 
     def test_save_macros(self):
-        # Save macros is pretty direct so that the necessary file
-        # protection actions are not yet implemented --> No tests yet
-        pass
+        """Unit tests for save_macros"""
+
+        filepath = TESTPATH + "macro_dummy.py"
+
+        macros = "Test"
+
+        self.main_window.actions.save_macros(filepath, macros)
+        macro_file = open(filepath)
+        assert macros == macro_file.read()
+        macro_file.close()
+        os.remove(filepath)
+
+        macro_file = open(filepath, "w")
+        self.main_window.actions.save_macros(filepath, macros)
+        macro_file.close()
+        os.remove(filepath)
 
 
 class TestHelpActions(object):
