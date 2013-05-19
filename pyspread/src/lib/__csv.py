@@ -398,15 +398,29 @@ class CsvInterface(StatusBarEventMixin):
     def write(self, iterable):
         """Writes values from iterable into CSV file"""
 
+        io_error_text = _("Error writing to file {filepath}.")
+        io_error_text = io_error_text.format(filepath=self.path)
+
         try:
             csvfile = open(self.path, "wb")
-            csv_writer = csv.writer(csvfile, self.dialect)
 
-            for line in iterable:
-                csv_writer.writerow(line)
+        except IOError:
+            txt = \
+                _("Error opening file {filepath}.").format(filepath=self.path)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=txt)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+            return False
 
-        finally:
-            csvfile.close()
+        csv_writer = csv.writer(csvfile, self.dialect)
+
+        for line in iterable:
+            csv_writer.writerow(line)
+
+        csvfile.close()
 
 
 class TxtGenerator(StatusBarEventMixin):
@@ -415,7 +429,7 @@ class TxtGenerator(StatusBarEventMixin):
     def __init__(self, main_window, path):
         self.main_window = main_window
         try:
-            self.infile = open(path, "r")
+            self.infile = open(path)
 
         except IOError:
             statustext = "Error opening file " + path + "."

@@ -40,9 +40,10 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + "/../../..")
 sys.path.insert(0, TESTPATH + "/../..")
 
+from src.gui._main_window import MainWindow
 from src.lib.testlib import params, pytest_generate_tests
 import src.lib.__csv as __csv
-from src.lib.__csv import Digest
+from src.lib.__csv import Digest, CsvInterface, TxtGenerator, sniff
 
 param_sniff = [
     {'filepath': TESTPATH + 'test1.csv', 'header': True, 'delimiter': ',',
@@ -134,26 +135,67 @@ class TestDigest(object):
 class TestCsvInterface(object):
     """Unit tests for CsvInterface"""
 
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
+
+        filepath = TESTPATH + 'test1.csv'
+        self.dialect, __ = sniff(filepath)
+        self.digest_types = [types.UnicodeType]
+        has_header = True
+
+        self.interface = CsvInterface(self.main_window, filepath, self.dialect,
+                                      self.digest_types, has_header)
+
     def test_iter(self):
         """Unit test for __iter__"""
 
-        pass
+        testline = [u"Test1", u"234", u"3.34", u"2012/12/04"]
+
+        for i, line in enumerate(self.interface):
+            if i:
+                for j, ele in enumerate(line):
+                    assert ele == repr(testline[j])
 
     def test_get_csv_cells_gen(self):
         """Unit test for _get_csv_cells_gen"""
 
-        pass
+        data = [u'324', u'234', u'sdfg']
+        res = self.interface._get_csv_cells_gen(data)
+
+        for ele, rele in zip(data, res):
+            assert repr(ele) == rele
 
     def test_write(self):
         """Unit test for write"""
 
-        pass
+        filepath = TESTPATH + 'dummy.csv'
+        interface = CsvInterface(self.main_window, filepath, self.dialect,
+                                 self.digest_types, False)
+
+        interface.write([["test", "world"], ["", "hello"]])
+
+        dummy = open(filepath, "w")
+        interface.write(["test", "world"])
+        dummy.close()
+
+        os.remove(filepath)
 
 
 class TestTxtGenerator(object):
     """Unit tests for TxtGenerator"""
 
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
+
+        filepath = TESTPATH + 'test_txt.csv'
+        self.txtgen = TxtGenerator(self.main_window, filepath)
+
     def test_iter(self):
         """Unit test for __iter__"""
 
-        pass
+        res = [[ele for ele in line] for line in self.txtgen]
+        assert res == [["Hallo", "Welt"], ["Test", "2"]]
