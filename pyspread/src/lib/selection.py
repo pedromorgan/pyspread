@@ -70,14 +70,18 @@ class Selection(object):
     def __repr__(self):
         """String output for printing selection"""
 
-        return "Selection" + repr(
-                   (self.block_tl,
-                    self.block_br,
-                    self.rows,
-                    self.cols,
-                    self.cells))
+        params = self.block_tl, self.block_br, self.rows, self.cols, self.cells
+
+        return "Selection" + repr(params)
 
     def __eq__(self, other):
+        """Returns True if self and other selection are equal
+
+        Selections are equal iif the order of each attribute is equal
+        because order precedence may change the selection outcome in the grid.
+
+        """
+
         assert type(other) is type(self)
 
         attrs = ("block_tl", "block_br", "rows", "cols", "cells")
@@ -131,22 +135,13 @@ class Selection(object):
 
         delta_row, delta_col = value
 
-        selection = copy(self)
+        block_tl = [(t + delta_row, l + delta_col) for t, l in self.block_tl]
+        block_br = [(t + delta_row, l + delta_col) for t, l in self.block_br]
+        rows = [row + delta_row for row in self.rows]
+        cols = [col + delta_col for col in self.cols]
+        cells = [(r + delta_row, c + delta_col) for r, c in self.cells]
 
-        selection.block_tl = [(t + delta_row, l + delta_col)
-                                    for t, l in selection.block_tl]
-
-        selection.block_br = [(t + delta_row, l + delta_col)
-                                    for t, l in selection.block_br]
-
-        selection.rows = [row + delta_row for row in selection.rows]
-
-        selection.cols = [col + delta_col for col in selection.cols]
-
-        selection.cells = [(r + delta_row, c + delta_col)
-                                    for r, c in selection.cells]
-
-        return selection
+        return Selection(block_tl, block_br, rows, cols, cells)
 
     def insert(self, point, number, axis):
         """Inserts number of rows/cols/tabs into selection at point on axis
@@ -162,10 +157,8 @@ class Selection(object):
 
         """
 
-        assert axis in [0, 1]
-
         def build_tuple_list(source_list, point, number, axis):
-            """"""
+            """Returns adjusted tuple list for single cells"""
 
             target_list = []
 
@@ -182,11 +175,13 @@ class Selection(object):
         self.block_br = build_tuple_list(self.block_br, point, number, axis)
 
         if axis == 0:
-            self.rows = [row + number if row > point else row
-                            for row in self.rows]
+            self.rows = \
+                [row + number if row > point else row for row in self.rows]
         elif axis == 1:
-            self.cols = [col + number if col > point else col
-                            for col in self.cols]
+            self.cols = \
+                [col + number if col > point else col for col in self.cols]
+        else:
+            raise ValueError("Axis not in [0, 1]")
 
         self.cells = build_tuple_list(self.cells, point, number, axis)
 
