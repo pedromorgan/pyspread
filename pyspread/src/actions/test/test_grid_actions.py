@@ -648,9 +648,29 @@ class TestGridActions(object):
 class TestSelectionActions(object):
     """Selection actions test class"""
 
-    # No tests yet because of close integration with selection in GUI
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
-    pass
+    # No tests for
+    # * get_selection
+    # * select_cell
+    # * select_slice
+    # because of close integration with selection in GUI
+
+    def test_delete_selection(self):
+        """Tests for delete_selection"""
+
+        self.grid.code_array[(0, 0, 0)] = "Test"
+
+        self.grid.actions.select_cell(0, 0)
+        self.grid.actions.delete_selection()
+
+        assert self.grid.code_array[(0, 0, 0)] is None
+
+        # Make sure that the result cache is empty
+        assert not self.grid.code_array.result_cache
 
 
 class TestFindActions(object):
