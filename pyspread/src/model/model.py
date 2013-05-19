@@ -724,8 +724,8 @@ class DataArray(object):
     def _set_cell_attributes(self, value):
         """Setter for cell_atributes"""
 
-        while len(self.cell_attributes):
-            self.cell_attributes.pop()
+        # Empty cell_attributes first
+        self.cell_attributes[:] = []
         self.cell_attributes.extend(value)
 
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis):
@@ -993,22 +993,27 @@ class CodeArray(DataArray):
 
         return res
 
-    def _has_assignment(self, code):
-        """Returns True iif  code is a global assignment
+    def _get_assignment_target_end(self, ast_module):
+        """Returns position of 1st char after assignment traget.
 
-        Assignment is valid iif
-         * only one term in front of "=" and
-         * no "==" and
-         * no operators left and
-         * parentheses balanced
+        If there is no assignment, -1 is returned
+
+        If there are more than one of any ( expressions or assigments)
+        then a ValueError is raised.
 
         """
 
-        return len(code) > 1 and \
-               len(code[0].split()) == 1 and \
-               code[1] != "" and \
-               (not max(op in code[0] for op in self.operators)) and \
-               code[0].count("(") == code[0].count(")")
+        if len(ast_module.body) > 1:
+            raise ValueError("More than one expression or assignment.")
+
+        elif len(ast_module.body) > 0 and \
+                type(ast_module.body[0]) is ast.Assign:
+            if len(ast_module.body[0].targets) != 1:
+                raise ValueError("More than one assignment target.")
+            else:
+                return len(ast_module.body[0].targets[0].id)
+
+        return -1
 
     def _get_updated_environment(self, env_dict=None):
         """Returns globals environment with 'magic' variable
@@ -1057,27 +1062,46 @@ class CodeArray(DataArray):
 
         # If only 1 term in front of the "=" --> global
 
-        split_exp = code.split("=")
+        try:
+            assignment_target_error = None
+            module = ast.parse(code)
+            assignment_target_end = self._get_assignment_target_end(module)
 
-        if self._has_assignment(split_exp):
-            glob_var = split_exp[0].strip()
-            expression = "=".join(split_exp[1:])
+        except ValueError, err:
+            assignment_target_error = ValueError(err)
+
+        except AttributeError, err:
+            # Attribute Error includes RunTimeError
+            assignment_target_error = AttributeError(err)
+
+        except Exception, err:
+            assignment_target_error = Exception(err)
+
+        if assignment_target_error is None and assignment_target_end != -1:
+            glob_var = code[:assignment_target_end]
+            expression = code.split("=", 1)[1]
+            expression = expression.strip()
 
             # Delete result cache because assignment changes results
             self.result_cache.clear()
+
         else:
             glob_var = None
             expression = code
 
-        try:
-            result = eval(expression, env, {})
+        if assignment_target_error is not None:
+            result = assignment_target_error
 
-        except AttributeError, err:
-            # Attribute Error includes RunTimeError
-            result = AttributeError(err)
+        else:
+            try:
+                result = eval(expression, env, {})
 
-        except Exception, err:
-            result = Exception(err)
+            except AttributeError, err:
+                # Attribute Error includes RunTimeError
+                result = AttributeError(err)
+
+            except Exception, err:
+                result = Exception(err)
 
         # Change back cell value for evaluation from other cells
         self.dict_grid[key] = _old_code

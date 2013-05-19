@@ -18,8 +18,9 @@
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-import fractions
-import math
+import ast
+import fractions  ## Yes, it is required
+import math  ## Yes, it is required
 import os
 import sys
 
@@ -34,10 +35,14 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + "/../../..")
 sys.path.insert(0, TESTPATH + "/../..")
 
+from src.lib.testlib import params, pytest_generate_tests
+
 from src.model.model import KeyValueStore, CellAttributes, DictGrid
 from src.model.model import DataArray, CodeArray
 
 from src.lib.selection import Selection
+
+from src.model.unredo import UnRedo
 
 
 class TestKeyValueStore(object):
@@ -66,11 +71,21 @@ class TestCellAttributes(object):
         """Creates empty CellAttributes"""
 
         self.cell_attr = CellAttributes()
+        self.cell_attr.unredo = UnRedo()
 
     def test_undoable_append(self):
         """Test undoable_append"""
 
-        pass
+        selection = Selection([], [], [], [], [(23, 12)])
+        table = 0
+        attr = {"angle": 0.2}
+
+        self.cell_attr.undoable_append((selection, table, attr))
+
+        # Check if 2 items - the actual action and the marker - have been added
+        assert len(self.cell_attr.unredo.undolist) == 2
+        assert len(self.cell_attr.unredo.redolist) == 0
+        assert not self.cell_attr._attr_cache
 
     def test_getitem(self):
         """Test __getitem__"""
@@ -330,9 +345,7 @@ class TestDataArray(object):
         """Unit test for __getitem__ and __setitem__"""
 
         self.data_array[0, 0, 0] = "'Test'"
-        ##assert len(self.grid.unredo.undolist) == 1
         self.data_array[0, 0, 0] = "'Tes'"
-        ##assert len(self.grid.unredo.undolist) == 2
 
         assert self.data_array[0, 0, 0] == "'Tes'"
 
@@ -362,12 +375,37 @@ class TestDataArray(object):
     def test_set_cell_attributes(self):
         """Unit test for _set_cell_attributes"""
 
-        pass
+        cell_attributes = ["Test"]
+        self.data_array._set_cell_attributes(cell_attributes)
+        assert self.data_array.cell_attributes == cell_attributes
 
-    def test_adjust_cell_attributes(self):
+    param_adjust_cell_attributes = [
+        {'inspoint': 0, 'noins': 5, 'axis': 0,
+         'src': (4, 3, 0), 'target': (9, 3, 0)},
+        {'inspoint': 34, 'noins': 5, 'axis': 0,
+         'src': (4, 3, 0), 'target': (4, 3, 0)},
+        {'inspoint': 0, 'noins': 0, 'axis': 0,
+         'src': (4, 3, 0), 'target': (4, 3, 0)},
+        {'inspoint': 1, 'noins': 5, 'axis': 1,
+         'src': (4, 3, 0), 'target': (4, 8, 0)},
+        {'inspoint': 1, 'noins': 5, 'axis': 1,
+         'src': (4, 3, 1), 'target': (4, 8, 1)},
+    ]
+
+    @params(param_adjust_cell_attributes)
+    def test_adjust_cell_attributes(self, inspoint, noins, axis, src, target):
         """Unit test for _adjust_cell_attributes"""
 
-        pass
+        row, col, tab = src
+
+        val = {"angle": 0.2}
+
+        attrs = [(Selection([], [], [], [], [(row, col)]), tab, val)]
+        self.data_array._set_cell_attributes(attrs)
+        self.data_array._adjust_cell_attributes(inspoint, noins, axis)
+
+        for key in val:
+            assert self.data_array.cell_attributes[target][key] == val[key]
 
     def test_insert(self):
         """Unit test for insert operation"""
@@ -394,12 +432,14 @@ class TestDataArray(object):
     def test_set_row_height(self):
         """Unit test for set_row_height"""
 
-        pass
+        self.data_array.set_row_height(7, 1, 22.345)
+        assert self.data_array.row_heights[7, 1] == 22.345
 
     def test_set_col_width(self):
         """Unit test for set_col_width"""
 
-        pass
+        self.data_array.set_col_width(7, 1, 22.345)
+        assert self.data_array.col_widths[7, 1] == 22.345
 
 
 class TestCodeArray(object):
@@ -448,8 +488,8 @@ class TestCodeArray(object):
                 filled_grid[1, 0, 0] = "math = __import__('math')"
                 filled_grid[1, 0, 0]
                 filled_grid[j, 3, 0] = funcname + ' (' + str(i) + ')'
-
                 #res = eval(funcname + "(" + "i" + ")")
+
                 assert filled_grid[j, 3, 0] == eval(funcname + "(" + "i" + ")")
         #Test X, Y, Z
         for i in xrange(10):
@@ -472,12 +512,44 @@ class TestCodeArray(object):
     def test_make_nested_list(self):
         """Unit test for _make_nested_list"""
 
-        pass
+        def gen():
+            """Nested generator"""
 
-    def test_has_assignment(self):
-        """Unit test for _has_assignment"""
+            yield (("Test" for _ in xrange(2)) for _ in xrange(2))
 
-        pass
+        res = self.code_array._make_nested_list(gen())
+
+        assert res == [[["Test" for _ in xrange(2)] for _ in xrange(2)]]
+
+    param_get_assignment_target_end = [
+        {'code': "a=5", 'res': 1},
+        {'code': "a = 5", 'res': 1},
+        {'code': "5", 'res': -1},
+        {'code': "a == 5", 'res': -1},
+        {'code': "", 'res': -1},
+        {'code': "fractions = __import__('fractions')", 'res': 9},
+        {'code': "math = __import__('math')", 'res': 4},
+        {'code': "a = 3==4", 'res': 1},
+        {'code': "a == 3 < 44", 'res': -1},
+        {'code': "a != 3 < 44", 'res': -1},
+        {'code': "a >= 3 < 44", 'res': -1},
+        {'code': "a = 3 ; a < 44", 'res': None},
+    ]
+
+    @params(param_get_assignment_target_end)
+    def test_get_assignment_target_end(self, code, res):
+        """Unit test for _get_assignment_target_end"""
+
+        module = ast.parse(code)
+
+        if res is None:
+            try:
+                self.code_array._get_assignment_target_end(module)
+                raise ValueError("Multiple expressions cell not identified")
+            except ValueError:
+                pass
+        else:
+            assert self.code_array._get_assignment_target_end(module) == res
 
     def test_eval_cell(self):
         """Unit test for _eval_cell"""
