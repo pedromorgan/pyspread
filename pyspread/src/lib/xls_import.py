@@ -20,29 +20,23 @@
 # --------------------------------------------------------------------
 
 """
+xls_import.py
+=============
 
-Typechecks
-==========
-
-typechecks.py contains functions for checking type likeness,
-i. e. existence of typical attributes of a type for objects.
+Helper functions for unit tests
 
 """
 
+def read_xls(filepath):
+	"""Inserts xls file content into grid"""
 
-def is_slice_like(obj):
-    """Returns True if obj is slice like, i.e. has attribute indices"""
+	import xlrd
 
-    return hasattr(obj, "indices")
+	workbook = xlrd.open_workbook(filepath)
+	for sheet_no, sheet in enumerate(workbook.sheets()):
+		for row in xrange(sheet.nrows):
+			for col in xrange(sheet.ncols):
+				S[row, col, sheet_no] = \
+					repr(sheet.cell(row, col).value)
 
-
-def is_string_like(obj):
-    """Returns True if obj is string like, i.e. has method split"""
-
-    return hasattr(obj, "split")
-
-
-def is_generator_like(obj):
-    """Returns True if obj is string like, i.e. has method next"""
-
-    return hasattr(obj, "next")
+	return filepath

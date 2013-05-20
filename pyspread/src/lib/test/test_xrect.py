@@ -1,7 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2009 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -18,6 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
+
+
+"""
+test_xrect
+==========
+
+Unit tests for xrect.py
+
+"""
 
 from math import sin, cos, pi
 import os
