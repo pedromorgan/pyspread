@@ -27,8 +27,6 @@ Grid selection representation
 
 """
 
-from copy import copy
-
 from itertools import izip
 
 

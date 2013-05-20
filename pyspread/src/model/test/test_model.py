@@ -551,15 +551,26 @@ class TestCodeArray(object):
         else:
             assert self.code_array._get_assignment_target_end(module) == res
 
-    def test_eval_cell(self):
+    param_eval_cell = [
+        {'key': (0, 0, 0), 'code': "2 + 4", 'res': 6},
+        {'key': (1, 0, 0), 'code': "S[0, 0, 0]", 'res': None},
+        {'key': (43, 2, 1), 'code': "X, Y, Z", 'res': (43, 2, 1)},
+    ]
+
+    @params(param_eval_cell)
+    def test_eval_cell(self, key, code, res):
         """Unit test for _eval_cell"""
 
-        pass
+        self.code_array[key] = code
+        assert self.code_array._eval_cell(key, code) == res
 
     def test_execute_macros(self):
         """Unit test for execute_macros"""
 
-        pass
+        self.code_array.macros = "a = 5\ndef f(x): return x ** 2"
+        self.code_array.execute_macros()
+        assert self.code_array._eval_cell((0, 0, 0), "a") == 5
+        assert self.code_array._eval_cell((0, 0, 0), "f(2)") == 4
 
     def test_sorted_keys(self):
         """Unit test for _sorted_keys"""

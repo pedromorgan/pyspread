@@ -1034,7 +1034,7 @@ class CodeArray(DataArray):
         return env
 
     def _eval_cell(self, key, code):
-        """Evaluates one cell"""
+        """Evaluates one cell and returns its result"""
 
         # Set up environment for evaluation
 
