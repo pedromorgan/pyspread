@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -154,6 +154,38 @@ class CellAttributes(list):
         self._attr_cache[key] = (len(self), result_dict)
 
         return result_dict
+
+    def get_merging_cell(self, key):
+        """Returns key of cell that merges the cell key
+
+        or None if cell key not merged
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer
+        \tThe key of the cell that is merged
+
+        """
+
+        row, col, tab = key
+
+        merging_cell = None
+
+        def is_in_merge_area(row, col, merge_area):
+            top, left, bottom, right = merge_area
+            return top <= row <= bottom and left <= col <= right
+
+        for selection, table, attr_dict in self:
+            try:
+                merge_area = attr_dict["merge_area"]
+                if table == tab and merge_area is not None:
+                    # We have a merge area in the cell's table
+                    if is_in_merge_area(row, col, merge_area):
+                        merging_cell = merge_area[0], merge_area[1], tab
+            except KeyError:
+                pass
+
+        return merging_cell
 
 # End of class CellAttributes
 
@@ -393,7 +425,8 @@ class DictGrid(KeyValueStore, ParserMixin, StringGeneratorMixin):
 
         for axis, key_ele in enumerate(key):
             if shape[axis] <= key_ele or key_ele < -shape[axis]:
-                msg = "Grid index {} outside grid shape {}.".format(key, shape)
+                msg = "Grid index {key} outside grid shape {shape}."
+                msg = msg.format(key=key, shape=shape)
                 raise IndexError(msg)
 
         return KeyValueStore.__getitem__(self, key)
@@ -691,8 +724,8 @@ class DataArray(object):
     def _set_cell_attributes(self, value):
         """Setter for cell_atributes"""
 
-        while len(self.cell_attributes):
-            self.cell_attributes.pop()
+        # Empty cell_attributes first
+        self.cell_attributes[:] = []
         self.cell_attributes.extend(value)
 
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis):
@@ -886,10 +919,10 @@ class CodeArray(DataArray):
 
     """
 
-    operators = ["+", "-", "*", "**", "/", "//",
-             "%", "<<", ">>", "&", "|", "^", "~",
-             "<", ">", "<=", ">=", "==", "!=", "<>",
-            ]
+    operators = (
+        "+", "-", "*", "**", "/", "//", "%", "<<", ">>", "&", "|", "^", "~",
+        "<", ">", "<=", ">=", "==", "!=", "<>",
+    )
 
     # Cache for results from __getitem__ calls
     result_cache = {}
@@ -960,22 +993,27 @@ class CodeArray(DataArray):
 
         return res
 
-    def _has_assignment(self, code):
-        """Returns True iif  code is a global assignment
+    def _get_assignment_target_end(self, ast_module):
+        """Returns position of 1st char after assignment traget.
 
-        Assignment is valid iif
-         * only one term in front of "=" and
-         * no "==" and
-         * no operators left and
-         * parentheses balanced
+        If there is no assignment, -1 is returned
+
+        If there are more than one of any ( expressions or assigments)
+        then a ValueError is raised.
 
         """
 
-        return len(code) > 1 and \
-               len(code[0].split()) == 1 and \
-               code[1] != "" and \
-               (not max(op in code[0] for op in self.operators)) and \
-               code[0].count("(") == code[0].count(")")
+        if len(ast_module.body) > 1:
+            raise ValueError("More than one expression or assignment.")
+
+        elif len(ast_module.body) > 0 and \
+                type(ast_module.body[0]) is ast.Assign:
+            if len(ast_module.body[0].targets) != 1:
+                raise ValueError("More than one assignment target.")
+            else:
+                return len(ast_module.body[0].targets[0].id)
+
+        return -1
 
     def _get_updated_environment(self, env_dict=None):
         """Returns globals environment with 'magic' variable
@@ -996,7 +1034,7 @@ class CodeArray(DataArray):
         return env
 
     def _eval_cell(self, key, code):
-        """Evaluates one cell"""
+        """Evaluates one cell and returns its result"""
 
         # Set up environment for evaluation
 
@@ -1024,27 +1062,46 @@ class CodeArray(DataArray):
 
         # If only 1 term in front of the "=" --> global
 
-        split_exp = code.split("=")
+        try:
+            assignment_target_error = None
+            module = ast.parse(code)
+            assignment_target_end = self._get_assignment_target_end(module)
 
-        if self._has_assignment(split_exp):
-            glob_var = split_exp[0].strip()
-            expression = "=".join(split_exp[1:])
+        except ValueError, err:
+            assignment_target_error = ValueError(err)
+
+        except AttributeError, err:
+            # Attribute Error includes RunTimeError
+            assignment_target_error = AttributeError(err)
+
+        except Exception, err:
+            assignment_target_error = Exception(err)
+
+        if assignment_target_error is None and assignment_target_end != -1:
+            glob_var = code[:assignment_target_end]
+            expression = code.split("=", 1)[1]
+            expression = expression.strip()
 
             # Delete result cache because assignment changes results
             self.result_cache.clear()
+
         else:
             glob_var = None
             expression = code
 
-        try:
-            result = eval(expression, env, {})
+        if assignment_target_error is not None:
+            result = assignment_target_error
 
-        except AttributeError, err:
-            # Attribute Error includes RunTimeError
-            result = AttributeError(err)
+        else:
+            try:
+                result = eval(expression, env, {})
 
-        except Exception, err:
-            result = Exception(err)
+            except AttributeError, err:
+                # Attribute Error includes RunTimeError
+                result = AttributeError(err)
+
+            except Exception, err:
+                result = Exception(err)
 
         # Change back cell value for evaluation from other cells
         self.dict_grid[key] = _old_code
