@@ -16,15 +16,19 @@ Fork the github repo at
 https://github.com/manns/pyspread.git
 
 In order to start pyspread without installation run
-``
+
+```
 $ ./pyspread.sh
-``
+```
+
 inside the top directory.
 
 Sources can be found in the sub-folder
-``
+
+```
 pyspread/src
-``
+```
+
 Commit your changes, push them into your fork and send a pull request.
 
 This page gives an overview how to do this:
