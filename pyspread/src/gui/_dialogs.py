@@ -1060,7 +1060,7 @@ class AboutDialog(object):
             _("A non-traditional Python spreadsheet application.\nPyspread is "
               "based on and written in the programming language Python."),
             350, wx.ClientDC(parent))
-        info.WebSite = ("http://manns.github.com/pyspread/",
+        info.WebSite = ("http://manns.github.io/pyspread/",
                         _("Pyspread Web site"))
         info.Developers = ["Martin Manns"]
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]

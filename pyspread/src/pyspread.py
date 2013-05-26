@@ -68,10 +68,6 @@ except KeyError:
     except ImportError:
         pass
 
-from wx import App
-from wx import InitAllImageHandlers
-
-
 from src.gui._events import post_command_event, GridActionEventMixin
 
 DEBUG = False
@@ -142,7 +138,7 @@ class Commandlineparser(object):
 # end of class Commandlineparser
 
 
-class MainApplication(App, GridActionEventMixin):
+class MainApplication(wx.App, GridActionEventMixin):
     """Main application class for pyspread."""
 
     dimensions = (1, 1, 1)  # Will be overridden anyways
@@ -166,7 +162,7 @@ class MainApplication(App, GridActionEventMixin):
         self.get_cmd_args()
 
         # Initialize the prerequisitions to construct the main window
-        InitAllImageHandlers()
+        wx.InitAllImageHandlers()
 
         # Main window creation
         from src.gui._main_window import MainWindow
