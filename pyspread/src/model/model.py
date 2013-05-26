@@ -463,27 +463,129 @@ class DataArray(object):
         # Safe mode
         self.safe_mode = False
 
+    # Data is the central content interface for loading / saving data.
+    # It shall be used for loading and saving from and to pys and other files.
+    # It shall be used for loading and saving macros.
+    # It is not used for importinf and exporting data because these operations
+    # are partial to the grid.
+
+    def _get_data(self):
+        """Returns dict of data content.
+
+        Keys
+        ----
+
+        shape: 3-tuple of Integer
+        \tGrid shape
+        grid: Dict of 3-tuples to strings
+        \tCell content
+        attributes: List of 3-tuples
+        \tCell attributes
+        row_heights: Dict of 2-tuples to float
+        \t(row, tab): row_height
+        col_widths: Dict of 2-tuples to float
+        \t(col, tab): col_width
+        macros: String
+        \tMacros from macro list
+
+        """
+
+        data = {}
+
+        data["shape"] = self.shape
+        data["grid"] = {}.update(self.dict_grid)
+        data["attributes"] = [ca for ca in self.cell_attributes]
+        data["row_heights"] = self.row_heights
+        data["col_widths"] = self.col_widths
+        data["macros"] = self.macros
+
+        return data
+
+    def _set_data(self, **kwargs):
+        """Sets data from given parameters
+
+        Old values are deleted.
+        If a paremeter is not given, nothing is changed.
+
+        Parameters
+        ----------
+
+        shape: 3-tuple of Integer
+        \tGrid shape
+        grid: Dict of 3-tuples to strings
+        \tCell content
+        attributes: List of 3-tuples
+        \tCell attributes
+        row_heights: Dict of 2-tuples to float
+        \t(row, tab): row_height
+        col_widths: Dict of 2-tuples to float
+        \t(col, tab): col_width
+        macros: String
+        \tMacros from macro list
+
+        """
+
+        if "shape" in kwargs:
+            self.shape = kwargs["shape"]
+
+        if "grid" in kwargs:
+            self.dict_grid.clear()
+            self.dict_grid.update(kwargs["grid"])
+
+        if "attributes" in kwargs:
+            self.attributes[:] = kwargs["attributes"]
+
+        if "row_heights" in kwargs:
+            self.row_heights = kwargs["row_heights"]
+
+        if "col_widths" in kwargs:
+            self.col_widths = kwargs["col_widths"]
+
+        if "macros" in kwargs:
+            self.macros = kwargs["macros"]
+
+    data = property(_get_data, _set_data)
+
     # Row and column attributes mask
     # Keys have the format (row, table)
 
-    @property
-    def row_heights(self):
+    def _get_row_heights(self):
         """Returns row_heights dict"""
 
         return self.dict_grid.row_heights
 
-    @property
-    def col_widths(self):
+    def _set_row_heights(self, row_heights):
+        """Sets  macros string"""
+
+        self.dict_grid.row_heights = row_heights
+
+    row_heights = property(_get_row_heights, _set_row_heights)
+
+    def _get_col_widths(self):
         """Returns col_widths dict"""
 
         return self.dict_grid.col_widths
 
+    def _set_col_widths(self, col_widths):
+        """Sets  macros string"""
+
+        self.dict_grid.col_widths = col_widths
+
+    col_widths = property(_get_col_widths, _set_col_widths)
+
     # Cell attributes mask
-    @property
-    def cell_attributes(self):
+    def _get_cell_attributes(self):
         """Returns cell_attributes list"""
 
         return self.dict_grid.cell_attributes
+
+    def _set_cell_attributes(self, cell_attributes):
+        """Sets  macros string"""
+
+        self.dict_grid.cell_attributes = cell_attributes
+
+    cell_attributes = attributes = \
+        property(_get_cell_attributes, _set_cell_attributes)
 
     def __iter__(self):
         """Returns iterator over self.dict_grid"""
@@ -918,11 +1020,6 @@ class CodeArray(DataArray):
     This class represents layer 3 of the model.
 
     """
-
-    operators = (
-        "+", "-", "*", "**", "/", "//", "%", "<<", ">>", "&", "|", "^", "~",
-        "<", ">", "<=", ">=", "==", "!=", "<>",
-    )
 
     # Cache for results from __getitem__ calls
     result_cache = {}
