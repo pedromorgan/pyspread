@@ -677,7 +677,11 @@ class HelpActions(Actions):
         os.chdir(get_help_path())
 
         try:
-            self.help_htmlwindow.LoadFile(filename)
+            if os.path.isfile(filename):
+                self.help_htmlwindow.LoadFile(filename)
+
+            else:
+                self.help_htmlwindow.LoadPage(filename)
 
         except IOError:
             self.help_htmlwindow.LoadPage(filename)
