@@ -581,7 +581,12 @@ class TableRowActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(row, no_rows, axis=0)
+        try:
+            self.code_array.delete(row, no_rows, axis=0)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableColumnActionsMixin(Actions):
@@ -619,7 +624,12 @@ class TableColumnActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(col, no_cols, axis=1)
+        try:
+            self.code_array.delete(col, no_cols, axis=1)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableTabActionsMixin(Actions):
@@ -649,11 +659,17 @@ class TableTabActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(tab, no_tabs, axis=2)
+        try:
+            self.code_array.delete(tab, no_tabs, axis=2)
 
-        # Update TableChoiceIntCtrl
-        shape = self.grid.code_array.shape
-        post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
+            # Update TableChoiceIntCtrl
+            shape = self.grid.code_array.shape
+            post_command_event(self.main_window, self.ResizeGridMsg,
+                               shape=shape)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableActions(TableRowActionsMixin, TableColumnActionsMixin,

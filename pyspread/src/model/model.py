@@ -824,11 +824,14 @@ class DataArray(object):
 
         """
 
+        if not 0 <= axis < len(self.shape):
+            raise ValueError("Axis not in grid dimensions")
+
         if no_to_delete < 0:
             raise ValueError("Cannot delete negative number of rows/cols/...")
 
-        if not 0 <= axis <= len(self.shape):
-            raise ValueError("Axis not in grid dimensions")
+        elif no_to_delete >= self.shape[axis]:
+            raise ValueError("Last row/column/table must not be deleted")
 
         if deletion_point > self.shape[axis] or \
            deletion_point <= -self.shape[axis]:

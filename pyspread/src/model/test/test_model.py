@@ -439,6 +439,12 @@ class TestDataArray(object):
         print self.data_array.shape
         assert self.data_array.shape == (99, 100, 100)
 
+        try:
+            self.data_array.delete(1, 1000, 0)
+            assert False
+        except ValueError:
+            pass
+
     def test_set_row_height(self):
         """Unit test for set_row_height"""
 
