@@ -106,8 +106,8 @@ class Grid(wx.grid.Grid, EventMixin):
         self._bind()
 
         # Update toolbars
-        self.cell_handlers._update_entry_line((0, 0, 0))
-        self.cell_handlers._update_attribute_toolbar((0, 0, 0))
+        self.update_entry_line((0, 0, 0))
+        self.update_attribute_toolbar((0, 0, 0))
 
         # Focus on grid so that typing can start immediately
         self.SetFocus()
@@ -398,6 +398,27 @@ class Grid(wx.grid.Grid, EventMixin):
 
         return top_left_drawn or left_drawn or top_drawn or middle_drawn
 
+    def update_entry_line(self, key):
+        """Updates the entry line"""
+
+        cell_code = self.GetTable().GetValue(*key)
+
+        post_command_event(self, self.EntryLineMsg, text=cell_code)
+
+    def update_attribute_toolbar(self, key):
+        """Updates the attribute toolbar"""
+
+        post_command_event(self, self.ToolbarUpdateMsg, key=key,
+                           attr=self.code_array.cell_attributes[key])
+
+    # Cell selection event handlers
+
+    def set_cursor(self, row, col, tab):
+        """Sets grid cursor to key"""
+
+        self.SetGridCursor(row, col)
+        self._last_selected_cell = row, col, tab
+        return
 
 # End of class Grid
 
@@ -492,6 +513,9 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_attr("textfont", event.font)
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         self.grid.ForceRefresh()
 
         event.Skip()
@@ -500,6 +524,9 @@ class GridCellEventHandlers(object):
         """Cell font size event handler"""
 
         self.grid.actions.set_attr("pointsize", event.size)
+
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
 
         self.grid.ForceRefresh()
 
@@ -522,6 +549,9 @@ class GridCellEventHandlers(object):
         except AttributeError:
             self.grid.actions.toggle_attr("fontweight")
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         self.grid.ForceRefresh()
 
         event.Skip()
@@ -543,6 +573,9 @@ class GridCellEventHandlers(object):
         except AttributeError:
             self.grid.actions.toggle_attr("fontstyle")
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         self.grid.ForceRefresh()
 
         event.Skip()
@@ -551,6 +584,9 @@ class GridCellEventHandlers(object):
         """Cell font underline event handler"""
 
         self.grid.actions.toggle_attr("underline")
+
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
 
         self.grid.ForceRefresh()
 
@@ -561,6 +597,9 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.toggle_attr("strikethrough")
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         self.grid.ForceRefresh()
 
         event.Skip()
@@ -569,6 +608,9 @@ class GridCellEventHandlers(object):
         """Cell frozen event handler"""
 
         self.grid.actions.change_frozen_attr()
+
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
 
         self.grid.ForceRefresh()
 
@@ -579,12 +621,18 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.merge_selected_cells(self.grid.selection)
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         self.grid.ForceRefresh()
 
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
 
         self.grid.actions.toggle_attr("justification")
+
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
 
         self.grid.ForceRefresh()
 
@@ -594,6 +642,9 @@ class GridCellEventHandlers(object):
         """Vertical cell alignment event handler"""
 
         self.grid.actions.toggle_attr("vertical_align")
+
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
 
         self.grid.ForceRefresh()
 
@@ -605,6 +656,9 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_border_attr("borderwidth",
                                           event.width, event.borders)
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         event.Skip()
 
     def OnCellBorderColor(self, event):
@@ -613,12 +667,18 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_border_attr("bordercolor",
                                           event.color, event.borders)
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         event.Skip()
 
     def OnCellBackgroundColor(self, event):
         """Cell background color event handler"""
 
         self.grid.actions.set_attr("bgcolor", event.color)
+
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
 
         self.grid.ForceRefresh()
 
@@ -628,6 +688,9 @@ class GridCellEventHandlers(object):
         """Cell text color event handler"""
 
         self.grid.actions.set_attr("textcolor", event.color)
+
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
 
         self.grid.ForceRefresh()
 
@@ -644,36 +707,20 @@ class GridCellEventHandlers(object):
             post_command_event(self.grid.main_window,
                                self.grid.TextRotationMsg, angle=angle)
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
 
         self.grid.actions.set_attr("angle", event.angle)
 
+        key = self.grid.actions.cursor
+        self.grid.update_attribute_toolbar(key)
+
         self.grid.ForceRefresh()
 
         event.Skip()
-
-    def _update_entry_line(self, key):
-        """Updates the entry line"""
-
-        cell_code = self.grid.GetTable().GetValue(*key)
-
-        post_command_event(self.grid, self.grid.EntryLineMsg, text=cell_code)
-
-    def _update_attribute_toolbar(self, key):
-        """Updates the attribute toolbar"""
-
-        post_command_event(self.grid, self.grid.ToolbarUpdateMsg, key=key,
-                           attr=self.grid.code_array.cell_attributes[key])
-
-    # Cell selection event handlers
-
-    def set_cursor(self, row, col, tab):
-        """Sets grid cursor to key"""
-
-        self.grid.SetGridCursor(row, col)
-        self.grid._last_selected_cell = row, col, tab
-        return
 
     def OnCellSelected(self, event):
         """Cell selection event handler"""
@@ -693,23 +740,23 @@ class GridCellEventHandlers(object):
             top, left, bottom, right = merge_area
             if self.grid._last_selected_cell == (top, left, tab):
                 if row == top + 1:
-                    self.set_cursor(bottom + 1, left, tab)
+                    self.grid.set_cursor(bottom + 1, left, tab)
                     return
                 elif col == left + 1:
-                    self.set_cursor(top, right + 1, tab)
+                    self.grid.set_cursor(top, right + 1, tab)
                     return
             elif (row, col) != (top, left):
-                self.set_cursor(top, left, tab)
+                self.grid.set_cursor(top, left, tab)
                 return
 
         # Redraw cursor
         self.grid.ForceRefresh()
 
         # Update entry line
-        self._update_entry_line(key)
+        self.grid.update_entry_line(key)
 
         # Update attribute toolbar
-        self._update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar(key)
 
         self.grid._last_selected_cell = key
 
