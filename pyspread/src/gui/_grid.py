@@ -513,10 +513,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_attr("textfont", event.font)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -525,10 +525,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_attr("pointsize", event.size)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -536,11 +536,10 @@ class GridCellEventHandlers(object):
         """Cell font bold event handler"""
 
         try:
-            if event.weight == "wxNORMAL":
-                weight = wx.NORMAL
-            elif event.weight == "wxBOLD":
-                weight = wx.BOLD
-            else:
+            try:
+                weight = getattr(wx, event.weight[2:])
+
+            except AttributeError:
                 msg = _("Weight {weight} unknown").format(weight=event.weight)
                 raise ValueError(msg)
 
@@ -549,10 +548,10 @@ class GridCellEventHandlers(object):
         except AttributeError:
             self.grid.actions.toggle_attr("fontweight")
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -560,11 +559,10 @@ class GridCellEventHandlers(object):
         """Cell font italics event handler"""
 
         try:
-            if event.style == "wxNORMAL":
-                style = wx.NORMAL
-            elif event.style == "wxITALIC":
-                style = wx.ITALIC
-            else:
+            try:
+                style = getattr(wx, event.style[2:])
+
+            except AttributeError:
                 msg = _("Style {style} unknown").format(style=event.style)
                 raise ValueError(msg)
 
@@ -573,10 +571,10 @@ class GridCellEventHandlers(object):
         except AttributeError:
             self.grid.actions.toggle_attr("fontstyle")
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -585,10 +583,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.toggle_attr("underline")
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -597,10 +595,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.toggle_attr("strikethrough")
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -609,10 +607,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.change_frozen_attr()
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -621,20 +619,20 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.merge_selected_cells(self.grid.selection)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
 
         self.grid.actions.toggle_attr("justification")
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -643,10 +641,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.toggle_attr("vertical_align")
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -655,6 +653,8 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_border_attr("borderwidth",
                                           event.width, event.borders)
+
+        self.grid.ForceRefresh()
 
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
@@ -667,6 +667,8 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_border_attr("bordercolor",
                                           event.color, event.borders)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
 
@@ -677,10 +679,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_attr("bgcolor", event.color)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -689,10 +691,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_attr("textcolor", event.color)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
@@ -707,6 +709,8 @@ class GridCellEventHandlers(object):
             post_command_event(self.grid.main_window,
                                self.grid.TextRotationMsg, angle=angle)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
 
@@ -715,10 +719,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_attr("angle", event.angle)
 
+        self.grid.ForceRefresh()
+
         key = self.grid.actions.cursor
         self.grid.update_attribute_toolbar(key)
-
-        self.grid.ForceRefresh()
 
         event.Skip()
 
