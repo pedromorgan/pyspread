@@ -903,7 +903,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         # Update TableChoiceIntCtrl
         post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
 
-        # Clear cell result cache
+        # Clear caches
+        self.code_array.unredo.reset()
         self.code_array.result_cache.clear()
 
 
