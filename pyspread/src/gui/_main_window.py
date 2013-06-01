@@ -1010,6 +1010,10 @@ class MainWindowEventHandlers(EventMixin):
                                self.main_window.FontItalicsMsg,
                                style=font.GetStyleString())
 
+            wx.Yield()
+
+            self.main_window.grid.update_attribute_toolbar()
+
     def OnTextColorDialog(self, event):
         """Event handler for launching text color dialog"""
 

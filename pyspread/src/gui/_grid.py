@@ -106,8 +106,8 @@ class Grid(wx.grid.Grid, EventMixin):
         self._bind()
 
         # Update toolbars
-        self.update_entry_line((0, 0, 0))
-        self.update_attribute_toolbar((0, 0, 0))
+        self.update_entry_line()
+        self.update_attribute_toolbar()
 
         # Focus on grid so that typing can start immediately
         self.SetFocus()
@@ -398,15 +398,35 @@ class Grid(wx.grid.Grid, EventMixin):
 
         return top_left_drawn or left_drawn or top_drawn or middle_drawn
 
-    def update_entry_line(self, key):
-        """Updates the entry line"""
+    def update_entry_line(self, key=None):
+        """Updates the entry line
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer, defaults to current cell
+        \tCell to which code the entry line is updated
+
+        """
+
+        if key is None:
+            key = self.actions.cursor
 
         cell_code = self.GetTable().GetValue(*key)
 
         post_command_event(self, self.EntryLineMsg, text=cell_code)
 
-    def update_attribute_toolbar(self, key):
-        """Updates the attribute toolbar"""
+    def update_attribute_toolbar(self, key=None):
+        """Updates the attribute toolbar
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer, defaults to current cell
+        \tCell to which attributes the attributes toolbar is updated
+
+        """
+
+        if key is None:
+            key = self.actions.cursor
 
         post_command_event(self, self.ToolbarUpdateMsg, key=key,
                            attr=self.code_array.cell_attributes[key])
@@ -515,8 +535,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -527,8 +546,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -550,8 +568,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -573,8 +590,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -585,8 +601,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -597,8 +612,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -609,8 +623,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -621,8 +634,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
@@ -631,8 +643,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -643,8 +654,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -656,8 +666,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -669,8 +678,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -681,8 +689,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -693,8 +700,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -711,8 +717,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
@@ -721,8 +726,7 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
-        key = self.grid.actions.cursor
-        self.grid.update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 

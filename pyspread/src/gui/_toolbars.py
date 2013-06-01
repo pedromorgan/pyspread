@@ -569,7 +569,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         """
 
-        toggle_state = font_weight == wx.FONTWEIGHT_BOLD
+        toggle_state = font_weight & wx.FONTWEIGHT_BOLD == wx.FONTWEIGHT_BOLD
 
         self.ToggleTool(wx.FONTFLAG_BOLD, toggle_state)
 
@@ -584,7 +584,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         """
 
-        toggle_state = font_style == wx.FONTSTYLE_ITALIC
+        toggle_state = font_style & wx.FONTSTYLE_ITALIC == wx.FONTSTYLE_ITALIC
 
         self.ToggleTool(wx.FONTFLAG_ITALIC, toggle_state)
 

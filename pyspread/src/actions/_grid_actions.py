@@ -950,6 +950,10 @@ class GridActions(Actions):
         _grid_table = GridTable(self.grid, self.grid.code_array)
         self.grid.SetTable(_grid_table, True)
 
+        # Update toolbars
+        self.grid.update_entry_line()
+        self.grid.update_attribute_toolbar()
+
     # Zoom actions
 
     def _zoom_rows(self, zoom):
