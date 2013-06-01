@@ -1080,11 +1080,17 @@ class GridEventHandlers(object):
     def OnInsertRows(self, event):
         """Insert the maximum of 1 and the number of selected rows"""
 
-        no_rows, _ = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
+        no_rows, _ = self._get_no_rowscols(bbox)
 
-        cursor = self.grid.actions.cursor
+        if bbox is None:
+            # Insert rows at cursor
+            ins_point = self.grid.actions.cursor[0] + 1
+        else:
+            # Insert at lower edge of bounding box
+            ins_point = bbox[1][0] + 1
 
-        self.grid.actions.insert_rows(cursor[0], no_rows)
+        self.grid.actions.insert_rows(ins_point, no_rows)
 
         self.grid.GetTable().ResetView()
 
@@ -1093,11 +1099,17 @@ class GridEventHandlers(object):
     def OnInsertCols(self, event):
         """Inserts the maximum of 1 and the number of selected columns"""
 
-        _, no_cols = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
+        _, no_cols = self._get_no_rowscols(bbox)
 
-        cursor = self.grid.actions.cursor
+        if bbox is None:
+            # Insert rows at cursor
+            ins_point = self.grid.actions.cursor[1] + 1
+        else:
+            # Insert at right edge of bounding box
+            ins_point = bbox[1][1] + 1
 
-        self.grid.actions.insert_cols(cursor[1], no_cols)
+        self.grid.actions.insert_cols(ins_point, no_cols)
 
         self.grid.GetTable().ResetView()
 
