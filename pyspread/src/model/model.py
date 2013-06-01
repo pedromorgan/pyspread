@@ -507,18 +507,29 @@ class DataArray(object):
 
         return self.dict_grid.keys()
 
-    def pop(self, key):
-        """Pops dict_grid with undo and redo support"""
+    def pop(self, key, mark_unredo=True):
+        """Pops dict_grid with undo and redo support
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer
+        \tCell key that shall be popped
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
 
         # UnRedo support
 
         try:
-            undo_operation = (self.__setitem__, [key, self.dict_grid[key]])
-            redo_operation = (self.pop, [key])
+            undo_operation = (self.__setitem__, [key, self.dict_grid[key],
+                                                 mark_unredo])
+            redo_operation = (self.pop, [key, mark_unredo])
 
             self.unredo.append(undo_operation, redo_operation)
 
-            self.unredo.mark()
+            if mark_unredo:
+                self.unredo.mark()
 
         except KeyError:
             # If key not present then unredo is not necessary
@@ -535,8 +546,17 @@ class DataArray(object):
 
         return self.dict_grid.shape
 
-    def _set_shape(self, shape):
-        """Deletes all cells beyond new shape and sets dict_grid shape"""
+    def _set_shape(self, shape, mark_unredo=True):
+        """Deletes all cells beyond new shape and sets dict_grid shape
+
+        Parameters
+        ----------
+        shape: 3-tuple of Integer
+        \tTarget shape for grid
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
 
         # Delete each cell that is beyond new borders
 
@@ -555,12 +575,13 @@ class DataArray(object):
 
         # UnRedo support
 
-        undo_operation = (setattr, [self.dict_grid, "shape", old_shape])
-        redo_operation = (setattr, [self.dict_grid, "shape", shape])
+        undo_operation = (self._set_shape, [old_shape, mark_unredo])
+        redo_operation = (self._set_shape, [shape, mark_unredo])
 
         self.unredo.append(undo_operation, redo_operation)
 
-        self.unredo.mark()
+        if mark_unredo:
+            self.unredo.mark()
 
         # End UnRedo support
 
@@ -614,7 +635,18 @@ class DataArray(object):
         return self.dict_grid[key]
 
     def __setitem__(self, key, value, mark_unredo=True):
-        """Accepts index and slice keys"""
+        """Accepts index and slice keys
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer or Slice object
+        \tCell key(s) that shall be set
+        value: Object (should be Unicode or similar)
+        \tCode for cell(s) to be set
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
 
         single_keys_per_dim = []
 
@@ -713,13 +745,13 @@ class DataArray(object):
 
                 break
 
-    def _adjust_shape(self, amount, axis):
+    def _adjust_shape(self, amount, axis, mark_unredo=True):
         """Changes shape along axis by amount"""
 
         new_shape = list(self.shape)
         new_shape[axis] += amount
 
-        self.shape = tuple(new_shape)
+        self._set_shape(tuple(new_shape), mark_unredo=mark_unredo)
 
     def _set_cell_attributes(self, value):
         """Setter for cell_atributes"""
@@ -803,19 +835,21 @@ class DataArray(object):
 
         new_keys = {}
 
-        for key in copy(self.dict_grid):
+        for key in self.dict_grid.keys():
             if key[axis] >= insertion_point:
                 new_key = list(key)
                 new_key[axis] += no_to_insert
 
-                new_keys[tuple(new_key)] = self.pop(key)
+                new_keys[tuple(new_key)] = self.pop(key, mark_unredo=False)
 
-        self._adjust_shape(no_to_insert, axis)
+        self._adjust_shape(no_to_insert, axis, mark_unredo=False)
 
         for key in new_keys:
-            self[key] = new_keys[key]
+            self.__setitem__(key, new_keys[key], mark_unredo=False)
 
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis)
+
+        self.unredo.mark()
 
     def delete(self, deletion_point, no_to_delete, axis):
         """Deletes no_to_delete rows/cols/... starting with deletion_point
@@ -843,22 +877,25 @@ class DataArray(object):
         # Note that the loop goes over a list that copies all dict keys
         for key in self.dict_grid.keys():
             if deletion_point <= key[axis] < deletion_point + no_to_delete:
-                self.pop(key)
+                self.pop(key, mark_unredo=False)
 
             elif key[axis] >= deletion_point + no_to_delete:
                 new_key = list(key)
                 new_key[axis] -= no_to_delete
 
-                new_key_values[tuple(new_key)] = self.pop(key)
+                new_key_values[tuple(new_key)] = \
+                    self.pop(key, mark_unredo=False)
 
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis)
 
-        self._adjust_shape(-no_to_delete, axis)
+        self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
 
         # Now re-insert moved keys
 
         for key in new_key_values:
-            self[key] = new_key_values[key]
+            self.__setitem__(key, new_key_values[key], mark_unredo=False)
+
+        self.unredo.mark()
 
     def set_row_height(self, row, tab, height):
         """Sets row height"""
