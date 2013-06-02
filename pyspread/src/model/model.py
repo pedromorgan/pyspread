@@ -811,6 +811,8 @@ class DataArray(object):
 
         self.unredo.append(undo_operation, redo_operation)
 
+        self.unredo.mark()
+
     def insert(self, insertion_point, no_to_insert, axis):
         """Inserts no_to_insert rows/cols/tabs/... before insertion_point
 
@@ -918,6 +920,7 @@ class DataArray(object):
         redo_operation = (self.set_row_height, [row, tab, height])
 
         self.unredo.append(undo_operation, redo_operation)
+
         self.unredo.mark()
 
     def set_col_width(self, col, tab, width):
@@ -941,6 +944,7 @@ class DataArray(object):
         redo_operation = (self.set_col_width, [col, tab, width])
 
         self.unredo.append(undo_operation, redo_operation)
+
         self.unredo.mark()
 
     # Element access via call
@@ -960,11 +964,6 @@ class CodeArray(DataArray):
     This class represents layer 3 of the model.
 
     """
-
-    operators = (
-        "+", "-", "*", "**", "/", "//", "%", "<<", ">>", "&", "|", "^", "~",
-        "<", ">", "<=", ">=", "==", "!=", "<>",
-    )
 
     # Cache for results from __getitem__ calls
     result_cache = {}
