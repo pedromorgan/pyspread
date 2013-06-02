@@ -1210,6 +1210,8 @@ class GridEventHandlers(object):
         self.grid.actions.undo()
         self.grid.GetTable().ResetView()
         self.grid.Refresh()
+        # Reset row heights and column widths by zooming
+        self.grid.actions.zoom()
 
     def OnRedo(self, event):
         """Calls the grid redo method"""
@@ -1217,5 +1219,7 @@ class GridEventHandlers(object):
         self.grid.actions.redo()
         self.grid.GetTable().ResetView()
         self.grid.Refresh()
+        # Reset row heights and column widths by zooming
+        self.grid.actions.zoom()
 
 # End of class GridEventHandlers

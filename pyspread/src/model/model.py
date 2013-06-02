@@ -918,6 +918,7 @@ class DataArray(object):
         redo_operation = (self.set_row_height, [row, tab, height])
 
         self.unredo.append(undo_operation, redo_operation)
+        self.unredo.mark()
 
     def set_col_width(self, col, tab, width):
         """Sets column width"""
@@ -940,6 +941,7 @@ class DataArray(object):
         redo_operation = (self.set_col_width, [col, tab, width])
 
         self.unredo.append(undo_operation, redo_operation)
+        self.unredo.mark()
 
     # Element access via call
 
