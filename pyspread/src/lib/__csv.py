@@ -219,6 +219,10 @@ class Digest(object):
             if type(obj) is types.UnicodeType:
                 return obj
 
+            elif isinstance(obj, types.StringType):
+                # Try UTF-8
+                return obj.decode('utf-8')
+
             if obj is None:
                 return u""
 
@@ -372,7 +376,7 @@ class CsvInterface(StatusBarEventMixin):
         for j, value in enumerate(line):
             if self.first_line:
                 digest_key = None
-                digest = lambda x: x
+                digest = lambda x: repr(x)
             else:
                 try:
                     digest_key = digest_types[j]
