@@ -72,7 +72,7 @@ class UnRedo(object):
     def mark(self):
         """Inserts a mark in undolist and empties redolist"""
 
-        if self.undolist != [] and self.undolist[-1] != "MARK":
+        if self.undolist and self.undolist[-1] != "MARK":
             self.undolist.append("MARK")
 
     def undo(self):
@@ -80,13 +80,13 @@ class UnRedo(object):
 
         self.active = True
 
-        while self.undolist != [] and self.undolist[-1] == "MARK":
+        while self.undolist and self.undolist[-1] == "MARK":
             self.undolist.pop()
 
-        if self.redolist != [] and self.redolist[-1] != "MARK":
+        if self.redolist and self.redolist[-1] != "MARK":
             self.redolist.append("MARK")
 
-        while self.undolist != []:
+        while self.undolist:
             step = self.undolist.pop()
             if step == "MARK":
                 break
@@ -103,7 +103,7 @@ class UnRedo(object):
         while self.redolist and self.redolist[-1] == "MARK":
             self.redolist.pop()
 
-        if self.undolist:
+        if self.undolist and self.undolist[-1] != "MARK":
             self.undolist.append("MARK")
 
         while self.redolist:
