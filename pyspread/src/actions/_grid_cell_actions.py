@@ -191,9 +191,10 @@ class CellActions(Actions):
 
         if selection is not None:
             cell_attributes = self.code_array.cell_attributes
-            cell_attributes.undoable_append((selection, table, attr))
+            cell_attributes.undoable_append((selection, table, attr),
+                                            mark_unredo=False)
 
-    def set_attr(self, attr, value, selection=None):
+    def set_attr(self, attr, value, selection=None, mark_unredo=False):
         """Sets attr of current selection to value"""
 
         if selection is None:
@@ -208,7 +209,10 @@ class CellActions(Actions):
         table = self.grid.current_table
 
         # Change model
-        self.grid.actions._set_cell_attr(selection, table, attrs)
+        self._set_cell_attr(selection, table, attrs)
+
+        if mark_unredo:
+            self.code_array.unredo.mark()
 
     def set_border_attr(self, attr, value, borders):
         """Sets border attribute by adjusting selection to borders
@@ -272,6 +276,8 @@ class CellActions(Actions):
                                           [bbox_lr], [], [], [])
                 self.set_attr(attr + "_right", value, adj_selection)
 
+        self.code_array.unredo.mark()
+
     def toggle_attr(self, attr):
         """Toggles an attribute attr for current selection"""
 
@@ -289,6 +295,8 @@ class CellActions(Actions):
         # Set the toggled value
 
         self.set_attr(attr, value)
+
+        self.code_array.unredo.mark()
 
     # Only cell attributes that can be toggled are contained
 
@@ -330,7 +338,7 @@ class CellActions(Actions):
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
         attr = {"merge_area": None}
 
-        self.grid.actions._set_cell_attr(selection, tab, attr)
+        self._set_cell_attr(selection, tab, attr)
 
     def merge(self, merge_area, tab):
         """Merges top left cell with all cells until bottom_right"""
@@ -339,7 +347,7 @@ class CellActions(Actions):
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
         attr = {"merge_area": merge_area}
 
-        self.grid.actions._set_cell_attr(selection, tab, attr)
+        self._set_cell_attr(selection, tab, attr)
 
     def merge_selected_cells(self, selection):
         """Merges or unmerges cells that are in the selection bounding box

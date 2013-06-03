@@ -117,15 +117,16 @@ class CellAttributes(list):
 
     _attr_cache = {}
 
-    def undoable_append(self, value):
+    def undoable_append(self, value, mark_unredo=True):
         """Appends item to list and provides undo and redo functionality"""
 
         undo_operation = (self.pop, [])
-        redo_operation = (self.undoable_append, [value])
+        redo_operation = (self.undoable_append, [value, mark_unredo])
 
         self.unredo.append(undo_operation, redo_operation)
 
-        self.unredo.mark()
+        if mark_unredo:
+            self.unredo.mark()
 
         self.append(value)
         self._attr_cache.clear()

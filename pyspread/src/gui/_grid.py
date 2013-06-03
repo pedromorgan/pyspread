@@ -722,11 +722,12 @@ class GridCellEventHandlers(object):
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
 
-        self.grid.actions.set_attr("angle", event.angle)
+        self.grid.actions.set_attr("angle", event.angle, mark_unredo=True)
 
         self.grid.ForceRefresh()
 
         self.grid.update_attribute_toolbar()
+        wx.Yield()
 
         event.Skip()
 
@@ -1212,6 +1213,9 @@ class GridEventHandlers(object):
         self.grid.Refresh()
         # Reset row heights and column widths by zooming
         self.grid.actions.zoom()
+        # Update toolbars
+        self.grid.update_entry_line()
+        self.grid.update_attribute_toolbar()
 
     def OnRedo(self, event):
         """Calls the grid redo method"""
@@ -1221,5 +1225,8 @@ class GridEventHandlers(object):
         self.grid.Refresh()
         # Reset row heights and column widths by zooming
         self.grid.actions.zoom()
+        # Update toolbars
+        self.grid.update_entry_line()
+        self.grid.update_attribute_toolbar()
 
 # End of class GridEventHandlers
