@@ -65,13 +65,16 @@ class CellActions(Actions):
         # Set cell code
         self.grid.code_array[key] = code
 
-    def delete_cell(self,  key):
+    def delete_cell(self,  key, mark_unredo=True):
         """Deletes key cell"""
 
         try:
-            self.code_array.pop(key)
+            self.code_array.pop(key, mark_unredo=mark_unredo)
+
         except KeyError:
             pass
+
+        self.grid.code_array.result_cache.clear()
 
     def _get_absolute_reference(self, ref_key):
         """Returns absolute reference code for key."""

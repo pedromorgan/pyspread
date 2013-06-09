@@ -842,12 +842,15 @@ class GridEventHandlers(object):
             if keycode == 127:
                 # Del pressed
 
-                # Delete cell at cursor
-                cursor = self.grid.actions.cursor
-                self.grid.actions.delete_cell(cursor)
+                # Is grid selection present? --> Delete current cell
+                if self.grid.IsSelection():
+                    # Delete selection
+                    self.grid.actions.delete_selection()
 
-                # Delete selection
-                self.grid.actions.delete_selection()
+                else:
+                    # Delete cell at cursor
+                    cursor = self.grid.actions.cursor
+                    self.grid.actions.delete_cell(cursor)
 
                 # Update grid
                 self.grid.ForceRefresh()

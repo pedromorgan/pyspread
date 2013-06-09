@@ -1221,7 +1221,9 @@ class SelectionActions(Actions):
             [key for key in self.grid.code_array if key[:2] in selection]
 
         for key in del_keys:
-            self.grid.actions.delete_cell(key)
+            self.grid.actions.delete_cell(key, mark_unredo=False)
+
+        self.grid.code_array.unredo.mark()
 
         self.grid.code_array.result_cache.clear()
 
