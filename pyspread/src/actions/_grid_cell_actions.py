@@ -242,17 +242,19 @@ class CellActions(Actions):
         if "inner" in borders:
             if "top" in borders:
                 adj_selection = selection + (-1, 0)
-                self.set_attr(attr + "_bottom", value, adj_selection)
+                self.set_attr(attr + "_bottom", value, adj_selection,
+                              mark_unredo=False)
 
             if "bottom" in borders:
-                self.set_attr(attr + "_bottom", value)
+                self.set_attr(attr + "_bottom", value, mark_unredo=False)
 
             if "left" in borders:
                 adj_selection = selection + (0, -1)
-                self.set_attr(attr + "_right", value, adj_selection)
+                self.set_attr(attr + "_right", value, adj_selection,
+                              mark_unredo=False)
 
             if "right" in borders:
-                self.set_attr(attr + "_right", value)
+                self.set_attr(attr + "_right", value, mark_unredo=False)
 
         else:
             # Adjust selection so that only bounding box edge is in selection
@@ -261,23 +263,27 @@ class CellActions(Actions):
                 adj_selection = Selection([bbox_tl],
                                           [(bbox_tl[0], bbox_lr[1])],
                                           [], [], []) + (-1, 0)
-                self.set_attr(attr + "_bottom", value, adj_selection)
+                self.set_attr(attr + "_bottom", value, adj_selection,
+                              mark_unredo=False)
 
             if "bottom" in borders:
                 adj_selection = Selection([(bbox_lr[0], bbox_tl[1])],
                                           [bbox_lr], [], [], [])
-                self.set_attr(attr + "_bottom", value, adj_selection)
+                self.set_attr(attr + "_bottom", value, adj_selection,
+                              mark_unredo=False)
 
             if "left" in borders:
                 adj_selection = Selection([bbox_tl],
                                           [(bbox_lr[0], bbox_tl[1])],
                                           [], [], []) + (0, -1)
-                self.set_attr(attr + "_right", value, adj_selection)
+                self.set_attr(attr + "_right", value, adj_selection,
+                              mark_unredo=False)
 
             if "right" in borders:
                 adj_selection = Selection([(bbox_tl[0], bbox_lr[1])],
                                           [bbox_lr], [], [], [])
-                self.set_attr(attr + "_right", value, adj_selection)
+                self.set_attr(attr + "_right", value, adj_selection,
+                              mark_unredo=False)
 
         self.code_array.unredo.mark()
 
@@ -297,7 +303,7 @@ class CellActions(Actions):
 
         # Set the toggled value
 
-        self.set_attr(attr, value)
+        self.set_attr(attr, value, mark_unredo=False)
 
         self.code_array.unredo.mark()
 
