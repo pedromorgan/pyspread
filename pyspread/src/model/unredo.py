@@ -88,9 +88,9 @@ class UnRedo(object):
 
         while self.undolist:
             step = self.undolist.pop()
+            self.redolist.append(step)
             if step == "MARK":
                 break
-            self.redolist.append(step)
             step[0](*step[1])
 
         self.active = False
