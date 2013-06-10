@@ -1000,7 +1000,7 @@ class GridEventHandlers(object):
     def OnShowFindReplace(self, event):
         """Calls the find-replace dialog"""
 
-        data = wx.FindReplaceData()
+        data = wx.FindReplaceData(wx.FR_DOWN)
         dlg = wx.FindReplaceDialog(self.grid, data, "Find & Replace",
                                    wx.FR_REPLACEDIALOG)
         dlg.data = data  # save a reference to data
