@@ -158,8 +158,8 @@ class ExchangeActions(Actions):
 
         # Export CSV file
 
-        csv_interface = CsvInterface(filepath, dialect, digest_types,
-                                     has_header)
+        csv_interface = CsvInterface(self.main_window, filepath, dialect,
+                                     digest_types, has_header)
 
         try:
             csv_interface.write(data)
