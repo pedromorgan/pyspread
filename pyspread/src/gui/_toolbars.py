@@ -69,7 +69,7 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
     def __init__(self, parent, *args, **kwargs):
 
         # Toolbars should be able to overflow
-        kwargs["agwStyle"] = aui.AUI_TB_OVERFLOW
+        kwargs["agwStyle"] = aui.AUI_TB_OVERFLOW | aui.AUI_TB_GRIPPER
 
         aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
@@ -79,6 +79,8 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
         self.label2id = {}
 
         self.parent = parent
+
+        self.SetGripperVisible(True)
 
     def add_tools(self):
         """Adds tools from self.toolbardata to self"""

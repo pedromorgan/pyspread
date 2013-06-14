@@ -194,20 +194,20 @@ class MainWindow(wx.Frame, EventMixin):
 
         self._mgr.AddPane(self.main_toolbar, aui.AuiPaneInfo().
                           Name("main_window_toolbar").
-                          Caption(_("Main Toolbar")).
+                          Caption(_("Main toolbar")).
                           ToolbarPane().Top().Row(0))
 
         self._mgr.AddPane(self.find_toolbar, aui.AuiPaneInfo().
-                          Name("find_toolbar").Caption(_("Find")).
+                          Name("find_toolbar").Caption(_("Find toolbar")).
                           ToolbarPane().Top().Row(0))
 
         self._mgr.AddPane(self.attributes_toolbar, aui.AuiPaneInfo().
                           Name("attributes_toolbar").
-                          Caption(_("Cell Attributes")).
+                          Caption(_("Format toolbar")).
                           ToolbarPane().Top().Row(1))
 
         self._mgr.AddPane(self.macro_toolbar, aui.AuiPaneInfo().
-                          Name("macro_toolbar").Caption(_("Macro Toolbar")).
+                          Name("macro_toolbar").Caption(_("Macro toolbar")).
                           Gripper(True).ToolbarPane().Top().Row(1))
 
         self._mgr.AddPane(self.entry_line_panel, aui.AuiPaneInfo().
@@ -269,6 +269,7 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnFindToolbarToggle)
         self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
+        self.Bind(aui.EVT_AUI_PANE_CLOSE, handlers.OnPaneClose)
 
         # File events
 
@@ -490,46 +491,72 @@ class MainWindowEventHandlers(EventMixin):
     def OnMainToolbarToggle(self, event):
         """Main window toolbar toggle event handler"""
 
-        main_toolbar = self.main_window._mgr.GetPane("main_window_toolbar")
+        self.main_window.main_toolbar.SetGripperVisible(True)
+        main_toolbar_info = \
+            self.main_window._mgr.GetPane("main_window_toolbar")
 
-        self._toggle_pane(main_toolbar)
+        self._toggle_pane(main_toolbar_info)
 
         event.Skip()
 
     def OnMacroToolbarToggle(self, event):
         """Macro toolbar toggle event handler"""
 
-        macro_toolbar = self.main_window._mgr.GetPane("macro_toolbar")
+        self.main_window.macro_toolbar.SetGripperVisible(True)
+        macro_toolbar_info = self.main_window._mgr.GetPane("macro_toolbar")
 
-        self._toggle_pane(macro_toolbar)
+        self._toggle_pane(macro_toolbar_info)
 
         event.Skip()
 
     def OnAttributesToolbarToggle(self, event):
         """Format toolbar toggle event handler"""
 
-        attributes_toolbar = \
+        self.main_window.attributes_toolbar.SetGripperVisible(True)
+        attributes_toolbar_info = \
             self.main_window._mgr.GetPane("attributes_toolbar")
 
-        self._toggle_pane(attributes_toolbar)
+        self._toggle_pane(attributes_toolbar_info)
 
         event.Skip()
 
     def OnFindToolbarToggle(self, event):
         """Search toolbar toggle event handler"""
 
-        find_toolbar = self.main_window._mgr.GetPane("find_toolbar")
+        self.main_window.find_toolbar.SetGripperVisible(True)
 
-        self._toggle_pane(find_toolbar)
+        find_toolbar_info = self.main_window._mgr.GetPane("find_toolbar")
+
+        self._toggle_pane(find_toolbar_info)
 
         event.Skip()
 
     def OnEntryLineToggle(self, event):
         """Entry line toggle event handler"""
 
-        entry_line_panel = self.main_window._mgr.GetPane("entry_line_panel")
+        entry_line_panel_info = \
+            self.main_window._mgr.GetPane("entry_line_panel")
 
-        self._toggle_pane(entry_line_panel)
+        self._toggle_pane(entry_line_panel_info)
+
+        event.Skip()
+
+    def OnPaneClose(self, event):
+        """Pane close toggle event handler (via close button)"""
+
+        toggle_label = event.GetPane().caption
+
+        # Get menu item to toggle
+        menubar = self.main_window.menubar
+        toggle_id = menubar.FindMenuItem(_("View"), toggle_label)
+        toggle_item = menubar.FindItemById(toggle_id)
+
+        # Adjust toggle to pane visibility
+        toggle_item.Check(False)
+
+        menubar.UpdateMenus()
+
+        self.main_window._mgr.Update()
 
         event.Skip()
 
