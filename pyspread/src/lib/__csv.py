@@ -422,7 +422,7 @@ class CsvInterface(StatusBarEventMixin):
         csv_writer = csv.writer(csvfile, self.dialect)
 
         for line in iterable:
-            csv_writer.writerow(line)
+            csv_writer.writerow(list(line))
 
         csvfile.close()
 

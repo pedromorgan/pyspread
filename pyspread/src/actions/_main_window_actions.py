@@ -43,6 +43,7 @@ Provides:
 import ast
 import base64
 import bz2
+from itertools import tee
 import os
 
 import wx
@@ -131,7 +132,7 @@ class ExchangeActions(Actions):
 
             self.main_window.interfaces.display_warning(msg, short_msg)
 
-    def _export_csv(self, filepath, data):
+    def _export_csv(self, filepath, data, preview_data):
         """CSV export of code_array results
 
         Parameters
@@ -146,7 +147,8 @@ class ExchangeActions(Actions):
 
         # Get csv info
 
-        csv_info = self.main_window.interfaces.get_csv_export_info(data)
+        csv_info = \
+            self.main_window.interfaces.get_csv_export_info(preview_data)
 
         if csv_info is None:
             return
@@ -203,7 +205,7 @@ class ExchangeActions(Actions):
         finally:
             outfile.close()
 
-    def export_file(self, filepath, filterindex, data):
+    def export_file(self, filepath, filterindex, data, preview_data=None):
         """Export data for other applications
 
         Parameters
@@ -221,7 +223,7 @@ class ExchangeActions(Actions):
         formats = ["csv", "svg", "eps", "ps", "pdf", "png"]
 
         if filterindex == 0:
-            self._export_csv(filepath, data)
+            self._export_csv(filepath, data, preview_data=preview_data)
 
         elif filterindex >= 1:
             self._export_figure(filepath, data, formats[filterindex])

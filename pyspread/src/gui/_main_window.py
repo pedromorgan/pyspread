@@ -801,7 +801,18 @@ class MainWindowEventHandlers(EventMixin):
         code_array = self.main_window.grid.code_array
         tab = self.main_window.grid.current_table
 
-        data = code_array[top:bottom + 1, left:right + 1, tab]
+        __top = 0 if top is None else top
+        __bottom = code_array.shape[0] if bottom is None else bottom + 1
+        __left = 0 if left is None else left
+        __right = code_array.shape[1] if right is None else right + 1
+
+        def data_gen(top, bottom, left, right):
+            for row in xrange(top, bottom):
+                yield (code_array[row, col, tab]
+                       for col in xrange(left, right))
+
+        data = data_gen(__top, __bottom, __left, __right)
+        preview_data = data_gen(__top, __bottom, __left, __right)
 
         # Get target filepath from user
 
@@ -832,7 +843,8 @@ class MainWindowEventHandlers(EventMixin):
         # Export file
         # -----------
 
-        self.main_window.actions.export_file(path, filterindex, data)
+        self.main_window.actions.export_file(path, filterindex, data,
+                                             preview_data)
 
     def OnApprove(self, event):
         """File approve event handler"""
