@@ -65,6 +65,7 @@ except ImportError:
     GPG_PRESENT = False
 
 from src.lib.selection import Selection
+from src.lib.fileio import Bz2AOpen
 
 from src.actions._main_window_actions import Actions
 from src.actions._grid_cell_actions import CellActions
@@ -208,18 +209,6 @@ class FileActions(Actions):
         for line2 in infile:
             return line2.strip()
 
-    def _abort_open(self, filepath, infile):
-        """Aborts file open"""
-
-        statustext = _("File loading aborted.")
-        post_command_event(self.main_window, self.StatusBarMsg,
-                           text=statustext)
-
-        infile.close()
-
-        self.opening = False
-        self.need_abort = False
-
     def clear(self, shape=None):
         """Empties grid and sets shape to shape
 
@@ -269,80 +258,69 @@ class FileActions(Actions):
 
         filepath = event.attr["filepath"]
 
+        # Content parsers
+
+        dict_grid = self.code_array.dict_grid
+
+        section_readers = {
+            "[shape]": dict_grid.parse_to_shape,
+            "[grid]": dict_grid.parse_to_grid,
+            "[attributes]": dict_grid.parse_to_attribute,
+            "[row_heights]": dict_grid.parse_to_height,
+            "[col_widths]": dict_grid.parse_to_width,
+            "[macros]": dict_grid.parse_to_macro,
+        }
+
         # Set states for file open
 
         self.opening = True
-        self.need_abort = False
 
         try:
-            infile = bz2.BZ2File(filepath, "r")
+            with Bz2AOpen(filepath, "r", main_window=self.main_window) \
+                    as infile:
+                # Make loading safe
+                self.approve(filepath)
 
-        except IOError:
-            txt = _("Error opening file {filepath}.").format(filepath=filepath)
-            post_command_event(self.main_window, self.StatusBarMsg, text=txt)
+                # Abort if file version not supported
 
-            return False
-
-        # Make loading safe
-        self.approve(filepath)
-
-        # Abort if file version not supported
-        try:
-            version = self._get_file_version(infile)
-            if version != "0.1":
-                text = _("File version {version} unsupported (not 0.1).")
-                text = text.format(version=version)
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=text)
-
-                return False
-
-        except (IOError, ValueError), errortext:
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=errortext)
-
-        # Parse content
-
-        def parser(*args):
-            """Dummy parser. Raises ValueError"""
-
-            raise ValueError(_("No section parser present."))
-
-        section_readers = {
-            "[shape]": self.code_array.dict_grid.parse_to_shape,
-            "[grid]": self.code_array.dict_grid.parse_to_grid,
-            "[attributes]": self.code_array.dict_grid.parse_to_attribute,
-            "[row_heights]": self.code_array.dict_grid.parse_to_height,
-            "[col_widths]": self.code_array.dict_grid.parse_to_width,
-            "[macros]": self.code_array.dict_grid.parse_to_macro,
-        }
-
-        # Disable undo
-        self.grid.code_array.unredo.active = True
-
-        try:
-            for cycle, line in enumerate(infile):
-                stripped_line = line.decode("utf-8").strip()
-                if stripped_line:
-                    # There is content in this line
-                    if stripped_line in section_readers:
-                        # Switch parser
-                        parser = section_readers[stripped_line]
-                    else:
-                        # Parse line
-                        parser(line)
-                        if parser == self.code_array.dict_grid.parse_to_shape:
-                            # Empty grid
-                            self.clear(self.code_array.shape)
-
-                            self.grid.GetTable().ResetView()
-                else:
-                    pass
-
-                # Enable abort during long saves
-                if self._is_aborted(cycle, "Loading file... "):
-                    self._abort_open(filepath, infile)
+                version = self._get_file_version(infile)
+                if version != "0.1":
+                    text = _("File version {version} unsupported (not 0.1).")
+                    text = text.format(version=version)
+                    post_command_event(self.main_window, self.StatusBarMsg,
+                                       text=text)
                     return False
+
+                # Disable undo
+                self.grid.code_array.unredo.active = True
+
+                for line in infile:
+                    stripped_line = line.decode("utf-8").strip()
+                    if stripped_line:
+                        # There is content in this line
+                        if stripped_line in section_readers:
+                            # Switch parser
+                            parser = section_readers[stripped_line]
+                        else:
+                            # Parse line
+                            parser(line)
+                            if parser == dict_grid.parse_to_shape:
+                                # Empty grid
+                                self.clear(self.code_array.shape)
+
+                                self.grid.GetTable().ResetView()
+
+                # Execute macros
+                self.main_window.actions.execute_macros()
+
+                # Enable undo again
+                self.grid.code_array.unredo.active = False
+
+                self.grid.GetTable().ResetView()
+                self.grid.ForceRefresh()
+
+                # File sucessfully opened. Approve again to show status.
+                self.approve(filepath)
 
         except IOError:
             txt = _("Error opening file {filepath}.").format(filepath=filepath)
@@ -354,20 +332,8 @@ class FileActions(Actions):
             # Normally on empty grids
             pass
 
-        infile.close()
-        self.opening = False
-
-        # Execute macros
-        self.main_window.actions.execute_macros()
-
-        # Enable undo again
-        self.grid.code_array.unredo.active = False
-
-        self.grid.GetTable().ResetView()
-        self.grid.ForceRefresh()
-
-        # File sucessfully opened. Approve again to show status.
-        self.approve(filepath)
+        finally:
+            self.opening = False
 
     def sign_file(self, filepath):
         """Signs file if possible"""
