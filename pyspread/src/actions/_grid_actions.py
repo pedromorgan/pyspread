@@ -287,6 +287,7 @@ class FileActions(Actions):
                 # Abort if file version not supported
 
                 version = self._get_file_version(infile)
+
                 if version not in self.pys_versions:
                     text = _("File version {version} unsupported. "
                              "Supported versions: {allver}")
@@ -482,7 +483,7 @@ class FileActions(Actions):
                 # The main window does not exist any more
                 pass
 
-        else:
+        elif not outfile.aborted:
             self.sign_file(filepath)
 
 

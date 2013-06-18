@@ -87,6 +87,7 @@ class AOpenMixin(object):
         self.main_window.Bind(wx.EVT_KEY_DOWN, self.on_key)
 
     def next(self):
+
         """Next that shows progress in statusbar for each <freq> cells"""
 
         self.progress_status()
