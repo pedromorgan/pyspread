@@ -87,11 +87,9 @@ class AOpenMixin(object):
         self.main_window.Bind(wx.EVT_KEY_DOWN, self.on_key)
 
     def next(self):
-        # Show progress in statusbar for each <freq> cells
-        if self.line % self.freq == 0:
-            self.post_status()
+        """Next that shows progress in statusbar for each <freq> cells"""
 
-        self.line += 1
+        self.progress_status()
 
         # Check abortes state and raise StopIteration if aborted
         if self.aborted:
@@ -102,20 +100,37 @@ class AOpenMixin(object):
 
         return self.parent_cls.next(self)
 
-    def post_status(self):
+    def write(self, *args, **kwargs):
+        """Write that shows progress in statusbar for each <freq> cells"""
+
+        self.progress_status()
+
+        # Check abortes state and raise StopIteration if aborted
+        if self.aborted:
+            statustext = _("File saving aborted.")
+            post_command_event(self.main_window, self.main_window.StatusBarMsg,
+                               text=statustext)
+            return False
+
+        return self.parent_cls.write(self, *args, **kwargs)
+
+    def progress_status(self):
         """Displays progress in statusbar"""
 
-        text = self.statustext.format(nele=self.line,
-                                      totalele=self.total_lines)
-        try:
-            post_command_event(self.main_window, self.main_window.StatusBarMsg,
-                               text=text)
-        except TypeError:
-            # The main window does not exist any more
-            pass
+        if self.line % self.freq == 0:
+            text = self.statustext.format(nele=self.line,
+                                          totalele=self.total_lines)
+            try:
+                post_command_event(self.main_window,
+                                   self.main_window.StatusBarMsg, text=text)
+            except TypeError:
+                # The main window does not exist any more
+                pass
 
-        # Now wait for the statusbar update to be written on screen
-        wx.Yield()
+            # Now wait for the statusbar update to be written on screen
+            wx.Yield()
+
+        self.line += 1
 
     def on_key(self, event):
         """Sets aborted state if escape is pressed"""

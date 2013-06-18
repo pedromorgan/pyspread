@@ -45,7 +45,6 @@ Provides:
 
 """
 
-import bz2
 import itertools
 import src.lib.i18n as i18n
 import os
@@ -81,6 +80,10 @@ class FileActions(Actions):
 
     def __init__(self, grid):
         Actions.__init__(self, grid)
+
+        # The pys file version that are expected.
+        # The latter version is created
+        self.pys_versions = ["0.1"]
 
         self.saving = False
 
@@ -284,9 +287,11 @@ class FileActions(Actions):
                 # Abort if file version not supported
 
                 version = self._get_file_version(infile)
-                if version != "0.1":
-                    text = _("File version {version} unsupported (not 0.1).")
-                    text = text.format(version=version)
+                if version not in self.pys_versions:
+                    text = _("File version {version} unsupported. "
+                             "Supported versions: {allver}")
+                    text = text.format(version=version,
+                                       allver=self.pys_versions)
                     post_command_event(self.main_window, self.StatusBarMsg,
                                        text=text)
                     return False
@@ -355,9 +360,8 @@ class FileActions(Actions):
 
             return
 
-        signfile = open(filepath + '.sig', 'wb')
-        signfile.write(signature)
-        signfile.close()
+        with open(filepath + '.sig', 'wb') as signfile:
+            signfile.write(signature)
 
         # Statustext differs if a save has occurred
 
@@ -373,24 +377,6 @@ class FileActions(Actions):
             # The main window does not exist any more
             pass
 
-    def _abort_save(self, filepath, outfile):
-        """Aborts file save"""
-
-        statustext = _("Save aborted.")
-
-        try:
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
-        except TypeError:
-            # The main window does not exist any more
-            pass
-
-        outfile.close()
-        os.remove(filepath)
-
-        self.saving = False
-        self.need_abort = False
-
     def save(self, event):
         """Saves a file that is specified in event.attr
 
@@ -405,90 +391,78 @@ class FileActions(Actions):
 
         dict_grid = self.code_array.dict_grid
 
-        self.saving = True
-        self.need_abort = False
-
         io_error_text = _("Error writing to file {filepath}.")
         io_error_text = io_error_text.format(filepath=filepath)
-
-        # Save file is compressed
-        try:
-            outfile = bz2.BZ2File(filepath, "wb")
-
-        except IOError:
-            txt = _("Error opening file {filepath}.").format(filepath=filepath)
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=txt)
-            except TypeError:
-                # The main window does not exist any more
-                pass
-            return False
-
-        # Header
-        try:
-            outfile.write("[Pyspread save file version]\n")
-            outfile.write("0.1\n")
-
-        except IOError:
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=io_error_text)
-            except TypeError:
-                # The main window does not exist any more
-                pass
-
-            return False
 
         # The output generators yield the lines for the outfile
         output_generators = [
             # Grid content
-            dict_grid.grid_to_strings(),
+            dict_grid.grid_to_strings,
             # Cell attributes
-            dict_grid.attributes_to_strings(),
+            dict_grid.attributes_to_strings,
             # Row heights
-            dict_grid.heights_to_strings(),
+            dict_grid.heights_to_strings,
             # Column widths
-            dict_grid.widths_to_strings(),
+            dict_grid.widths_to_strings,
             # Macros
-            dict_grid.macros_to_strings(),
+            dict_grid.macros_to_strings,
         ]
 
-        # Options for self._is_aborted
-        abort_options_list = [
-            ["Saving grid... ", len(dict_grid), 100000],
-            ["Saving cell attributes... ", len(dict_grid.cell_attributes)],
-            ["Saving row heights... ", len(dict_grid.row_heights)],
-            ["Saving column widths... ", len(dict_grid.col_widths)],
-            ["Saving macros... ", dict_grid.macros.count("\n")],
-        ]
+        # Set state to file saving
+        self.saving = True
 
-        # Save cycle
+        # Make sure that old save file does not get lost on abort save
+        try:
+            tmpfile = filepath + "~"
+            os.rename(filepath, tmpfile)
 
-        for generator, options in zip(output_generators, abort_options_list):
-            for cycle, line in enumerate(generator):
-                try:
-                    outfile.write(line.encode("utf-8"))
+        except OSError:
+            # No file present
+            pass
 
-                except IOError:
-                    try:
-                        post_command_event(self.main_window, self.StatusBarMsg,
-                                           text=io_error_text)
-                    except TypeError:
-                        # The main window does not exist any more
-                        pass
-                    return False
+        try:
+            with Bz2AOpen(filepath, "wb", main_window=self.main_window) \
+                    as outfile:
 
-                # Enable abort during long saves
-                if self._is_aborted(cycle, *options):
-                    self._abort_save(filepath, outfile)
-                    return False
+                # Header
+                outfile.write("[Pyspread save file version]\n")
+                outfile.write("{ver}\n".format(ver=self.pys_versions[-1]))
 
-        # Save is done
+                # Save cycle
 
-        outfile.close()
+                for generator in output_generators:
+                    for line in generator():
+                        outfile.write(line.encode("utf-8"))
+                        if outfile.aborted:
+                            break
+                    if outfile.aborted:
+                            break
 
-        self.saving = False
+        except IOError:
+            msg = _("Error writing to file {filepath}.")
+            msg = msg.format(filepath=filepath)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=msg)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+            return False
+
+        finally:
+            # Remove partial save file if save has been aborted
+
+            try:
+                if outfile.aborted:
+                    os.rename(tmpfile, filepath)
+                else:
+                    os.remove(tmpfile)
+            except OSError:
+                # No tmp file present
+                pass
+
+            self.saving = False
 
         # Mark content as unchanged
         try:
