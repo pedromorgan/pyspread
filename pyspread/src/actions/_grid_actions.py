@@ -289,8 +289,7 @@ class FileActions(Actions):
                 version = self._get_file_version(infile)
 
                 if version not in self.pys_versions:
-                    text = _("File version {version} unsupported. "
-                             "Supported versions: {allver}")
+                    text = _("File version {version} unsupported (not 0.1).")
                     text = text.format(version=version,
                                        allver=self.pys_versions)
                     post_command_event(self.main_window, self.StatusBarMsg,
