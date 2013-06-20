@@ -75,7 +75,7 @@ class AOpenMixin(object):
             self.freq = kwargs.pop("freq")
 
         except KeyError:
-            self.freq = 100
+            self.freq = 1000
 
         # The aborted attribute makes next() to raise StopIteration
         self.aborted = False
@@ -152,7 +152,7 @@ class AOpen(AOpenMixin, file):
     \tLeft text in statusbar to be displayed
     total_lines: Integer, defaults to None
     \tThe number of elements that have to be processed
-    freq: Integer, defaults to 100
+    freq: Integer, defaults to 1000
     \tNo. operations between two abort possibilities
 
     """
@@ -178,7 +178,7 @@ class Bz2AOpen(AOpenMixin, bz2.BZ2File):
     \tLeft text in statusbar to be displayed
     total_lines: Integer, defaults to None
     \tThe number of elements that have to be processed
-    freq: Integer, defaults to 100
+    freq: Integer, defaults to 1000
     \tNo. operations between two abort possibilities
 
     """

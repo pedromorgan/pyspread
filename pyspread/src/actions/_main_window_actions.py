@@ -94,6 +94,9 @@ class ExchangeActions(Actions):
             post_command_event(self.main_window, self.StatusBarMsg, text=msg)
             return
 
+        except TypeError:
+            return  # Import is aborted or empty
+
         return CsvInterface(self.main_window,
                             path, dialect, digest_types, has_header)
 
@@ -497,7 +500,7 @@ class ClipboardActions(Actions):
 
         data_gen = self._get_paste_data_gen(key, data)
 
-        self.grid.actions.paste(key[:2], data_gen)
+        self.grid.actions.paste(key[:2], data_gen, freq=1000)
 
         self.main_window.grid.ForceRefresh()
 
@@ -542,7 +545,7 @@ class ClipboardActions(Actions):
             # This is no Python code so te try to interpret it as paste data
             try:
                 obj = [map(ast.literal_eval, line.split("\t"))
-                        for line in data.split("\n")]
+                       for line in data.split("\n")]
 
             except Exception, err:
                 error_msg(err)
@@ -559,7 +562,7 @@ class ClipboardActions(Actions):
         if parameters["transpose"]:
             paste_data = zip(*paste_data)
 
-        self.main_window.grid.actions.paste(key, paste_data)
+        self.main_window.grid.actions.paste(key, paste_data, freq=1000)
 
 
 class MacroActions(Actions):

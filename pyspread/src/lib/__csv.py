@@ -46,6 +46,7 @@ from src.config import config
 from src.gui._events import post_command_event, StatusBarEventMixin
 
 import src.lib.i18n as i18n
+from src.lib.fileio import AOpen
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -59,11 +60,8 @@ def sniff(filepath):
 
     """
 
-    try:
-        csvfile = open(filepath, "rb")
+    with open(filepath, "rb") as csvfile:
         sample = csvfile.read(config["sniff_size"])
-    finally:
-        csvfile.close()
 
     sniffer = csv.Sniffer()
     dialect = sniffer.sniff(sample)()
@@ -75,15 +73,11 @@ def sniff(filepath):
 def get_first_line(filepath, dialect):
     """Returns List of first line items of file filepath"""
 
-    try:
-        csvfile = open(filepath, "rb")
+    with open(filepath, "rb") as csvfile:
         csvreader = csv.reader(csvfile, dialect=dialect)
 
         for first_line in csvreader:
             break
-
-    finally:
-        csvfile.close()
 
     return first_line
 
@@ -124,8 +118,7 @@ def csv_digest_gen(filepath, dialect, has_header, digest_types):
 
     """
 
-    try:
-        csvfile = open(filepath, "rb")
+    with open(filepath, "rb") as csvfile:
         csvreader = csv.reader(csvfile, dialect=dialect)
 
         if has_header:
@@ -135,9 +128,6 @@ def csv_digest_gen(filepath, dialect, has_header, digest_types):
 
         for line in csvreader:
             yield digested_line(line, digest_types)
-
-    finally:
-        csvfile.close()
 
 
 def cell_key_val_gen(iterable, shape, topleft=(0, 0)):
@@ -337,36 +327,23 @@ class CsvInterface(StatusBarEventMixin):
     def __iter__(self):
         """Generator of generators that yield csv data"""
 
-        try:
-            csv_file = open(self.path, "r")
+        with AOpen(self.path, "rb", main_window=self.main_window) as csv_file:
             csv_reader = csv.reader(csv_file, self.dialect)
 
-        except IOError, err:
-            statustext = "Error opening file " + self.path + "."
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            self.first_line = self.has_header
 
-            csv_file = []
-
-        self.first_line = self.has_header
-
-        try:
             for line in csv_reader:
                 yield self._get_csv_cells_gen(line)
-                self.first_line = False
+                break
 
-        except Exception, err:
-            msg = 'The file "' + self.csvfilename + '" only partly loaded.' + \
-                  '\n \nError message:\n' + str(err)
-            short_msg = 'Error reading CSV file'
-            self.main_window.interfaces.display_warning(msg, short_msg)
+            self.first_line = False
 
-        finally:
-            statustext = "File " + self.csvfilename + " imported successfully."
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            for line in csv_reader:
+                yield self._get_csv_cells_gen(line)
 
-        csv_file.close()
+        msg = _("File {filename} imported successfully.").format(
+            filename=self.csvfilename)
+        post_command_event(self.main_window, self.StatusBarMsg, text=msg)
 
     def _get_csv_cells_gen(self, line):
         """Generator of values in a csv line"""

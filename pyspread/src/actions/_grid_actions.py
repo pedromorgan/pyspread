@@ -90,7 +90,7 @@ class FileActions(Actions):
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_OPEN, self.open)
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_SAVE, self.save)
 
-    def _is_aborted(self, cycle, statustext, total_elements=None, freq=100):
+    def _is_aborted(self, cycle, statustext, total_elements=None, freq=None):
         """Displays progress and returns True if abort
 
         Parameters
@@ -102,7 +102,7 @@ class FileActions(Actions):
         \tLeft text in statusbar to be displayed
         total_elements: Integer:
         \tThe number of elements that have to be processed
-        freq: Integer, defaults to 1000
+        freq: Integer, defaults to None
         \tNo. operations between two abort possibilities
 
         """
@@ -114,7 +114,7 @@ class FileActions(Actions):
                             "Press <Esc> to abort.")
 
         # Show progress in statusbar each freq (1000) cells
-        if cycle % freq == 0:
+        if freq is not None and cycle % freq == 0:
             text = statustext.format(nele=cycle, totalele=total_elements)
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
@@ -697,7 +697,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
-    def paste_to_current_cell(self, tl_key, data):
+    def paste_to_current_cell(self, tl_key, data, freq=None):
         """Pastes data into grid from top left cell tl_key
 
         Parameters
@@ -707,6 +707,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         \key of top left cell of paste area
         data: iterable of iterables where inner iterable returns string
         \tThe outer iterable represents rows
+        freq: Integer, defaults to None
+        \tStatus message frequency
 
         """
 
@@ -726,7 +728,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         for src_row, row_data in enumerate(data):
             target_row = tl_row + src_row
 
-            if self.grid.actions._is_aborted(src_row, _("Pasting cells... ")):
+            if self.grid.actions._is_aborted(src_row, _("Pasting cells... "),
+                                             freq=freq):
                 self._abort_paste()
                 return False
 
@@ -768,7 +771,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         self.pasting = False
 
-    def selection_paste_data_gen(self, selection, data):
+    def selection_paste_data_gen(self, selection, data, freq=None):
         """Generator that yields data for selection paste"""
 
         (bb_top, bb_left), (bb_bottom, bb_right) = \
@@ -791,15 +794,15 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
             yield duplicated_row_data
 
-    def paste_to_selection(self, selection, data):
+    def paste_to_selection(self, selection, data, freq=None):
         """Pastes data into grid selection"""
 
         (bb_top, bb_left), (bb_bottom, bb_right) = \
             selection.get_grid_bbox(self.grid.code_array.shape)
         adjusted_data = self.selection_paste_data_gen(selection, data)
-        self.paste_to_current_cell((bb_top, bb_left), adjusted_data)
+        self.paste_to_current_cell((bb_top, bb_left), adjusted_data, freq=freq)
 
-    def paste(self, tl_key, data):
+    def paste(self, tl_key, data, freq=None):
         """Pastes data into grid, marks grid changed
 
         If no selection is present, data is pasted starting with current cell
@@ -813,6 +816,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         \key of top left cell of paste area
         data: iterable of iterables where inner iterable returns string
         \tThe outer iterable represents rows
+        freq: Integer, defaults to None
+        \tStatus message frequency
 
         """
 
@@ -829,7 +834,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             self.paste_to_selection(selection, data)
         else:
             # There is no selection.  Paste from top left cell.
-            self.paste_to_current_cell(tl_key, data)
+            self.paste_to_current_cell(tl_key, data, freq=freq)
 
     def change_grid_shape(self, shape):
         """Grid shape change event handler, marks content as changed"""
