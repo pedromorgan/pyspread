@@ -113,15 +113,22 @@ class FileActions(Actions):
             statustext += _("{nele} of {totalele} elements processed. "
                             "Press <Esc> to abort.")
 
+        if freq is None:
+            show_msg = False
+            freq = 1000
+        else:
+            show_msg = True
+
         # Show progress in statusbar each freq (1000) cells
-        if freq is not None and cycle % freq == 0:
-            text = statustext.format(nele=cycle, totalele=total_elements)
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=text)
-            except TypeError:
-                # The main window does not exist any more
-                pass
+        if cycle % freq == 0:
+            if show_msg:
+                text = statustext.format(nele=cycle, totalele=total_elements)
+                try:
+                    post_command_event(self.main_window, self.StatusBarMsg,
+                                       text=text)
+                except TypeError:
+                    # The main window does not exist any more
+                    pass
 
             # Now wait for the statusbar update to be written on screen
             wx.Yield()
@@ -831,7 +838,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         if selection:
             # There is a selection.  Paste into it
-            self.paste_to_selection(selection, data)
+            self.paste_to_selection(selection, data, freq=freq)
         else:
             # There is no selection.  Paste from top left cell.
             self.paste_to_current_cell(tl_key, data, freq=freq)
