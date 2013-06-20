@@ -780,6 +780,9 @@ class MainWindowEventHandlers(EventMixin):
 
         """
 
+        code_array = self.main_window.grid.code_array
+        tab = self.main_window.grid.current_table
+
         selection = self.main_window.grid.selection
 
         # Check if no selection is present
@@ -789,17 +792,21 @@ class MainWindowEventHandlers(EventMixin):
         wildcard = _("CSV file") + " (*.*)|*.*"
 
         if selection_bbox is None:
-            # No selection --> Use current screen for csv export
-            (top, left), (bottom, right) = \
-                self.main_window.grid.actions.get_visible_area()
+            # No selection --> Use smallest filled area for bottom right edge
+            maxrow = 0
+            maxcol = 0
+
+            for row, col, __tab in code_array:
+                if tab == __tab:
+                    maxrow = max(row, maxrow)
+                    maxcol = max(row, maxcol)
+
+            (top, left), (bottom, right) = (0, 0), (maxrow, maxcol)
 
         else:
             (top, left), (bottom, right) = selection_bbox
 
         # Generator of row and column keys in correct order
-
-        code_array = self.main_window.grid.code_array
-        tab = self.main_window.grid.current_table
 
         __top = 0 if top is None else top
         __bottom = code_array.shape[0] if bottom is None else bottom + 1

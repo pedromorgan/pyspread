@@ -345,6 +345,9 @@ class CsvParameterWidgets(object):
         value = list(self.choices['dialects']).index(dialect_name)
 
         if dialect_name == 'sniffer':
+            if self.csvfilepath is None:
+                event.Skip()
+                return None
             dialect, self.has_header = sniff(self.csvfilepath)
         elif dialect_name == 'user':
             event.Skip()
