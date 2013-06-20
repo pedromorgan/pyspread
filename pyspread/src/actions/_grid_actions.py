@@ -103,7 +103,7 @@ class FileActions(Actions):
         total_elements: Integer:
         \tThe number of elements that have to be processed
         freq: Integer, defaults to None
-        \tNo. operations between two abort possibilities
+        \tNo. operations between two abort possibilities, 1000 if None
 
         """
 
