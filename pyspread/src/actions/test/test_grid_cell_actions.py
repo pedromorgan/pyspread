@@ -70,13 +70,6 @@ class TestCellActions(object):
 
         assert self.grid.code_array(key) == result
 
-        wx.Yield()
-
-        if code is None or not code:
-            assert not self.main_window.changed_since_save
-        else:
-            assert self.main_window.changed_since_save
-
     @params(param_set_code)
     def test_delete_cell(self, key, code, result):
         """Unit test for delete_cell"""
@@ -179,9 +172,6 @@ class TestCellActions(object):
 
         assert color == attr[attr.keys()[0]]
 
-        wx.Yield()
-        assert self.main_window.changed_since_save
-
     def test_set_border_attr(self):
         """Unit test for set_border_attr"""
 
@@ -218,8 +208,8 @@ class TestCellActions(object):
     param_change_frozen_attr = [
         {'cell': (0, 0, 0), 'code': None, 'result': None},
         {'cell': (0, 0, 0), 'code': "'Test'", 'result': 'Test'},
-        {'cell': (2, 1, 1), 'code': "'Test'", 'result': 'Test'},
-        {'cell': (2, 1, 1), 'code': "32", 'result': 32},
+        {'cell': (2, 2, 0), 'code': "'Test'", 'result': 'Test'},
+        {'cell': (2, 1, 0), 'code': "32", 'result': 32},
     ]
 
     @params(param_change_frozen_attr)
@@ -245,9 +235,9 @@ class TestCellActions(object):
     param_get_new_cell_attr_state = [
         {'cell': (0, 0, 0), 'attr': "fontweight",
          'before': wx.NORMAL, 'next': wx.BOLD},
-        {'cell': (2, 1, 3), 'attr': "fontweight",
+        {'cell': (2, 1, 0), 'attr': "fontweight",
          'before': wx.NORMAL, 'next': wx.BOLD},
-        {'cell': (2, 1, 3), 'attr': "vertical_align",
+        {'cell': (2, 1, 0), 'attr': "vertical_align",
          'before': "top", 'next': "middle"},
     ]
 
@@ -268,14 +258,14 @@ class TestCellActions(object):
     param_get_new_selection_attr_state = [
         {'selection': Selection([], [], [], [], [(0, 0)]), 'cell': (0, 0, 0),
          'attr': "fontweight", 'before': wx.NORMAL, 'next': wx.BOLD},
-        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 2),
+        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 0),
          'attr': "fontweight", 'before': wx.NORMAL, 'next': wx.BOLD},
-        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 2),
+        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 0),
          'attr': "fontweight", 'before': wx.BOLD, 'next': wx.NORMAL},
-        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 2),
+        {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 0),
          'attr': "vertical_align", 'before': "top", 'next': "middle"},
         {'selection': Selection([(1, 0)], [(23, 2)], [], [], []),
-         'cell': (2, 1, 2),
+         'cell': (2, 1, 0),
          'attr': "vertical_align", 'before': "top", 'next': "middle"},
     ]
 

@@ -781,7 +781,8 @@ class DataArray(object):
         self.cell_attributes[:] = []
         self.cell_attributes.extend(value)
 
-    def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis):
+    def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis,
+                                mark_unredo=True):
         """Adjusts cell attributes on insertion/deletion"""
 
         assert axis in [0, 1, 2]
@@ -826,13 +827,14 @@ class DataArray(object):
         # Make undoable
 
         undo_operation = (self._adjust_cell_attributes,
-                          [insertion_point, -no_to_insert, axis])
+                          [insertion_point, -no_to_insert, axis, mark_unredo])
         redo_operation = (self._adjust_cell_attributes,
-                          [insertion_point, no_to_insert, axis])
+                          [insertion_point, no_to_insert, axis, mark_unredo])
 
         self.unredo.append(undo_operation, redo_operation)
 
-        self.unredo.mark()
+        if mark_unredo:
+            self.unredo.mark()
 
     def insert(self, insertion_point, no_to_insert, axis):
         """Inserts no_to_insert rows/cols/tabs/... before insertion_point
@@ -859,7 +861,7 @@ class DataArray(object):
         new_keys = {}
 
         for key in self.dict_grid.keys():
-            if key[axis] >= insertion_point:
+            if key[axis] > insertion_point:
                 new_key = list(key)
                 new_key[axis] += no_to_insert
 
@@ -870,7 +872,8 @@ class DataArray(object):
         for key in new_keys:
             self.__setitem__(key, new_keys[key], mark_unredo=False)
 
-        self._adjust_cell_attributes(insertion_point, no_to_insert, axis)
+        self._adjust_cell_attributes(insertion_point, no_to_insert, axis,
+                                     mark_unredo=False)
 
         self.unredo.mark()
 
