@@ -588,6 +588,26 @@ class DataArray(object):
 
     shape = property(_get_shape, _set_shape)
 
+    def get_last_filled_cell(self, table=None):
+        """Returns key for the bottommost rightmost cell with content
+
+        Parameters
+        ----------
+        table: Integer, defaults to None
+        \tLimit search to this table
+
+        """
+
+        maxrow = 0
+        maxcol = 0
+
+        for row, col, tab in self.dict_grid:
+            if table is None or tab == table:
+                maxrow = max(row, maxrow)
+                maxcol = max(col, maxcol)
+
+        return maxrow, maxcol, table
+
     # Pickle support
 
     def __getstate__(self):
@@ -778,11 +798,11 @@ class DataArray(object):
 
             new_sizes = {}
 
-            for pos, tab in cell_sizes:
+            for pos, tab in cell_sizes.keys():
                 if pos > insertion_point:
                     new_sizes[(pos + no_to_insert, tab)] = \
                         cell_sizes[(pos, tab)]
-                    cell_sizes[(pos, tab)] = None
+                    cell_sizes.pop((pos, tab))
                 else:
                     new_sizes[(pos, tab)] = cell_sizes[(pos, tab)]
 

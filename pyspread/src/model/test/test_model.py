@@ -338,6 +338,24 @@ class TestDataArray(object):
 
         assert self.data_array.shape == (10000, 100, 100)
 
+    param_get_last_filled_cell = [
+        {'content': {(0, 0, 0): "2"}, 'table': 0, 'res': (0, 0)},
+        {'content': {(2, 0, 2): "2"}, 'table': 0, 'res': (0, 0)},
+        {'content': {(2, 0, 2): "2"}, 'table': None, 'res': (2, 0)},
+        {'content': {(2, 0, 2): "2"}, 'table': 2, 'res': (2, 0)},
+        {'content': {(32, 30, 0): "432"}, 'table': 0, 'res': (32, 30)},
+    ]
+
+    @params(param_get_last_filled_cell)
+    def test_get_last_filled_cell(self, content, table, res):
+        """Unit test for get_last_filled_cellet_end"""
+
+        for key in content:
+            self.data_array[key] = content[key]
+
+        assert self.data_array.get_last_filled_cell(table)[:2] == res
+
+
     def test_getstate(self):
         """Unit test for __getstate__ (pickle support)"""
 

@@ -814,13 +814,7 @@ class MainWindowEventHandlers(EventMixin):
 
         if selection_bbox is None:
             # No selection --> Use smallest filled area for bottom right edge
-            maxrow = 0
-            maxcol = 0
-
-            for row, col, __tab in code_array:
-                if tab == __tab:
-                    maxrow = max(row, maxrow)
-                    maxcol = max(row, maxcol)
+            maxrow, maxcol, __ = code_array.get_last_filled_cell(tab)
 
             (top, left), (bottom, right) = (0, 0), (maxrow, maxcol)
 
