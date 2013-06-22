@@ -306,6 +306,11 @@ class FileActions(Actions):
                 # Disable undo
                 self.grid.code_array.unredo.active = True
 
+                # Switch to table 0
+                post_command_event(self.main_window, self.GotoCellMsg,
+                                   key=(0, 0, 0))
+                wx.Yield()
+
                 for line in infile:
                     stripped_line = line.decode("utf-8").strip()
                     if stripped_line:
