@@ -889,6 +889,7 @@ class GridEventHandlers(object):
 
         self.grid.actions.cursor = row, col, tab
         self.grid.MakeCellVisible(row, col)
+
         event.Skip()
 
     def OnEnterSelectionMode(self, event):

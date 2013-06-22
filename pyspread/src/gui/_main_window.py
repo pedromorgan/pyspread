@@ -615,6 +615,16 @@ class MainWindowEventHandlers(EventMixin):
 
         self.main_window.grid.ForceRefresh()
 
+        wx.Yield()
+
+        # Mark content as unchanged
+        try:
+            post_command_event(self.main_window, self.ContentChangedMsg,
+                               changed=False)
+        except TypeError:
+            # The main window does not exist any more
+            pass
+
     def OnOpen(self, event):
         """File open event handler"""
 
@@ -661,6 +671,16 @@ class MainWindowEventHandlers(EventMixin):
                            self.main_window.TitleMsg, text=title_text)
 
         self.main_window.grid.ForceRefresh()
+
+        wx.Yield()
+
+        # Mark content as unchanged
+        try:
+            post_command_event(self.main_window, self.ContentChangedMsg,
+                               changed=False)
+        except TypeError:
+            # The main window does not exist any more
+            pass
 
     def OnSave(self, event):
         """File save event handler"""
