@@ -799,6 +799,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                 break
 
             # Duplicate row data if selection is wider than row data
+            row_data = list(row_data)
             duplicated_row_data = row_data * (bbox_width // len(row_data) + 1)
             duplicated_row_data = duplicated_row_data[:bbox_width]
 
