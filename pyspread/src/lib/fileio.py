@@ -136,8 +136,11 @@ class AOpenMixin(object):
     def on_key(self, event):
         """Sets aborted state if escape is pressed"""
 
-        if event.GetKeyCode() == wx.WXK_ESCAPE:
+        if self.main_window.grid.actions.pasting and \
+           event.GetKeyCode() == wx.WXK_ESCAPE:
             self.aborted = True
+
+        event.Skip()
 
 
 class AOpen(AOpenMixin, file):
