@@ -234,6 +234,13 @@ class FileActions(Actions):
 
         """
 
+        # Without setting this explicitly, the cursor is set too late
+        self.grid.actions.cursor = 0, 0, 0
+        self.grid.current_table = 0
+
+        post_command_event(self.main_window.grid, self.GotoCellMsg,
+                           key=(0, 0, 0))
+
         # Clear cells
         self.code_array.dict_grid.clear()
 
@@ -305,11 +312,6 @@ class FileActions(Actions):
 
                 # Disable undo
                 self.grid.code_array.unredo.active = True
-
-                # Switch to table 0
-                post_command_event(self.main_window, self.GotoCellMsg,
-                                   key=(0, 0, 0))
-                wx.Yield()
 
                 for line in infile:
                     stripped_line = line.decode("utf-8").strip()
@@ -1070,11 +1072,6 @@ class GridActions(Actions):
 
             self.zoom()
 
-            statustext = _("Switched to table {table}.").format(table=newtable)
-
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
-
     def get_cursor(self):
         """Returns current grid cursor cell (row, col, tab)"""
 
@@ -1093,13 +1090,15 @@ class GridActions(Actions):
         """
 
         if len(value) == 3:
-            row, col, tab = value
+            self.grid._last_selected_cell = row, col, tab = value
 
             if tab != self.cursor[2]:
                 post_command_event(self.main_window,
                                    self.GridActionTableSwitchMsg, newtable=tab)
+                wx.Yield()
         else:
             row, col = value
+            self.grid._last_selected_cell = row, col, self.grid.current_table
 
         if not (row is None and col is None):
             self.grid.MakeCellVisible(row, col)

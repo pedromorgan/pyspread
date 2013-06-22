@@ -431,15 +431,6 @@ class Grid(wx.grid.Grid, EventMixin):
         post_command_event(self, self.ToolbarUpdateMsg, key=key,
                            attr=self.code_array.cell_attributes[key])
 
-    # Cell selection event handlers
-
-    def set_cursor(self, row, col, tab):
-        """Sets grid cursor to key"""
-
-        self.SetGridCursor(row, col)
-        self._last_selected_cell = row, col, tab
-        return
-
 # End of class Grid
 
 
@@ -737,7 +728,6 @@ class GridCellEventHandlers(object):
         # If in selection mode do nothing
         # This prevents the current cell from changing
         if not self.grid.IsEditable():
-            event.Skip()
             return
 
         key = row, col, tab = event.Row, event.Col, self.grid.current_table
@@ -749,13 +739,13 @@ class GridCellEventHandlers(object):
             top, left, bottom, right = merge_area
             if self.grid._last_selected_cell == (top, left, tab):
                 if row == top + 1:
-                    self.grid.set_cursor(bottom + 1, left, tab)
+                    self.grid.actions.set_cursor(bottom + 1, left, tab)
                     return
                 elif col == left + 1:
-                    self.grid.set_cursor(top, right + 1, tab)
+                    self.grid.actions.set_cursor(top, right + 1, tab)
                     return
             elif (row, col) != (top, left):
-                self.grid.set_cursor(top, left, tab)
+                self.grid.actions.set_cursor(top, left, tab)
                 return
 
         # Redraw cursor
@@ -899,7 +889,6 @@ class GridEventHandlers(object):
 
         self.grid.actions.cursor = row, col, tab
         self.grid.MakeCellVisible(row, col)
-
         event.Skip()
 
     def OnEnterSelectionMode(self, event):

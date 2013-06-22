@@ -585,8 +585,6 @@ class MainWindowEventHandlers(EventMixin):
         if shape is None:
             return
 
-        self.main_window.grid.actions.change_grid_shape(shape)
-
         # Set new filepath and post it to the title bar
 
         self.main_window.filepath = None
@@ -603,6 +601,9 @@ class MainWindowEventHandlers(EventMixin):
         # Update TableChoiceIntCtrl
         post_command_event(self.main_window, self.main_window.ResizeGridMsg,
                            shape=shape)
+
+        wx.Yield()
+        self.main_window.grid.actions.change_grid_shape(shape)
 
         self.main_window.grid.GetTable().ResetView()
         self.main_window.grid.ForceRefresh()
