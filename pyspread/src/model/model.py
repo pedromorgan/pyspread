@@ -520,25 +520,21 @@ class DataArray(object):
 
         """
 
+        result = self.dict_grid.pop(key)
+
         # UnRedo support
 
-        try:
-            undo_operation = (self.__setitem__, [key, self.dict_grid[key],
-                                                 mark_unredo])
-            redo_operation = (self.pop, [key, mark_unredo])
+        undo_operation = (self.__setitem__, [key, result, mark_unredo])
+        redo_operation = (self.pop, [key, mark_unredo])
 
-            self.unredo.append(undo_operation, redo_operation)
+        self.unredo.append(undo_operation, redo_operation)
 
-            if mark_unredo:
-                self.unredo.mark()
-
-        except KeyError:
-            # If key not present then unredo is not necessary
-            pass
+        if mark_unredo:
+            self.unredo.mark()
 
         # End UnRedo support
 
-        return self.dict_grid.pop(key)
+        return result
 
     # Shape mask
 
@@ -851,6 +847,8 @@ class DataArray(object):
 
         """
 
+        self.unredo.mark()
+
         if not 0 <= axis <= len(self.shape):
             raise ValueError("Axis not in grid dimensions")
 
@@ -912,7 +910,8 @@ class DataArray(object):
                 new_key_values[tuple(new_key)] = \
                     self.pop(key, mark_unredo=False)
 
-        self._adjust_cell_attributes(deletion_point, -no_to_delete, axis)
+        self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
+                                     mark_unredo=False)
 
         self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
 

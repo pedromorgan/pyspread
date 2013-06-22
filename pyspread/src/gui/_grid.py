@@ -1082,7 +1082,7 @@ class GridEventHandlers(object):
             no_rows = 1
         else:
             # Insert at lower edge of bounding box
-            ins_point = bbox[1][0] - 1
+            ins_point = bbox[0][0] - 1
             no_rows = self._get_no_rowscols(bbox)[0]
 
         self.grid.actions.insert_rows(ins_point, no_rows)
@@ -1105,7 +1105,7 @@ class GridEventHandlers(object):
             no_cols = 1
         else:
             # Insert at right edge of bounding box
-            ins_point = bbox[1][1] - 1
+            ins_point = bbox[0][1] - 1
             no_cols = self._get_no_rowscols(bbox)[1]
 
         self.grid.actions.insert_cols(ins_point, no_cols)
