@@ -521,8 +521,12 @@ class DataArray(object):
         """
 
         result = self.dict_grid.pop(key)
+        self.result_cache.pop(repr(key))
 
         # UnRedo support
+
+        if mark_unredo:
+            self.unredo.mark()
 
         undo_operation = (self.__setitem__, [key, result, mark_unredo])
         redo_operation = (self.pop, [key, mark_unredo])
@@ -781,7 +785,11 @@ class DataArray(object):
                                 mark_unredo=True):
         """Adjusts cell attributes on insertion/deletion"""
 
+        ###### TODO: TOTALLY BROKEN FOR DELETION OPERATIONS
+
         assert axis in [0, 1, 2]
+
+        print insertion_point, no_to_insert, axis
 
         if axis < 2:
             # Adjust selections
@@ -792,6 +800,7 @@ class DataArray(object):
 
             # Adjust row heights and col widths
             cell_sizes = self.col_widths if axis else self.row_heights
+            set_cell_size = self.set_col_width if axis else self.set_row_height
 
             new_sizes = {}
 
@@ -799,11 +808,14 @@ class DataArray(object):
                 if pos > insertion_point:
                     new_sizes[(pos + no_to_insert, tab)] = \
                         cell_sizes[(pos, tab)]
-                    cell_sizes.pop((pos, tab))
+                    # Pop cell size with undo functionality
+                    set_cell_size(pos, tab, None, mark_unredo=False)
                 else:
                     new_sizes[(pos, tab)] = cell_sizes[(pos, tab)]
 
-            cell_sizes.update(new_sizes)
+            for pos, tab in new_sizes:
+                set_cell_size(pos, tab, new_sizes[(pos, tab)],
+                              mark_unredo=False)
 
         elif axis == 2:
             # Adjust tabs
@@ -882,6 +894,8 @@ class DataArray(object):
 
         """
 
+        self.unredo.mark()
+
         if not 0 <= axis < len(self.shape):
             raise ValueError("Axis not in grid dimensions")
 
@@ -910,9 +924,6 @@ class DataArray(object):
                 new_key_values[tuple(new_key)] = \
                     self.pop(key, mark_unredo=False)
 
-        self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
-                                     mark_unredo=False)
-
         self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
 
         # Now re-insert moved keys
@@ -920,9 +931,12 @@ class DataArray(object):
         for key in new_key_values:
             self.__setitem__(key, new_key_values[key], mark_unredo=False)
 
+        self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
+                                     mark_unredo=False)
+
         self.unredo.mark()
 
-    def set_row_height(self, row, tab, height):
+    def set_row_height(self, row, tab, height, mark_unredo=True):
         """Sets row height"""
 
         try:
@@ -944,9 +958,10 @@ class DataArray(object):
 
         self.unredo.append(undo_operation, redo_operation)
 
-        self.unredo.mark()
+        if mark_unredo:
+            self.unredo.mark()
 
-    def set_col_width(self, col, tab, width):
+    def set_col_width(self, col, tab, width, mark_unredo=True):
         """Sets column width"""
 
         try:
@@ -968,7 +983,8 @@ class DataArray(object):
 
         self.unredo.append(undo_operation, redo_operation)
 
-        self.unredo.mark()
+        if mark_unredo:
+            self.unredo.mark()
 
     # Element access via call
 

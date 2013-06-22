@@ -1127,26 +1127,46 @@ class GridEventHandlers(object):
     def OnDeleteRows(self, event):
         """Deletes rows from all tables of the grid"""
 
-        no_rows, _ = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
 
-        cursor = self.grid.actions.cursor
+        if bbox is None or bbox[1][0] is None:
+            # Insert rows at cursor
+            del_point = self.grid.actions.cursor[0]
+            no_rows = 1
+        else:
+            # Insert at lower edge of bounding box
+            del_point = bbox[0][0]
+            no_rows = self._get_no_rowscols(bbox)[0]
 
-        self.grid.actions.delete_rows(cursor[0], no_rows)
+        self.grid.actions.delete_rows(del_point, no_rows)
 
         self.grid.GetTable().ResetView()
+
+        # Update the default sized cell sizes
+        self.grid.actions.zoom()
 
         event.Skip()
 
     def OnDeleteCols(self, event):
         """Deletes columns from all tables of the grid"""
 
-        _, no_cols = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
 
-        cursor = self.grid.actions.cursor
+        if bbox is None or bbox[1][1] is None:
+            # Insert rows at cursor
+            del_point = self.grid.actions.cursor[1]
+            no_cols = 1
+        else:
+            # Insert at right edge of bounding box
+            del_point = bbox[0][1]
+            no_cols = self._get_no_rowscols(bbox)[1]
 
-        self.grid.actions.delete_cols(cursor[1], no_cols)
+        self.grid.actions.delete_cols(del_point, no_cols)
 
         self.grid.GetTable().ResetView()
+
+        # Update the default sized cell sizes
+        self.grid.actions.zoom()
 
         event.Skip()
 
