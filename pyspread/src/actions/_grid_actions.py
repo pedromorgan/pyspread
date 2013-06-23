@@ -1077,7 +1077,7 @@ class GridActions(Actions):
         """Returns current grid cursor cell (row, col, tab)"""
 
         return self.grid.GetGridCursorRow(), self.grid.GetGridCursorCol(), \
-            self.grid.current_table
+               self.grid.current_table
 
     def set_cursor(self, value):
         """Changes the grid cursor cell.

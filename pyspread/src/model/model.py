@@ -780,9 +780,60 @@ class DataArray(object):
         self.cell_attributes[:] = []
         self.cell_attributes.extend(value)
 
+    def _shift_rowcol(self, insertion_point, no_to_insert, mark_unredo):
+        """Shifts row and column sizes when a table is inserted or deleted"""
+
+        if mark_unredo:
+            self.unredo.mark()
+
+        # Shift row heights
+
+        new_row_heights = {}
+        del_row_heights = []
+
+        for row, tab in self.row_heights:
+            if tab > insertion_point:
+                new_row_heights[(row, tab + no_to_insert)] = \
+                                self.row_heights[(row, tab)]
+                del_row_heights.append((row, tab))
+
+        for row, tab in new_row_heights:
+            self.set_row_height(row, tab, new_row_heights[(row, tab)],
+                                mark_unredo=False)
+
+        for row, tab in del_row_heights:
+            if (row, tab) not in new_row_heights:
+                self.set_row_height(row, tab, None, mark_unredo=False)
+
+        # Shift column widths
+
+        new_col_widths = {}
+        del_col_widths = []
+
+        for col, tab in self.col_widths:
+            if tab > insertion_point:
+                new_col_widths[(col, tab + no_to_insert)] = \
+                                self.col_widths[(col, tab)]
+                del_col_widths.append((col, tab))
+
+        for col, tab in new_col_widths:
+            self.set_col_width(col, tab, new_col_widths[(col, tab)],
+                               mark_unredo=False)
+
+        for col, tab in del_col_widths:
+            if (col, tab) not in new_col_widths:
+                self.set_col_width(col, tab, None, mark_unredo=False)
+
+        if mark_unredo:
+            self.unredo.mark()
+
     def _adjust_rowcol(self, insertion_point, no_to_insert, axis,
                        mark_unredo=True):
         """Adjusts row and column sizes on insertion/deletion"""
+
+        if axis == 2:
+            self._shift_rowcol(insertion_point, no_to_insert, mark_unredo)
+            return
 
         assert axis in (0, 1)
 
@@ -898,9 +949,8 @@ class DataArray(object):
             if key not in new_keys and self(key) is not None:
                 self.pop(key, mark_unredo=False)
 
-        if axis in (0, 1):
-            self._adjust_rowcol(insertion_point, no_to_insert, axis,
-                                mark_unredo=False)
+        self._adjust_rowcol(insertion_point, no_to_insert, axis,
+                            mark_unredo=False)
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis,
                                      mark_unredo=False)
 

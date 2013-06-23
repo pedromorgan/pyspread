@@ -1120,7 +1120,7 @@ class GridEventHandlers(object):
     def OnInsertTabs(self, event):
         """Insert one table into grid"""
 
-        self.grid.actions.insert_tabs(self.grid.current_table, 1)
+        self.grid.actions.insert_tabs(self.grid.current_table - 1, 1)
         self.grid.GetTable().ResetView()
         self.grid.actions.zoom()
 
