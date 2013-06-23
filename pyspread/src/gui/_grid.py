@@ -1039,8 +1039,18 @@ class GridEventHandlers(object):
     def OnReplaceAll(self, event):
         """Called when a replace all operation is started"""
 
-        while self.OnReplace(event) is not None:
-            pass
+        old_findpositions = []
+
+        while True:
+            findpos = self.OnReplace(event)
+            if findpos is None:
+                break
+            if findpos in old_findpositions:
+                # Undo one step because one update was already twice
+                self.grid.actions.undo()
+                self.grid.update_entry_line()
+                break
+            old_findpositions.append(findpos)
 
         event.Skip()
 
