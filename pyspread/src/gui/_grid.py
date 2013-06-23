@@ -739,13 +739,13 @@ class GridCellEventHandlers(object):
             top, left, bottom, right = merge_area
             if self.grid._last_selected_cell == (top, left, tab):
                 if row == top + 1:
-                    self.grid.actions.set_cursor(bottom + 1, left, tab)
+                    self.grid.actions.set_cursor((bottom + 1, left, tab))
                     return
                 elif col == left + 1:
-                    self.grid.actions.set_cursor(top, right + 1, tab)
+                    self.grid.actions.set_cursor((top, right + 1, tab))
                     return
             elif (row, col) != (top, left):
-                self.grid.actions.set_cursor(top, left, tab)
+                self.grid.actions.set_cursor((top, left, tab))
                 return
 
         # Redraw cursor
