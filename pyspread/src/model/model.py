@@ -188,6 +188,10 @@ class CellAttributes(list):
 
         return merging_cell
 
+    # Allow getting and setting elements in list
+    get_item = list.__getitem__
+    set_item = list.__setitem__
+
 # End of class CellAttributes
 
 
@@ -878,15 +882,17 @@ class DataArray(object):
             self.cell_attributes._attr_cache.clear()
 
         elif axis == 2:
-            # TODO: Tab deletion is not undoable
             # Adjust tabs
             new_tabs = []
-            for _, old_tab, _ in self.cell_attributes:
-                new_tabs.append(old_tab + no_to_insert
-                                if old_tab >= insertion_point else old_tab)
+            for selection, old_tab, value in self.cell_attributes:
+                if old_tab > insertion_point:
+                    new_tabs.append((selection, old_tab + no_to_insert, value))
+                else:
+                    new_tabs.append(None)
 
-            for i, new_tab in new_tabs:
-                self.cell_attributes[i][1] = new_tab
+            for i, sel_tab_val in enumerate(new_tabs):
+                if sel_tab_val is not None:
+                    self.dict_grid.cell_attributes.set_item(i, sel_tab_val)
 
             self.cell_attributes._attr_cache.clear()
 
