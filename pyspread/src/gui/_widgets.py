@@ -987,7 +987,6 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         self.SetMax(self.no_tabs - 1)
         if event.GetValue() > self.GetMax():
-            print event.GetValue(), self.GetMax()
             self.SetValue(self.GetMax())
             return
 
@@ -1000,6 +999,10 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
+
+        # Prevent lost IntCtrl changes
+        if self.switching:
+            return
 
         self.SetMax(self.no_tabs - 1)
 
