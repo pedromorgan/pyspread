@@ -893,6 +893,8 @@ class DataArray(object):
 
         self._adjust_shape(no_to_insert, axis, mark_unredo=False)
 
+        # Now re-insert moved keys
+
         for key in new_keys:
             self.__setitem__(key, new_keys[key], mark_unredo=False)
 
@@ -930,28 +932,35 @@ class DataArray(object):
            deletion_point <= -self.shape[axis]:
             raise IndexError("Deletion point not in grid")
 
-        # Store all keys that are moved here because dict iteration is unsorted
-        new_key_values = {}
+        new_keys = {}
+        del_keys = []
 
         # Note that the loop goes over a list that copies all dict keys
         for key in self.dict_grid.keys():
             if deletion_point <= key[axis] < deletion_point + no_to_delete:
-                self.pop(key, mark_unredo=False)
+                del_keys.append(key)
 
             elif key[axis] >= deletion_point + no_to_delete:
                 new_key = list(key)
                 new_key[axis] -= no_to_delete
 
-                new_key_values[tuple(new_key)] = \
-                    self.pop(key, mark_unredo=False)
+                new_keys[tuple(new_key)] = self(key)
+                del_keys.append(key)
 
         self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
 
         # Now re-insert moved keys
 
-        for key in new_key_values:
-            self.__setitem__(key, new_key_values[key], mark_unredo=False)
+        for key in new_keys:
+            self.__setitem__(key, new_keys[key], mark_unredo=False)
 
+        for key in del_keys:
+            if key not in new_keys and self(key) is not None:
+                self.pop(key, mark_unredo=False)
+
+        if axis in (0, 1):
+            self._adjust_rowcol(deletion_point, -no_to_delete, axis,
+                                mark_unredo=False)
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
                                      mark_unredo=False)
 
