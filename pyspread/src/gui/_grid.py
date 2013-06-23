@@ -1121,6 +1121,8 @@ class GridEventHandlers(object):
         """Insert one table into grid"""
 
         self.grid.actions.insert_tabs(self.grid.current_table, 1)
+        self.grid.GetTable().ResetView()
+        self.grid.actions.zoom()
 
         event.Skip()
 
@@ -1174,6 +1176,8 @@ class GridEventHandlers(object):
         """Deletes tables"""
 
         self.grid.actions.delete_tabs(self.grid.current_table, 1)
+        self.grid.GetTable().ResetView()
+        self.grid.actions.zoom()
 
         event.Skip()
 

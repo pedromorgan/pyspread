@@ -522,11 +522,6 @@ class DataArray(object):
 
         result = self.dict_grid.pop(key)
 
-        try:
-            self.result_cache.pop(repr(key))
-        except KeyError:
-            pass
-
         # UnRedo support
 
         if mark_unredo:
@@ -832,11 +827,12 @@ class DataArray(object):
             self.cell_attributes._attr_cache.clear()
 
         elif axis == 2:
+            # TODO: Tab deletion is not undoable
             # Adjust tabs
             new_tabs = []
             for _, old_tab, _ in self.cell_attributes:
                 new_tabs.append(old_tab + no_to_insert
-                                if old_tab > insertion_point else old_tab)
+                                if old_tab >= insertion_point else old_tab)
 
             for i, new_tab in new_tabs:
                 self.cell_attributes[i][1] = new_tab
@@ -947,8 +943,6 @@ class DataArray(object):
                 new_keys[tuple(new_key)] = self(key)
                 del_keys.append(key)
 
-        self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
-
         # Now re-insert moved keys
 
         for key in new_keys:
@@ -963,6 +957,8 @@ class DataArray(object):
                                 mark_unredo=False)
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
                                      mark_unredo=False)
+
+        self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
 
         self.unredo.mark()
 
@@ -1222,6 +1218,26 @@ class CodeArray(DataArray):
             globals().update({glob_var: result})
 
         return result
+
+    def pop(self, key, mark_unredo=True):
+        """Pops dict_grid with undo and redo support
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer
+        \tCell key that shall be popped
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
+
+        try:
+            self.result_cache.pop(repr(key))
+
+        except KeyError:
+            pass
+
+        return DataArray.pop(self, key, mark_unredo=mark_unredo)
 
     def reload_modules(self):
         """Reloads modules that are available in cells"""
