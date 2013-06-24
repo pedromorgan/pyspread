@@ -769,14 +769,6 @@ class DataArray(object):
 
                 break
 
-    def _adjust_shape(self, amount, axis, mark_unredo=True):
-        """Changes shape along axis by amount"""
-
-        new_shape = list(self.shape)
-        new_shape[axis] += amount
-
-        self._set_shape(tuple(new_shape), mark_unredo=mark_unredo)
-
     def _set_cell_attributes(self, value):
         """Setter for cell_atributes"""
 
@@ -831,7 +823,7 @@ class DataArray(object):
         if mark_unredo:
             self.unredo.mark()
 
-    def _adjust_rowcol(self, insertion_point, no_to_insert, axis,
+    def _adjust_rowcol(self, insertion_point, no_to_insert, axis, tab=None,
                        mark_unredo=True):
         """Adjusts row and column sizes on insertion/deletion"""
 
@@ -850,25 +842,26 @@ class DataArray(object):
         new_sizes = {}
         del_sizes = []
 
-        for pos, tab in cell_sizes:
-            if pos > insertion_point:
-                new_sizes[(pos + no_to_insert, tab)] = \
-                    cell_sizes[(pos, tab)]
-                del_sizes.append((pos, tab))
+        for pos, table in cell_sizes:
+            if pos > insertion_point and (tab is None or tab == table):
+                if 0 <= pos + no_to_insert < self.shape[axis]:
+                    new_sizes[(pos + no_to_insert, table)] = \
+                        cell_sizes[(pos, table)]
+                del_sizes.append((pos, table))
 
-        for pos, tab in new_sizes:
-            set_cell_size(pos, tab, new_sizes[(pos, tab)],
+        for pos, table in new_sizes:
+            set_cell_size(pos, table, new_sizes[(pos, table)],
                           mark_unredo=False)
 
-        for pos, tab in del_sizes:
-            if (pos, tab) not in new_sizes:
-                set_cell_size(pos, tab, None, mark_unredo=False)
+        for pos, table in del_sizes:
+            if (pos, table) not in new_sizes:
+                set_cell_size(pos, table, None, mark_unredo=False)
 
         if mark_unredo:
             self.unredo.mark()
 
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis,
-                                mark_unredo=True):
+                                tab=None, mark_unredo=True):
         """Adjusts cell attributes on insertion/deletion"""
 
         if mark_unredo:
@@ -876,8 +869,9 @@ class DataArray(object):
 
         if axis < 2:
             # Adjust selections
-            for selection, _, _ in self.cell_attributes:
-                selection.insert(insertion_point, no_to_insert, axis)
+            for selection, _, table in self.cell_attributes:
+                if tab is None or tab == table:
+                    selection.insert(insertion_point, no_to_insert, axis)
 
             self.cell_attributes._attr_cache.clear()
 
@@ -885,7 +879,8 @@ class DataArray(object):
             # Adjust tabs
             new_tabs = []
             for selection, old_tab, value in self.cell_attributes:
-                if old_tab > insertion_point:
+                if old_tab > insertion_point and \
+                   (tab is None or tab == old_tab):
                     new_tabs.append((selection, old_tab + no_to_insert, value))
                 else:
                     new_tabs.append(None)
@@ -900,16 +895,18 @@ class DataArray(object):
             raise ValueError("Axis must be in [0, 1, 2]")
 
         undo_operation = (self._adjust_cell_attributes,
-                          [insertion_point, -no_to_insert, axis, mark_unredo])
+                          [insertion_point, -no_to_insert, axis, tab,
+                           mark_unredo])
         redo_operation = (self._adjust_cell_attributes,
-                          [insertion_point, no_to_insert, axis, mark_unredo])
+                          [insertion_point, no_to_insert, axis, tab,
+                           mark_unredo])
 
         self.unredo.append(undo_operation, redo_operation)
 
         if mark_unredo:
             self.unredo.mark()
 
-    def insert(self, insertion_point, no_to_insert, axis):
+    def insert(self, insertion_point, no_to_insert, axis, tab=None):
         """Inserts no_to_insert rows/cols/tabs/... before insertion_point
 
         Parameters
@@ -921,6 +918,8 @@ class DataArray(object):
         \tNumber of rows/cols/tabs that shall be inserted
         axis: Integer
         \tSpecifies number of dimension, i.e. 0 == row, 1 == col, ...
+        tab: Integer, defaults to None
+        \tIf given then insertion is limited to this tab for axis < 2
 
         """
 
@@ -937,14 +936,12 @@ class DataArray(object):
         del_keys = []
 
         for key in self.dict_grid.keys():
-            if key[axis] > insertion_point:
+            if key[axis] > insertion_point and (tab is None or tab == key[2]):
                 new_key = list(key)
                 new_key[axis] += no_to_insert
-
-                new_keys[tuple(new_key)] = self(key)
+                if 0 <= new_key[axis] < self.shape[axis]:
+                    new_keys[tuple(new_key)] = self(key)
                 del_keys.append(key)
-
-        self._adjust_shape(no_to_insert, axis, mark_unredo=False)
 
         # Now re-insert moved keys
 
@@ -955,14 +952,14 @@ class DataArray(object):
             if key not in new_keys and self(key) is not None:
                 self.pop(key, mark_unredo=False)
 
-        self._adjust_rowcol(insertion_point, no_to_insert, axis,
+        self._adjust_rowcol(insertion_point, no_to_insert, axis, tab=tab,
                             mark_unredo=False)
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis,
-                                     mark_unredo=False)
+                                     tab=tab, mark_unredo=False)
 
         self.unredo.mark()
 
-    def delete(self, deletion_point, no_to_delete, axis):
+    def delete(self, deletion_point, no_to_delete, axis, tab=None):
         """Deletes no_to_delete rows/cols/... starting with deletion_point
 
         Axis specifies number of dimension, i.e. 0 == row, 1 == col, ...
@@ -989,15 +986,16 @@ class DataArray(object):
 
         # Note that the loop goes over a list that copies all dict keys
         for key in self.dict_grid.keys():
-            if deletion_point <= key[axis] < deletion_point + no_to_delete:
-                del_keys.append(key)
+            if tab is None or tab == key[2]:
+                if deletion_point <= key[axis] < deletion_point + no_to_delete:
+                    del_keys.append(key)
 
-            elif key[axis] >= deletion_point + no_to_delete:
-                new_key = list(key)
-                new_key[axis] -= no_to_delete
+                elif key[axis] >= deletion_point + no_to_delete:
+                    new_key = list(key)
+                    new_key[axis] -= no_to_delete
 
-                new_keys[tuple(new_key)] = self(key)
-                del_keys.append(key)
+                    new_keys[tuple(new_key)] = self(key)
+                    del_keys.append(key)
 
         # Now re-insert moved keys
 
@@ -1009,12 +1007,10 @@ class DataArray(object):
                 self.pop(key, mark_unredo=False)
 
         if axis in (0, 1):
-            self._adjust_rowcol(deletion_point, -no_to_delete, axis,
+            self._adjust_rowcol(deletion_point, -no_to_delete, axis, tab=tab,
                                 mark_unredo=False)
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
-                                     mark_unredo=False)
-
-        self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
+                                     tab=tab, mark_unredo=False)
 
         self.unredo.mark()
 

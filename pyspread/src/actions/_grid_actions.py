@@ -526,7 +526,9 @@ class TableRowActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.insert(row, no_rows, axis=0)
+        tab = self.grid.current_table
+
+        self.code_array.insert(row, no_rows, axis=0, tab=tab)
 
     def delete_rows(self, row, no_rows=1):
         """Deletes no_rows rows and marks grid as changed"""
@@ -535,8 +537,10 @@ class TableRowActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
+        tab = self.grid.current_table
+
         try:
-            self.code_array.delete(row, no_rows, axis=0)
+            self.code_array.delete(row, no_rows, axis=0, tab=tab)
 
         except ValueError, err:
             post_command_event(self.main_window, self.StatusBarMsg,
@@ -569,7 +573,9 @@ class TableColumnActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.insert(col, no_cols, axis=1)
+        tab = self.grid.current_table
+
+        self.code_array.insert(col, no_cols, axis=1, tab=tab)
 
     def delete_cols(self, col, no_cols=1):
         """Deletes no_cols column and marks grid as changed"""
@@ -578,8 +584,10 @@ class TableColumnActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
+        tab = self.grid.current_table
+
         try:
-            self.code_array.delete(col, no_cols, axis=1)
+            self.code_array.delete(col, no_cols, axis=1, tab=tab)
 
         except ValueError, err:
             post_command_event(self.main_window, self.StatusBarMsg,
