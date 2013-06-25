@@ -63,6 +63,7 @@ setup(
         '*.py',
         '../pyspread.sh',
         '../pyspread.bat',
+        '../runtests.py',
         'src/*.py',
         'src/pyspread',
         'src/*/*.py',

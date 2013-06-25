@@ -393,13 +393,6 @@ class TestDataArray(object):
         assert [[list(e) for e in c] for c in cell_array] == \
             [[[None] * 5] * 5] * 5
 
-    def test_adjust_shape(self):
-        """Unit test for _adjust_shape"""
-
-        self.data_array._adjust_shape(2, 0)
-        res = list(self.data_array.shape)
-        assert res == [102, 100, 100]
-
     def test_set_cell_attributes(self):
         """Unit test for _set_cell_attributes"""
 
@@ -438,13 +431,12 @@ class TestDataArray(object):
     def test_insert(self):
         """Unit test for insert operation"""
 
-        self.data_array[2, 3, 4] = 42
-        self.data_array.insert(1, 100, 0)
+        self.data_array[2, 3, 0] = 42
+        self.data_array.insert(1, 1, 0)
 
-        assert self.data_array.shape == (200, 100, 100)
-        assert self.data_array[2, 3, 4] is None
+        assert self.data_array[2, 3, 0] is None
 
-        assert self.data_array[102, 3, 4] == 42
+        assert self.data_array[3, 3, 0] == 42
 
     def test_delete(self):
         """Tests delete operation"""
@@ -454,8 +446,6 @@ class TestDataArray(object):
 
         assert self.data_array[2, 3, 4] is None
         assert self.data_array[1, 3, 4] == "42"
-        print self.data_array.shape
-        assert self.data_array.shape == (99, 100, 100)
 
         try:
             self.data_array.delete(1, 1000, 0)

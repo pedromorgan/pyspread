@@ -424,7 +424,6 @@ class TestTableColumnActionsMixin(object):
         {'col': 0, 'no_cols': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': None},
         {'col': 0, 'no_cols': 1, 'test_key': (1, 2, 0), 'test_val': "3"},
-        {'col': 0, 'no_cols': 5000, 'test_key': (1, 5001, 0), 'test_val': "3"},
     ]
 
     @params(param_insert_cols)
@@ -466,12 +465,9 @@ class TestTableTabActionsMixin(object):
         {'tab': -1, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'tab': -1, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': None},
         {'tab': -1, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': "'Test'"},
-        {'tab': -1, 'no_tabs': 5, 'test_key': (0, 0, 5), 'test_val': "'Test'"},
+        {'tab': -1, 'no_tabs': 2, 'test_key': (0, 0, 2), 'test_val': "'Test'"},
         {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': None},
-        {'tab': 0, 'no_tabs': 1, 'test_key': (1, 2, 3), 'test_val': "78"},
-        {'tab': 0, 'no_tabs': 5000, 'test_key': (1, 2, 5002),
-         'test_val': "78"},
     ]
 
     @params(param_insert_tabs)

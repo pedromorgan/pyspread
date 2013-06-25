@@ -75,7 +75,7 @@ class DefaultConfig(object):
         self.max_result_length = "1000"
 
         # Colors
-        self.grid_color = repr(wx.SYS_COLOUR_ACTIVEBORDER)
+        self.grid_color = repr(wx.SYS_COLOUR_GRAYTEXT)
         self.selection_color = repr(wx.SYS_COLOUR_HIGHLIGHT)
         self.background_color = repr(wx.SYS_COLOUR_WINDOW)
         self.text_color = repr(wx.SYS_COLOUR_WINDOWTEXT)
