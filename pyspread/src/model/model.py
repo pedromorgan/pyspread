@@ -56,6 +56,8 @@ from src.lib.selection import Selection
 
 import src.lib.charts as charts
 
+from src.sysvars import get_color, get_font_string
+
 from unredo import UnRedo
 
 
@@ -94,14 +96,14 @@ class CellAttributes(list):
     default_cell_attributes = {
         "borderwidth_bottom": 1,
         "borderwidth_right": 1,
-        "bordercolor_bottom": wx.Colour(*config["grid_color"]).GetRGB(),
-        "bordercolor_right": wx.Colour(*config["grid_color"]).GetRGB(),
-        "bgcolor": wx.Colour(*config["background_color"]).GetRGB(),
-        "textfont": config["font"],
+        "bordercolor_bottom": get_color(config["grid_color"]).GetRGB(),
+        "bordercolor_right": get_color(config["grid_color"]).GetRGB(),
+        "bgcolor": get_color(config["background_color"]).GetRGB(),
+        "textfont": get_font_string(config["font"]),
         "pointsize": 10,
         "fontweight": wx.NORMAL,
         "fontstyle": wx.NORMAL,
-        "textcolor": wx.Colour(*config["text_color"]).GetRGB(),
+        "textcolor": get_color(config["text_color"]).GetRGB(),
         "underline": False,
         "strikethrough": False,
         "angle": 0.0,

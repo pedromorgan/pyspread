@@ -45,6 +45,7 @@ import src.lib.i18n as i18n
 from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
+from src.sysvars import get_color
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -67,7 +68,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         # Zoom of grid
         self.zoom = 1.0
 
-        # Old curso position
+        # Old cursor position
         self.old_cursor_row_col = 0, 0
 
     def get_zoomed_size(self, size):
@@ -661,13 +662,11 @@ class Background(object):
     def draw_background(self, dc):
         """Draws the background of the background"""
 
-        color = wx.Colour()
-
         if self.selection:
-            color.Set(*config["selection_color"])
+            color = get_color(config["selection_color"])
         else:
             rgb = self.data_array.cell_attributes[self.key]["bgcolor"]
-            color.SetRGB(rgb)
+            color = wx.Colour().SetRGB(rgb)
 
         bgbrush = wx.Brush(color, wx.SOLID)
 

@@ -71,9 +71,9 @@ def get_dpi():
 
 
 def get_color(name):
-    """Returns string representation of named system color"""
+    """Returns system color from name"""
 
-    return wx.SystemSettings.GetColour(name).Get()
+    return wx.SystemSettings.GetColour(name)
 
 
 def get_default_font():

@@ -71,6 +71,8 @@ class Grid(wx.grid.Grid, EventMixin):
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
 
+        self.SetDefaultCellBackgroundColour(wx.Color(255, 255, 255, 255))
+
         # Cursor position on entering selection mode
         self.sel_mode_cursor = None
 
