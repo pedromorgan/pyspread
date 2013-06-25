@@ -77,6 +77,45 @@ Help html window now goes back with right click
 UTF-8 symbols removed from tutorial
 Assignment identification in model.py changed to ast
 Year numbers removed from Copyright notices
+Markup added to README
+pyspread.py simplified
+Norwegian po file added and converted to mo
+Legacy help images deleted
+Last row/column/table cannot be deleted any longer
+Old mouse clicked based referencing removed
+Attributes toolbar is now updated when attribute is changed via the menu
+Font styles other than condensed work now. Condensedn wont work.
+Attributes toolbar now updates when FontDialog is closed
+Grid cell cache is now deleted when grid is resized
+Unredo is now made impossible when changing the grid shape
+Inserting rows is now undoable in one step
+Row/column insertion now is at lower/right border of bbox
+If a string is imported from csv as unicode then utf-8 is assumed and tried out.
+Norwegian Nyorsk po file updated
+Norwegian Bokmaal po file added
+unredo simplified
+Row and column changes are now done with markers updated immediately in grid
+Markers added for cell attribute changes
+Andreas Noteng added to translators in About dialog
+Standard search direction for Find/Replace dialog switched to down
+Toolbar toggles are now updated correcly when a toolbar is closed
+CSV export now works for large amounts of data
+pys file opening switched to new fileio class that allows aborts
+Saving pys files now uses new fileio interface
+CSV import can now be aborted
+Export csv now exports all data in current cell if no selection is present
+When opening a file, the current cell is now reset to (0, 0, 0)
+Creating an empty grid when the cursor is outside the new grid dimensions is now done witout error messages
+When a new grid is created or a file is opened, the grid is now considered unchanged
+Importing into a selection works now
+Insert now works similarly for code and for cell attributes
+Cell attributes are now transfered if tables are inserted and deleted
+Switching tables via the mouse wheel now synchronizes correctly between table and TableChoiceIntCtrl
+Replacing cell content with a string that contains the search now updates each cell only once
+Clicking on merged cells no longer results in error messages
+Insertion and deletion actions do not resize grid any more and affect only current table
+Colors now adapt to dark themes
+Added runtests py to distribution package
 
 0.2.3
 -----
