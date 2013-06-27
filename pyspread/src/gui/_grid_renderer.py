@@ -666,7 +666,8 @@ class Background(object):
             color = get_color(config["selection_color"])
         else:
             rgb = self.data_array.cell_attributes[self.key]["bgcolor"]
-            color = wx.Colour().SetRGB(rgb)
+            color = wx.Colour()
+            color.SetRGB(rgb)
 
         bgbrush = wx.Brush(color, wx.SOLID)
 

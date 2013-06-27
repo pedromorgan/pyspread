@@ -720,8 +720,6 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
     def OnUpdate(self, event):
         """Updates the toolbar states"""
 
-        wx.Yield()
-
         attributes = event.attr
 
         self._update_font(attributes["textfont"])
