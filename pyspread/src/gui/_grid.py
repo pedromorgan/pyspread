@@ -466,16 +466,17 @@ class GridCellEventHandlers(object):
                                                                message, style)
 
         try:
-            bmp = wx.Bitmap(filepath)
+            img = wx.EmptyImage(1, 1)
+            img.LoadFile(filepath)
         except TypeError:
             return
 
-        if bmp.Size == (-1, -1):
+        if img.GetSize() == (-1, -1):
             # Bitmap could not be read
             return
 
         key = self.grid.actions.cursor
-        code = self.grid.main_window.actions.bmp2code(key, bmp)
+        code = self.grid.main_window.actions.img2code(key, img)
 
         self.grid.actions.set_code(key, code)
 

@@ -454,23 +454,35 @@ class ClipboardActions(Actions):
 
         return self.copy(selection, getter=getter)
 
-    def bmp2code(self, key, bmp):
-        """Pastes bitmap into single cell"""
-
-        assert type(bmp) is wx._gdi.Bitmap
+    def img2code(self, key, img):
+        """Pastes wx.Image into single cell"""
 
         code_template = \
-            "wx.BitmapFromImage(wx.ImageFromData(" + \
-            "{width}, {height}, bz2.decompress(base64.b64decode('{data}'))))"
+            "wx.ImageFromData({width}, {height}, " + \
+            "bz2.decompress(base64.b64decode('{data}'))).ConvertToBitmap()"
 
-        img = bmp.ConvertToImage()
+        code_alpha_template = \
+            "wx.ImageFromDataWithAlpha({width}, {height}, " + \
+            "bz2.decompress(base64.b64decode('{data}')), " + \
+            "bz2.decompress(base64.b64decode('{alpha}'))).ConvertToBitmap()"
 
         data = base64.b64encode(bz2.compress(img.GetData(), 9))
 
-        code_str = code_template.format(width=img.GetWidth(),
-                                        height=img.GetHeight(), data=data)
+        if img.HasAlpha():
+            alpha = base64.b64encode(bz2.compress(img.GetAlphaData(), 9))
+            code_str = code_alpha_template.format(
+                width=img.GetWidth(), height=img.GetHeight(),
+                data=data, alpha=alpha)
+        else:
+            code_str = code_template.format(width=img.GetWidth(),
+                                            height=img.GetHeight(), data=data)
 
         return code_str
+
+    def bmp2code(self, key, bmp):
+        """Pastes wx.Bitmap into single cell"""
+
+        return self.img2code(key, bmp.ConvertToImage())
 
     def _get_paste_data_gen(self, key, data):
         """Generator for paste data
