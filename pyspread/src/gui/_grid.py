@@ -41,6 +41,7 @@ from _menubars import ContextMenu
 from _chart_dialog import ChartDialog
 
 import src.lib.i18n as i18n
+from src.sysvars import is_gtk
 
 import src.lib.xrect as xrect
 from src.model.model import CodeArray
@@ -720,7 +721,9 @@ class GridCellEventHandlers(object):
         self.grid.ForceRefresh()
 
         self.grid.update_attribute_toolbar()
-        wx.Yield()
+
+        if is_gtk():
+            wx.Yield()
 
         event.Skip()
 

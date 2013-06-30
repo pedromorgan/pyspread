@@ -52,7 +52,7 @@ import os
 import wx
 
 from src.config import config
-from src.sysvars import get_default_font
+from src.sysvars import get_default_font, is_gtk
 
 from src.gui._grid_table import GridTable
 
@@ -131,7 +131,8 @@ class FileActions(Actions):
                     pass
 
             # Now wait for the statusbar update to be written on screen
-            wx.Yield()
+            if is_gtk():
+                wx.Yield()
 
             # Abort if we have to
             if self.need_abort:
@@ -1085,7 +1086,7 @@ class GridActions(Actions):
         """Returns current grid cursor cell (row, col, tab)"""
 
         return self.grid.GetGridCursorRow(), self.grid.GetGridCursorCol(), \
-               self.grid.current_table
+            self.grid.current_table
 
     def set_cursor(self, value):
         """Changes the grid cursor cell.
@@ -1104,7 +1105,8 @@ class GridActions(Actions):
             if tab != self.cursor[2]:
                 post_command_event(self.main_window,
                                    self.GridActionTableSwitchMsg, newtable=tab)
-                wx.Yield()
+                if is_gtk():
+                    wx.Yield()
         else:
             row, col = value
             self.grid._last_selected_cell = row, col, self.grid.current_table

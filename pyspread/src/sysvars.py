@@ -33,6 +33,10 @@ import os
 import wx
 
 
+# OS
+def is_gtk():
+    return "__WXGTK__" in wx.PlatformInfo
+
 # Paths
 
 

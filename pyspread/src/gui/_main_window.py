@@ -39,7 +39,7 @@ from matplotlib.figure import Figure
 
 import src.lib.i18n as i18n
 from src.config import config
-from src.sysvars import get_python_tutorial_path
+from src.sysvars import get_python_tutorial_path, is_gtk
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
@@ -602,7 +602,9 @@ class MainWindowEventHandlers(EventMixin):
         post_command_event(self.main_window, self.main_window.ResizeGridMsg,
                            shape=shape)
 
-        wx.Yield()
+        if is_gtk():
+            wx.Yield()
+
         self.main_window.grid.actions.change_grid_shape(shape)
 
         self.main_window.grid.GetTable().ResetView()
@@ -615,7 +617,8 @@ class MainWindowEventHandlers(EventMixin):
 
         self.main_window.grid.ForceRefresh()
 
-        wx.Yield()
+        if is_gtk():
+            wx.Yield()
 
         # Mark content as unchanged
         try:
@@ -672,7 +675,8 @@ class MainWindowEventHandlers(EventMixin):
 
         self.main_window.grid.ForceRefresh()
 
-        wx.Yield()
+        if is_gtk():
+            wx.Yield()
 
         # Mark content as unchanged
         try:
@@ -1071,7 +1075,8 @@ class MainWindowEventHandlers(EventMixin):
                                self.main_window.FontItalicsMsg,
                                style=font.GetStyleString())
 
-            wx.Yield()
+            if is_gtk():
+                wx.Yield()
 
             self.main_window.grid.update_attribute_toolbar()
 

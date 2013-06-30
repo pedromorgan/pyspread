@@ -41,6 +41,7 @@ import i18n
 import wx
 
 from src.gui._events import post_command_event
+from src.sysvars import is_gtk
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -129,7 +130,8 @@ class AOpenMixin(object):
                 pass
 
             # Now wait for the statusbar update to be written on screen
-            wx.Yield()
+            if is_gtk():
+                wx.Yield()
 
         self.line += 1
 

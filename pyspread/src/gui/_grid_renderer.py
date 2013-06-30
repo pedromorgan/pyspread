@@ -45,7 +45,7 @@ import src.lib.i18n as i18n
 from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
-from src.sysvars import get_color
+from src.sysvars import get_color, is_gtk
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -595,7 +595,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 bg = self.backgrounds[bg_key] = \
                     Background(grid, rect, self.data_array, *key)
 
-        if "__WXGTK__" in wx.PlatformInfo and not printing:
+        if is_gtk() and not printing:
             mask_type = wx.AND
         else:
             mask_type = wx.COPY
