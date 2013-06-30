@@ -497,7 +497,7 @@ class GridCellEventHandlers(object):
             # Bitmap could not be read
             return
 
-        code = "wx.Bitmap('{filepath}')".format(filepath=filepath)
+        code = "wx.Bitmap(r'{filepath}')".format(filepath=filepath)
 
         key = self.grid.actions.cursor
         self.grid.actions.set_code(key, code)
