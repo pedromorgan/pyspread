@@ -871,9 +871,20 @@ class DataArray(object):
 
         if axis < 2:
             # Adjust selections
-            for selection, _, table in self.cell_attributes:
+            for key in self.cell_attributes:
+                selection, table, value = key
                 if tab is None or tab == table:
                     selection.insert(insertion_point, no_to_insert, axis)
+                    # Update merge area if present
+                    if "merge_area" in value:
+                        top, left, bottom, right = value["merge_area"]
+                        ma_sel = Selection([(top, left)], [(bottom, right)],
+                                           [], [], [])
+                        ma_sel.insert(insertion_point, no_to_insert, axis)
+                        __top, __left = ma_sel.block_tl[0]
+                        __bottom, __right = ma_sel.block_br[0]
+
+                        value["merge_area"] = __top, __left, __bottom, __right
 
             self.cell_attributes._attr_cache.clear()
 
