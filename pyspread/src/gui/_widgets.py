@@ -720,6 +720,10 @@ class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
         self.selection_toggle_button.SetToolTip(tooltip)
         self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)
 
+        if not is_gtk():
+            # TODO: Selections still do not work right on Windows
+            self.selection_toggle_button.Disable()
+
         self.__do_layout()
 
     def __do_layout(self):
