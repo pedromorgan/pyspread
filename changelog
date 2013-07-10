@@ -116,6 +116,12 @@ Clicking on merged cells no longer results in error messages
 Insertion and deletion actions do not resize grid any more and affect only current table
 Colors now adapt to dark themes
 Added runtests py to distribution package
+Linked bitmaps now work under Windows
+Parsing of title string to chart_dialog fixed
+wx.Yield errors in non-GTK environments removed
+In cell bitmaps with alpha transparency are now supported
+Disabled selection mode for non-GTK environments
+
 
 0.2.3
 -----
