@@ -604,7 +604,11 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 bg.dc, 0, 0, mask_type)
 
         # Check if the dc is drawn manually be a return func
-        res = self.data_array[row, col, grid.current_table]
+        try:
+            res = self.data_array[row, col, grid.current_table]
+
+        except IndexError:
+            return
 
         if isinstance(res, types.FunctionType):
             # Add func_dict attribute

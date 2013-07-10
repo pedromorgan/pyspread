@@ -942,7 +942,7 @@ class DataArray(object):
             raise ValueError("Axis not in grid dimensions")
 
         if insertion_point > self.shape[axis] or \
-           insertion_point <= -self.shape[axis]:
+           insertion_point < -self.shape[axis]:
             raise IndexError("Insertion point not in grid")
 
         new_keys = {}
