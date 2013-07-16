@@ -863,28 +863,41 @@ class DataArray(object):
             self.unredo.mark()
 
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis,
-                                tab=None, mark_unredo=True):
+                                tab=None, cell_attrs=None, mark_unredo=True):
         """Adjusts cell attributes on insertion/deletion"""
 
         if mark_unredo:
             self.unredo.mark()
 
+        old_cell_attrs = self.cell_attributes[:]
+
         if axis < 2:
             # Adjust selections
-            for key in self.cell_attributes:
-                selection, table, value = key
-                if tab is None or tab == table:
-                    selection.insert(insertion_point, no_to_insert, axis)
-                    # Update merge area if present
-                    if "merge_area" in value:
-                        top, left, bottom, right = value["merge_area"]
-                        ma_sel = Selection([(top, left)], [(bottom, right)],
-                                           [], [], [])
-                        ma_sel.insert(insertion_point, no_to_insert, axis)
-                        __top, __left = ma_sel.block_tl[0]
-                        __bottom, __right = ma_sel.block_br[0]
 
-                        value["merge_area"] = __top, __left, __bottom, __right
+            if cell_attrs is None:
+                cell_attrs = []
+
+                for key in self.cell_attributes:
+                    selection, table, value = key
+                    if tab is None or tab == table:
+                        new_sel = copy(selection)
+                        new_val = copy(value)
+                        new_sel.insert(insertion_point, no_to_insert, axis)
+                        # Update merge area if present
+                        if "merge_area" in value:
+                            top, left, bottom, right = value["merge_area"]
+                            ma_sel = Selection([(top, left)],
+                                               [(bottom, right)], [], [], [])
+                            ma_sel.insert(insertion_point, no_to_insert, axis)
+                            __top, __left = ma_sel.block_tl[0]
+                            __bottom, __right = ma_sel.block_br[0]
+
+                            new_val["merge_area"] = \
+                                __top, __left, __bottom, __right
+
+                        cell_attrs.append((new_sel, table, new_val))
+
+            self.cell_attributes[:] = cell_attrs
 
             self.cell_attributes._attr_cache.clear()
 
@@ -909,10 +922,10 @@ class DataArray(object):
 
         undo_operation = (self._adjust_cell_attributes,
                           [insertion_point, -no_to_insert, axis, tab,
-                           mark_unredo])
+                           old_cell_attrs, mark_unredo])
         redo_operation = (self._adjust_cell_attributes,
                           [insertion_point, no_to_insert, axis, tab,
-                           mark_unredo])
+                           cell_attrs, mark_unredo])
 
         self.unredo.append(undo_operation, redo_operation)
 
