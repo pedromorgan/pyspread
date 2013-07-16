@@ -641,7 +641,8 @@ class MacroActions(Actions):
         io_error_text = io_error_text.format(filepath=filepath)
 
         try:
-            macro_outfile = open(filepath, "w")
+            with open(filepath, "w") as macro_outfile:
+                macro_outfile.write(macros)
 
         except IOError:
             txt = _("Error opening file {filepath}.").format(filepath=filepath)
@@ -652,10 +653,9 @@ class MacroActions(Actions):
                 # The main window does not exist any more
                 pass
 
-            return False
+            wx.EndBusyCursor()
 
-        macro_outfile.write(macros)
-        macro_outfile.close()
+            return False
 
 
 class HelpActions(Actions):

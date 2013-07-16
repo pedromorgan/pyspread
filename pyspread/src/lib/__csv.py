@@ -41,6 +41,8 @@ import datetime
 import os
 import types
 
+import wx
+
 from src.config import config
 
 from src.gui._events import post_command_event, StatusBarEventMixin
@@ -383,7 +385,12 @@ class CsvInterface(StatusBarEventMixin):
         io_error_text = io_error_text.format(filepath=self.path)
 
         try:
-            csvfile = open(self.path, "wb")
+
+            with open(self.path, "wb") as csvfile:
+                csv_writer = csv.writer(csvfile, self.dialect)
+
+                for line in iterable:
+                    csv_writer.writerow(list(line))
 
         except IOError:
             txt = \
@@ -394,14 +401,8 @@ class CsvInterface(StatusBarEventMixin):
             except TypeError:
                 # The main window does not exist any more
                 pass
+
             return False
-
-        csv_writer = csv.writer(csvfile, self.dialect)
-
-        for line in iterable:
-            csv_writer.writerow(list(line))
-
-        csvfile.close()
 
 
 class TxtGenerator(StatusBarEventMixin):

@@ -436,6 +436,7 @@ class FileActions(Actions):
             pass
 
         try:
+            wx.BeginBusyCursor()
             with Bz2AOpen(filepath, "wb", main_window=self.main_window) \
                     as outfile:
 
@@ -463,6 +464,8 @@ class FileActions(Actions):
                 # The main window does not exist any more
                 pass
 
+            wx.EndBusyCursor()
+
             return False
 
         finally:
@@ -478,6 +481,7 @@ class FileActions(Actions):
                 pass
 
             self.saving = False
+            wx.EndBusyCursor()
 
         # Mark content as unchanged
         try:
