@@ -181,7 +181,14 @@ class FileActions(Actions):
     def approve(self, filepath):
         """Sets safe mode if signature missing of invalid"""
 
-        if self.validate_signature(filepath):
+        try:
+            signature_valid = self.validate_signature(filepath)
+
+        except ValueError:
+            # GPG is not installed
+            signature_valid = False
+
+        if signature_valid:
             self.leave_safe_mode()
             post_command_event(self.main_window, self.SafeModeExitMsg)
 
