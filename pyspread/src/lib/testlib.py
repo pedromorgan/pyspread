@@ -27,6 +27,8 @@ Helper functions for unit tests
 
 """
 
+import wx
+
 # Standard grid values for initial filling
 
 grid_values = { \
@@ -65,7 +67,7 @@ def basic_setup_test(grid, func, test_key, test_val, *args, **kwargs):
     restore_basic_grid(grid)
 
     func(*args, **kwargs)
-
+    grid.code_array.result_cache.clear()
     assert grid.code_array(test_key) == test_val
 
 

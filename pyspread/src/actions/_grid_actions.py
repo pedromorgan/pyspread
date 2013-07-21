@@ -45,7 +45,6 @@ Provides:
 
 """
 
-import bz2
 import itertools
 import src.lib.i18n as i18n
 import os
@@ -53,7 +52,7 @@ import os
 import wx
 
 from src.config import config
-from src.sysvars import get_default_font
+from src.sysvars import get_default_font, is_gtk
 
 from src.gui._grid_table import GridTable
 
@@ -65,6 +64,7 @@ except ImportError:
     GPG_PRESENT = False
 
 from src.lib.selection import Selection
+from src.lib.fileio import Bz2AOpen
 
 from src.actions._main_window_actions import Actions
 from src.actions._grid_cell_actions import CellActions
@@ -81,12 +81,16 @@ class FileActions(Actions):
     def __init__(self, grid):
         Actions.__init__(self, grid)
 
+        # The pys file version that are expected.
+        # The latter version is created
+        self.pys_versions = ["0.1"]
+
         self.saving = False
 
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_OPEN, self.open)
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_SAVE, self.save)
 
-    def _is_aborted(self, cycle, statustext, total_elements=None, freq=100):
+    def _is_aborted(self, cycle, statustext, total_elements=None, freq=None):
         """Displays progress and returns True if abort
 
         Parameters
@@ -98,8 +102,8 @@ class FileActions(Actions):
         \tLeft text in statusbar to be displayed
         total_elements: Integer:
         \tThe number of elements that have to be processed
-        freq: Integer, defaults to 1000
-        \tNo. operations between two abort possibilities
+        freq: Integer, defaults to None
+        \tNo. operations between two abort possibilities, 1000 if None
 
         """
 
@@ -109,18 +113,26 @@ class FileActions(Actions):
             statustext += _("{nele} of {totalele} elements processed. "
                             "Press <Esc> to abort.")
 
+        if freq is None:
+            show_msg = False
+            freq = 1000
+        else:
+            show_msg = True
+
         # Show progress in statusbar each freq (1000) cells
         if cycle % freq == 0:
-            text = statustext.format(nele=cycle, totalele=total_elements)
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=text)
-            except TypeError:
-                # The main window does not exist any more
-                pass
+            if show_msg:
+                text = statustext.format(nele=cycle, totalele=total_elements)
+                try:
+                    post_command_event(self.main_window, self.StatusBarMsg,
+                                       text=text)
+                except TypeError:
+                    # The main window does not exist any more
+                    pass
 
             # Now wait for the statusbar update to be written on screen
-            wx.Yield()
+            if is_gtk():
+                wx.Yield()
 
             # Abort if we have to
             if self.need_abort:
@@ -169,7 +181,14 @@ class FileActions(Actions):
     def approve(self, filepath):
         """Sets safe mode if signature missing of invalid"""
 
-        if self.validate_signature(filepath):
+        try:
+            signature_valid = self.validate_signature(filepath)
+
+        except ValueError:
+            # GPG is not installed
+            signature_valid = False
+
+        if signature_valid:
             self.leave_safe_mode()
             post_command_event(self.main_window, self.SafeModeExitMsg)
 
@@ -208,18 +227,6 @@ class FileActions(Actions):
         for line2 in infile:
             return line2.strip()
 
-    def _abort_open(self, filepath, infile):
-        """Aborts file open"""
-
-        statustext = _("File loading aborted.")
-        post_command_event(self.main_window, self.StatusBarMsg,
-                           text=statustext)
-
-        infile.close()
-
-        self.opening = False
-        self.need_abort = False
-
     def clear(self, shape=None):
         """Empties grid and sets shape to shape
 
@@ -234,6 +241,13 @@ class FileActions(Actions):
         \tShape unchanged if None
 
         """
+
+        # Without setting this explicitly, the cursor is set too late
+        self.grid.actions.cursor = 0, 0, 0
+        self.grid.current_table = 0
+
+        post_command_event(self.main_window.grid, self.GotoCellMsg,
+                           key=(0, 0, 0))
 
         # Clear cells
         self.code_array.dict_grid.clear()
@@ -269,80 +283,71 @@ class FileActions(Actions):
 
         filepath = event.attr["filepath"]
 
+        # Content parsers
+
+        dict_grid = self.code_array.dict_grid
+
+        section_readers = {
+            "[shape]": dict_grid.parse_to_shape,
+            "[grid]": dict_grid.parse_to_grid,
+            "[attributes]": dict_grid.parse_to_attribute,
+            "[row_heights]": dict_grid.parse_to_height,
+            "[col_widths]": dict_grid.parse_to_width,
+            "[macros]": dict_grid.parse_to_macro,
+        }
+
         # Set states for file open
 
         self.opening = True
-        self.need_abort = False
 
         try:
-            infile = bz2.BZ2File(filepath, "r")
+            with Bz2AOpen(filepath, "r", main_window=self.main_window) \
+                    as infile:
+                # Make loading safe
+                self.approve(filepath)
 
-        except IOError:
-            txt = _("Error opening file {filepath}.").format(filepath=filepath)
-            post_command_event(self.main_window, self.StatusBarMsg, text=txt)
+                # Abort if file version not supported
 
-            return False
+                version = self._get_file_version(infile)
 
-        # Make loading safe
-        self.approve(filepath)
-
-        # Abort if file version not supported
-        try:
-            version = self._get_file_version(infile)
-            if version != "0.1":
-                text = _("File version {version} unsupported (not 0.1).")
-                text = text.format(version=version)
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=text)
-
-                return False
-
-        except (IOError, ValueError), errortext:
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=errortext)
-
-        # Parse content
-
-        def parser(*args):
-            """Dummy parser. Raises ValueError"""
-
-            raise ValueError(_("No section parser present."))
-
-        section_readers = {
-            "[shape]": self.code_array.dict_grid.parse_to_shape,
-            "[grid]": self.code_array.dict_grid.parse_to_grid,
-            "[attributes]": self.code_array.dict_grid.parse_to_attribute,
-            "[row_heights]": self.code_array.dict_grid.parse_to_height,
-            "[col_widths]": self.code_array.dict_grid.parse_to_width,
-            "[macros]": self.code_array.dict_grid.parse_to_macro,
-        }
-
-        # Disable undo
-        self.grid.code_array.unredo.active = True
-
-        try:
-            for cycle, line in enumerate(infile):
-                stripped_line = line.decode("utf-8").strip()
-                if stripped_line:
-                    # There is content in this line
-                    if stripped_line in section_readers:
-                        # Switch parser
-                        parser = section_readers[stripped_line]
-                    else:
-                        # Parse line
-                        parser(line)
-                        if parser == self.code_array.dict_grid.parse_to_shape:
-                            # Empty grid
-                            self.clear(self.code_array.shape)
-
-                            self.grid.GetTable().ResetView()
-                else:
-                    pass
-
-                # Enable abort during long saves
-                if self._is_aborted(cycle, "Loading file... "):
-                    self._abort_open(filepath, infile)
+                if version not in self.pys_versions:
+                    text = _("File version {version} unsupported (not 0.1).")
+                    text = text.format(version=version,
+                                       allver=self.pys_versions)
+                    post_command_event(self.main_window, self.StatusBarMsg,
+                                       text=text)
                     return False
+
+                # Disable undo
+                self.grid.code_array.unredo.active = True
+
+                for line in infile:
+                    stripped_line = line.decode("utf-8").strip()
+                    if stripped_line:
+                        # There is content in this line
+                        if stripped_line in section_readers:
+                            # Switch parser
+                            parser = section_readers[stripped_line]
+                        else:
+                            # Parse line
+                            parser(line)
+                            if parser == dict_grid.parse_to_shape:
+                                # Empty grid
+                                self.clear(self.code_array.shape)
+
+                                self.grid.GetTable().ResetView()
+
+                # Execute macros
+                self.main_window.actions.execute_macros()
+
+                # Enable undo again
+                self.grid.code_array.unredo.active = False
+
+                self.grid.GetTable().ResetView()
+                self.grid.ForceRefresh()
+
+                # File sucessfully opened. Approve again to show status.
+                self.approve(filepath)
 
         except IOError:
             txt = _("Error opening file {filepath}.").format(filepath=filepath)
@@ -354,20 +359,8 @@ class FileActions(Actions):
             # Normally on empty grids
             pass
 
-        infile.close()
-        self.opening = False
-
-        # Execute macros
-        self.main_window.actions.execute_macros()
-
-        # Enable undo again
-        self.grid.code_array.unredo.active = False
-
-        self.grid.GetTable().ResetView()
-        self.grid.ForceRefresh()
-
-        # File sucessfully opened. Approve again to show status.
-        self.approve(filepath)
+        finally:
+            self.opening = False
 
     def sign_file(self, filepath):
         """Signs file if possible"""
@@ -389,9 +382,8 @@ class FileActions(Actions):
 
             return
 
-        signfile = open(filepath + '.sig', 'wb')
-        signfile.write(signature)
-        signfile.close()
+        with open(filepath + '.sig', 'wb') as signfile:
+            signfile.write(signature)
 
         # Statustext differs if a save has occurred
 
@@ -407,24 +399,6 @@ class FileActions(Actions):
             # The main window does not exist any more
             pass
 
-    def _abort_save(self, filepath, outfile):
-        """Aborts file save"""
-
-        statustext = _("Save aborted.")
-
-        try:
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
-        except TypeError:
-            # The main window does not exist any more
-            pass
-
-        outfile.close()
-        os.remove(filepath)
-
-        self.saving = False
-        self.need_abort = False
-
     def save(self, event):
         """Saves a file that is specified in event.attr
 
@@ -439,90 +413,82 @@ class FileActions(Actions):
 
         dict_grid = self.code_array.dict_grid
 
-        self.saving = True
-        self.need_abort = False
-
         io_error_text = _("Error writing to file {filepath}.")
         io_error_text = io_error_text.format(filepath=filepath)
-
-        # Save file is compressed
-        try:
-            outfile = bz2.BZ2File(filepath, "wb")
-
-        except IOError:
-            txt = _("Error opening file {filepath}.").format(filepath=filepath)
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=txt)
-            except TypeError:
-                # The main window does not exist any more
-                pass
-            return False
-
-        # Header
-        try:
-            outfile.write("[Pyspread save file version]\n")
-            outfile.write("0.1\n")
-
-        except IOError:
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=io_error_text)
-            except TypeError:
-                # The main window does not exist any more
-                pass
-
-            return False
 
         # The output generators yield the lines for the outfile
         output_generators = [
             # Grid content
-            dict_grid.grid_to_strings(),
+            dict_grid.grid_to_strings,
             # Cell attributes
-            dict_grid.attributes_to_strings(),
+            dict_grid.attributes_to_strings,
             # Row heights
-            dict_grid.heights_to_strings(),
+            dict_grid.heights_to_strings,
             # Column widths
-            dict_grid.widths_to_strings(),
+            dict_grid.widths_to_strings,
             # Macros
-            dict_grid.macros_to_strings(),
+            dict_grid.macros_to_strings,
         ]
 
-        # Options for self._is_aborted
-        abort_options_list = [
-            ["Saving grid... ", len(dict_grid), 100000],
-            ["Saving cell attributes... ", len(dict_grid.cell_attributes)],
-            ["Saving row heights... ", len(dict_grid.row_heights)],
-            ["Saving column widths... ", len(dict_grid.col_widths)],
-            ["Saving macros... ", dict_grid.macros.count("\n")],
-        ]
+        # Set state to file saving
+        self.saving = True
 
-        # Save cycle
+        # Make sure that old save file does not get lost on abort save
+        try:
+            tmpfile = filepath + "~"
+            os.rename(filepath, tmpfile)
 
-        for generator, options in zip(output_generators, abort_options_list):
-            for cycle, line in enumerate(generator):
-                try:
-                    outfile.write(line.encode("utf-8"))
+        except OSError:
+            # No file present
+            pass
 
-                except IOError:
-                    try:
-                        post_command_event(self.main_window, self.StatusBarMsg,
-                                           text=io_error_text)
-                    except TypeError:
-                        # The main window does not exist any more
-                        pass
-                    return False
+        try:
+            wx.BeginBusyCursor()
+            with Bz2AOpen(filepath, "wb", main_window=self.main_window) \
+                    as outfile:
 
-                # Enable abort during long saves
-                if self._is_aborted(cycle, *options):
-                    self._abort_save(filepath, outfile)
-                    return False
+                # Header
+                outfile.write("[Pyspread save file version]\n")
+                outfile.write("{ver}\n".format(ver=self.pys_versions[-1]))
 
-        # Save is done
+                # Save cycle
 
-        outfile.close()
+                for generator in output_generators:
+                    for line in generator():
+                        outfile.write(line.encode("utf-8"))
+                        if outfile.aborted:
+                            break
+                    if outfile.aborted:
+                            break
 
-        self.saving = False
+        except IOError:
+            msg = _("Error writing to file {filepath}.")
+            msg = msg.format(filepath=filepath)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=msg)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+            wx.EndBusyCursor()
+
+            return False
+
+        finally:
+            # Remove partial save file if save has been aborted
+
+            try:
+                if outfile.aborted:
+                    os.rename(tmpfile, filepath)
+                else:
+                    os.remove(tmpfile)
+            except OSError:
+                # No tmp file present
+                pass
+
+            self.saving = False
+            wx.EndBusyCursor()
 
         # Mark content as unchanged
         try:
@@ -542,7 +508,7 @@ class FileActions(Actions):
                 # The main window does not exist any more
                 pass
 
-        else:
+        elif not outfile.aborted:
             self.sign_file(filepath)
 
 
@@ -572,7 +538,9 @@ class TableRowActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.insert(row, no_rows, axis=0)
+        tab = self.grid.current_table
+
+        self.code_array.insert(row, no_rows, axis=0, tab=tab)
 
     def delete_rows(self, row, no_rows=1):
         """Deletes no_rows rows and marks grid as changed"""
@@ -581,7 +549,14 @@ class TableRowActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(row, no_rows, axis=0)
+        tab = self.grid.current_table
+
+        try:
+            self.code_array.delete(row, no_rows, axis=0, tab=tab)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableColumnActionsMixin(Actions):
@@ -610,7 +585,9 @@ class TableColumnActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.insert(col, no_cols, axis=1)
+        tab = self.grid.current_table
+
+        self.code_array.insert(col, no_cols, axis=1, tab=tab)
 
     def delete_cols(self, col, no_cols=1):
         """Deletes no_cols column and marks grid as changed"""
@@ -619,7 +596,14 @@ class TableColumnActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(col, no_cols, axis=1)
+        tab = self.grid.current_table
+
+        try:
+            self.code_array.delete(col, no_cols, axis=1, tab=tab)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableTabActionsMixin(Actions):
@@ -649,11 +633,17 @@ class TableTabActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(tab, no_tabs, axis=2)
+        try:
+            self.code_array.delete(tab, no_tabs, axis=2)
 
-        # Update TableChoiceIntCtrl
-        shape = self.grid.code_array.shape
-        post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
+            # Update TableChoiceIntCtrl
+            shape = self.grid.code_array.shape
+            post_command_event(self.main_window, self.ResizeGridMsg,
+                               shape=shape)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
@@ -741,7 +731,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
-    def paste_to_current_cell(self, tl_key, data):
+    def paste_to_current_cell(self, tl_key, data, freq=None):
         """Pastes data into grid from top left cell tl_key
 
         Parameters
@@ -751,6 +741,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         \key of top left cell of paste area
         data: iterable of iterables where inner iterable returns string
         \tThe outer iterable represents rows
+        freq: Integer, defaults to None
+        \tStatus message frequency
 
         """
 
@@ -770,7 +762,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         for src_row, row_data in enumerate(data):
             target_row = tl_row + src_row
 
-            if self.grid.actions._is_aborted(src_row, _("Pasting cells... ")):
+            if self.grid.actions._is_aborted(src_row, _("Pasting cells... "),
+                                             freq=freq):
                 self._abort_paste()
                 return False
 
@@ -812,7 +805,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         self.pasting = False
 
-    def selection_paste_data_gen(self, selection, data):
+    def selection_paste_data_gen(self, selection, data, freq=None):
         """Generator that yields data for selection paste"""
 
         (bb_top, bb_left), (bb_bottom, bb_right) = \
@@ -826,6 +819,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                 break
 
             # Duplicate row data if selection is wider than row data
+            row_data = list(row_data)
             duplicated_row_data = row_data * (bbox_width // len(row_data) + 1)
             duplicated_row_data = duplicated_row_data[:bbox_width]
 
@@ -835,15 +829,15 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
             yield duplicated_row_data
 
-    def paste_to_selection(self, selection, data):
+    def paste_to_selection(self, selection, data, freq=None):
         """Pastes data into grid selection"""
 
         (bb_top, bb_left), (bb_bottom, bb_right) = \
             selection.get_grid_bbox(self.grid.code_array.shape)
         adjusted_data = self.selection_paste_data_gen(selection, data)
-        self.paste_to_current_cell((bb_top, bb_left), adjusted_data)
+        self.paste_to_current_cell((bb_top, bb_left), adjusted_data, freq=freq)
 
-    def paste(self, tl_key, data):
+    def paste(self, tl_key, data, freq=None):
         """Pastes data into grid, marks grid changed
 
         If no selection is present, data is pasted starting with current cell
@@ -857,6 +851,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         \key of top left cell of paste area
         data: iterable of iterables where inner iterable returns string
         \tThe outer iterable represents rows
+        freq: Integer, defaults to None
+        \tStatus message frequency
 
         """
 
@@ -870,10 +866,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         if selection:
             # There is a selection.  Paste into it
-            self.paste_to_selection(selection, data)
+            self.paste_to_selection(selection, data, freq=freq)
         else:
             # There is no selection.  Paste from top left cell.
-            self.paste_to_current_cell(tl_key, data)
+            self.paste_to_current_cell(tl_key, data, freq=freq)
 
     def change_grid_shape(self, shape):
         """Grid shape change event handler, marks content as changed"""
@@ -886,6 +882,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         # Update TableChoiceIntCtrl
         post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
+
+        # Clear caches
+        self.code_array.unredo.reset()
+        self.code_array.result_cache.clear()
 
 
 class UnRedoActions(Actions):
@@ -933,6 +933,10 @@ class GridActions(Actions):
 
         _grid_table = GridTable(self.grid, self.grid.code_array)
         self.grid.SetTable(_grid_table, True)
+
+        # Update toolbars
+        self.grid.update_entry_line()
+        self.grid.update_attribute_toolbar()
 
     # Zoom actions
 
@@ -1089,11 +1093,6 @@ class GridActions(Actions):
 
             self.zoom()
 
-            statustext = _("Switched to table {table}.").format(table=newtable)
-
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
-
     def get_cursor(self):
         """Returns current grid cursor cell (row, col, tab)"""
 
@@ -1112,13 +1111,16 @@ class GridActions(Actions):
         """
 
         if len(value) == 3:
-            row, col, tab = value
+            self.grid._last_selected_cell = row, col, tab = value
 
             if tab != self.cursor[2]:
                 post_command_event(self.main_window,
                                    self.GridActionTableSwitchMsg, newtable=tab)
+                if is_gtk():
+                    wx.Yield()
         else:
             row, col = value
+            self.grid._last_selected_cell = row, col, self.grid.current_table
 
         if not (row is None and col is None):
             self.grid.MakeCellVisible(row, col)
@@ -1197,7 +1199,9 @@ class SelectionActions(Actions):
             [key for key in self.grid.code_array if key[:2] in selection]
 
         for key in del_keys:
-            self.grid.actions.delete_cell(key)
+            self.grid.actions.delete_cell(key, mark_unredo=False)
+
+        self.grid.code_array.unredo.mark()
 
         self.grid.code_array.result_cache.clear()
 

@@ -43,6 +43,7 @@ Provides:
 import ast
 import base64
 import bz2
+from itertools import tee
 import os
 
 import wx
@@ -93,6 +94,9 @@ class ExchangeActions(Actions):
             post_command_event(self.main_window, self.StatusBarMsg, text=msg)
             return
 
+        except TypeError:
+            return  # Import is aborted or empty
+
         return CsvInterface(self.main_window,
                             path, dialect, digest_types, has_header)
 
@@ -131,7 +135,7 @@ class ExchangeActions(Actions):
 
             self.main_window.interfaces.display_warning(msg, short_msg)
 
-    def _export_csv(self, filepath, data):
+    def _export_csv(self, filepath, data, preview_data):
         """CSV export of code_array results
 
         Parameters
@@ -146,7 +150,8 @@ class ExchangeActions(Actions):
 
         # Get csv info
 
-        csv_info = self.main_window.interfaces.get_csv_export_info(data)
+        csv_info = \
+            self.main_window.interfaces.get_csv_export_info(preview_data)
 
         if csv_info is None:
             return
@@ -158,8 +163,8 @@ class ExchangeActions(Actions):
 
         # Export CSV file
 
-        csv_interface = CsvInterface(filepath, dialect, digest_types,
-                                     has_header)
+        csv_interface = CsvInterface(self.main_window, filepath, dialect,
+                                     digest_types, has_header)
 
         try:
             csv_interface.write(data)
@@ -203,7 +208,7 @@ class ExchangeActions(Actions):
         finally:
             outfile.close()
 
-    def export_file(self, filepath, filterindex, data):
+    def export_file(self, filepath, filterindex, data, preview_data=None):
         """Export data for other applications
 
         Parameters
@@ -221,7 +226,7 @@ class ExchangeActions(Actions):
         formats = ["csv", "svg", "eps", "ps", "pdf", "png"]
 
         if filterindex == 0:
-            self._export_csv(filepath, data)
+            self._export_csv(filepath, data, preview_data=preview_data)
 
         elif filterindex >= 1:
             self._export_figure(filepath, data, formats[filterindex])
@@ -449,23 +454,35 @@ class ClipboardActions(Actions):
 
         return self.copy(selection, getter=getter)
 
-    def bmp2code(self, key, bmp):
-        """Pastes bitmap into single cell"""
-
-        assert type(bmp) is wx._gdi.Bitmap
+    def img2code(self, key, img):
+        """Pastes wx.Image into single cell"""
 
         code_template = \
-            "wx.BitmapFromImage(wx.ImageFromData(" + \
-            "{width}, {height}, bz2.decompress(base64.b64decode('{data}'))))"
+            "wx.ImageFromData({width}, {height}, " + \
+            "bz2.decompress(base64.b64decode('{data}'))).ConvertToBitmap()"
 
-        img = bmp.ConvertToImage()
+        code_alpha_template = \
+            "wx.ImageFromDataWithAlpha({width}, {height}, " + \
+            "bz2.decompress(base64.b64decode('{data}')), " + \
+            "bz2.decompress(base64.b64decode('{alpha}'))).ConvertToBitmap()"
 
         data = base64.b64encode(bz2.compress(img.GetData(), 9))
 
-        code_str = code_template.format(width=img.GetWidth(),
-                                        height=img.GetHeight(), data=data)
+        if img.HasAlpha():
+            alpha = base64.b64encode(bz2.compress(img.GetAlphaData(), 9))
+            code_str = code_alpha_template.format(
+                width=img.GetWidth(), height=img.GetHeight(),
+                data=data, alpha=alpha)
+        else:
+            code_str = code_template.format(width=img.GetWidth(),
+                                            height=img.GetHeight(), data=data)
 
         return code_str
+
+    def bmp2code(self, key, bmp):
+        """Pastes wx.Bitmap into single cell"""
+
+        return self.img2code(key, bmp.ConvertToImage())
 
     def _get_paste_data_gen(self, key, data):
         """Generator for paste data
@@ -495,7 +512,7 @@ class ClipboardActions(Actions):
 
         data_gen = self._get_paste_data_gen(key, data)
 
-        self.grid.actions.paste(key[:2], data_gen)
+        self.grid.actions.paste(key[:2], data_gen, freq=1000)
 
         self.main_window.grid.ForceRefresh()
 
@@ -540,7 +557,7 @@ class ClipboardActions(Actions):
             # This is no Python code so te try to interpret it as paste data
             try:
                 obj = [map(ast.literal_eval, line.split("\t"))
-                        for line in data.split("\n")]
+                       for line in data.split("\n")]
 
             except Exception, err:
                 error_msg(err)
@@ -557,7 +574,7 @@ class ClipboardActions(Actions):
         if parameters["transpose"]:
             paste_data = zip(*paste_data)
 
-        self.main_window.grid.actions.paste(key, paste_data)
+        self.main_window.grid.actions.paste(key, paste_data, freq=1000)
 
 
 class MacroActions(Actions):
@@ -624,7 +641,8 @@ class MacroActions(Actions):
         io_error_text = io_error_text.format(filepath=filepath)
 
         try:
-            macro_outfile = open(filepath, "w")
+            with open(filepath, "w") as macro_outfile:
+                macro_outfile.write(macros)
 
         except IOError:
             txt = _("Error opening file {filepath}.").format(filepath=filepath)
@@ -635,10 +653,9 @@ class MacroActions(Actions):
                 # The main window does not exist any more
                 pass
 
-            return False
+            wx.EndBusyCursor()
 
-        macro_outfile.write(macros)
-        macro_outfile.close()
+            return False
 
 
 class HelpActions(Actions):
@@ -677,7 +694,11 @@ class HelpActions(Actions):
         os.chdir(get_help_path())
 
         try:
-            self.help_htmlwindow.LoadFile(filename)
+            if os.path.isfile(filename):
+                self.help_htmlwindow.LoadFile(filename)
+
+            else:
+                self.help_htmlwindow.LoadPage(filename)
 
         except IOError:
             self.help_htmlwindow.LoadPage(filename)

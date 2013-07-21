@@ -345,6 +345,9 @@ class CsvParameterWidgets(object):
         value = list(self.choices['dialects']).index(dialect_name)
 
         if dialect_name == 'sniffer':
+            if self.csvfilepath is None:
+                event.Skip()
+                return None
             dialect, self.has_header = sniff(self.csvfilepath)
         elif dialect_name == 'user':
             event.Skip()
@@ -1066,7 +1069,7 @@ class AboutDialog(object):
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
-                            "Martin Manns"]
+                            "Martin Manns", "Andreas Noteng"]
 
         license_file = open(get_program_path() + "/COPYING", "r")
         license_text = license_file.read()

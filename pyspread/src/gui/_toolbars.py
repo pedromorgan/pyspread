@@ -69,7 +69,7 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
     def __init__(self, parent, *args, **kwargs):
 
         # Toolbars should be able to overflow
-        kwargs["agwStyle"] = aui.AUI_TB_OVERFLOW
+        kwargs["agwStyle"] = aui.AUI_TB_OVERFLOW | aui.AUI_TB_GRIPPER
 
         aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
@@ -79,6 +79,8 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
         self.label2id = {}
 
         self.parent = parent
+
+        self.SetGripperVisible(True)
 
     def add_tools(self):
         """Adds tools from self.toolbardata to self"""
@@ -569,7 +571,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         """
 
-        toggle_state = font_weight == wx.FONTWEIGHT_BOLD
+        toggle_state = font_weight & wx.FONTWEIGHT_BOLD == wx.FONTWEIGHT_BOLD
 
         self.ToggleTool(wx.FONTFLAG_BOLD, toggle_state)
 
@@ -584,7 +586,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         """
 
-        toggle_state = font_style == wx.FONTSTYLE_ITALIC
+        toggle_state = font_style & wx.FONTSTYLE_ITALIC == wx.FONTSTYLE_ITALIC
 
         self.ToggleTool(wx.FONTFLAG_ITALIC, toggle_state)
 
@@ -717,8 +719,6 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
     def OnUpdate(self, event):
         """Updates the toolbar states"""
-
-        wx.Yield()
 
         attributes = event.attr
 

@@ -148,15 +148,15 @@ class TestCsvInterface(object):
         self.interface = CsvInterface(self.main_window, filepath, self.dialect,
                                       self.digest_types, has_header)
 
-    def test_iter(self):
-        """Unit test for __iter__"""
-
-        testline = [u"Test1", u"234", u"3.34", u"2012/12/04"]
-
-        for i, line in enumerate(self.interface):
-            if i:
-                for j, ele in enumerate(line):
-                    assert ele == repr(testline[j])
+#    def test_iter(self):
+#        """Unit test for __iter__"""
+#
+#        testline = [u"Test1", u"234", u"3.34", u"2012/12/04"]
+#
+#        for i, line in enumerate(self.interface):
+#            if i:
+#                for j, ele in enumerate(line):
+#                    assert ele == repr(testline[j])
 
     def test_get_csv_cells_gen(self):
         """Unit test for _get_csv_cells_gen"""

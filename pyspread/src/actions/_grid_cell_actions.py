@@ -65,13 +65,16 @@ class CellActions(Actions):
         # Set cell code
         self.grid.code_array[key] = code
 
-    def delete_cell(self,  key):
+    def delete_cell(self,  key, mark_unredo=True):
         """Deletes key cell"""
 
         try:
-            self.code_array.pop(key)
+            self.code_array.pop(key, mark_unredo=mark_unredo)
+
         except KeyError:
             pass
+
+        self.grid.code_array.result_cache.clear()
 
     def _get_absolute_reference(self, ref_key):
         """Returns absolute reference code for key."""
@@ -191,9 +194,10 @@ class CellActions(Actions):
 
         if selection is not None:
             cell_attributes = self.code_array.cell_attributes
-            cell_attributes.undoable_append((selection, table, attr))
+            cell_attributes.undoable_append((selection, table, attr),
+                                            mark_unredo=False)
 
-    def set_attr(self, attr, value, selection=None):
+    def set_attr(self, attr, value, selection=None, mark_unredo=True):
         """Sets attr of current selection to value"""
 
         if selection is None:
@@ -208,7 +212,10 @@ class CellActions(Actions):
         table = self.grid.current_table
 
         # Change model
-        self.grid.actions._set_cell_attr(selection, table, attrs)
+        self._set_cell_attr(selection, table, attrs)
+
+        if mark_unredo:
+            self.code_array.unredo.mark()
 
     def set_border_attr(self, attr, value, borders):
         """Sets border attribute by adjusting selection to borders
@@ -235,17 +242,19 @@ class CellActions(Actions):
         if "inner" in borders:
             if "top" in borders:
                 adj_selection = selection + (-1, 0)
-                self.set_attr(attr + "_bottom", value, adj_selection)
+                self.set_attr(attr + "_bottom", value, adj_selection,
+                              mark_unredo=False)
 
             if "bottom" in borders:
-                self.set_attr(attr + "_bottom", value)
+                self.set_attr(attr + "_bottom", value, mark_unredo=False)
 
             if "left" in borders:
                 adj_selection = selection + (0, -1)
-                self.set_attr(attr + "_right", value, adj_selection)
+                self.set_attr(attr + "_right", value, adj_selection,
+                              mark_unredo=False)
 
             if "right" in borders:
-                self.set_attr(attr + "_right", value)
+                self.set_attr(attr + "_right", value, mark_unredo=False)
 
         else:
             # Adjust selection so that only bounding box edge is in selection
@@ -254,23 +263,29 @@ class CellActions(Actions):
                 adj_selection = Selection([bbox_tl],
                                           [(bbox_tl[0], bbox_lr[1])],
                                           [], [], []) + (-1, 0)
-                self.set_attr(attr + "_bottom", value, adj_selection)
+                self.set_attr(attr + "_bottom", value, adj_selection,
+                              mark_unredo=False)
 
             if "bottom" in borders:
                 adj_selection = Selection([(bbox_lr[0], bbox_tl[1])],
                                           [bbox_lr], [], [], [])
-                self.set_attr(attr + "_bottom", value, adj_selection)
+                self.set_attr(attr + "_bottom", value, adj_selection,
+                              mark_unredo=False)
 
             if "left" in borders:
                 adj_selection = Selection([bbox_tl],
                                           [(bbox_lr[0], bbox_tl[1])],
                                           [], [], []) + (0, -1)
-                self.set_attr(attr + "_right", value, adj_selection)
+                self.set_attr(attr + "_right", value, adj_selection,
+                              mark_unredo=False)
 
             if "right" in borders:
                 adj_selection = Selection([(bbox_tl[0], bbox_lr[1])],
                                           [bbox_lr], [], [], [])
-                self.set_attr(attr + "_right", value, adj_selection)
+                self.set_attr(attr + "_right", value, adj_selection,
+                              mark_unredo=False)
+
+        self.code_array.unredo.mark()
 
     def toggle_attr(self, attr):
         """Toggles an attribute attr for current selection"""
@@ -288,7 +303,9 @@ class CellActions(Actions):
 
         # Set the toggled value
 
-        self.set_attr(attr, value)
+        self.set_attr(attr, value, mark_unredo=False)
+
+        self.code_array.unredo.mark()
 
     # Only cell attributes that can be toggled are contained
 
@@ -330,7 +347,7 @@ class CellActions(Actions):
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
         attr = {"merge_area": None}
 
-        self.grid.actions._set_cell_attr(selection, tab, attr)
+        self._set_cell_attr(selection, tab, attr)
 
     def merge(self, merge_area, tab):
         """Merges top left cell with all cells until bottom_right"""
@@ -339,7 +356,7 @@ class CellActions(Actions):
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
         attr = {"merge_area": merge_area}
 
-        self.grid.actions._set_cell_attr(selection, tab, attr)
+        self._set_cell_attr(selection, tab, attr)
 
     def merge_selected_cells(self, selection):
         """Merges or unmerges cells that are in the selection bounding box

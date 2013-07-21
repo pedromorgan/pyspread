@@ -45,6 +45,7 @@ import src.lib.i18n as i18n
 from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
+from src.sysvars import get_color, is_gtk
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -67,7 +68,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         # Zoom of grid
         self.zoom = 1.0
 
-        # Old curso position
+        # Old cursor position
         self.old_cursor_row_col = 0, 0
 
     def get_zoomed_size(self, size):
@@ -594,7 +595,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 bg = self.backgrounds[bg_key] = \
                     Background(grid, rect, self.data_array, *key)
 
-        if "__WXGTK__" in wx.PlatformInfo and not printing:
+        if is_gtk() and not printing:
             mask_type = wx.AND
         else:
             mask_type = wx.COPY
@@ -603,7 +604,11 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 bg.dc, 0, 0, mask_type)
 
         # Check if the dc is drawn manually be a return func
-        res = self.data_array[row, col, grid.current_table]
+        try:
+            res = self.data_array[row, col, grid.current_table]
+
+        except IndexError:
+            return
 
         if isinstance(res, types.FunctionType):
             # Add func_dict attribute
@@ -661,12 +666,11 @@ class Background(object):
     def draw_background(self, dc):
         """Draws the background of the background"""
 
-        color = wx.Colour()
-
         if self.selection:
-            color.Set(*config["selection_color"])
+            color = get_color(config["selection_color"])
         else:
             rgb = self.data_array.cell_attributes[self.key]["bgcolor"]
+            color = wx.Colour()
             color.SetRGB(rgb)
 
         bgbrush = wx.Brush(color, wx.SOLID)

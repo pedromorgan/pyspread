@@ -39,7 +39,7 @@ from matplotlib.figure import Figure
 
 import src.lib.i18n as i18n
 from src.config import config
-from src.sysvars import get_python_tutorial_path
+from src.sysvars import get_python_tutorial_path, is_gtk
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
@@ -194,20 +194,20 @@ class MainWindow(wx.Frame, EventMixin):
 
         self._mgr.AddPane(self.main_toolbar, aui.AuiPaneInfo().
                           Name("main_window_toolbar").
-                          Caption(_("Main Toolbar")).
+                          Caption(_("Main toolbar")).
                           ToolbarPane().Top().Row(0))
 
         self._mgr.AddPane(self.find_toolbar, aui.AuiPaneInfo().
-                          Name("find_toolbar").Caption(_("Find")).
+                          Name("find_toolbar").Caption(_("Find toolbar")).
                           ToolbarPane().Top().Row(0))
 
         self._mgr.AddPane(self.attributes_toolbar, aui.AuiPaneInfo().
                           Name("attributes_toolbar").
-                          Caption(_("Cell Attributes")).
+                          Caption(_("Format toolbar")).
                           ToolbarPane().Top().Row(1))
 
         self._mgr.AddPane(self.macro_toolbar, aui.AuiPaneInfo().
-                          Name("macro_toolbar").Caption(_("Macro Toolbar")).
+                          Name("macro_toolbar").Caption(_("Macro toolbar")).
                           Gripper(True).ToolbarPane().Top().Row(1))
 
         self._mgr.AddPane(self.entry_line_panel, aui.AuiPaneInfo().
@@ -269,6 +269,7 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnFindToolbarToggle)
         self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
+        self.Bind(aui.EVT_AUI_PANE_CLOSE, handlers.OnPaneClose)
 
         # File events
 
@@ -490,46 +491,72 @@ class MainWindowEventHandlers(EventMixin):
     def OnMainToolbarToggle(self, event):
         """Main window toolbar toggle event handler"""
 
-        main_toolbar = self.main_window._mgr.GetPane("main_window_toolbar")
+        self.main_window.main_toolbar.SetGripperVisible(True)
+        main_toolbar_info = \
+            self.main_window._mgr.GetPane("main_window_toolbar")
 
-        self._toggle_pane(main_toolbar)
+        self._toggle_pane(main_toolbar_info)
 
         event.Skip()
 
     def OnMacroToolbarToggle(self, event):
         """Macro toolbar toggle event handler"""
 
-        macro_toolbar = self.main_window._mgr.GetPane("macro_toolbar")
+        self.main_window.macro_toolbar.SetGripperVisible(True)
+        macro_toolbar_info = self.main_window._mgr.GetPane("macro_toolbar")
 
-        self._toggle_pane(macro_toolbar)
+        self._toggle_pane(macro_toolbar_info)
 
         event.Skip()
 
     def OnAttributesToolbarToggle(self, event):
         """Format toolbar toggle event handler"""
 
-        attributes_toolbar = \
+        self.main_window.attributes_toolbar.SetGripperVisible(True)
+        attributes_toolbar_info = \
             self.main_window._mgr.GetPane("attributes_toolbar")
 
-        self._toggle_pane(attributes_toolbar)
+        self._toggle_pane(attributes_toolbar_info)
 
         event.Skip()
 
     def OnFindToolbarToggle(self, event):
         """Search toolbar toggle event handler"""
 
-        find_toolbar = self.main_window._mgr.GetPane("find_toolbar")
+        self.main_window.find_toolbar.SetGripperVisible(True)
 
-        self._toggle_pane(find_toolbar)
+        find_toolbar_info = self.main_window._mgr.GetPane("find_toolbar")
+
+        self._toggle_pane(find_toolbar_info)
 
         event.Skip()
 
     def OnEntryLineToggle(self, event):
         """Entry line toggle event handler"""
 
-        entry_line_panel = self.main_window._mgr.GetPane("entry_line_panel")
+        entry_line_panel_info = \
+            self.main_window._mgr.GetPane("entry_line_panel")
 
-        self._toggle_pane(entry_line_panel)
+        self._toggle_pane(entry_line_panel_info)
+
+        event.Skip()
+
+    def OnPaneClose(self, event):
+        """Pane close toggle event handler (via close button)"""
+
+        toggle_label = event.GetPane().caption
+
+        # Get menu item to toggle
+        menubar = self.main_window.menubar
+        toggle_id = menubar.FindMenuItem(_("View"), toggle_label)
+        toggle_item = menubar.FindItemById(toggle_id)
+
+        # Adjust toggle to pane visibility
+        toggle_item.Check(False)
+
+        menubar.UpdateMenus()
+
+        self.main_window._mgr.Update()
 
         event.Skip()
 
@@ -558,8 +585,6 @@ class MainWindowEventHandlers(EventMixin):
         if shape is None:
             return
 
-        self.main_window.grid.actions.change_grid_shape(shape)
-
         # Set new filepath and post it to the title bar
 
         self.main_window.filepath = None
@@ -577,6 +602,11 @@ class MainWindowEventHandlers(EventMixin):
         post_command_event(self.main_window, self.main_window.ResizeGridMsg,
                            shape=shape)
 
+        if is_gtk():
+            wx.Yield()
+
+        self.main_window.grid.actions.change_grid_shape(shape)
+
         self.main_window.grid.GetTable().ResetView()
         self.main_window.grid.ForceRefresh()
 
@@ -586,6 +616,17 @@ class MainWindowEventHandlers(EventMixin):
                            text=msg)
 
         self.main_window.grid.ForceRefresh()
+
+        if is_gtk():
+            wx.Yield()
+
+        # Mark content as unchanged
+        try:
+            post_command_event(self.main_window, self.ContentChangedMsg,
+                               changed=False)
+        except TypeError:
+            # The main window does not exist any more
+            pass
 
     def OnOpen(self, event):
         """File open event handler"""
@@ -633,6 +674,17 @@ class MainWindowEventHandlers(EventMixin):
                            self.main_window.TitleMsg, text=title_text)
 
         self.main_window.grid.ForceRefresh()
+
+        if is_gtk():
+            wx.Yield()
+
+        # Mark content as unchanged
+        try:
+            post_command_event(self.main_window, self.ContentChangedMsg,
+                               changed=False)
+        except TypeError:
+            # The main window does not exist any more
+            pass
 
     def OnSave(self, event):
         """File save event handler"""
@@ -753,6 +805,9 @@ class MainWindowEventHandlers(EventMixin):
 
         """
 
+        code_array = self.main_window.grid.code_array
+        tab = self.main_window.grid.current_table
+
         selection = self.main_window.grid.selection
 
         # Check if no selection is present
@@ -762,19 +817,28 @@ class MainWindowEventHandlers(EventMixin):
         wildcard = _("CSV file") + " (*.*)|*.*"
 
         if selection_bbox is None:
-            # No selection --> Use current screen for csv export
-            (top, left), (bottom, right) = \
-                self.main_window.grid.actions.get_visible_area()
+            # No selection --> Use smallest filled area for bottom right edge
+            maxrow, maxcol, __ = code_array.get_last_filled_cell(tab)
+
+            (top, left), (bottom, right) = (0, 0), (maxrow, maxcol)
 
         else:
             (top, left), (bottom, right) = selection_bbox
 
         # Generator of row and column keys in correct order
 
-        code_array = self.main_window.grid.code_array
-        tab = self.main_window.grid.current_table
+        __top = 0 if top is None else top
+        __bottom = code_array.shape[0] if bottom is None else bottom + 1
+        __left = 0 if left is None else left
+        __right = code_array.shape[1] if right is None else right + 1
 
-        data = code_array[top:bottom + 1, left:right + 1, tab]
+        def data_gen(top, bottom, left, right):
+            for row in xrange(top, bottom):
+                yield (code_array[row, col, tab]
+                       for col in xrange(left, right))
+
+        data = data_gen(__top, __bottom, __left, __right)
+        preview_data = data_gen(__top, __bottom, __left, __right)
 
         # Get target filepath from user
 
@@ -805,7 +869,8 @@ class MainWindowEventHandlers(EventMixin):
         # Export file
         # -----------
 
-        self.main_window.actions.export_file(path, filterindex, data)
+        self.main_window.actions.export_file(path, filterindex, data,
+                                             preview_data)
 
     def OnApprove(self, event):
         """File approve event handler"""
@@ -1009,6 +1074,11 @@ class MainWindowEventHandlers(EventMixin):
             post_command_event(self.main_window,
                                self.main_window.FontItalicsMsg,
                                style=font.GetStyleString())
+
+            if is_gtk():
+                wx.Yield()
+
+            self.main_window.grid.update_attribute_toolbar()
 
     def OnTextColorDialog(self, event):
         """Event handler for launching text color dialog"""

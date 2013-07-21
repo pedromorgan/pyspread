@@ -357,14 +357,14 @@ class TestTableRowActionsMixins(object):
         assert row_heights[row, tab] == height
 
     param_insert_rows = [
-        {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-        {'row': 0, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': None},
-        {'row': 0, 'no_rows': 1, 'test_key': (1, 0, 0), 'test_val': "'Test'"},
-        {'row': 0, 'no_rows': 5, 'test_key': (5, 0, 0), 'test_val': "'Test'"},
+        {'row': -1, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'row': -1, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': None},
+        {'row': -1, 'no_rows': 1, 'test_key': (1, 0, 0), 'test_val': "'Test'"},
+        {'row': -1, 'no_rows': 5, 'test_key': (5, 0, 0), 'test_val': "'Test'"},
         {'row': 1, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'row': 1, 'no_rows': 1, 'test_key': (1, 0, 0), 'test_val': None},
-        {'row': 1, 'no_rows': 1, 'test_key': (2, 1, 0), 'test_val': "3"},
-        {'row': 1, 'no_rows': 5000, 'test_key': (5001, 1, 0), 'test_val': "3"},
+        {'row': -1, 'no_rows': 1, 'test_key': (2, 1, 0), 'test_val': "3"},
+        {'row': 0, 'no_rows': 500, 'test_key': (501, 1, 0), 'test_val': "3"},
     ]
 
     @params(param_insert_rows)
@@ -417,14 +417,13 @@ class TestTableColumnActionsMixin(object):
         assert col_widths[col, tab] == width
 
     param_insert_cols = [
-        {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-        {'col': 0, 'no_cols': 1, 'test_key': (0, 0, 0), 'test_val': None},
-        {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "'Test'"},
-        {'col': 0, 'no_cols': 5, 'test_key': (0, 5, 0), 'test_val': "'Test'"},
-        {'col': 1, 'no_cols': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-        {'col': 1, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': None},
-        {'col': 1, 'no_cols': 1, 'test_key': (1, 2, 0), 'test_val': "3"},
-        {'col': 1, 'no_cols': 5000, 'test_key': (1, 5001, 0), 'test_val': "3"},
+        {'col': -1, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'col': -1, 'no_cols': 1, 'test_key': (0, 0, 0), 'test_val': None},
+        {'col': -1, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "'Test'"},
+        {'col': -1, 'no_cols': 5, 'test_key': (0, 5, 0), 'test_val': "'Test'"},
+        {'col': 0, 'no_cols': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': None},
+        {'col': 0, 'no_cols': 1, 'test_key': (1, 2, 0), 'test_val': "3"},
     ]
 
     @params(param_insert_cols)
@@ -435,14 +434,15 @@ class TestTableColumnActionsMixin(object):
                          test_val, col, no_cols=no_cols)
 
     param_delete_cols = [
-        {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-        {'col': 0, 'no_cols': 1, 'test_key': (0, 2, 0), 'test_val': None},
-        {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
-        {'col': 0, 'no_cols': 95, 'test_key': (999, 4, 0),
+        {'col': -1, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'col': -1, 'no_cols': 1, 'test_key': (0, 2, 0), 'test_val': None},
+        {'col': -1, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
+        {'col': -1, 'no_cols': 95, 'test_key': (999, 4, 0),
          'test_val': "$^%&$^"},
-        {'col': 1, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
-        {'col': 1, 'no_cols': 1, 'test_key': (1, 1, 0), 'test_val': "4"},
-        {'col': 1, 'no_cols': 99, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
+        {'col': 0, 'no_cols': 1, 'test_key': (1, 1, 0), 'test_val': "4"},
+        {'col': 1, 'no_cols': 99, 'test_key': (0, 0, 0),
+         'test_val': "'Test'"},
     ]
 
     @params(param_delete_cols)
@@ -462,15 +462,12 @@ class TestTableTabActionsMixin(object):
         self.code_array = self.grid.code_array
 
     param_insert_tabs = [
-        {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-        {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': None},
-        {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': "'Test'"},
-        {'tab': 0, 'no_tabs': 5, 'test_key': (0, 0, 5), 'test_val': "'Test'"},
-        {'tab': 1, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-        {'tab': 1, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': None},
-        {'tab': 1, 'no_tabs': 1, 'test_key': (1, 2, 3), 'test_val': "78"},
-        {'tab': 1, 'no_tabs': 5000, 'test_key': (1, 2, 5002),
-         'test_val': "78"},
+        {'tab': -1, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'tab': -1, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': None},
+        {'tab': -1, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': "'Test'"},
+        {'tab': -1, 'no_tabs': 2, 'test_key': (0, 0, 2), 'test_val': "'Test'"},
+        {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': None},
     ]
 
     @params(param_insert_tabs)

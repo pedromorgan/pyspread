@@ -29,7 +29,7 @@ from ast import literal_eval
 
 import wx
 
-from sysvars import get_color, get_font_string
+##from sysvars import get_color, get_font_string
 
 VERSION = "0.2.4"
 
@@ -65,8 +65,6 @@ class DefaultConfig(object):
         # Grid configuration
         # ------------------
 
-        ##self.grid_shape = "(1000, 100, 3)"
-
         self.grid_rows = "1000"
         self.grid_columns = "100"
         self.grid_tables = "3"
@@ -77,14 +75,14 @@ class DefaultConfig(object):
         self.max_result_length = "1000"
 
         # Colors
-        self.grid_color = repr(get_color(wx.SYS_COLOUR_3DSHADOW))
-        self.selection_color = repr(get_color(wx.SYS_COLOUR_HIGHLIGHT))
-        self.background_color = repr(get_color(wx.SYS_COLOUR_WINDOW))
-        self.text_color = repr(get_color(wx.SYS_COLOUR_WINDOWTEXT))
+        self.grid_color = repr(wx.SYS_COLOUR_GRAYTEXT)
+        self.selection_color = repr(wx.SYS_COLOUR_HIGHLIGHT)
+        self.background_color = repr(wx.SYS_COLOUR_WINDOW)
+        self.text_color = repr(wx.SYS_COLOUR_WINDOWTEXT)
 
         # Fonts
 
-        self.font = repr(get_font_string(wx.SYS_DEFAULT_GUI_FONT))
+        self.font = repr(wx.SYS_DEFAULT_GUI_FONT)
 
         # Default cell font size
 
@@ -180,8 +178,6 @@ class Config(object):
 
     def save(self):
         """Saves configuration file"""
-
-        ## TODO: Set permissions here, SetUmask
 
         for key in self.defaults.__dict__:
             data = getattr(self.data, key)

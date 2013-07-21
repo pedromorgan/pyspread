@@ -41,6 +41,7 @@ from _menubars import ContextMenu
 from _chart_dialog import ChartDialog
 
 import src.lib.i18n as i18n
+from src.sysvars import is_gtk
 
 import src.lib.xrect as xrect
 from src.model.model import CodeArray
@@ -70,6 +71,8 @@ class Grid(wx.grid.Grid, EventMixin):
             kwargs.pop("dimensions")
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
+
+        self.SetDefaultCellBackgroundColour(wx.Color(255, 255, 255, 255))
 
         # Cursor position on entering selection mode
         self.sel_mode_cursor = None
@@ -106,8 +109,8 @@ class Grid(wx.grid.Grid, EventMixin):
         self._bind()
 
         # Update toolbars
-        self.cell_handlers._update_entry_line((0, 0, 0))
-        self.cell_handlers._update_attribute_toolbar((0, 0, 0))
+        self.update_entry_line()
+        self.update_attribute_toolbar()
 
         # Focus on grid so that typing can start immediately
         self.SetFocus()
@@ -155,7 +158,6 @@ class Grid(wx.grid.Grid, EventMixin):
         # Grid events
 
         self.GetGridWindow().Bind(wx.EVT_MOTION, handlers.OnMouseMotion)
-        self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, handlers.OnMouseClick)
         self.Bind(wx.EVT_SCROLLWIN, handlers.OnScroll)
         self.Bind(wx.grid.EVT_GRID_RANGE_SELECT, handlers.OnRangeSelected)
 
@@ -399,6 +401,38 @@ class Grid(wx.grid.Grid, EventMixin):
 
         return top_left_drawn or left_drawn or top_drawn or middle_drawn
 
+    def update_entry_line(self, key=None):
+        """Updates the entry line
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer, defaults to current cell
+        \tCell to which code the entry line is updated
+
+        """
+
+        if key is None:
+            key = self.actions.cursor
+
+        cell_code = self.GetTable().GetValue(*key)
+
+        post_command_event(self, self.EntryLineMsg, text=cell_code)
+
+    def update_attribute_toolbar(self, key=None):
+        """Updates the attribute toolbar
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer, defaults to current cell
+        \tCell to which attributes the attributes toolbar is updated
+
+        """
+
+        if key is None:
+            key = self.actions.cursor
+
+        post_command_event(self, self.ToolbarUpdateMsg, key=key,
+                           attr=self.code_array.cell_attributes[key])
 
 # End of class Grid
 
@@ -432,16 +466,17 @@ class GridCellEventHandlers(object):
                                                                message, style)
 
         try:
-            bmp = wx.Bitmap(filepath)
+            img = wx.EmptyImage(1, 1)
+            img.LoadFile(filepath)
         except TypeError:
             return
 
-        if bmp.Size == (-1, -1):
+        if img.GetSize() == (-1, -1):
             # Bitmap could not be read
             return
 
         key = self.grid.actions.cursor
-        code = self.grid.main_window.actions.bmp2code(key, bmp)
+        code = self.grid.main_window.actions.img2code(key, img)
 
         self.grid.actions.set_code(key, code)
 
@@ -464,7 +499,7 @@ class GridCellEventHandlers(object):
             # Bitmap could not be read
             return
 
-        code = "wx.Bitmap('{filepath}')".format(filepath=filepath)
+        code = "wx.Bitmap(r'{filepath}')".format(filepath=filepath)
 
         key = self.grid.actions.cursor
         self.grid.actions.set_code(key, code)
@@ -495,6 +530,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontSize(self, event):
@@ -504,17 +541,18 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontBold(self, event):
         """Cell font bold event handler"""
 
         try:
-            if event.weight == "wxNORMAL":
-                weight = wx.NORMAL
-            elif event.weight == "wxBOLD":
-                weight = wx.BOLD
-            else:
+            try:
+                weight = getattr(wx, event.weight[2:])
+
+            except AttributeError:
                 msg = _("Weight {weight} unknown").format(weight=event.weight)
                 raise ValueError(msg)
 
@@ -525,17 +563,18 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontItalics(self, event):
         """Cell font italics event handler"""
 
         try:
-            if event.style == "wxNORMAL":
-                style = wx.NORMAL
-            elif event.style == "wxITALIC":
-                style = wx.ITALIC
-            else:
+            try:
+                style = getattr(wx, event.style[2:])
+
+            except AttributeError:
                 msg = _("Style {style} unknown").format(style=event.style)
                 raise ValueError(msg)
 
@@ -546,6 +585,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontUnderline(self, event):
@@ -554,6 +595,8 @@ class GridCellEventHandlers(object):
         self.grid.actions.toggle_attr("underline")
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -564,6 +607,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFrozen(self, event):
@@ -572,6 +617,8 @@ class GridCellEventHandlers(object):
         self.grid.actions.change_frozen_attr()
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -582,12 +629,16 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
 
         self.grid.actions.toggle_attr("justification")
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -598,6 +649,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellBorderWidth(self, event):
@@ -606,6 +659,10 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_border_attr("borderwidth",
                                           event.width, event.borders)
 
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellBorderColor(self, event):
@@ -613,6 +670,10 @@ class GridCellEventHandlers(object):
 
         self.grid.actions.set_border_attr("bordercolor",
                                           event.color, event.borders)
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -623,6 +684,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellTextColor(self, event):
@@ -631,6 +694,8 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_attr("textcolor", event.color)
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -645,36 +710,23 @@ class GridCellEventHandlers(object):
             post_command_event(self.grid.main_window,
                                self.grid.TextRotationMsg, angle=angle)
 
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
 
-        self.grid.actions.set_attr("angle", event.angle)
+        self.grid.actions.set_attr("angle", event.angle, mark_unredo=True)
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
+        if is_gtk():
+            wx.Yield()
+
         event.Skip()
-
-    def _update_entry_line(self, key):
-        """Updates the entry line"""
-
-        cell_code = self.grid.GetTable().GetValue(*key)
-
-        post_command_event(self.grid, self.grid.EntryLineMsg, text=cell_code)
-
-    def _update_attribute_toolbar(self, key):
-        """Updates the attribute toolbar"""
-
-        post_command_event(self.grid, self.grid.ToolbarUpdateMsg, key=key,
-                           attr=self.grid.code_array.cell_attributes[key])
-
-    # Cell selection event handlers
-
-    def set_cursor(self, row, col, tab):
-        """Sets grid cursor to key"""
-
-        self.grid.SetGridCursor(row, col)
-        self.grid._last_selected_cell = row, col, tab
-        return
 
     def OnCellSelected(self, event):
         """Cell selection event handler"""
@@ -682,7 +734,6 @@ class GridCellEventHandlers(object):
         # If in selection mode do nothing
         # This prevents the current cell from changing
         if not self.grid.IsEditable():
-            event.Skip()
             return
 
         key = row, col, tab = event.Row, event.Col, self.grid.current_table
@@ -694,23 +745,23 @@ class GridCellEventHandlers(object):
             top, left, bottom, right = merge_area
             if self.grid._last_selected_cell == (top, left, tab):
                 if row == top + 1:
-                    self.set_cursor(bottom + 1, left, tab)
+                    self.grid.actions.set_cursor((bottom + 1, left, tab))
                     return
                 elif col == left + 1:
-                    self.set_cursor(top, right + 1, tab)
+                    self.grid.actions.set_cursor((top, right + 1, tab))
                     return
             elif (row, col) != (top, left):
-                self.set_cursor(top, left, tab)
+                self.grid.actions.set_cursor((top, left, tab))
                 return
 
         # Redraw cursor
         self.grid.ForceRefresh()
 
         # Update entry line
-        self._update_entry_line(key)
+        self.grid.update_entry_line(key)
 
         # Update attribute toolbar
-        self._update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar(key)
 
         self.grid._last_selected_cell = key
 
@@ -746,41 +797,6 @@ class GridEventHandlers(object):
         grid.actions.on_mouse_over((row, col, tab))
 
         event.Skip()
-
-    def OnMouseClick(self, event):
-        """Grid left mouse click event handler"""
-
-        cursor = self.grid.actions.cursor
-        click_key = event.GetRow(), event.GetCol(), self.grid.current_table
-
-        if event.ControlDown() and not event.ShiftDown() and event.AltDown():
-            # Add click position as relative reference
-            self.grid.actions.append_reference_code(cursor, click_key,
-                                                    ref_type="relative")
-            # Yield to let grid update happen first
-            wx.Yield()
-            self.grid.ForceRefresh()
-
-            # Enter entry line to continue editing
-
-            self.grid.main_window.entry_line.SetFocus()
-            self.grid.main_window.entry_line.SetInsertionPointEnd()
-
-        elif event.ControlDown() and event.ShiftDown() and not event.AltDown():
-            # Add click position as absolute reference
-            self.grid.actions.append_reference_code(cursor, click_key,
-                                                    ref_type="absolute")
-            # Yield to let grid update happen first
-            wx.Yield()
-            self.grid.ForceRefresh()
-
-            # Enter entry line to continue editing
-
-            self.grid.main_window.entry_line.SetFocus()
-            self.grid.main_window.entry_line.SetInsertionPointEnd()
-
-        else:
-            event.Skip()
 
     def OnKey(self, event):
         """Handles non-standard shortcut events"""
@@ -822,12 +838,15 @@ class GridEventHandlers(object):
             if keycode == 127:
                 # Del pressed
 
-                # Delete cell at cursor
-                cursor = self.grid.actions.cursor
-                self.grid.actions.delete_cell(cursor)
+                # Is grid selection present? --> Delete current cell
+                if self.grid.IsSelection():
+                    # Delete selection
+                    self.grid.actions.delete_selection()
 
-                # Delete selection
-                self.grid.actions.delete_selection()
+                else:
+                    # Delete cell at cursor
+                    cursor = self.grid.actions.cursor
+                    self.grid.actions.delete_cell(cursor)
 
                 # Update grid
                 self.grid.ForceRefresh()
@@ -977,7 +996,7 @@ class GridEventHandlers(object):
     def OnShowFindReplace(self, event):
         """Calls the find-replace dialog"""
 
-        data = wx.FindReplaceData()
+        data = wx.FindReplaceData(wx.FR_DOWN)
         dlg = wx.FindReplaceDialog(self.grid, data, "Find & Replace",
                                    wx.FR_REPLACEDIALOG)
         dlg.data = data  # save a reference to data
@@ -1026,8 +1045,18 @@ class GridEventHandlers(object):
     def OnReplaceAll(self, event):
         """Called when a replace all operation is started"""
 
-        while self.OnReplace(event) is not None:
-            pass
+        old_findpositions = []
+
+        while True:
+            findpos = self.OnReplace(event)
+            if findpos is None:
+                break
+            if findpos in old_findpositions:
+                # Undo one step because one update was already twice
+                self.grid.actions.undo()
+                self.grid.update_entry_line()
+                break
+            old_findpositions.append(findpos)
 
         event.Skip()
 
@@ -1061,59 +1090,101 @@ class GridEventHandlers(object):
     def OnInsertRows(self, event):
         """Insert the maximum of 1 and the number of selected rows"""
 
-        no_rows, _ = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
 
-        cursor = self.grid.actions.cursor
+        if bbox is None or bbox[1][0] is None:
+            # Insert rows at cursor
+            ins_point = self.grid.actions.cursor[0] - 1
+            no_rows = 1
+        else:
+            # Insert at lower edge of bounding box
+            ins_point = bbox[0][0] - 1
+            no_rows = self._get_no_rowscols(bbox)[0]
 
-        self.grid.actions.insert_rows(cursor[0], no_rows)
+        self.grid.actions.insert_rows(ins_point, no_rows)
 
         self.grid.GetTable().ResetView()
+
+        # Update the default sized cell sizes
+        self.grid.actions.zoom()
 
         event.Skip()
 
     def OnInsertCols(self, event):
         """Inserts the maximum of 1 and the number of selected columns"""
 
-        _, no_cols = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
 
-        cursor = self.grid.actions.cursor
+        if bbox is None or bbox[1][1] is None:
+            # Insert rows at cursor
+            ins_point = self.grid.actions.cursor[1] - 1
+            no_cols = 1
+        else:
+            # Insert at right edge of bounding box
+            ins_point = bbox[0][1] - 1
+            no_cols = self._get_no_rowscols(bbox)[1]
 
-        self.grid.actions.insert_cols(cursor[1], no_cols)
+        self.grid.actions.insert_cols(ins_point, no_cols)
 
         self.grid.GetTable().ResetView()
+
+        # Update the default sized cell sizes
+        self.grid.actions.zoom()
 
         event.Skip()
 
     def OnInsertTabs(self, event):
         """Insert one table into grid"""
 
-        self.grid.actions.insert_tabs(self.grid.current_table, 1)
+        self.grid.actions.insert_tabs(self.grid.current_table - 1, 1)
+        self.grid.GetTable().ResetView()
+        self.grid.actions.zoom()
 
         event.Skip()
 
     def OnDeleteRows(self, event):
         """Deletes rows from all tables of the grid"""
 
-        no_rows, _ = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
 
-        cursor = self.grid.actions.cursor
+        if bbox is None or bbox[1][0] is None:
+            # Insert rows at cursor
+            del_point = self.grid.actions.cursor[0]
+            no_rows = 1
+        else:
+            # Insert at lower edge of bounding box
+            del_point = bbox[0][0]
+            no_rows = self._get_no_rowscols(bbox)[0]
 
-        self.grid.actions.delete_rows(cursor[0], no_rows)
+        self.grid.actions.delete_rows(del_point, no_rows)
 
         self.grid.GetTable().ResetView()
+
+        # Update the default sized cell sizes
+        self.grid.actions.zoom()
 
         event.Skip()
 
     def OnDeleteCols(self, event):
         """Deletes columns from all tables of the grid"""
 
-        _, no_cols = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
 
-        cursor = self.grid.actions.cursor
+        if bbox is None or bbox[1][1] is None:
+            # Insert rows at cursor
+            del_point = self.grid.actions.cursor[1]
+            no_cols = 1
+        else:
+            # Insert at right edge of bounding box
+            del_point = bbox[0][1]
+            no_cols = self._get_no_rowscols(bbox)[1]
 
-        self.grid.actions.delete_cols(cursor[1], no_cols)
+        self.grid.actions.delete_cols(del_point, no_cols)
 
         self.grid.GetTable().ResetView()
+
+        # Update the default sized cell sizes
+        self.grid.actions.zoom()
 
         event.Skip()
 
@@ -1121,6 +1192,8 @@ class GridEventHandlers(object):
         """Deletes tables"""
 
         self.grid.actions.delete_tabs(self.grid.current_table, 1)
+        self.grid.GetTable().ResetView()
+        self.grid.actions.zoom()
 
         event.Skip()
 
@@ -1179,6 +1252,11 @@ class GridEventHandlers(object):
         self.grid.actions.undo()
         self.grid.GetTable().ResetView()
         self.grid.Refresh()
+        # Reset row heights and column widths by zooming
+        self.grid.actions.zoom()
+        # Update toolbars
+        self.grid.update_entry_line()
+        self.grid.update_attribute_toolbar()
 
     def OnRedo(self, event):
         """Calls the grid redo method"""
@@ -1186,5 +1264,10 @@ class GridEventHandlers(object):
         self.grid.actions.redo()
         self.grid.GetTable().ResetView()
         self.grid.Refresh()
+        # Reset row heights and column widths by zooming
+        self.grid.actions.zoom()
+        # Update toolbars
+        self.grid.update_entry_line()
+        self.grid.update_attribute_toolbar()
 
 # End of class GridEventHandlers

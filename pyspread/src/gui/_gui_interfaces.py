@@ -30,6 +30,7 @@ Provides:
 """
 
 import csv
+from itertools import islice
 import os
 import sys
 import types
@@ -222,14 +223,14 @@ class ModalDialogInterfaceMixin(object):
 
         return dialect, has_header, digest_types
 
-    def get_csv_export_info(self, data):
+    def get_csv_export_info(self, preview_data):
         """Shows csv export preview dialog and returns csv_info
 
         csv_info is a tuple of dialect, has_header, digest_types
 
         Parameters
         ----------
-        data: Iterable of iterables
+        preview_data: Iterable of iterables
         \tContains csv export data row-wise
 
         """
@@ -237,7 +238,9 @@ class ModalDialogInterfaceMixin(object):
         preview_rows = 100
         preview_cols = 100
 
-        export_preview = data[:preview_rows, :preview_cols]
+        export_preview = list(list(islice(col, None, preview_cols))
+                              for col in islice(preview_data, None,
+                                                preview_rows))
 
         filterdlg = CsvExportDialog(self.main_window, data=export_preview)
 

@@ -92,7 +92,10 @@ class GridTable(wx.grid.PyGridTableBase):
 
         wx.BeginBusyCursor()
 
-        cell_code = self.data_array((row, col, table))
+        try:
+            cell_code = self.data_array((row, col, table))
+        except IndexError:
+            cell_code = None
 
         # Put EOLs into result if it is too long
         maxlength = int(config["max_textctrl_length"])
@@ -100,7 +103,7 @@ class GridTable(wx.grid.PyGridTableBase):
         if cell_code is not None and len(cell_code) > maxlength:
             chunk = 80
             cell_code = "\n".join(cell_code[i:i + chunk]
-                                for i in xrange(0, len(cell_code), chunk))
+                                  for i in xrange(0, len(cell_code), chunk))
 
         wx.EndBusyCursor()
 

@@ -52,7 +52,7 @@ from wx.lib.intctrl import IntCtrl, EVT_INT
 
 import src.lib.i18n as i18n
 from src.config import config
-from src.sysvars import get_default_font
+from src.sysvars import get_default_font, is_gtk
 
 from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
 from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
@@ -720,6 +720,10 @@ class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
         self.selection_toggle_button.SetToolTip(tooltip)
         self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)
 
+        if not is_gtk():
+            # TODO: Selections still do not work right on Windows
+            self.selection_toggle_button.Disable()
+
         self.__do_layout()
 
     def __do_layout(self):
@@ -801,7 +805,8 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
 
         post_command_event(self, self.GridActionTableSwitchMsg,
                            newtable=self.last_table)
-        wx.Yield()
+        if is_gtk():
+                wx.Yield()
         sel_start, sel_stop = self.last_selection
 
         shape = self.main_window.grid.code_array.shape
@@ -987,7 +992,6 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         self.SetMax(self.no_tabs - 1)
         if event.GetValue() > self.GetMax():
-            print event.GetValue(), self.GetMax()
             self.SetValue(self.GetMax())
             return
 
@@ -995,11 +999,16 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
             self.switching = True
             post_command_event(self, self.GridActionTableSwitchMsg,
                                newtable=event.GetValue())
-            wx.Yield()
+            if is_gtk():
+                wx.Yield()
             self.switching = False
 
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
+
+        # Prevent lost IntCtrl changes
+        if self.switching:
+            return
 
         self.SetMax(self.no_tabs - 1)
 
