@@ -624,9 +624,6 @@ class DataArray(object):
 
         return {"dict_grid": self.dict_grid}
 
-    def __str__(self):
-        return self.dict_grid.__str__()
-
     # Slice support
 
     def __getitem__(self, key):
