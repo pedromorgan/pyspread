@@ -36,6 +36,7 @@ Provides
 
 """
 
+import ast
 import csv
 import datetime
 import os
@@ -159,6 +160,16 @@ def cell_key_val_gen(iterable, shape, topleft=(0, 0)):
             yield row, col, value
 
 
+def utf8_encode_gen(line):
+    """Encodes all Unicode strings in line to utf-8"""
+
+    for ele in line:
+        if isinstance(ele, types.UnicodeType):
+            yield ele.encode("utf-8")
+        else:
+            yield ele
+
+
 class Digest(object):
     """
     Maps types to types that are acceptable for target class
@@ -248,8 +259,12 @@ class Digest(object):
 
         def make_object(obj):
             """Returns the object"""
+            try:
+                return ast.literal_eval(obj)
 
-            return obj
+            except SyntaxError:
+                # returns None
+                pass
 
         self.typehandlers = {
             None: repr,
@@ -355,7 +370,7 @@ class CsvInterface(StatusBarEventMixin):
         for j, value in enumerate(line):
             if self.first_line:
                 digest_key = None
-                digest = lambda x: repr(x)
+                digest = lambda x: x.decode('utf-8')
             else:
                 try:
                     digest_key = digest_types[j]
@@ -367,11 +382,11 @@ class CsvInterface(StatusBarEventMixin):
             try:
                 digest_res = digest(value)
 
-                if digest_key is not None and digest_res != "\b" and \
-                   digest_key is not types.CodeType:
-                    digest_res = repr(digest_res)
-                elif digest_res == "\b":
+                if digest_res == "\b":
                     digest_res = None
+
+                elif digest_key is not types.CodeType:
+                    digest_res = repr(digest_res)
 
             except Exception, err:
                 digest_res = str(err)
@@ -390,7 +405,7 @@ class CsvInterface(StatusBarEventMixin):
                 csv_writer = csv.writer(csvfile, self.dialect)
 
                 for line in iterable:
-                    csv_writer.writerow(list(line))
+                    csv_writer.writerow(list(utf8_encode_gen(line)))
 
         except IOError:
             txt = \

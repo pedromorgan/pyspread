@@ -1415,7 +1415,7 @@ class CodeArray(DataArray):
         for key in searchkeys:
             yield key
 
-    def _string_match(self, datastring, findstring, flags=None):
+    def string_match(self, datastring, findstring, flags=None):
         """
         Returns position of findstring in datastring or None if not found.
         Flags is a list of strings. Supported strings are:
@@ -1457,7 +1457,7 @@ class CodeArray(DataArray):
         else:
             return pos
 
-    def findnextmatch(self, startkey, find_string, flags):
+    def findnextmatch(self, startkey, find_string, flags, search_result=True):
         """ Returns a tuple with the position of the next match of find_string
 
         Returns None if string not found.
@@ -1468,22 +1468,35 @@ class CodeArray(DataArray):
         find_string:String to be searched for
         flags:      List of strings, out of
                     ["UP" xor "DOWN", "WHOLE_WORD", "MATCH_CASE", "REG_EXP"]
+        search_result: Bool, defaults to True
+        \tIf True then the search includes the result string (slower)
 
         """
 
         assert "UP" in flags or "DOWN" in flags
         assert not ("UP" in flags and "DOWN" in flags)
 
+        if search_result:
+            def is_matching(key, find_string, flags):
+                code = self(key)
+                if self.string_match(code, find_string, flags) is not None:
+                    return True
+                else:
+                    res_str = unicode(self[key])
+                    return self.string_match(res_str, find_string, flags) \
+                        is not None
+
+        else:
+            def is_matching(code, find_string, flags):
+                code = self(key)
+                return self.string_match(code, find_string, flags) is not None
+
         # List of keys in sgrid in search order
 
         reverse = "UP" in flags
 
         for key in self._sorted_keys(self.keys(), startkey, reverse=reverse):
-            code = self(key)
-            res_str = unicode(self[key])
-
-            if self._string_match(code, find_string, flags) is not None or \
-               self._string_match(res_str, find_string, flags) is not None:
+            if is_matching(key, find_string, flags):
                 return key
 
 # End of class CodeArray
