@@ -1099,7 +1099,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
-                  "xlim", "ylim", "x", "labels", "colors", "xy", "xytext"]
+                  "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
+                  "title", "xlabel", "ylabel", "label"]
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",

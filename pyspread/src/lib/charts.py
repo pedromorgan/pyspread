@@ -58,9 +58,6 @@ def object2code(key, code):
         else:
             code = False
 
-    elif key in ["title", "xlabel", "ylabel", "label"]:
-        code = repr(code)
-
     else:
         code = str(code)
 
