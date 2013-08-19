@@ -190,7 +190,14 @@ class ChartFigure(Figure):
 
         for key in key2setter:
             if key in axes_data and axes_data[key]:
-                key2setter[key](axes_data[key])
+                try:
+                    kwargs_key = key + "_kwargs"
+                    kwargs = axes_data[kwargs_key]
+
+                except KeyError:
+                    kwargs = {}
+
+                key2setter[key](axes_data[key], **kwargs)
 
     def _setup_legend(self, axes_data):
         """Sets up legend for drawing chart"""
