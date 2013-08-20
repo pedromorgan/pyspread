@@ -169,7 +169,9 @@ class ChartFigure(Figure):
             self.__axes.xaxis_date()
             formatter = dates.DateFormatter(xdate_format)
             self.__axes.xaxis.set_major_formatter(formatter)
-            self.autofmt_xdate()
+
+            # The autofmt method does not work in matplotlib 1.3.0
+            #self.autofmt_xdate()
 
     def _setup_axes(self, axes_data):
         """Sets up axes for drawing chart"""
