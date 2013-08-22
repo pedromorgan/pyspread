@@ -59,7 +59,7 @@ from src.sysvars import get_program_path
 from src.gui._widgets import PythonSTC
 from src.gui._events import post_command_event
 from src.gui._events import MainWindowEventMixin, GridEventMixin
-from src.lib.__csv import Digest, sniff, get_first_line, utf8_encode_gen
+from src.lib.__csv import Digest, sniff, get_first_line, encode_gen
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -567,7 +567,7 @@ class CSVPreviewTextCtrl(wx.TextCtrl):
         csvwriter = csv.writer(csvfile, dialect=dialect)
 
         for i, line in enumerate(data):
-            csvwriter.writerow(list(utf8_encode_gen(line)))
+            csvwriter.writerow(list(encode_gen(line)))
             if i >= self.preview_lines:
                 break
 
