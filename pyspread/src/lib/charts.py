@@ -38,6 +38,7 @@ from copy import copy
 from cStringIO import StringIO
 import datetime
 import i18n
+import warnings
 
 import wx
 
@@ -85,6 +86,15 @@ def fig2bmp(figure, width, height, dpi, zoom):
     figure.set_figwidth(width / dpi)
     figure.set_figheight(height / dpi)
     figure.subplots_adjust()
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        try:
+            # The padding is too small for small sizes. This fixes it.
+            figure.tight_layout(pad=1.0/zoom)
+
+        except ValueError:
+            pass
 
     figure.set_canvas(FigureCanvas(figure))
     png_stream = StringIO()
