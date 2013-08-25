@@ -3,6 +3,19 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+0.2.5
+-----
+
+String representation method of S removed
+Labels in chart dialog are now parsed correctly
+CSV utf-8 import and export bugs fixed
+Default font size for renderer is now set explicitly if 0 (OS X fix)
+Brazilian Portuguese localization added
+Pyspread now displays dates with matplotlib 1.3.0
+Translator information and Thanks file updated
+CSV import now allows different file encodings
+Chart padding fixed
+
 0.2.4
 -----
 
