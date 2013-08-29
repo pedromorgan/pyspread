@@ -34,10 +34,10 @@ import sys
 import wx
 app = wx.App()
 
-TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+TESTPATH = os.sep.join(os.path.realpath(__file__).split(os.sep)[:-1]) + os.sep
 sys.path.insert(0, TESTPATH)
-sys.path.insert(0, TESTPATH + "/../../..")
-sys.path.insert(0, TESTPATH + "/../..")
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
 from src.lib.testlib import params, pytest_generate_tests
 
