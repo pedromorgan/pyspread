@@ -224,6 +224,7 @@ class Digest(object):
                 return ""
             try:
                 return str(obj)
+
             except Exception:
                 return repr(obj)
 
@@ -240,7 +241,11 @@ class Digest(object):
             if obj is None:
                 return u""
 
-            return unicode(obj)
+            try:
+                return unicode(obj)
+
+            except Exception:
+                return repr(obj)
 
         def make_slice(obj):
             """Makes a slice object from slice or int"""
@@ -248,34 +253,52 @@ class Digest(object):
             if isinstance(obj, slice):
                 return obj
 
-            return slice(obj, obj + 1, None)
+            try:
+                return slice(obj, obj + 1, None)
+
+            except Exception:
+                return None
 
         def make_date(obj):
             """Makes a date from comparable types"""
 
             from dateutil.parser import parse
-            return parse(obj).date()
+
+            try:
+                return parse(obj).date()
+
+            except Exception:
+                return None
 
         def make_datetime(obj):
             """Makes a datetime from comparable types"""
 
             from dateutil.parser import parse
-            return parse(obj)
+
+            try:
+                return parse(obj)
+
+            except Exception:
+                return None
 
         def make_time(obj):
             """Makes a time from comparable types"""
 
             from dateutil.parser import parse
-            return parse(obj).time()
+
+            try:
+                return parse(obj).time()
+
+            except Exception:
+                return None
 
         def make_object(obj):
             """Returns the object"""
             try:
                 return ast.literal_eval(obj)
 
-            except SyntaxError:
-                # returns None
-                pass
+            except Exception:
+                return None
 
         self.typehandlers = {
             None: repr,
