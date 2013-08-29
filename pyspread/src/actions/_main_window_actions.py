@@ -43,7 +43,6 @@ Provides:
 import ast
 import base64
 import bz2
-from itertools import tee
 import os
 
 import wx
@@ -51,7 +50,7 @@ import wx.html
 
 from matplotlib.figure import Figure
 
-import lib.i18n as i18n
+import src.lib.i18n as i18n
 from src.sysvars import get_help_path
 
 from src.config import config
