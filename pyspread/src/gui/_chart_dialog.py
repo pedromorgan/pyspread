@@ -644,7 +644,14 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
                u"by x/sum(x)\nThe wedges are plotted counterclockwise"),
         "labels": _(u"Sequence of wedge label strings"),
         "colors": _(u"Sequence of matplotlib color args through which the pie "
-                    u"cycles"),
+                    u"cycles.\nSupported strings are:\n'b': blue\n'g': green\n"
+                    u"'r': red\n'c': cyan\n'm': magenta\n'y': yellow\n'k': "
+                    u"black\n'w': white\nGray shades can be given as a string"
+                    u"that encodes a float in the 0-1 range, e.g.: '0.75'. "
+                    u"You can also specify the color with an html hex string "
+                    u"as in: '#eeefff'. Finally, legal html names for colors, "
+                    u"such as 'red', 'burlywood' and 'chartreuse' are "
+                    u"supported."),
         "shadow": _(u"If True then a shadow beneath the pie is drawn"),
     }
 
