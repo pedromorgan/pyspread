@@ -650,7 +650,7 @@ class MainWindowEventHandlers(EventMixin):
             _("Pyspread file") + " (*.pys)|*.pys|" + \
             _("All files") + " (*.*)|*.*"
         message = _("Choose pyspread file to open.")
-        style = wx.OPEN | wx.CHANGE_DIR
+        style = wx.OPEN
         filepath, filterindex = \
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
@@ -718,7 +718,7 @@ class MainWindowEventHandlers(EventMixin):
             _("Pyspread file") + " (*.pys)|*.pys|" + \
             _("All files") + " (*.*)|*.*"
         message = _("Choose filename for saving.")
-        style = wx.SAVE | wx.CHANGE_DIR
+        style = wx.SAVE
         filepath, filterindex = \
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
@@ -775,7 +775,7 @@ class MainWindowEventHandlers(EventMixin):
             _("CSV file") + " (*.*)|*.*|" + \
             _("Tab delimited text file") + " (*.*)|*.*"
         message = _("Choose file to import.")
-        style = wx.OPEN | wx.CHANGE_DIR
+        style = wx.OPEN
         filepath, filterindex = \
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
@@ -849,14 +849,14 @@ class MainWindowEventHandlers(EventMixin):
             figure = code_array[cursor]
             if isinstance(figure, Figure):
                 wildcard += \
-                    " |" + _("SVG file") + " (*.svg)|*.svg" + \
-                    " |" + _("EPS file") + " (*.eps)|*.eps" + \
-                    " |" + _("PS file") + " (*.ps)|*.ps" + \
-                    " |" + _("PDF file") + " (*.pdf)|*.pdf" + \
-                    " |" + _("PNG file") + " (*.png)|*.png"
+                    "|" + _("SVG file") + " (*.svg)|*.svg" + \
+                    "|" + _("EPS file") + " (*.eps)|*.eps" + \
+                    "|" + _("PS file") + " (*.ps)|*.ps" + \
+                    "|" + _("PDF file") + " (*.pdf)|*.pdf" + \
+                    "|" + _("PNG file") + " (*.png)|*.png"
 
         message = _("Choose filename for export.")
-        style = wx.OPEN | wx.CHANGE_DIR
+        style = wx.SAVE
         path, filterindex = \
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
@@ -1150,7 +1150,7 @@ class MainWindowEventHandlers(EventMixin):
             _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
-        style = wx.OPEN | wx.CHANGE_DIR
+        style = wx.OPEN
         filepath, filterindex = \
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
@@ -1178,7 +1178,7 @@ class MainWindowEventHandlers(EventMixin):
             _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
-        style = wx.SAVE | wx.CHANGE_DIR
+        style = wx.SAVE
         filepath, filterindex = \
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
