@@ -39,6 +39,7 @@ from cStringIO import StringIO
 import datetime
 import i18n
 import warnings
+import types
 
 import wx
 
@@ -239,7 +240,18 @@ class ChartFigure(Figure):
                 # Wrong length --> ignore xdata
                 series.pop(x_str)
             else:
-                series[x_str] = tuple(series[x_str])
+                # Solve the problem that the series data may contain utf-8 data
+                series_list = list(series[x_str])
+                series_unicode_list = []
+                for ele in series_list:
+                    if isinstance(ele, types.StringType):
+                        try:
+                            series_unicode_list.append(ele.decode('utf-8'))
+                        except Exception:
+                            series_unicode_list.append(ele)
+                    else:
+                        series_unicode_list.append(ele)
+                series[x_str] = tuple(series_unicode_list)
 
             fixed_attrs = []
             if chart_type_string in self.plot_type_fixed_attrs:
