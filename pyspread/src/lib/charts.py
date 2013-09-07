@@ -197,7 +197,8 @@ class ChartFigure(Figure):
             "yscale": self.__axes.set_yscale,
             "xlim": self.__axes.set_xlim,
             "ylim": self.__axes.set_ylim,
-            "grid": self.__axes.grid,
+            "xgrid": self.__axes.xaxis.grid,
+            "ygrid": self.__axes.yaxis.grid,
             "xdate_format": self._xdate_setter,
         }
 

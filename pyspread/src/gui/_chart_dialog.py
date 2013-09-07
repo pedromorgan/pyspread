@@ -699,7 +699,8 @@ Code 	Meaning
         "ylabel": (_("Label"), StringEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
-        "grid": (_("Grid"), BoolEditor, False),
+        "xgrid": (_("X-axis grid"), BoolEditor, False),
+        "ygrid": (_("Y-axis grid"), BoolEditor, False),
         "legend": (_("Legend"), BoolEditor, False),
         "xdate_format": (_("Date format"), StringEditor, ""),
     }
@@ -708,9 +709,9 @@ Code 	Meaning
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Figure"), ["title", "grid", "legend"]),
-        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xdate_format"]),
-        (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
+        (_("Figure"), ["title", "legend"]),
+        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format"]),
+        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid"]),
     ]
 
     tooltips = {
@@ -1110,9 +1111,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                   "title", "xlabel", "ylabel", "label"]
 
     # String keys need to be put in "
-    string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",
-                   "notch", "sym", "normed", "cumulative", "xdate_format",
-                   "xycoords", "textcoords", "s"]
+    string_keys = ["type", "linestyle", "marker", "shadow", "vert", "xgrid",
+                   "ygrid", "notch", "sym", "normed", "cumulative",
+                   "xdate_format", "xycoords", "textcoords", "s"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]
