@@ -74,7 +74,15 @@ class MainWindow(wx.Frame, EventMixin):
 
         self.interfaces = GuiInterfaces(self)
 
-        self._mgr = aui.AuiManager(self)
+        try:
+            self._mgr = aui.AuiManager(self)
+
+        except Exception:
+            # This may fail if py.testv runs under Windows
+            # Therefore, we set up a basic framework for the unit tests
+            self.grid = Grid(self, -1, S=S, dimensions=(1000, 100, 3))
+            self.clipboard = Clipboard()
+            self.actions = AllMainWindowActions(self.grid)
 
         self.parent = parent
 

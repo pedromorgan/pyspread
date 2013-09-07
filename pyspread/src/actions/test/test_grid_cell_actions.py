@@ -49,7 +49,7 @@ class TestCellActions(object):
     """Cell actions test class"""
 
     def setup_method(self, method):
-        self.main_window = MainWindow(None, -1)
+        self.main_window = MainWindow(None, title="pyspread", S=None)
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
