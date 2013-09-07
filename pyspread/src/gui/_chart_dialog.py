@@ -735,7 +735,7 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
     default_data = {
         "s": (_("Text"), StringEditor, ""),
         "xy": (_("Point"), StringEditor, ""),
-        "xycoords": (_("Point coordinates"), CoordinatesEditor, "data"),
+        "xycoords": (_("Coordinates"), CoordinatesEditor, "data"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -1113,7 +1113,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "xgrid",
                    "ygrid", "notch", "sym", "normed", "cumulative",
-                   "xdate_format", "xycoords", "textcoords", "s"]
+                   "xdate_format", "xycoords", "textcoords"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]
