@@ -64,6 +64,8 @@ Provides
 #                      FigurePanel
 
 
+from copy import copy
+
 import wx
 import matplotlib
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
@@ -216,6 +218,55 @@ class StringEditor(wx.TextCtrl, ChartDialogEventMixin):
 
     def OnText(self, event):
         """Text entry event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
+
+
+class FontEditor(wx.Button, ChartDialogEventMixin):
+    """Editor widget for fonts
+
+    The editor provides a button that launches a wx.FontDialog.
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        wx.Button.__init__(self, *args, **kwargs)
+
+        self.font_data = wx.FontData()
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_BUTTON, self.OnFont)
+
+    def get_code(self):
+        """Returns code representation of value of widget"""
+        raise NotImplementedError
+        return self.font_data
+
+    def set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of widget value
+
+        """
+        raise NotImplementedError
+        #self.SetValue(code)
+
+    def OnFont(self, event):
+        """Check event handler"""
+
+        dlg = wx.FontDialog(self, self.data)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            self.font_data = copy(dlg.GetFontData())
+
+        dlg.Destroy()
 
         post_command_event(self, self.DrawChartMsg)
 
