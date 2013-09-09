@@ -44,8 +44,8 @@ from src.lib.testlib import params, pytest_generate_tests
 from src.lib.parsers import get_font_from_data, get_pen_from_data
 
 param_font = [
-    {"fontdata": "Sans 13", "face": "Sans", "size": 13},
-    {"fontdata": "Serif 43", "face": "Serif", "size": 43},
+    {"fontdata": "Courier 13", "face": "Courier", "size": 13},
+    {"fontdata": "Arial 43", "face": "Arial", "size": 43},
 ]
 
 
