@@ -15,6 +15,14 @@ Pyspread now displays dates with matplotlib 1.3.0
 Translator information and Thanks file updated
 CSV import now allows different file encodings
 Chart padding fixed
+Translator added to About dialog 
+PATHs in test files are now set system independently
+Save file dialog styles switched to file choice
+Tooltip text for pie chart colors is extended
+Chart grid lines are now separately selectable for each axis 
+Annotation texts are now treated as code instead of strings
+All unit tests now succeed in Windows
+Ukranian mo file updated
 
 0.2.4
 -----
