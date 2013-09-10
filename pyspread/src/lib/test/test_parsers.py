@@ -49,14 +49,18 @@ param_font = [
 ]
 
 
-@params(param_font)
-def test_get_font_from_data(fontdata, face, size):
-    """Unit test for get_font_from_data"""
+# In Windows, base fonts seem to have no face name
+# Therefore, the following test fails
+if not "__WXMSW__" in wx.PlatformInfo:
 
-    font = get_font_from_data(fontdata)
+    @params(param_font)
+    def test_get_font_from_data(fontdata, face, size):
+        """Unit test for get_font_from_data"""
 
-    assert font.GetFaceName() == face
-    assert font.GetPointSize() == size
+        font = get_font_from_data(fontdata)
+
+        assert font.GetFaceName() == face
+        assert font.GetPointSize() == size
 
 param_pen = [
     {"pendata": [wx.RED.GetRGB(), 4], "width": 4,
