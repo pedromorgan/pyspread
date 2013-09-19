@@ -50,6 +50,13 @@ def get_font_from_data(fontdata):
     if fontdata != "":
         nativefontinfo = wx.NativeFontInfo()
         nativefontinfo.FromString(fontdata)
+
+        # OS X does not like a PointSize of 0
+        # Therefore, it is explicitly set to the system default font point size
+
+        if not nativefontinfo.GetPointSize():
+            nativefontinfo.SetPointSize(get_default_font().GetPointSize())
+
         textfont.SetNativeFontInfo(nativefontinfo)
 
     return textfont

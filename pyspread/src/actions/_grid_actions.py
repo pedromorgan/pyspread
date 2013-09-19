@@ -1209,8 +1209,10 @@ class SelectionActions(Actions):
 class FindActions(Actions):
     """Actions for finding inside the grid"""
 
-    def find(self, gridpos, find_string, flags):
-        """Return next position of event_find_string in MainGrid
+    def find_all(self, find_string, flags):
+        """Return list of all positions of event_find_string in MainGrid.
+
+        Only the code is searched. The result is not searched here.
 
         Parameters:
         -----------
@@ -1221,6 +1223,34 @@ class FindActions(Actions):
         flags: List of strings
         \t Search flag out of
         \t ["UP" xor "DOWN", "WHOLE_WORD", "MATCH_CASE", "REG_EXP"]
+
+        """
+
+        code_array = self.grid.code_array
+        string_match = code_array.string_match
+
+        find_keys = []
+
+        for key in code_array:
+            if string_match(code_array(key), find_string, flags) is not None:
+                find_keys.append(key)
+
+        return find_keys
+
+    def find(self, gridpos, find_string, flags, search_result=True):
+        """Return next position of event_find_string in MainGrid
+
+        Parameters:
+        -----------
+        gridpos: 3-tuple of Integer
+        \tPosition at which the search starts
+        find_string: String
+        \tString to find in grid
+        flags: List of strings
+        \tSearch flag out of
+        \t["UP" xor "DOWN", "WHOLE_WORD", "MATCH_CASE", "REG_EXP"]
+        search_result: Bool, defaults to True
+        \tIf True then the search includes the result string (slower)
 
         """
 
@@ -1245,7 +1275,39 @@ class FindActions(Actions):
             else:
                 gridpos = [dim - 1 for dim in self.grid.code_array.shape]
 
-        return findfunc(tuple(gridpos), find_string, flags)
+        return findfunc(tuple(gridpos), find_string, flags, search_result)
+
+    def replace_all(self, findpositions, find_string, replace_string):
+        """Replaces occurrences of find_string with replace_string at findpos
+
+        and marks content as changed
+
+        Parameters
+        ----------
+
+        findpositions: List of 3-Tuple of Integer
+        \tPositions in grid that shall be replaced
+        find_string: String
+        \tString to be overwritten in the cell
+        replace_string: String
+        \tString to be used for replacement
+
+        """
+        # Mark content as changed
+        post_command_event(self.main_window, self.ContentChangedMsg,
+                           changed=True)
+
+        for findpos in findpositions:
+            old_code = self.grid.code_array(findpos)
+            new_code = old_code.replace(find_string, replace_string)
+
+            self.grid.code_array[findpos] = new_code
+
+        statustext = _("Replaced {no_cells} cells.")
+        statustext = statustext.format(no_cells=len(findpositions))
+
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
 
     def replace(self, findpos, find_string, replace_string):
         """Replaces occurrences of find_string with replace_string at findpos

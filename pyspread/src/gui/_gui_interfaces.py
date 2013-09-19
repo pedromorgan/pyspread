@@ -213,6 +213,7 @@ class ModalDialogInterfaceMixin(object):
         if filterdlg.ShowModal() == wx.ID_OK:
             dialect, has_header = filterdlg.csvwidgets.get_dialect()
             digest_types = filterdlg.grid.dtypes
+            encoding = filterdlg.csvwidgets.encoding
 
         else:
             filterdlg.Destroy()
@@ -221,7 +222,7 @@ class ModalDialogInterfaceMixin(object):
 
         filterdlg.Destroy()
 
-        return dialect, has_header, digest_types
+        return dialect, has_header, digest_types, encoding
 
     def get_csv_export_info(self, preview_data):
         """Shows csv export preview dialog and returns csv_info

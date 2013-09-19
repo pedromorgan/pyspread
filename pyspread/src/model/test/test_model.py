@@ -40,10 +40,10 @@ import numpy
 import wx
 app = wx.App()
 
-TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+TESTPATH = os.sep.join(os.path.realpath(__file__).split(os.sep)[:-1]) + os.sep
 sys.path.insert(0, TESTPATH)
-sys.path.insert(0, TESTPATH + "/../../..")
-sys.path.insert(0, TESTPATH + "/../..")
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
 from src.lib.testlib import params, pytest_generate_tests
 
@@ -361,14 +361,6 @@ class TestDataArray(object):
 
         assert "dict_grid" in self.data_array.__getstate__()
 
-    def test_str(self):
-        """Unit test for __str__"""
-
-        self.data_array[(1, 2, 3)] = "12"
-
-        data_array_str = str(self.data_array)
-        assert data_array_str == "{(1, 2, 3): '12'}"
-
     def test_slicing(self):
         """Unit test for __getitem__ and __setitem__"""
 
@@ -611,7 +603,7 @@ class TestCodeArray(object):
                       (1, 2, 3), (0, 99, 0)]
 
     def test_string_match(self):
-        """Tests creation of _string_match"""
+        """Tests creation of string_match"""
 
         code_array = self.code_array
 
@@ -626,19 +618,19 @@ class TestCodeArray(object):
         flags = []
         results = [None, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, None]
         for test_string, result in zip(test_strings, results):
-            res = code_array._string_match(test_string, search_string, flags)
+            res = code_array.string_match(test_string, search_string, flags)
             assert res == result
 
         flags = ["MATCH_CASE"]
         results = [None, 0, 1, 0, 1, 0, 1, 1, 1, None, None, None]
         for test_string, result in zip(test_strings, results):
-            res = code_array._string_match(test_string, search_string, flags)
+            res = code_array.string_match(test_string, search_string, flags)
             assert res == result
 
         flags = ["WHOLE_WORD"]
         results = [None, 0, 1, 0, 1, 0, None, None, None, 0, 0, None]
         for test_string, result in zip(test_strings, results):
-            res = code_array._string_match(test_string, search_string, flags)
+            res = code_array.string_match(test_string, search_string, flags)
             assert res == result
 
     def test_findnextmatch(self):

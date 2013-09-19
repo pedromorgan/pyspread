@@ -64,6 +64,8 @@ Provides
 #                      FigurePanel
 
 
+from copy import copy
+
 import wx
 import matplotlib
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
@@ -216,6 +218,55 @@ class StringEditor(wx.TextCtrl, ChartDialogEventMixin):
 
     def OnText(self, event):
         """Text entry event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
+
+
+class FontEditor(wx.Button, ChartDialogEventMixin):
+    """Editor widget for fonts
+
+    The editor provides a button that launches a wx.FontDialog.
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        wx.Button.__init__(self, *args, **kwargs)
+
+        self.font_data = wx.FontData()
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.Bind(wx.EVT_BUTTON, self.OnFont)
+
+    def get_code(self):
+        """Returns code representation of value of widget"""
+        raise NotImplementedError
+        return self.font_data
+
+    def set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of widget value
+
+        """
+        raise NotImplementedError
+        #self.SetValue(code)
+
+    def OnFont(self, event):
+        """Check event handler"""
+
+        dlg = wx.FontDialog(self, self.font_data)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            self.font_data = copy(dlg.GetFontData())
+
+        dlg.Destroy()
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -644,7 +695,14 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
                u"by x/sum(x)\nThe wedges are plotted counterclockwise"),
         "labels": _(u"Sequence of wedge label strings"),
         "colors": _(u"Sequence of matplotlib color args through which the pie "
-                    u"cycles"),
+                    u"cycles.\nSupported strings are:\n'b': blue\n'g': green\n"
+                    u"'r': red\n'c': cyan\n'm': magenta\n'y': yellow\n'k': "
+                    u"black\n'w': white\nGray shades can be given as a string"
+                    u"that encodes a float in the 0-1 range, e.g.: '0.75'. "
+                    u"You can also specify the color with an html hex string "
+                    u"as in: '#eeefff'. Finally, legal html names for colors, "
+                    u"such as 'red', 'burlywood' and 'chartreuse' are "
+                    u"supported."),
         "shadow": _(u"If True then a shadow beneath the pie is drawn"),
     }
 
@@ -692,7 +750,8 @@ Code 	Meaning
         "ylabel": (_("Label"), StringEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
-        "grid": (_("Grid"), BoolEditor, False),
+        "xgrid": (_("X-axis grid"), BoolEditor, False),
+        "ygrid": (_("Y-axis grid"), BoolEditor, False),
         "legend": (_("Legend"), BoolEditor, False),
         "xdate_format": (_("Date format"), StringEditor, ""),
     }
@@ -701,9 +760,9 @@ Code 	Meaning
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Figure"), ["title", "grid", "legend"]),
-        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xdate_format"]),
-        (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
+        (_("Figure"), ["title", "legend"]),
+        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format"]),
+        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid"]),
     ]
 
     tooltips = {
@@ -727,7 +786,7 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
     default_data = {
         "s": (_("Text"), StringEditor, ""),
         "xy": (_("Point"), StringEditor, ""),
-        "xycoords": (_("Point coordinates"), CoordinatesEditor, "data"),
+        "xycoords": (_("Coordinates"), CoordinatesEditor, "data"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -1099,12 +1158,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
-                  "xlim", "ylim", "x", "labels", "colors", "xy", "xytext"]
+                  "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
+                  "title", "xlabel", "ylabel", "label"]
 
     # String keys need to be put in "
-    string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",
-                   "notch", "sym", "normed", "cumulative", "xdate_format",
-                   "xycoords", "textcoords", "s"]
+    string_keys = ["type", "linestyle", "marker", "shadow", "vert", "xgrid",
+                   "ygrid", "notch", "sym", "normed", "cumulative",
+                   "xdate_format", "xycoords", "textcoords"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]

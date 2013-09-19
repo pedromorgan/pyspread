@@ -38,6 +38,8 @@ from copy import copy
 from cStringIO import StringIO
 import datetime
 import i18n
+import warnings
+import types
 
 import wx
 
@@ -57,9 +59,6 @@ def object2code(key, code):
             code = True
         else:
             code = False
-
-    elif key in ["title", "xlabel", "ylabel", "label"]:
-        code = repr(code)
 
     else:
         code = str(code)
@@ -88,6 +87,15 @@ def fig2bmp(figure, width, height, dpi, zoom):
     figure.set_figwidth(width / dpi)
     figure.set_figheight(height / dpi)
     figure.subplots_adjust()
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        try:
+            # The padding is too small for small sizes. This fixes it.
+            figure.tight_layout(pad=1.0/zoom)
+
+        except ValueError:
+            pass
 
     figure.set_canvas(FigureCanvas(figure))
     png_stream = StringIO()
@@ -172,7 +180,9 @@ class ChartFigure(Figure):
             self.__axes.xaxis_date()
             formatter = dates.DateFormatter(xdate_format)
             self.__axes.xaxis.set_major_formatter(formatter)
-            self.autofmt_xdate()
+
+            # The autofmt method does not work in matplotlib 1.3.0
+            #self.autofmt_xdate()
 
     def _setup_axes(self, axes_data):
         """Sets up axes for drawing chart"""
@@ -187,13 +197,21 @@ class ChartFigure(Figure):
             "yscale": self.__axes.set_yscale,
             "xlim": self.__axes.set_xlim,
             "ylim": self.__axes.set_ylim,
-            "grid": self.__axes.grid,
+            "xgrid": self.__axes.xaxis.grid,
+            "ygrid": self.__axes.yaxis.grid,
             "xdate_format": self._xdate_setter,
         }
 
         for key in key2setter:
             if key in axes_data and axes_data[key]:
-                key2setter[key](axes_data[key])
+                try:
+                    kwargs_key = key + "_kwargs"
+                    kwargs = axes_data[kwargs_key]
+
+                except KeyError:
+                    kwargs = {}
+
+                key2setter[key](axes_data[key], **kwargs)
 
     def _setup_legend(self, axes_data):
         """Sets up legend for drawing chart"""
@@ -223,7 +241,18 @@ class ChartFigure(Figure):
                 # Wrong length --> ignore xdata
                 series.pop(x_str)
             else:
-                series[x_str] = tuple(series[x_str])
+                # Solve the problem that the series data may contain utf-8 data
+                series_list = list(series[x_str])
+                series_unicode_list = []
+                for ele in series_list:
+                    if isinstance(ele, types.StringType):
+                        try:
+                            series_unicode_list.append(ele.decode('utf-8'))
+                        except Exception:
+                            series_unicode_list.append(ele)
+                    else:
+                        series_unicode_list.append(ele)
+                series[x_str] = tuple(series_unicode_list)
 
             fixed_attrs = []
             if chart_type_string in self.plot_type_fixed_attrs:

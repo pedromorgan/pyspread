@@ -36,6 +36,7 @@ Provides
 
 """
 
+import ast
 import csv
 import datetime
 import os
@@ -159,6 +160,25 @@ def cell_key_val_gen(iterable, shape, topleft=(0, 0)):
             yield row, col, value
 
 
+def encode_gen(line, encoding="utf-8"):
+    """Encodes all Unicode strings in line to encoding
+
+    Parameters
+    ----------
+    line: Iterable of Unicode strings
+    \tDate to be encoded
+    encoding: String, defaults to "utf-8"
+    \tTarget encoding
+
+    """
+
+    for ele in line:
+        if isinstance(ele, types.UnicodeType):
+            yield ele.encode(encoding)
+        else:
+            yield ele
+
+
 class Digest(object):
     """
     Maps types to types that are acceptable for target class
@@ -182,13 +202,15 @@ class Digest(object):
 
     """
 
-    def __init__(self, acceptable_types=None, fallback_type=None):
+    def __init__(self, acceptable_types=None, fallback_type=None,
+                 encoding="utf-8"):
 
         if acceptable_types is None:
             acceptable_types = [None]
 
         self.acceptable_types = acceptable_types
         self.fallback_type = fallback_type
+        self.encoding = encoding
 
         # Type conversion functions
 
@@ -202,6 +224,7 @@ class Digest(object):
                 return ""
             try:
                 return str(obj)
+
             except Exception:
                 return repr(obj)
 
@@ -213,12 +236,16 @@ class Digest(object):
 
             elif isinstance(obj, types.StringType):
                 # Try UTF-8
-                return obj.decode('utf-8')
+                return obj.decode(self.encoding)
 
             if obj is None:
                 return u""
 
-            return unicode(obj)
+            try:
+                return unicode(obj)
+
+            except Exception:
+                return repr(obj)
 
         def make_slice(obj):
             """Makes a slice object from slice or int"""
@@ -226,30 +253,52 @@ class Digest(object):
             if isinstance(obj, slice):
                 return obj
 
-            return slice(obj, obj + 1, None)
+            try:
+                return slice(obj, obj + 1, None)
+
+            except Exception:
+                return None
 
         def make_date(obj):
             """Makes a date from comparable types"""
 
             from dateutil.parser import parse
-            return parse(obj).date()
+
+            try:
+                return parse(obj).date()
+
+            except Exception:
+                return None
 
         def make_datetime(obj):
             """Makes a datetime from comparable types"""
 
             from dateutil.parser import parse
-            return parse(obj)
+
+            try:
+                return parse(obj)
+
+            except Exception:
+                return None
 
         def make_time(obj):
             """Makes a time from comparable types"""
 
             from dateutil.parser import parse
-            return parse(obj).time()
+
+            try:
+                return parse(obj).time()
+
+            except Exception:
+                return None
 
         def make_object(obj):
             """Returns the object"""
+            try:
+                return ast.literal_eval(obj)
 
-            return obj
+            except Exception:
+                return None
 
         self.typehandlers = {
             None: repr,
@@ -315,7 +364,8 @@ class CsvInterface(StatusBarEventMixin):
 
     """
 
-    def __init__(self, main_window, path, dialect, digest_types, has_header):
+    def __init__(self, main_window, path, dialect, digest_types, has_header,
+                 encoding='utf-8'):
         self.main_window = main_window
         self.path = path
         self.csvfilename = os.path.split(path)[1]
@@ -323,6 +373,8 @@ class CsvInterface(StatusBarEventMixin):
         self.dialect = dialect
         self.digest_types = digest_types
         self.has_header = has_header
+
+        self.encoding = encoding
 
         self.first_line = False
 
@@ -355,23 +407,24 @@ class CsvInterface(StatusBarEventMixin):
         for j, value in enumerate(line):
             if self.first_line:
                 digest_key = None
-                digest = lambda x: repr(x)
+                digest = lambda x: x.decode(self.encoding)
             else:
                 try:
                     digest_key = digest_types[j]
                 except IndexError:
                     digest_key = digest_types[0]
 
-                digest = Digest(acceptable_types=[digest_key])
+                digest = Digest(acceptable_types=[digest_key],
+                                encoding=self.encoding)
 
             try:
                 digest_res = digest(value)
 
-                if digest_key is not None and digest_res != "\b" and \
-                   digest_key is not types.CodeType:
-                    digest_res = repr(digest_res)
-                elif digest_res == "\b":
+                if digest_res == "\b":
                     digest_res = None
+
+                elif digest_key is not types.CodeType:
+                    digest_res = repr(digest_res)
 
             except Exception, err:
                 digest_res = str(err)
@@ -390,7 +443,8 @@ class CsvInterface(StatusBarEventMixin):
                 csv_writer = csv.writer(csvfile, self.dialect)
 
                 for line in iterable:
-                    csv_writer.writerow(list(line))
+                    csv_writer.writerow(
+                        list(encode_gen(line, encoding=self.encoding)))
 
         except IOError:
             txt = \

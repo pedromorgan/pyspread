@@ -34,29 +34,33 @@ import sys
 import wx
 app = wx.App()
 
-TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+TESTPATH = os.sep.join(os.path.realpath(__file__).split(os.sep)[:-1]) + os.sep
 sys.path.insert(0, TESTPATH)
-sys.path.insert(0, TESTPATH + "/../../..")
-sys.path.insert(0, TESTPATH + "/../..")
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
 from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.parsers import get_font_from_data, get_pen_from_data
 
 param_font = [
-    {"fontdata": "Sans 13", "face": "Sans", "size": 13},
-    {"fontdata": "Serif 43", "face": "Serif", "size": 43},
+    {"fontdata": "Courier 13", "face": "Courier", "size": 13},
+    {"fontdata": "Arial 43", "face": "Arial", "size": 43},
 ]
 
 
-@params(param_font)
-def test_get_font_from_data(fontdata, face, size):
-    """Unit test for get_font_from_data"""
+# In Windows, base fonts seem to have no face name
+# Therefore, the following test fails
+if not "__WXMSW__" in wx.PlatformInfo:
 
-    font = get_font_from_data(fontdata)
+    @params(param_font)
+    def test_get_font_from_data(fontdata, face, size):
+        """Unit test for get_font_from_data"""
 
-    assert font.GetFaceName() == face
-    assert font.GetPointSize() == size
+        font = get_font_from_data(fontdata)
+
+        assert font.GetFaceName() == face
+        assert font.GetPointSize() == size
 
 param_pen = [
     {"pendata": [wx.RED.GetRGB(), 4], "width": 4,

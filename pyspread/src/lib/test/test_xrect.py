@@ -34,10 +34,10 @@ import sys
 
 import numpy
 
-TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+TESTPATH = os.sep.join(os.path.realpath(__file__).split(os.sep)[:-1]) + os.sep
 sys.path.insert(0, TESTPATH)
-sys.path.insert(0, TESTPATH + "/../../..")
-sys.path.insert(0, TESTPATH + "/../..")
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
 import src.lib.xrect as xrect
 

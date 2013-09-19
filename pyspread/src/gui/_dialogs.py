@@ -59,7 +59,7 @@ from src.sysvars import get_program_path
 from src.gui._widgets import PythonSTC
 from src.gui._events import post_command_event
 from src.gui._events import MainWindowEventMixin, GridEventMixin
-from src.lib.__csv import Digest, sniff, get_first_line
+from src.lib.__csv import Digest, sniff, get_first_line, encode_gen
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -170,6 +170,8 @@ class CsvParameterWidgets(object):
     """
 
     csv_params = [
+        ["encodings", types.TupleType, _("Encoding"),
+         _("CSV file encoding.")],
         ["dialects", types.TupleType, _("Dialect"),
          _("To make it easier to specify the format of input and output "
            "records, specific formatting parameters are grouped together "
@@ -211,14 +213,35 @@ class CsvParameterWidgets(object):
         types.IntType: wx.Choice,
     }
 
+    standard_encodings = (
+        "utf-8", "ascii", "big5", "big5hkscs", "cp037", "cp424", "cp437",
+        "cp500", "cp720", "cp737", "cp775", "cp850", "cp852", "cp855", "cp856",
+        "cp857", "cp858", "cp860", "cp861", "cp862", "cp863", "cp864", "cp865",
+        "cp866", "cp869", "cp874", "cp875", "cp932", "cp949", "cp950",
+        "cp1006", "cp1026", "cp1140", "cp1250", "cp1251", "cp1252", "cp1253",
+        "cp1254", "cp1255", "cp1256", "cp1257", "cp1258", "euc-jp",
+        "euc-jis-2004", "euc-jisx0213", "euc-kr", "gb2312", "gbk", "gb18030",
+        "hz", "iso2022-jp", "iso2022-jp-1", "iso2022-jp-2", "iso2022-jp-2004",
+        "iso2022-jp-3", "iso2022-jp-ext", "iso2022-kr", "latin-1", "iso8859-2",
+        "iso8859-3", "iso8859-4", "iso8859-5", "iso8859-6", "iso8859-7",
+        "iso8859-8", "iso8859-9", "iso8859-10", "iso8859-13", "iso8859-14",
+        "iso8859-15", "iso8859-16", "johab", "koi8-r", "koi8-u",
+        "mac-cyrillic", "mac-greek", "mac-iceland", "mac-latin2", "mac-roman",
+        "mac-turkish", "ptcp154", "shift-jis", "shift-jis-2004",
+        "shift-jisx0213", "utf-32", "utf-32-be", "utf-32-le", "utf-16",
+        "utf-16-be", "utf-16-le", "utf-7", "utf-8-sig",
+    )
+
     # All tuple types from csv_params have choice boxes
     choices = {
         'dialects': tuple(["sniffer"] + csv.list_dialects() + ["user"]),
         'quoting': ("QUOTE_ALL", "QUOTE_MINIMAL",
                     "QUOTE_NONNUMERIC", "QUOTE_NONE"),
+        'encodings': standard_encodings,
     }
 
     widget_handlers = {
+        'encodings': "OnEncoding",
         'dialects': "OnDialectChoice",
         'quoting': "OnWidget",
         'delimiter': "OnWidget",
@@ -232,6 +255,8 @@ class CsvParameterWidgets(object):
     def __init__(self, parent, csvfilepath):
         self.parent = parent
         self.csvfilepath = csvfilepath
+
+        self.encoding = self.standard_encodings[0]
 
         if csvfilepath is None:
             dialect = csv.get_dialect(csv.list_dialects()[0])
@@ -261,6 +286,7 @@ class CsvParameterWidgets(object):
             if pname in self.choices:
                 widget.AppendItems(self.choices[pname])
                 widget.SetValue = widget.Select
+                widget.SetSelection(0)
 
             # Bind event handler to widget
             if ptype is types.StringType or ptype is types.UnicodeType:
@@ -314,7 +340,7 @@ class CsvParameterWidgets(object):
         """Sets the widget settings to those of the chosen dialect"""
 
         # the first parameter is the dialect itself --> ignore
-        for parameter in self.csv_params[1:]:
+        for parameter in self.csv_params[2:]:
             pname, ptype, plabel, phelp = parameter
 
             widget = self._widget_from_p(pname, ptype)
@@ -337,6 +363,12 @@ class CsvParameterWidgets(object):
         widget_name = self.type2widget[ptype].__name__.lower()
         widget_name = "_".join([widget_name, pname])
         return getattr(self, widget_name)
+
+    def OnEncoding(self, event):
+        """Stores encoding information"""
+
+        self.encoding = event.GetString()
+        event.Skip()
 
     def OnDialectChoice(self, event):
         """Updates all param widgets confirming to the selcted dialect"""
@@ -371,7 +403,7 @@ class CsvParameterWidgets(object):
 
         parameters = {}
 
-        for parameter in self.csv_params[1:]:
+        for parameter in self.csv_params[2:]:
             pname, ptype, plabel, phelp = parameter
 
             widget = self._widget_from_p(pname, ptype)
@@ -567,13 +599,13 @@ class CSVPreviewTextCtrl(wx.TextCtrl):
         csvwriter = csv.writer(csvfile, dialect=dialect)
 
         for i, line in enumerate(data):
-            csvwriter.writerow(line)
+            csvwriter.writerow(list(encode_gen(line)))
             if i >= self.preview_lines:
                 break
 
         preview = csvfile.getvalue()
         csvfile.close()
-        preview = preview.replace("\r\n", "\n")
+        preview = preview.decode("utf-8").replace("\r\n", "\n")
         self.SetValue(preview)
 
 
@@ -1069,7 +1101,8 @@ class AboutDialog(object):
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
-                            "Martin Manns", "Andreas Noteng"]
+                            "Martin Manns", "Andreas Noteng",
+                            "Enrico Nicoletto"]
 
         license_file = open(get_program_path() + "/COPYING", "r")
         license_text = license_file.read()

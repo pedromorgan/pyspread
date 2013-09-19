@@ -991,8 +991,6 @@ class GridEventHandlers(object):
 
         event.Skip()
 
-        return findpos
-
     def OnShowFindReplace(self, event):
         """Calls the find-replace dialog"""
 
@@ -1029,34 +1027,46 @@ class GridEventHandlers(object):
     def OnReplace(self, event):
         """Called when a replace operation is started, returns find position"""
 
-        event.text = find_string = event.GetFindString()
-        event.flags = self._wxflag2flag(event.GetFlags())
+        find_string = event.GetFindString()
+        flags = self._wxflag2flag(event.GetFlags())
         replace_string = event.GetReplaceString()
 
-        findpos = self.OnFind(event)
+        gridpos = list(self.grid.actions.cursor)
 
-        if findpos is not None:
+        findpos = self.grid.actions.find(gridpos, find_string, flags,
+                                         search_result=False)
+
+        if findpos is None:
+            statustext = _(u"'{find_string}' not found.")
+            statustext = statustext.format(find_string=find_string)
+
+        else:
             self.grid.actions.replace(findpos, find_string, replace_string)
+            self.grid.actions.cursor = findpos
+
+            # Update statusbar
+            statustext = _(u"Replaced '{find_string}' in cell {key} with "
+                           u"{replace_string}.")
+            statustext = statustext.format(find_string=find_string,
+                                           key=findpos,
+                                           replace_string=replace_string)
+
+        post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
+                           text=statustext)
 
         event.Skip()
-
-        return findpos
 
     def OnReplaceAll(self, event):
         """Called when a replace all operation is started"""
 
-        old_findpositions = []
+        find_string = event.GetFindString()
+        flags = self._wxflag2flag(event.GetFlags())
+        replace_string = event.GetReplaceString()
 
-        while True:
-            findpos = self.OnReplace(event)
-            if findpos is None:
-                break
-            if findpos in old_findpositions:
-                # Undo one step because one update was already twice
-                self.grid.actions.undo()
-                self.grid.update_entry_line()
-                break
-            old_findpositions.append(findpos)
+        findpositions = self.grid.actions.find_all(find_string, flags)
+
+        self.grid.actions.replace_all(findpositions, find_string,
+                                      replace_string)
 
         event.Skip()
 

@@ -43,7 +43,6 @@ Provides:
 import ast
 import base64
 import bz2
-from itertools import tee
 import os
 
 import wx
@@ -51,7 +50,7 @@ import wx.html
 
 from matplotlib.figure import Figure
 
-import lib.i18n as i18n
+import src.lib.i18n as i18n
 from src.sysvars import get_help_path
 
 from src.config import config
@@ -86,7 +85,7 @@ class ExchangeActions(Actions):
         # Get csv info
 
         try:
-            dialect, has_header, digest_types = \
+            dialect, has_header, digest_types, encoding = \
                 self.main_window.interfaces.get_csv_import_info(path)
 
         except IOError:
@@ -98,7 +97,7 @@ class ExchangeActions(Actions):
             return  # Import is aborted or empty
 
         return CsvInterface(self.main_window,
-                            path, dialect, digest_types, has_header)
+                            path, dialect, digest_types, has_header, encoding)
 
     def _import_txt(self, path):
         """Whitespace-delimited txt import workflow. This should be fast."""

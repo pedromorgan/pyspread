@@ -35,10 +35,10 @@ import bz2
 import wx
 app = wx.App()
 
-TESTPATH = "/".join(os.path.realpath(__file__).split("/")[:-1]) + "/"
+TESTPATH = os.sep.join(os.path.realpath(__file__).split(os.sep)[:-1]) + os.sep
 sys.path.insert(0, TESTPATH)
-sys.path.insert(0, TESTPATH + "/../../..")
-sys.path.insert(0, TESTPATH + "/../..")
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
+sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
 from src.gui._main_window import MainWindow
 from src.lib.selection import Selection
@@ -53,7 +53,7 @@ class TestFileActions(object):
     """File actions test class"""
 
     def setup_method(self, method):
-        self.main_window = MainWindow(None, -1)
+        self.main_window = MainWindow(None, title="pyspread", S=None)
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
@@ -505,22 +505,22 @@ class TestTableActions(object):
     param_paste = [
         {'tl_cell': (0, 0, 0), 'data': [["78"]],
          'test_key': (0, 0, 0), 'test_val': "78"},
-        {'tl_cell': (0, 0, 0), 'data': [[None]],
-         'test_key': (0, 0, 0), 'test_val': None},
+        {'tl_cell': (40, 0, 0), 'data': [[None]],
+         'test_key': (40, 0, 0), 'test_val': None},
         {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
          'test_key': (0, 0, 0), 'test_val': "1"},
         {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
          'test_key': (1, 1, 0), 'test_val': "4"},
         {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
          'test_key': (1, 1, 1), 'test_val': None},
-        {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-         'test_key': (0, 0, 0), 'test_val': None},
+        {'tl_cell': (41, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (40, 0, 0), 'test_val': None},
         {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
          'test_key': (1, 0, 0), 'test_val': "1"},
-        {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
-         'test_key': (0, 1, 0), 'test_val': "1"},
-        {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
-         'test_key': (0, 0, 0), 'test_val': None},
+        {'tl_cell': (40, 1, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (40, 1, 0), 'test_val': "1"},
+        {'tl_cell': (40, 1, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (40, 0, 0), 'test_val': None},
         {'tl_cell': (123, 5, 0), 'data': [["1", "2"], ["3", "4"]],
          'test_key': (123, 6, 0), 'test_val': "2"},
         {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
