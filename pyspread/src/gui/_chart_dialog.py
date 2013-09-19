@@ -261,7 +261,7 @@ class FontEditor(wx.Button, ChartDialogEventMixin):
     def OnFont(self, event):
         """Check event handler"""
 
-        dlg = wx.FontDialog(self, self.data)
+        dlg = wx.FontDialog(self, self.font_data)
 
         if dlg.ShowModal() == wx.ID_OK:
             self.font_data = copy(dlg.GetFontData())
