@@ -1,4 +1,4 @@
-# German translation of pyspread
+# German translation of pyspread 0.2.5
 # Copyright (C) 2012 Free Software Foundation, Inc.
 # This file is distributed under the same license as the pyspread package.
 #
@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: pyspread 0.2.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-09 22:24+0200\n"
-"PO-Revision-Date: 2013-09-16 22:27+0200\n"
+"PO-Revision-Date: 2013-09-21 15:59+0100\n"
 "Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -19,13 +19,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: src/lib/fileio.py:67 src/actions/_grid_actions.py:113
 msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
-msgstr ""
-"{nele} Elemente von {totalele} Elementen verarbeitet. Drücken Sie <Esc> zum "
-"Abbrechen."
+msgstr "{nele} Elemente von {totalele} Elementen verarbeitet. Drücken Sie <Esc> zum Abbrechen."
 
 #: src/lib/fileio.py:73 src/actions/_grid_actions.py:111
 msgid "{nele} elements processed. Press <Esc> to abort."
@@ -36,7 +34,6 @@ msgid "File loading aborted."
 msgstr "Laden der Datei abgebrochen."
 
 #: src/lib/fileio.py:112
-#| msgid "File loading aborted."
 msgid "File saving aborted."
 msgstr "Speichern der Datei abgebrochen."
 
@@ -77,9 +74,8 @@ msgid ""
 "Choose a GPG key for signing pyspread save files.\n"
 "The GPG key must not have a passphrase set."
 msgstr ""
-"Wählen Sie einen eigenen GPG-Schlüssel, mit dem Sie pyspread-Dateien "
-"signieren wollen.\n"
-"Klicken Sie auf Abbrechen, um einen neuen Schlüssel zu erzeugen."
+"Wählen Sie einen eigenen GPG-Schlüssel, mit dem Sie pyspread-Dateien signieren wollen.\n"
+"Der GPG-Schlüssel darf nicht mit einem Passwort versehen sein."
 
 #: src/lib/gpg.py:66
 msgid "Choose key"
@@ -103,7 +99,7 @@ msgstr "Nachdem Sie diesen Dialog bestätigt haben,"
 
 #: src/lib/gpg.py:129
 msgid "'{key}' will be generated."
-msgstr "'{key}' wird erzeugt."
+msgstr "»{key}« wird erstellt."
 
 #: src/lib/gpg.py:130
 msgid ""
@@ -133,12 +129,8 @@ msgstr "%prog {version}"
 
 #: src/pyspread.py:106
 #, python-format
-msgid ""
-"Dimensions of empty grid (works only without filename) rows, cols, tables "
-"[default: %default]"
-msgstr ""
-"Größe der leeren Tabelle (funktioniert nur ohne Dateinamen) Zeilen, Spalten, "
-"Tabellen [standard: %default]"
+msgid "Dimensions of empty grid (works only without filename) rows, cols, tables [default: %default]"
+msgstr "Größe der leeren Tabelle (funktioniert nur ohne Dateinamen) Zeilen, Spalten, Tabellen [Voreinstellung: %default]"
 
 #: src/pyspread.py:123
 msgid "Cell dimension must be > 0."
@@ -796,9 +788,7 @@ msgstr "Abgesicherter Modus wurde deaktiviert."
 
 #: src/gui/_main_window.py:911
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
-msgstr ""
-"Das Löschen globaler Variablen und Neuladen der Module kann nicht rückgängig "
-"gemacht werden. Wollen Sie wirklich fortsetzen?"
+msgstr "Das Löschen globaler Variablen und erneutes Laden der Module kann nicht rückgängig gemacht werden. Wollen Sie wirklich fortsetzen?"
 
 #: src/gui/_main_window.py:913
 msgid "Really delete globals and modules?"
@@ -1029,26 +1019,18 @@ msgstr "Histogramm"
 #: src/gui/_chart_dialog.py:660
 msgid ""
 "Histogram data series\n"
-"Multiple data sets can be provided as a list or as a 2-D ndarray in which "
-"each columnis a dataset. Note that the ndarray form is transposed relative "
-"to the list form."
+"Multiple data sets can be provided as a list or as a 2-D ndarray in which each columnis a dataset. Note that the ndarray form is transposed relative to the list form."
 msgstr ""
 "Histogramm-Datenreihe\n"
-"Mehrere Datensätze können als eine Liste oder als 2D-ndarray, in dem jede "
-"Spalte einen Datensatz darstellt, angegeben werden. Beachten Sie, dass die "
-"ndarray-Form bezogen auf die Listenform transponiert ist."
+"Mehrere Datensätze können als eine Liste oder als 2D-ndarray, in dem jede Spalte einen Datensatz darstellt, angegeben werden. Beachten Sie, dass die ndarray-Form bezogen auf die Listenform transponiert ist."
 
 #: src/gui/_chart_dialog.py:664
 msgid "Either an integer number of bins or a bin sequence"
 msgstr "Entweder die Anzahl Klassen (Integer) oder eine Klassensequenz"
 
 #: src/gui/_chart_dialog.py:665
-msgid ""
-"If True then the first element is the counts normalizedto form a probability "
-"density, i.e., n/(len(x)*dbin)."
-msgstr ""
-"Falls True ist das erste Element die Anzahl, die zur Erzeugung einer "
-"Wahrscheinlichkeitsdichte normalisiert ist, d. h. n/(len(x)*dbin)."
+msgid "If True then the first element is the counts normalizedto form a probability density, i.e., n/(len(x)*dbin)."
+msgstr "Falls True ist das erste Element die Anzahl, die zur Erzeugung einer Wahrscheinlichkeitsdichte normalisiert ist, d. h. n/(len(x)*dbin)."
 
 #: src/gui/_chart_dialog.py:667
 msgid ""
@@ -1100,13 +1082,9 @@ msgid ""
 "'y': yellow\n"
 "'k': black\n"
 "'w': white\n"
-"Gray shades can be given as a stringthat encodes a float in the 0-1 range, e."
-"g.: '0.75'. You can also specify the color with an html hex string as in: "
-"'#eeefff'. Finally, legal html names for colors, such as 'red', 'burlywood' "
-"and 'chartreuse' are supported."
+"Gray shades can be given as a stringthat encodes a float in the 0-1 range, e.g.: '0.75'. You can also specify the color with an html hex string as in: '#eeefff'. Finally, legal html names for colors, such as 'red', 'burlywood' and 'chartreuse' are supported."
 msgstr ""
-"Matplotlib-Farbfolge, die das Tortendiagramm durchläuft. Unterstützte "
-"Zeichenketten sind:\n"
+"Matplotlib-Farbfolge, die das Tortendiagramm durchläuft. Unterstützte Zeichenketten sind:\n"
 "'b': blau\n"
 "'g': grün\n"
 "'r': rot\n"
@@ -1115,11 +1093,7 @@ msgstr ""
 "'y': gelb\n"
 "'k': schwarz\n"
 "'w': weiß\n"
-"Grauwerte können als Zeichenkette angegeben werden, die eine Fließkommazahl "
-"im Wertebereich 0-1 kodiert, z. B. '0.75'. Sie können auch die Farbe mit "
-"einer Hex-Zeichenkette wie in '#eeefff' festlegen. Schließlich werden "
-"gültige html-Namen für Farben wie 'red', 'burlywood' and 'chartreuse' "
-"unterstützt."
+"Grauwerte können als Zeichenkette angegeben werden, die eine Fließkommazahl im Wertebereich 0-1 kodiert, z. B. »0.75«. Sie können auch die Farbe mit einer Hex-Zeichenkette wie in »#eeefff« festlegen. Schließlich werden gültige html-Namen für Farben wie »red«, »burlywood« und »chartreuse« unterstützt."
 
 #: src/gui/_chart_dialog.py:706
 msgid "If True then a shadow beneath the pie is drawn"
@@ -1194,12 +1168,10 @@ msgid "Log. scale"
 msgstr "Log. Skala"
 
 #: src/gui/_chart_dialog.py:753
-#| msgid "Main grid"
 msgid "X-axis grid"
 msgstr "X-Achsen-Gitter"
 
 #: src/gui/_chart_dialog.py:754
-#| msgid "Main grid"
 msgid "Y-axis grid"
 msgstr "Y-Achsen-Gitter"
 
@@ -1268,7 +1240,6 @@ msgid "Point"
 msgstr "Punkt"
 
 #: src/gui/_chart_dialog.py:789
-#| msgid "Point coordinates"
 msgid "Coordinates"
 msgstr "Koordinaten"
 
@@ -1331,7 +1302,7 @@ msgid ""
 "Opening it yielded the error:\n"
 "{error}"
 msgstr ""
-"'{filepath}' scheint keine gültige CSV-Datei zu sein.\n"
+"»{filepath}« scheint keine gültige CSV-Datei zu sein.\n"
 " \n"
 "Das Öffnen verursachte folgende Fehlermeldung:\n"
 "{error}"
@@ -1370,20 +1341,19 @@ msgstr "Geben Sie den Textwinkel in Grad ein."
 
 #: src/gui/_grid.py:979
 msgid "'{text}' not found."
-msgstr "'{text}' nicht gefunden."
+msgstr "»{text}« nicht gefunden."
 
 #: src/gui/_grid.py:986
 msgid "Found '{text}' in cell {key}."
-msgstr "'{text}' in Zelle {key} gefunden."
+msgstr "»{text}« in Zelle {key} gefunden."
 
 #: src/gui/_grid.py:1040
-#| msgid "'{text}' not found."
 msgid "'{find_string}' not found."
-msgstr "'{find_string}' nicht gefunden."
+msgstr "»{find_string}« nicht gefunden."
 
 #: src/gui/_grid.py:1048
 msgid "Replaced '{find_string}' in cell {key} with {replace_string}."
-msgstr "'{find_string}' in Zelle {key} durch {replace_string} ersetzt."
+msgstr "»{find_string}« in Zelle {key} durch {replace_string} ersetzt."
 
 #: src/gui/_grid.py:1224
 msgid "Grid dimensions changed to {shape}."
@@ -1519,16 +1489,13 @@ msgstr ""
 
 #: src/gui/_widgets.py:952
 msgid "For switching tables enter the table number or use the mouse wheel."
-msgstr ""
-"Um zu einer Tabelle zu wechseln, geben Sie die Tabellennummer ein oder "
-"verwenden Sie das Mausrad."
+msgstr "Um zu einer Tabelle zu wechseln, geben Sie die Tabellennummer ein oder verwenden Sie das Mausrad."
 
 #: src/gui/_dialogs.py:173
 msgid "Encoding"
 msgstr "Kodierung"
 
 #: src/gui/_dialogs.py:174
-#| msgid "CSV file"
 msgid "CSV file encoding."
 msgstr "Kodierung der CSV-Datei"
 
@@ -1538,20 +1505,16 @@ msgstr "Dialekt"
 
 #: src/gui/_dialogs.py:176
 msgid ""
-"To make it easier to specify the format of input and output records, "
-"specific formatting parameters are grouped together into dialects.\n"
+"To make it easier to specify the format of input and output records, specific formatting parameters are grouped together into dialects.\n"
 "'excel': Defines the usual properties of an Excel-generated CSV file.\n"
 "'sniffer': Deduces the format of a CSV file\n"
-"'excel-tab': Defines the usual properties of an Excel-generated TAB-"
-"delimited file."
+"'excel-tab': Defines the usual properties of an Excel-generated TAB-delimited file."
 msgstr ""
 "Um die Angabe des Formats für Ein- und Ausgabedatensätze zu vereinfachen,\n"
 "werden spezifische Formatierungsparameter in Dialekten zusammengefasst.\n"
-"»excel«: Definiert die üblichen Eigenschaften einer durch Excel erzeugten "
-"CSV-Datei.\n"
+"»excel«: Definiert die üblichen Eigenschaften einer durch Excel erzeugten CSV-Datei.\n"
 "»sniffer«: Definiert das Format einer CSV-Datei.\n"
-"»excel-tab«: Definiert die üblichen Eigenschaften einer durch Excel "
-"erzeugten\n"
+"»excel-tab«: Definiert die üblichen Eigenschaften einer durch Excel erzeugten\n"
 "tabulatorgetrennten Datei."
 
 #: src/gui/_dialogs.py:182
@@ -1567,40 +1530,24 @@ msgid "Doublequote"
 msgstr "Doppelte Anführungsstriche"
 
 #: src/gui/_dialogs.py:185
-msgid ""
-"Controls how instances of quotechar appearing inside a field should be "
-"themselves be quoted. When True, the character is doubled. When False, the "
-"escapechar is used as a prefix to the quotechar."
-msgstr ""
-"Gibt an, wie das quotechar-Zeichen innerhalb von Feldern maskiert wird. Bei "
-"True wird quotechar verdoppelt. Dagegen wird bei False das escapechar-"
-"Zeichen vor quotechar gesetzt."
+msgid "Controls how instances of quotechar appearing inside a field should be themselves be quoted. When True, the character is doubled. When False, the escapechar is used as a prefix to the quotechar."
+msgstr "Gibt an, wie das quotechar-Zeichen innerhalb von Feldern maskiert wird. Bei True wird quotechar verdoppelt. Dagegen wird bei False das escapechar-Zeichen vor quotechar gesetzt."
 
 #: src/gui/_dialogs.py:189
 msgid "Escape character"
 msgstr "Escape-Zeichen"
 
 #: src/gui/_dialogs.py:190
-msgid ""
-"A one-character string used by the writer to escape the delimiter if quoting "
-"is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, "
-"the escapechar removes any special meaning from the following character."
-msgstr ""
-"String der Länge 1, der beim Schreiben Trennzeichen innerhalb von "
-"Spaltenwerten maskiert, falls quoting den Wert QUOTE_NONE hat. Beim Lesen "
-"entfernt escapechar jede spezielle Bedeutung des Folgezeichens."
+msgid "A one-character string used by the writer to escape the delimiter if quoting is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, the escapechar removes any special meaning from the following character."
+msgstr "String der Länge 1, der beim Schreiben Trennzeichen innerhalb von Spaltenwerten maskiert, falls quoting den Wert QUOTE_NONE hat. Beim Lesen entfernt escapechar jede spezielle Bedeutung des Folgezeichens."
 
 #: src/gui/_dialogs.py:195
 msgid "Quote character"
 msgstr "Zitatzeichen"
 
 #: src/gui/_dialogs.py:196
-msgid ""
-"A one-character string used to quote fields containing special characters, "
-"such as the delimiter or quotechar, or which contain new-line characters."
-msgstr ""
-"String der Länge 1, mit dem Felder umschlossen werden, die Sonderzeichen wie "
-"Trennzeichen, quotechar oder Zeilenumbrüche enthalten."
+msgid "A one-character string used to quote fields containing special characters, such as the delimiter or quotechar, or which contain new-line characters."
+msgstr "String der Länge 1, mit dem Felder umschlossen werden, die Sonderzeichen wie Trennzeichen, quotechar oder Zeilenumbrüche enthalten."
 
 #: src/gui/_dialogs.py:199
 msgid "Quoting style"
@@ -1615,12 +1562,8 @@ msgid "Header present"
 msgstr "Kopfzeile vorhanden"
 
 #: src/gui/_dialogs.py:202
-msgid ""
-"Analyze the CSV file and treat the first row as strings if it appears to be "
-"a series of column headers."
-msgstr ""
-"Die CSV-Datei analysieren und die erste Zeile als Zeichenkette annehmen, "
-"falls sie eine Reihe von Spalten-Kopfzeilen zu sein scheint."
+msgid "Analyze the CSV file and treat the first row as strings if it appears to be a series of column headers."
+msgstr "Die CSV-Datei analysieren und die erste Zeile als Zeichenkette annehmen, falls sie eine Reihe von Spalten-Kopfzeilen zu sein scheint."
 
 #: src/gui/_dialogs.py:204
 msgid "Skip initial space"
@@ -1628,9 +1571,7 @@ msgstr "Führende Leerzeichen überspringen"
 
 #: src/gui/_dialogs.py:205
 msgid "When True, whitespace immediately following the delimiter is ignored."
-msgstr ""
-"Wenn aktiviert, werden unmittelbar auf den Trenner folgende Leerzeichen "
-"ignoriert."
+msgstr "Wenn aktiviert, werden unmittelbar auf den Trenner folgende Leerzeichen ignoriert."
 
 #: src/gui/_dialogs.py:419
 msgid "{type} unknown."
@@ -1806,16 +1747,11 @@ msgstr "Transponieren"
 
 #: src/actions/_grid_actions.py:195
 msgid "Valid signature found. File is trusted."
-msgstr ""
-"Gültige Signatur gefunden. Die Datei wurde als vertrauenswürdig erkannt."
+msgstr "Gültige Signatur gefunden. Die Datei wurde als vertrauenswürdig erkannt."
 
 #: src/actions/_grid_actions.py:204
-msgid ""
-"File is not properly signed. Safe mode activated. Select File -> Approve to "
-"leave safe mode."
-msgstr ""
-"Die Datei ist nicht sauber signiert. Der abgesicherte Modus wurde aktiviert. "
-"Wählen Sie Datei -> Bestätigen, um den abgesicherten Modus zu verlassen."
+msgid "File is not properly signed. Safe mode activated. Select File -> Approve to leave safe mode."
+msgstr "Die Datei ist nicht sauber signiert. Der abgesicherte Modus wurde aktiviert. Wählen Sie Datei -> Bestätigen, um den abgesicherten Modus zu verlassen."
 
 #: src/actions/_grid_actions.py:224
 msgid "File format unsupported."
@@ -1866,13 +1802,8 @@ msgid "Import cell overflow missing"
 msgstr "Überlauf beim Zell-Import fehlt"
 
 #: src/actions/_grid_actions.py:717
-msgid ""
-"The imported data did not fit into the grid {cause}. It has been truncated. "
-"Use a larger grid for full import."
-msgstr ""
-"Die importierten Daten passen nicht in das Gitter {cause}. Sie wurden "
-"abgeschnitten. Verwenden Sie ein größeres Gitter für einen vollständigen "
-"Import."
+msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
+msgstr "Die importierten Daten passen nicht in das Gitter {cause}. Sie wurden abgeschnitten. Verwenden Sie ein größeres Gitter für einen vollständigen Import."
 
 #: src/actions/_grid_actions.py:726
 msgid "s"
@@ -1891,7 +1822,6 @@ msgid "Zoomed to {0:.2f}."
 msgstr "Vergrößerungsstufe auf {0:.2f} geändert."
 
 #: src/actions/_grid_actions.py:1306
-#| msgid "Replace strings in cells"
 msgid "Replaced {no_cells} cells."
 msgstr "{no_cells} Zellen ersetzt"
 
@@ -1950,9 +1880,7 @@ msgstr "Fehler bei der Datenanalyse: "
 #~ msgstr "Makro-Werkzeugleiste"
 
 #~ msgid "Sequence of matplotlib color args through which the pie cycles"
-#~ msgstr ""
-#~ "Folge von matplotlib-Farbwerten, die das Tortendiagramm wiederholt "
-#~ "durchläuft"
+#~ msgstr "Folge von matplotlib-Farbwerten, die das Tortendiagramm wiederholt durchläuft"
 
 #~ msgid "Grid"
 #~ msgstr "Tabelle"
@@ -2138,8 +2066,7 @@ msgstr "Fehler bei der Datenanalyse: "
 #~ msgstr "Passphrase in der Konfigurationsdatei speichern"
 
 #~ msgid "If False then the passprase is not stored on exit"
-#~ msgstr ""
-#~ "Wenn deaktiviert, wird die Passphrase beim Beenden nicht gespeichert"
+#~ msgstr "Wenn deaktiviert, wird die Passphrase beim Beenden nicht gespeichert"
 
 #~ msgid "Store passphrase in keyring"
 #~ msgstr "Passphrase im Schlüsselbund speichern"
