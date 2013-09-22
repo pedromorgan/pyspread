@@ -80,6 +80,7 @@ import src.lib.i18n as i18n
 import src.lib.charts as charts
 from src.lib.parsers import color2code, code2color, parse_dict_strings
 from icons import icons
+from sysvars import get_default_font, get_color
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -222,29 +223,54 @@ class StringEditor(wx.TextCtrl, ChartDialogEventMixin):
         post_command_event(self, self.DrawChartMsg)
 
 
-class FontEditor(wx.Button, ChartDialogEventMixin):
-    """Editor widget for fonts
+class TextEditor(wx.Panel, ChartDialogEventMixin):
+    """Editor widget for text objects
 
-    The editor provides a button that launches a wx.FontDialog.
+    The editor provides a taxt ctrl, a font button and a color chooser
 
     """
 
     def __init__(self, *args, **kwargs):
-        wx.Button.__init__(self, *args, **kwargs)
+        wx.Panel.__init__(self, *args, **kwargs)
 
+        self.textctrl = wx.TextCtrl(self, -1)
+        self.fontbutton = wx.Button(self, -1, label=u"\u2131", size=(24, 24))
+        self.colorselect = csel.ColourSelect(self, -1)
+
+        self.value = u""
         self.font_data = wx.FontData()
+        self.color = get_color
 
         self.__bindings()
+        self.__do_layout()
 
     def __bindings(self):
         """Binds events to handlers"""
 
-        self.Bind(wx.EVT_BUTTON, self.OnFont)
+        self.textctrl.Bind(wx.EVT_TEXT, self.OnText)
+        self.fontbutton.Bind(wx.EVT_BUTTON, self.OnFont)
+        self.Bind(csel.EVT_COLOURSELECT, self.OnColor)
+
+    def __do_layout(self):
+        grid_sizer = wx.FlexGridSizer(1, 3, 0, 0)
+
+        grid_sizer.Add(self.textctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.fontbutton, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.colorselect, 1, wx.ALL | wx.EXPAND, 2)
+
+        grid_sizer.AddGrowableCol(0)
+
+        self.SetSizer(grid_sizer)
+
+        self.fontbutton.SetToolTip(wx.ToolTip(_("Text font")))
+        self.colorselect.SetToolTip(wx.ToolTip(_("Text color")))
+
+        self.Layout()
 
     def get_code(self):
         """Returns code representation of value of widget"""
-        raise NotImplementedError
-        return self.font_data
+
+        return self.textctrl.GetValue()
 
     def set_code(self, code):
         """Sets widget from code string
@@ -255,8 +281,19 @@ class FontEditor(wx.Button, ChartDialogEventMixin):
         \tCode representation of widget value
 
         """
-        raise NotImplementedError
-        #self.SetValue(code)
+
+        self.textctrl.SetValue(code)
+
+    # Properties
+
+    code = property(get_code, set_code)
+
+    # Handlers
+
+    def OnText(self, event):
+        """Text entry event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
 
     def OnFont(self, event):
         """Check event handler"""
@@ -267,6 +304,11 @@ class FontEditor(wx.Button, ChartDialogEventMixin):
             self.font_data = copy(dlg.GetFontData())
 
         dlg.Destroy()
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnColor(self, event):
+        """Check event handler"""
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -743,7 +785,7 @@ Code 	Meaning
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "title": (_("Title"), StringEditor, ""),
+        "title": (_("Title"), TextEditor, ""),
         "xlabel": (_("Label"), StringEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
