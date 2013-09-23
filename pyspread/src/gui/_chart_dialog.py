@@ -270,7 +270,17 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
     def get_code(self):
         """Returns code representation of value of widget"""
 
+        #return self.textctrl.GetValue() + ", " + \
+        #    unicode({"color": color2code(self.colorselect.GetValue())})
+
+        #print eval(repr(self.textctrl.GetValue()) + ", " + \
+        #    unicode({"color": color2code(self.colorselect.GetValue())}))
         return self.textctrl.GetValue()
+
+    def get_kwargs(self):
+        """Return kwargs dict for text"""
+
+        return u'{"color": ' + color2code(self.colorselect.GetValue()) + '}'
 
     def set_code(self, code):
         """Sets widget from code string
@@ -1303,6 +1313,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                 attr_dict[key] = widget
             else:
                 attr_dict[key] = widget.code
+                try:
+                    attr_dict[key+"_kwargs"] = widget.get_kwargs()
+                except AttributeError:
+                    pass
 
         attr_dicts.append(attr_dict)
 
