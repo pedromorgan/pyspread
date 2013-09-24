@@ -238,7 +238,13 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
         self.colorselect = csel.ColourSelect(self, -1)
 
         self.value = u""
-        self.font_data = wx.FontData()
+
+        self.chosen_font = None
+
+        self.font_face = None
+        self.font_size = None
+        self.font_style = None
+        self.font_weight = None
         self.color = get_color
 
         self.__bindings()
@@ -280,7 +286,36 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
     def get_kwargs(self):
         """Return kwargs dict for text"""
 
-        return u'{"color": ' + color2code(self.colorselect.GetValue()) + '}'
+        style_wx2mpl = {
+            wx.FONTSTYLE_ITALIC: "italic",
+            wx.FONTSTYLE_NORMAL: "normal",
+            wx.FONTSTYLE_SLANT: "oblique",
+        }
+
+        weight_wx2mpl = {
+            wx.FONTWEIGHT_BOLD: "bold",
+            wx.FONTWEIGHT_NORMAL: "normal",
+            wx.FONTWEIGHT_LIGHT: "light",
+        }
+
+        kwargs = {}
+
+        if self.font_face:
+            kwargs["fontname"] = repr(self.font_face)
+        if self.font_size:
+            kwargs["fontsize"] = repr(self.font_size)
+        if self.font_style in style_wx2mpl:
+            kwargs["fontstyle"] = repr(style_wx2mpl[self.font_style])
+        if self.font_weight in weight_wx2mpl:
+            kwargs["fontweight"] = repr(weight_wx2mpl[self.font_weight])
+
+        kwargs["color"] = color2code(self.colorselect.GetValue())
+
+        code = ", ".join(repr(key) + ": " + kwargs[key] for key in kwargs)
+
+        code = "{" + code + "}"
+
+        return code
 
     def set_code(self, code):
         """Sets widget from code string
@@ -308,10 +343,22 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
     def OnFont(self, event):
         """Check event handler"""
 
-        dlg = wx.FontDialog(self, self.font_data)
+        font_data = wx.FontData()
+
+        if self.chosen_font:
+            font_data.SetInitialFont(self.chosen_font)
+
+        dlg = wx.FontDialog(self, font_data)
 
         if dlg.ShowModal() == wx.ID_OK:
-            self.font_data = copy(dlg.GetFontData())
+            font_data = dlg.GetFontData()
+
+            font = self.chosen_font = font_data.GetChosenFont()
+
+            self.font_face = font.GetFaceName()
+            self.font_size = font.GetPointSize()
+            self.font_style = font.GetStyle()
+            self.font_weight = font.GetWeight()
 
         dlg.Destroy()
 
