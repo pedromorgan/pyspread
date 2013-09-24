@@ -345,6 +345,9 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
 
         font_data = wx.FontData()
 
+        # Disable color chooser on Windows
+        font_data.EnableEffects(False)
+
         if self.chosen_font:
             font_data.SetInitialFont(self.chosen_font)
 
