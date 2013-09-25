@@ -846,10 +846,10 @@ Code 	Meaning
 
     default_data = {
         "title": (_("Title"), TextEditor, ""),
-        "xlabel": (_("Label"), StringEditor, ""),
+        "xlabel": (_("Label"), TextEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
-        "ylabel": (_("Label"), StringEditor, ""),
+        "ylabel": (_("Label"), TextEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
         "xgrid": (_("X-axis grid"), BoolEditor, False),
