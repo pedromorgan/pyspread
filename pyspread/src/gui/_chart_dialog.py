@@ -63,7 +63,6 @@ Provides
 # ChartDialog provides FigureAttributesPanel, Flatnotebook of SeriesPanels,
 #                      FigurePanel
 
-
 from copy import copy
 
 import wx
@@ -79,6 +78,7 @@ from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
 from src.lib.parsers import color2code, code2color, parse_dict_strings
+from src.lib.parsers import unquote_string
 from icons import icons
 from sysvars import get_default_font, get_color
 
@@ -230,12 +230,28 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
 
     """
 
+    style_wx2mpl = {
+        wx.FONTSTYLE_ITALIC: "italic",
+        wx.FONTSTYLE_NORMAL: "normal",
+        wx.FONTSTYLE_SLANT: "oblique",
+    }
+
+    style_mpl2wx = dict((v, k) for k, v in style_wx2mpl.iteritems())
+
+    weight_wx2mpl = {
+        wx.FONTWEIGHT_BOLD: "bold",
+        wx.FONTWEIGHT_NORMAL: "normal",
+        wx.FONTWEIGHT_LIGHT: "light",
+    }
+
+    weight_mpl2wx = dict((v, k) for k, v in weight_wx2mpl.iteritems())
+
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
         self.textctrl = wx.TextCtrl(self, -1)
         self.fontbutton = wx.Button(self, -1, label=u"\u2131", size=(24, 24))
-        self.colorselect = csel.ColourSelect(self, -1)
+        self.colorselect = csel.ColourSelect(self, -1, size=(24, 24))
 
         self.value = u""
 
@@ -286,28 +302,16 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
     def get_kwargs(self):
         """Return kwargs dict for text"""
 
-        style_wx2mpl = {
-            wx.FONTSTYLE_ITALIC: "italic",
-            wx.FONTSTYLE_NORMAL: "normal",
-            wx.FONTSTYLE_SLANT: "oblique",
-        }
-
-        weight_wx2mpl = {
-            wx.FONTWEIGHT_BOLD: "bold",
-            wx.FONTWEIGHT_NORMAL: "normal",
-            wx.FONTWEIGHT_LIGHT: "light",
-        }
-
         kwargs = {}
 
         if self.font_face:
             kwargs["fontname"] = repr(self.font_face)
         if self.font_size:
             kwargs["fontsize"] = repr(self.font_size)
-        if self.font_style in style_wx2mpl:
-            kwargs["fontstyle"] = repr(style_wx2mpl[self.font_style])
-        if self.font_weight in weight_wx2mpl:
-            kwargs["fontweight"] = repr(weight_wx2mpl[self.font_weight])
+        if self.font_style in self.style_wx2mpl:
+            kwargs["fontstyle"] = repr(self.style_wx2mpl[self.font_style])
+        if self.font_weight in self.weight_wx2mpl:
+            kwargs["fontweight"] = repr(self.weight_wx2mpl[self.font_weight])
 
         kwargs["color"] = color2code(self.colorselect.GetValue())
 
@@ -328,6 +332,65 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
         """
 
         self.textctrl.SetValue(code)
+
+    def set_kwargs(self, code):
+        """Sets widget from kwargs string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of kwargs value
+
+        """
+
+        kwargs = {}
+
+        kwarglist = list(parse_dict_strings(code[1:-1]))
+
+        for kwarg, val in zip(kwarglist[::2], kwarglist[1::2]):
+            kwargs[unquote_string(kwarg)] = val
+
+        for key in kwargs:
+            if key == "color":
+                color = code2color(kwargs[key])
+                self.colorselect.SetValue(color)
+                self.colorselect.SetOwnForegroundColour(color)
+
+            elif key == "fontname":
+                self.font_face = unquote_string(kwargs[key])
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+                self.chosen_font.SetFaceName(self.font_face)
+
+            elif key == "fontsize":
+                if kwargs[key]:
+                    self.font_size = int(kwargs[key])
+                else:
+                    self.font_size = get_default_font().GetPointSize()
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetPointSize(self.font_size)
+
+            elif key == "fontstyle":
+                self.font_style = \
+                    self.style_mpl2wx[unquote_string(kwargs[key])]
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetStyle(self.font_style)
+
+            elif key == "fontweight":
+                self.font_weight = \
+                    self.weight_mpl2wx[unquote_string(kwargs[key])]
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetWeight(self.font_weight)
 
     # Properties
 
@@ -849,6 +912,7 @@ Code 	Meaning
         "xlabel": (_("Label"), TextEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
+        #"xtick_params": (_("X-axis ticks"), TicksEditor, ""),
         "ylabel": (_("Label"), TextEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
@@ -1294,6 +1358,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for key, widget in self.figure_attributes_panel:
             try:
                 obj = figure_attributes[key]
+                kwargs_key = key + "_kwargs"
+                if kwargs_key in figure_attributes:
+                    widget.set_kwargs(figure_attributes[kwargs_key])
 
             except KeyError:
                 obj = ""
