@@ -436,6 +436,15 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
         post_command_event(self, self.DrawChartMsg)
 
 
+class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
+    """Editor widget for axis ticks
+
+    The widget contains: direction, pad, labelsize, bottom, top, left, right
+
+    """
+
+    pass
+
 class ColorEditor(csel.ColourSelect, ChartDialogEventMixin):
     """Editor widget for 3-tuples of floats that represent color"""
 
@@ -912,7 +921,7 @@ Code 	Meaning
         "xlabel": (_("Label"), TextEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
-        #"xtick_params": (_("X-axis ticks"), TicksEditor, ""),
+        "xtick_params": (_("X-axis ticks"), TickParamsEditor, ""),
         "ylabel": (_("Label"), TextEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
