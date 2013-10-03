@@ -443,7 +443,57 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
 
     """
 
-    pass
+    choises_map = {_("inside"): "in",
+                   _("outside"): "out",
+                   _("both"): "inout"}
+
+    def __init__(self, *args, **kwargs):
+        wx.Panel.__init__(self, *args, **kwargs)
+
+        choices = [_("inside"), _("outside"), _("inside and outside")]
+        self.direction_choicectrl = wx.Choice(self, -1, choices=choices)
+        self.pad_intctrl = IntCtrl(self, -1)
+        self.labelsize_intctrl = IntCtrl(self, -1)
+        self.top_checkboxctrl = wx.CheckBox(self, -1, label=_("Top"),
+                                            style=wx.ALIGN_RIGHT)
+        self.bottom_checkboxctrl = wx.CheckBox(self, -1, label=_("Bottom"),
+                                               style=wx.ALIGN_RIGHT)
+        self.left_checkboxctrl = wx.CheckBox(self, -1, label=_("Left"),
+                                             style=wx.ALIGN_RIGHT)
+        self.right_checkboxctrl = wx.CheckBox(self, -1, label=_("Right"),
+                                              style=wx.ALIGN_RIGHT)
+
+        self.__bindings()
+        self.__do_layout()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+    def __do_layout(self):
+        grid_sizer = wx.FlexGridSizer(1, 3, 0, 0)
+
+        grid_sizer.Add(self.top_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.bottom_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.direction_choicectrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.left_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.right_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.pad_intctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.labelsize_intctrl, 1, wx.ALL | wx.EXPAND, 2)
+
+        grid_sizer.AddGrowableCol(0)
+
+        self.SetSizer(grid_sizer)
+
+        # Tooltips
+        dir_tip = _("Puts ticks inside the axes, outside the axes, or both.")
+        self.direction_choicectrl.SetToolTip(wx.ToolTip(dir_tip))
+        pad_tip = _("Distance in points between tick and label.")
+        self.pad_intctrl.SetToolTip(wx.ToolTip(pad_tip))
+        label_tip = _("Tick label font size in points.")
+        self.labelsize_intctrl.SetToolTip(wx.ToolTip(label_tip))
+
+        self.Layout()
+
 
 class ColorEditor(csel.ColourSelect, ChartDialogEventMixin):
     """Editor widget for 3-tuples of floats that represent color"""
@@ -936,7 +986,8 @@ Code 	Meaning
 
     boxes = [
         (_("Figure"), ["title", "legend"]),
-        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format"]),
+        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format",
+                       "xtick_params"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid"]),
     ]
 
