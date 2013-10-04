@@ -1044,6 +1044,7 @@ Code 	Meaning
         "ylabel": (_("Label"), TextEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
+        "ytick_params": (_("Y-axis ticks"), TickParamsEditor, ""),
         "xgrid": (_("X-axis grid"), BoolEditor, False),
         "ygrid": (_("Y-axis grid"), BoolEditor, False),
         "legend": (_("Legend"), BoolEditor, False),
@@ -1057,7 +1058,7 @@ Code 	Meaning
         (_("Figure"), ["title", "legend"]),
         (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format",
                        "xtick_params"]),
-        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid"]),
+        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid", "ytick_params"]),
     ]
 
     tooltips = {
