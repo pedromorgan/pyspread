@@ -74,7 +74,7 @@ def get_pen_from_data(pendata):
 
 
 def code2color(color_string):
-    """Returns wx.Colour from 3-tuple of floats in [0.0, 1.0]"""
+    """Returns wx.Colour from a string of a 3-tuple of floats in [0.0, 1.0]"""
 
     color_tuple = ast.literal_eval(color_string)
     color_tuple_int = map(lambda x: int(x * 255.0), color_tuple)
@@ -86,6 +86,18 @@ def color2code(color):
     """Returns repr of 3-tuple of floats in [0.0, 1.0] from wx.Colour"""
 
     return unicode(tuple(i / 255.0 for i in color.Get()))
+
+
+def unquote_string(code):
+    """Returns a string from code that contains aa repr of the string"""
+
+    if code[0] in ['"', "'"]:
+        start = 1
+    else:
+        # start may have a Unicode or raw string
+        start = 2
+
+    return code[start:-1]
 
 
 def parse_dict_strings(code):

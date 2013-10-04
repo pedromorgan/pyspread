@@ -63,7 +63,6 @@ Provides
 # ChartDialog provides FigureAttributesPanel, Flatnotebook of SeriesPanels,
 #                      FigurePanel
 
-
 from copy import copy
 
 import wx
@@ -79,7 +78,9 @@ from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
 from src.lib.parsers import color2code, code2color, parse_dict_strings
+from src.lib.parsers import unquote_string
 from icons import icons
+from sysvars import get_default_font, get_color
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -222,29 +223,98 @@ class StringEditor(wx.TextCtrl, ChartDialogEventMixin):
         post_command_event(self, self.DrawChartMsg)
 
 
-class FontEditor(wx.Button, ChartDialogEventMixin):
-    """Editor widget for fonts
+class TextEditor(wx.Panel, ChartDialogEventMixin):
+    """Editor widget for text objects
 
-    The editor provides a button that launches a wx.FontDialog.
+    The editor provides a taxt ctrl, a font button and a color chooser
 
     """
 
-    def __init__(self, *args, **kwargs):
-        wx.Button.__init__(self, *args, **kwargs)
+    style_wx2mpl = {
+        wx.FONTSTYLE_ITALIC: "italic",
+        wx.FONTSTYLE_NORMAL: "normal",
+        wx.FONTSTYLE_SLANT: "oblique",
+    }
 
-        self.font_data = wx.FontData()
+    style_mpl2wx = dict((v, k) for k, v in style_wx2mpl.iteritems())
+
+    weight_wx2mpl = {
+        wx.FONTWEIGHT_BOLD: "bold",
+        wx.FONTWEIGHT_NORMAL: "normal",
+        wx.FONTWEIGHT_LIGHT: "light",
+    }
+
+    weight_mpl2wx = dict((v, k) for k, v in weight_wx2mpl.iteritems())
+
+    def __init__(self, *args, **kwargs):
+        wx.Panel.__init__(self, *args, **kwargs)
+
+        self.textctrl = wx.TextCtrl(self, -1)
+        self.fontbutton = wx.Button(self, -1, label=u"\u2131", size=(24, 24))
+        self.colorselect = csel.ColourSelect(self, -1, size=(24, 24))
+
+        self.value = u""
+
+        self.chosen_font = None
+
+        self.font_face = None
+        self.font_size = None
+        self.font_style = None
+        self.font_weight = None
+        self.color = get_color
 
         self.__bindings()
+        self.__do_layout()
 
     def __bindings(self):
         """Binds events to handlers"""
 
-        self.Bind(wx.EVT_BUTTON, self.OnFont)
+        self.textctrl.Bind(wx.EVT_TEXT, self.OnText)
+        self.fontbutton.Bind(wx.EVT_BUTTON, self.OnFont)
+        self.Bind(csel.EVT_COLOURSELECT, self.OnColor)
+
+    def __do_layout(self):
+        grid_sizer = wx.FlexGridSizer(1, 3, 0, 0)
+
+        grid_sizer.Add(self.textctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.fontbutton, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.colorselect, 1, wx.ALL | wx.EXPAND, 2)
+
+        grid_sizer.AddGrowableCol(0)
+
+        self.SetSizer(grid_sizer)
+
+        self.fontbutton.SetToolTip(wx.ToolTip(_("Text font")))
+        self.colorselect.SetToolTip(wx.ToolTip(_("Text color")))
+
+        self.Layout()
 
     def get_code(self):
         """Returns code representation of value of widget"""
-        raise NotImplementedError
-        return self.font_data
+
+        return self.textctrl.GetValue()
+
+    def get_kwargs(self):
+        """Return kwargs dict for text"""
+
+        kwargs = {}
+
+        if self.font_face:
+            kwargs["fontname"] = repr(self.font_face)
+        if self.font_size:
+            kwargs["fontsize"] = repr(self.font_size)
+        if self.font_style in self.style_wx2mpl:
+            kwargs["fontstyle"] = repr(self.style_wx2mpl[self.font_style])
+        if self.font_weight in self.weight_wx2mpl:
+            kwargs["fontweight"] = repr(self.weight_wx2mpl[self.font_weight])
+
+        kwargs["color"] = color2code(self.colorselect.GetValue())
+
+        code = ", ".join(repr(key) + ": " + kwargs[key] for key in kwargs)
+
+        code = "{" + code + "}"
+
+        return code
 
     def set_code(self, code):
         """Sets widget from code string
@@ -255,18 +325,298 @@ class FontEditor(wx.Button, ChartDialogEventMixin):
         \tCode representation of widget value
 
         """
-        raise NotImplementedError
-        #self.SetValue(code)
+
+        self.textctrl.SetValue(code)
+
+    def set_kwargs(self, code):
+        """Sets widget from kwargs string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of kwargs value
+
+        """
+
+        kwargs = {}
+
+        kwarglist = list(parse_dict_strings(code[1:-1]))
+
+        for kwarg, val in zip(kwarglist[::2], kwarglist[1::2]):
+            kwargs[unquote_string(kwarg)] = val
+
+        for key in kwargs:
+            if key == "color":
+                color = code2color(kwargs[key])
+                self.colorselect.SetValue(color)
+                self.colorselect.SetOwnForegroundColour(color)
+
+            elif key == "fontname":
+                self.font_face = unquote_string(kwargs[key])
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+                self.chosen_font.SetFaceName(self.font_face)
+
+            elif key == "fontsize":
+                if kwargs[key]:
+                    self.font_size = int(kwargs[key])
+                else:
+                    self.font_size = get_default_font().GetPointSize()
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetPointSize(self.font_size)
+
+            elif key == "fontstyle":
+                self.font_style = \
+                    self.style_mpl2wx[unquote_string(kwargs[key])]
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetStyle(self.font_style)
+
+            elif key == "fontweight":
+                self.font_weight = \
+                    self.weight_mpl2wx[unquote_string(kwargs[key])]
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetWeight(self.font_weight)
+
+    # Properties
+
+    code = property(get_code, set_code)
+
+    # Handlers
+
+    def OnText(self, event):
+        """Text entry event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
 
     def OnFont(self, event):
         """Check event handler"""
 
-        dlg = wx.FontDialog(self, self.font_data)
+        font_data = wx.FontData()
+
+        # Disable color chooser on Windows
+        font_data.EnableEffects(False)
+
+        if self.chosen_font:
+            font_data.SetInitialFont(self.chosen_font)
+
+        dlg = wx.FontDialog(self, font_data)
 
         if dlg.ShowModal() == wx.ID_OK:
-            self.font_data = copy(dlg.GetFontData())
+            font_data = dlg.GetFontData()
+
+            font = self.chosen_font = font_data.GetChosenFont()
+
+            self.font_face = font.GetFaceName()
+            self.font_size = font.GetPointSize()
+            self.font_style = font.GetStyle()
+            self.font_weight = font.GetWeight()
 
         dlg.Destroy()
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnColor(self, event):
+        """Check event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
+
+
+class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
+    """Editor widget for axis ticks
+
+    The widget contains: direction, pad, labelsize, bottom, top, left, right
+
+    """
+
+    choice_labels = [_("Inside"),
+                     _("Outside"),
+                     _("Both"),
+    ]
+
+    choice_params = ["in",
+                     "out",
+                     "inout",
+    ]
+
+    choice_label2param = dict(zip(choice_labels, choice_params))
+    choice_param2label = dict(zip(choice_params, choice_labels))
+
+
+    def __init__(self, *args, **kwargs):
+        wx.Panel.__init__(self, *args, **kwargs)
+
+        self.attrs = {
+            "direction": None,
+            "pad": None,
+            "top": None,
+            "right": None,
+            "labelsize": None,
+        }
+
+        self.direction_choicectrl = wx.Choice(self, -1,
+                                              choices=self.choice_labels)
+        self.pad_label = wx.StaticText(self, -1, _("Padding"), size=(-1, 15))
+        self.pad_intctrl = IntCtrl(self, -1, allow_none = True, value=None,
+                                   limited=True)
+        self.size_label = wx.StaticText(self, -1, _("Size"), size=(-1, 15))
+        self.labelsize_intctrl = IntCtrl(self, -1, allow_none=True, value=None,
+                                         min=1, max=99, limited=True)
+        self.sec_checkboxctrl = wx.CheckBox(self, -1, label=_("Secondary"),
+                                    style=wx.ALIGN_RIGHT | wx.CHK_3STATE)
+
+        self.sec_checkboxctrl.Set3StateValue(wx.CHK_UNDETERMINED)
+        self.__bindings()
+        self.__do_layout()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+
+        self.direction_choicectrl.Bind(wx.EVT_CHOICE, self.OnDirectionChoice)
+        self.sec_checkboxctrl.Bind(wx.EVT_CHECKBOX, self.OnSecondaryCheckbox)
+        self.pad_intctrl.Bind(EVT_INT, self.OnPadIntCtrl)
+        self.labelsize_intctrl.Bind(EVT_INT, self.OnLabelSizeIntCtrl)
+
+    def __do_layout(self):
+        grid_sizer = wx.FlexGridSizer(1, 3, 0, 0)
+        grid_sizer.Add(self.sec_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.pad_label, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.pad_intctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.direction_choicectrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.size_label, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.labelsize_intctrl, 1, wx.ALL | wx.EXPAND, 2)
+
+        grid_sizer.AddGrowableCol(0)
+        grid_sizer.AddGrowableCol(1)
+        grid_sizer.AddGrowableCol(2)
+
+        self.SetSizer(grid_sizer)
+
+        # Tooltips
+        dir_tip = _("Puts ticks inside the axes, outside the axes, or both.")
+        self.direction_choicectrl.SetToolTip(wx.ToolTip(dir_tip))
+        pad_tip = _("Distance in points between tick and label.")
+        self.pad_intctrl.SetToolTip(wx.ToolTip(pad_tip))
+        label_tip = _("Tick label font size in points.")
+        self.labelsize_intctrl.SetToolTip(wx.ToolTip(label_tip))
+
+        self.Layout()
+
+    def get_code(self):
+        """Returns code representation of value of widget"""
+
+        return ""
+
+    def get_kwargs(self):
+        """Return kwargs dict for text"""
+
+        kwargs = {}
+
+        for attr in self.attrs:
+            val = self.attrs[attr]
+            if val is not None:
+                kwargs[attr] = repr(val)
+
+        code = ", ".join(repr(key) + ": " + kwargs[key] for key in kwargs)
+
+        code = "{" + code + "}"
+
+        return code
+
+    def set_code(self, code):
+        """Sets widget from code string, does nothing here
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of widget value
+
+        """
+
+        pass
+
+    def set_kwargs(self, code):
+        """Sets widget from kwargs string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of kwargs value
+
+        """
+
+        kwargs = {}
+
+        kwarglist = list(parse_dict_strings(code[1:-1]))
+
+        for kwarg, val in zip(kwarglist[::2], kwarglist[1::2]):
+            kwargs[unquote_string(kwarg)] = val
+
+        for key in kwargs:
+            if key == "direction":
+                self.attrs[key] = unquote_string(kwargs[key])
+                label = self.choice_param2label[self.attrs[key]]
+                label_list = self.direction_choicectrl.Items
+                self.direction_choicectrl.SetSelection(label_list.index(label))
+
+            elif key == "pad":
+                self.attrs[key] = int(kwargs[key])
+                self.pad_intctrl.SetValue(self.attrs[key])
+
+            elif key in ["top", "right"]:
+                self.attrs[key] = (not kwargs[key] == "False")
+                if self.attrs[key]:
+                    self.sec_checkboxctrl.Set3StateValue(wx.CHK_CHECKED)
+                else:
+                    self.sec_checkboxctrl.Set3StateValue(wx.CHK_UNCHECKED)
+
+            elif key == "labelsize":
+                self.attrs[key] = int(kwargs[key])
+                self.labelsize_intctrl.SetValue(self.attrs[key])
+
+    # Properties
+
+    code = property(get_code, set_code)
+
+    # Event handlers
+
+    def OnDirectionChoice(self, event):
+        """Direction choice event handler"""
+
+        label = self.direction_choicectrl.GetItems()[event.GetSelection()]
+        param = self.choice_label2param[label]
+        self.attrs["direction"] = param
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnSecondaryCheckbox(self, event):
+        """Top Checkbox event handler"""
+
+        self.attrs["top"] = event.IsChecked()
+        self.attrs["right"] = event.IsChecked()
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnPadIntCtrl(self, event):
+        """Pad IntCtrl event handler"""
+
+        self.attrs["pad"] = event.GetValue()
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnLabelSizeIntCtrl(self, event):
+        """Label size IntCtrl event handler"""
+
+        self.attrs["labelsize"] = event.GetValue()
 
         post_command_event(self, self.DrawChartMsg)
 
@@ -743,13 +1093,15 @@ Code 	Meaning
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "title": (_("Title"), StringEditor, ""),
-        "xlabel": (_("Label"), StringEditor, ""),
+        "title": (_("Title"), TextEditor, ""),
+        "xlabel": (_("Label"), TextEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
-        "ylabel": (_("Label"), StringEditor, ""),
+        "xtick_params": (_("X-axis ticks"), TickParamsEditor, ""),
+        "ylabel": (_("Label"), TextEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
+        "ytick_params": (_("Y-axis ticks"), TickParamsEditor, ""),
         "xgrid": (_("X-axis grid"), BoolEditor, False),
         "ygrid": (_("Y-axis grid"), BoolEditor, False),
         "legend": (_("Legend"), BoolEditor, False),
@@ -761,8 +1113,9 @@ Code 	Meaning
 
     boxes = [
         (_("Figure"), ["title", "legend"]),
-        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format"]),
-        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid"]),
+        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format",
+                       "xtick_params"]),
+        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid", "ytick_params"]),
     ]
 
     tooltips = {
@@ -1085,7 +1438,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((1000, 500))
+        self.SetSize((1000, 600))
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
         self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
@@ -1192,6 +1545,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         for key, widget in self.figure_attributes_panel:
             try:
                 obj = figure_attributes[key]
+                kwargs_key = key + "_kwargs"
+                if kwargs_key in figure_attributes:
+                    widget.set_kwargs(figure_attributes[kwargs_key])
 
             except KeyError:
                 obj = ""
@@ -1236,6 +1592,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                     else:
                         code = '0'
 
+                elif key in ["xtick_params"]:
+                    code = '"x"'
+
+                elif key in ["ytick_params"]:
+                    code = '"y"'
+
                 if not code:
                     if key in self.empty_none_keys:
                         code = "None"
@@ -1261,6 +1623,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                 attr_dict[key] = widget
             else:
                 attr_dict[key] = widget.code
+                try:
+                    attr_dict[key+"_kwargs"] = widget.get_kwargs()
+                except AttributeError:
+                    pass
 
         attr_dicts.append(attr_dict)
 

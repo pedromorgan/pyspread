@@ -28,16 +28,15 @@ Provides:
   1. PythonSTC: Syntax highlighting editor
   2. ImageComboBox: Base class for image combo boxes
   3. PenWidthComboBox: ComboBox for pen width selection
-  4. PenStyleComboBox: ComboBox for pen style selection
-  5. MatplotlibStyleChoice: Base class for matplotlib chart style choices
-  6. LineStyleComboBox: ChoiceBox for selection matplotlib line styles
-  7. MarkerStyleComboBox: ChoiceBox for selection matplotlib marker styles
-  8. FontChoiceCombobox: ComboBox for font selection
-  9. BorderEditChoice: ComboBox for border selection
- 10. BitmapToggleButton: Button that toggles through a list of bitmaps
- 11. EntryLine: The line for entering cell code
- 12. StatusBar: Main window statusbar
- 13. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
+  4. MatplotlibStyleChoice: Base class for matplotlib chart style choices
+  5. LineStyleComboBox: ChoiceBox for selection matplotlib line styles
+  6. MarkerStyleComboBox: ChoiceBox for selection matplotlib marker styles
+  7. FontChoiceCombobox: ComboBox for font selection
+  8. BorderEditChoice: ComboBox for border selection
+  9. BitmapToggleButton: Button that toggles through a list of bitmaps
+ 10. EntryLine: The line for entering cell code
+ 11. StatusBar: Main window statusbar
+ 12. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
 
 """
 

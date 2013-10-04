@@ -23,6 +23,8 @@ Chart grid lines are now separately selectable for each axis
 Annotation texts are now treated as code instead of strings
 All unit tests now succeed in Windows
 Ukranian mo file updated
+Brazilian po and mo files updated
+German po and mo files updated
 
 0.2.4
 -----
