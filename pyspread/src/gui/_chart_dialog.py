@@ -292,11 +292,6 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
     def get_code(self):
         """Returns code representation of value of widget"""
 
-        #return self.textctrl.GetValue() + ", " + \
-        #    unicode({"color": color2code(self.colorselect.GetValue())})
-
-        #print eval(repr(self.textctrl.GetValue()) + ", " + \
-        #    unicode({"color": color2code(self.colorselect.GetValue())}))
         return self.textctrl.GetValue()
 
     def get_kwargs(self):
@@ -443,25 +438,41 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
 
     """
 
-    choises_map = {_("inside"): "in",
-                   _("outside"): "out",
-                   _("both"): "inout"}
+    choice_labels = [_("Inside"),
+                     _("Outside"),
+                     _("Both"),
+    ]
+
+    choice_params = ["in",
+                     "out",
+                     "inout",
+    ]
+
+    choice_label2param = dict(zip(choice_labels, choice_params))
+    choice_param2label = dict(zip(choice_params, choice_labels))
+
 
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
-        choices = [_("inside"), _("outside"), _("inside and outside")]
-        self.direction_choicectrl = wx.Choice(self, -1, choices=choices)
-        self.pad_intctrl = IntCtrl(self, -1)
-        self.labelsize_intctrl = IntCtrl(self, -1)
-        self.top_checkboxctrl = wx.CheckBox(self, -1, label=_("Top"),
-                                            style=wx.ALIGN_RIGHT)
-        self.bottom_checkboxctrl = wx.CheckBox(self, -1, label=_("Bottom"),
-                                               style=wx.ALIGN_RIGHT)
-        self.left_checkboxctrl = wx.CheckBox(self, -1, label=_("Left"),
-                                             style=wx.ALIGN_RIGHT)
-        self.right_checkboxctrl = wx.CheckBox(self, -1, label=_("Right"),
-                                              style=wx.ALIGN_RIGHT)
+        self.attrs = {
+            "direction": None,
+            "pad": None,
+            "top": None,
+            "right": None,
+            "labelsize": None,
+        }
+
+        self.direction_choicectrl = wx.Choice(self, -1,
+                                              choices=self.choice_labels)
+        self.pad_label = wx.StaticText(self, -1, _("Padding"))
+        self.pad_intctrl = IntCtrl(self, -1, allow_none = True, value=None,
+                                   limited=True)
+        self.size_label = wx.StaticText(self, -1, _("Size"))
+        self.labelsize_intctrl = IntCtrl(self, -1, allow_none=True, value=None,
+                                         min=1, max=99, limited=True)
+        self.sec_checkboxctrl = wx.CheckBox(self, -1, label=_("Secondary"),
+                                    style=wx.ALIGN_RIGHT | wx.CHK_3STATE)
 
         self.__bindings()
         self.__do_layout()
@@ -469,16 +480,20 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
     def __bindings(self):
         """Binds events to handlers"""
 
+        self.direction_choicectrl.Bind(wx.EVT_CHOICE, self.OnDirectionChoice)
+        self.sec_checkboxctrl.Bind(wx.EVT_CHECKBOX, self.OnSecondaryCheckbox)
+        self.pad_intctrl.Bind(EVT_INT, self.OnPadIntCtrl)
+        self.labelsize_intctrl.Bind(EVT_INT, self.OnLabelSizeIntCtrl)
+
     def __do_layout(self):
         grid_sizer = wx.FlexGridSizer(1, 3, 0, 0)
-
-        grid_sizer.Add(self.top_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
-        grid_sizer.Add(self.bottom_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
-        grid_sizer.Add(self.direction_choicectrl, 1, wx.ALL | wx.EXPAND, 2)
-        grid_sizer.Add(self.left_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
-        grid_sizer.Add(self.right_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.sec_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.pad_label, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer.Add(self.pad_intctrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.direction_choicectrl, 1, wx.ALL | wx.EXPAND, 2)
+        grid_sizer.Add(self.size_label, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer.Add(self.labelsize_intctrl, 1, wx.ALL | wx.EXPAND, 2)
+
 
         grid_sizer.AddGrowableCol(0)
 
@@ -493,6 +508,60 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
         self.labelsize_intctrl.SetToolTip(wx.ToolTip(label_tip))
 
         self.Layout()
+
+    def get_code(self):
+        """Returns code representation of value of widget"""
+
+        return ""
+
+    def get_kwargs(self):
+        """Return kwargs dict for text"""
+
+        kwargs = {}
+
+        for attr in self.attrs:
+            val = self.attrs[attr]
+            if val is not None:
+                kwargs[attr] = repr(val)
+
+        code = ", ".join(repr(key) + ": " + kwargs[key] for key in kwargs)
+
+        code = "{" + code + "}"
+
+        return code
+
+    # Event handlers
+
+    def OnDirectionChoice(self, event):
+        """Direction choice event handler"""
+
+        label = self.direction_choicectrl.GetItems()[event.GetSelection()]
+        param = self.choice_label2param[label]
+        self.attrs["direction"] = param
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnSecondaryCheckbox(self, event):
+        """Top Checkbox event handler"""
+
+        self.attrs["top"] = event.IsChecked()
+        self.attrs["right"] = event.IsChecked()
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnPadIntCtrl(self, event):
+        """Pad IntCtrl event handler"""
+
+        self.attrs["pad"] = event.GetValue()
+
+        post_command_event(self, self.DrawChartMsg)
+
+    def OnLabelSizeIntCtrl(self, event):
+        """Label size IntCtrl event handler"""
+
+        self.attrs["labelsize"] = event.GetValue()
+
+        post_command_event(self, self.DrawChartMsg)
 
 
 class ColorEditor(csel.ColourSelect, ChartDialogEventMixin):
@@ -1464,6 +1533,12 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                         code = '1'
                     else:
                         code = '0'
+
+                elif key in ["xtick_params"]:
+                    code = '"x"'
+
+                elif key in ["ytick_params"]:
+                    code = '"y"'
 
                 if not code:
                     if key in self.empty_none_keys:
