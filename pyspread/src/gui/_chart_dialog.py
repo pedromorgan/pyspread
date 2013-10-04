@@ -465,15 +465,16 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
 
         self.direction_choicectrl = wx.Choice(self, -1,
                                               choices=self.choice_labels)
-        self.pad_label = wx.StaticText(self, -1, _("Padding"))
+        self.pad_label = wx.StaticText(self, -1, _("Padding"), size=(-1, 15))
         self.pad_intctrl = IntCtrl(self, -1, allow_none = True, value=None,
                                    limited=True)
-        self.size_label = wx.StaticText(self, -1, _("Size"))
+        self.size_label = wx.StaticText(self, -1, _("Size"), size=(-1, 15))
         self.labelsize_intctrl = IntCtrl(self, -1, allow_none=True, value=None,
                                          min=1, max=99, limited=True)
         self.sec_checkboxctrl = wx.CheckBox(self, -1, label=_("Secondary"),
                                     style=wx.ALIGN_RIGHT | wx.CHK_3STATE)
 
+        self.sec_checkboxctrl.Set3StateValue(wx.CHK_UNDETERMINED)
         self.__bindings()
         self.__do_layout()
 
@@ -494,8 +495,9 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
         grid_sizer.Add(self.size_label, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer.Add(self.labelsize_intctrl, 1, wx.ALL | wx.EXPAND, 2)
 
-
         grid_sizer.AddGrowableCol(0)
+        grid_sizer.AddGrowableCol(1)
+        grid_sizer.AddGrowableCol(2)
 
         self.SetSizer(grid_sizer)
 
@@ -529,6 +531,61 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
         code = "{" + code + "}"
 
         return code
+
+    def set_code(self, code):
+        """Sets widget from code string, does nothing here
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of widget value
+
+        """
+
+        pass
+
+    def set_kwargs(self, code):
+        """Sets widget from kwargs string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of kwargs value
+
+        """
+
+        kwargs = {}
+
+        kwarglist = list(parse_dict_strings(code[1:-1]))
+
+        for kwarg, val in zip(kwarglist[::2], kwarglist[1::2]):
+            kwargs[unquote_string(kwarg)] = val
+
+        for key in kwargs:
+            if key == "direction":
+                self.attrs[key] = unquote_string(kwargs[key])
+                label = self.choice_param2label[self.attrs[key]]
+                label_list = self.direction_choicectrl.Items
+                self.direction_choicectrl.SetSelection(label_list.index(label))
+
+            elif key == "pad":
+                self.attrs[key] = int(kwargs[key])
+                self.pad_intctrl.SetValue(self.attrs[key])
+
+            elif key in ["top", "right"]:
+                self.attrs[key] = (not kwargs[key] == "False")
+                if self.attrs[key]:
+                    self.sec_checkboxctrl.Set3StateValue(wx.CHK_CHECKED)
+                else:
+                    self.sec_checkboxctrl.Set3StateValue(wx.CHK_UNCHECKED)
+
+            elif key == "labelsize":
+                self.attrs[key] = int(kwargs[key])
+                self.labelsize_intctrl.SetValue(self.attrs[key])
+
+    # Properties
+
+    code = property(get_code, set_code)
 
     # Event handlers
 
@@ -1381,7 +1438,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((1000, 500))
+        self.SetSize((1000, 600))
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
         self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
