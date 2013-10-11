@@ -195,6 +195,8 @@ class ChartFigure(Figure):
             "ylabel": self.__axes.set_ylabel,
             "xscale": self.__axes.set_xscale,
             "yscale": self.__axes.set_yscale,
+            "xtick_params": self.__axes.tick_params,
+            "ytick_params": self.__axes.tick_params,
             "xlim": self.__axes.set_xlim,
             "ylim": self.__axes.set_ylim,
             "xgrid": self.__axes.xaxis.grid,
