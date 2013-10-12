@@ -22,7 +22,7 @@
 
 """
 test_model
-========
+==========
 
 Unit tests for model.py
 
