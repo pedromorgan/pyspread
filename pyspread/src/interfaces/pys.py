@@ -103,10 +103,23 @@ class Pys(object):
         assert line == "0.1"
 
     def _version2pys(self):
-        """Writes pys fiel version"""
+        """Writes pys file version to pys file
+
+        Format: <version>\n
+
+        """
+
+        self.pys_file.write("0.1\n")
 
     def _shape2pys(self):
-        """Updates shape in pys file data"""
+        """Writes shape to pys file
+
+        Format: <rows>\t<cols>\t<tabs>\n
+
+        """
+
+        shape_line = u"\t".join(map(unicode, self.data_array.shape)) + u"\n"
+        self.pys_file.write(shape_line)
 
     def _pys2shape(self, line):
         """Updates shape in data_array"""
@@ -114,7 +127,17 @@ class Pys(object):
         self.data_array.shape = self._get_key(*self._split_tidy(line))
 
     def _code2pys(self):
-        """Updates code in pys file data"""
+        """Writes code to pys file
+
+        Format: <row>\t<col>\t<tab>\t<code>\n
+
+        """
+
+        for key in self.data_array:
+            key_str = u"\t".join(repr(ele) for ele in key)
+            code_str = unicode(self[key])
+
+            self.pys_file.write(key_str + u"\t" + code_str + u"\n")
 
     def _pys2code(self, line):
         """Updates code in pys data_array"""
@@ -125,7 +148,27 @@ class Pys(object):
         self.data_array[key] = unicode(code, encoding='utf-8')
 
     def _attributes2pys(self):
-        """Updates attributes in pys file data"""
+        """Writes attributes to pys file
+
+        Format:
+        <selection[0]>\t[...]\t<tab>\t<key>\t<value>\t[...]\n
+
+        """
+
+        for selection, tab, attr_dict in self.data_array.cell_attributes:
+            sel_list = [selection.block_tl, selection.block_br,
+                        selection.rows, selection.cols, selection.cells]
+
+            tab_list = [tab]
+
+            attr_dict_list = []
+            for key in attr_dict:
+                attr_dict_list.append(key)
+                attr_dict_list.append(attr_dict[key])
+
+            line_list = map(repr, sel_list + tab_list + attr_dict_list)
+
+            self.pys_file.write(u"\t".join(line_list) + u"\n")
 
     def _pys2attributes(self, line):
         """Updates attributes in data_array"""
@@ -150,7 +193,16 @@ class Pys(object):
         self.data_array.cell_attributes.append((selection, tab, attrs))
 
     def _row_heights2pys(self):
-        """Updates row_heights in pys file data"""
+        """Writes row_heights to pys file
+
+        Format: <row>\t<tab>\t<value>\n
+
+        """
+
+        for row, tab in self.data_array.row_heights:
+            height = self.row_heights[(row, tab)]
+            height_strings = map(repr, [row, tab, height])
+            self.pys_file.write(u"\t".join(height_strings) + u"\n")
 
     def _pys2row_heights(self, line):
         """Updates row_heights in data_array"""
@@ -166,7 +218,16 @@ class Pys(object):
             pass
 
     def _col_widths2pys(self):
-        """Updates col_widths in pys file data"""
+        """Writes col_widths to pys file
+
+        Format: <col>\t<tab>\t<value>\n
+
+        """
+
+        for col, tab in self.data_array.col_widths:
+            width = self.col_widths[(col, tab)]
+            width_strings = map(repr, [col, tab, width])
+            self.pys_file.write(u"\t".join(width_strings) + u"\n")
 
     def _pys2col_widths(self, line):
         """Updates col_widths in data_array"""
@@ -182,9 +243,14 @@ class Pys(object):
             pass
 
     def _macros2pys(self):
-        """Updates macros in pys file data"""
+        """Writes macros to pys file
 
-        self.pys_file_data["macros"] = self.data_array.dict_grid.macros
+        Format: <macro code line>\n
+
+        """
+
+        for line in self.data_array.dict_grid.macros.split("\n"):
+            self.pys_file.write(line + u"\n")
 
     def _pys2macros(self, line):
         """Updates macros in data_array"""
@@ -199,7 +265,11 @@ class Pys(object):
         """Replaces everything in file_data from data_array"""
 
         for key in self._section2writer:
+            self.pys_file.write("[key]\n".format(key=key))
             self._section2writer[key]()
+
+            if self.pys_file.aborted:
+                break
 
     def to_data_array(self):
         """Replaces everything in data_array from file_data"""
