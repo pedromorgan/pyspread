@@ -135,7 +135,7 @@ class Pys(object):
 
         for key in self.data_array:
             key_str = u"\t".join(repr(ele) for ele in key)
-            code_str = unicode(self[key])
+            code_str = unicode(self.data_array[key])
 
             self.pys_file.write(key_str + u"\t" + code_str + u"\n")
 
