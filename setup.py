@@ -90,10 +90,13 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: X11 Applications :: GTK',
+        'Environment :: Win32 (MS Windows)',
         'Intended Audience :: End Users/Desktop',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Natural Language :: English',
+        'Operating System :: OS Independent',
         'Operating System :: POSIX',
+        'Operating System :: Microsoft',
         'Programming Language :: Python :: 2.7',
         'Topic :: Office/Business :: Financial :: Spreadsheet',
     ],
