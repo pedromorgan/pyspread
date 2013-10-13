@@ -65,23 +65,23 @@ class Pys(object):
         self.pys_file = pys_file
 
         self._section2reader = {
-            "Pyspread save file version": self._pys_assert_version,
-            "shape": self._pys2shape,
-            "code": self._pys2code,
-            "attributes": self._pys2attributes,
-            "row_heights": self._pys2row_heights,
-            "col_widths": self._pys2col_widths,
-            "macros": self._pys2macros,
+            "[Pyspread save file version]\n": self._pys_assert_version,
+            "[shape]\n": self._pys2shape,
+            "[grid]\n": self._pys2code,
+            "[attributes]\n": self._pys2attributes,
+            "[row_heights]\n": self._pys2row_heights,
+            "[col_widths]\n": self._pys2col_widths,
+            "[macros]\n": self._pys2macros,
         }
 
         self._section2writer = OrderedDict([
-            ("Pyspread save file version", self._version2pys),
-            ("shape", self._shape2pys),
-            ("code", self._code2pys),
-            ("attributes", self._attributes2pys),
-            ("row_heights", self._row_heights2pys),
-            ("col_widths", self._col_widths2pys),
-            ("macros", self._macros2pys),
+            ("[Pyspread save file version]\n", self._version2pys),
+            ("[shape]\n", self._shape2pys),
+            ("[grid]\n", self._code2pys),
+            ("[attributes]\n", self._attributes2pys),
+            ("[row_heights]\n", self._row_heights2pys),
+            ("[col_widths]\n", self._col_widths2pys),
+            ("[macros]\n", self._macros2pys),
         ])
 
     def _split_tidy(self, string, maxsplit=None):
@@ -100,7 +100,7 @@ class Pys(object):
     def _pys_assert_version(self, line):
         """Asserts pys file version"""
 
-        assert line == "0.1"
+        assert line == "0.1\n"
 
     def _version2pys(self):
         """Writes pys file version to pys file
@@ -135,9 +135,10 @@ class Pys(object):
 
         for key in self.data_array:
             key_str = u"\t".join(repr(ele) for ele in key)
-            code_str = unicode(self.data_array[key])
+            code_str = self.data_array[key]
+            out_str = key_str + u"\t" + code_str + u"\n"
 
-            self.pys_file.write(key_str + u"\t" + code_str + u"\n")
+            self.pys_file.write(out_str.encode("utf-8"))
 
     def _pys2code(self, line):
         """Updates code in pys data_array"""
@@ -199,8 +200,8 @@ class Pys(object):
 
         """
 
-        for row, tab in self.data_array.row_heights:
-            height = self.row_heights[(row, tab)]
+        for row, tab in self.data_array.dict_grid.row_heights:
+            height = self.data_array.dict_grid.row_heights[(row, tab)]
             height_strings = map(repr, [row, tab, height])
             self.pys_file.write(u"\t".join(height_strings) + u"\n")
 
@@ -224,8 +225,8 @@ class Pys(object):
 
         """
 
-        for col, tab in self.data_array.col_widths:
-            width = self.col_widths[(col, tab)]
+        for col, tab in self.data_array.dict_grid.col_widths:
+            width = self.data_array.dict_grid.col_widths[(col, tab)]
             width_strings = map(repr, [col, tab, width])
             self.pys_file.write(u"\t".join(width_strings) + u"\n")
 
@@ -249,32 +250,45 @@ class Pys(object):
 
         """
 
-        for line in self.data_array.dict_grid.macros.split("\n"):
-            self.pys_file.write(line + u"\n")
+        macros = self.data_array.dict_grid.macros
+        pys_macros = macros.encode("utf-8")
+        self.pys_file.write(pys_macros)
 
     def _pys2macros(self, line):
         """Updates macros in data_array"""
 
-        self.data_array.dict_grid.macros += "\n"
-        self.data_array.dict_grid.macros += line
+        if self.data_array.dict_grid.macros and \
+           self.data_array.dict_grid.macros[-1] != "\n":
+            # The last macro line does not end with \n
+            # Therefore, if not new line is inserted, the codeis broken
+            self.data_array.dict_grid.macros += "\n"
+
+        self.data_array.dict_grid.macros += line.decode("utf-8")
 
     # Access via model.py data
     # ------------------------
 
     def from_data_array(self):
-        """Replaces everything in file_data from data_array"""
+        """Replaces everything in pys_file from data_array"""
 
         for key in self._section2writer:
-            self.pys_file.write("[key]\n".format(key=key))
+            self.pys_file.write(key)
             self._section2writer[key]()
 
-            if self.pys_file.aborted:
-                break
+            try:
+                if self.pys_file.aborted:
+                    break
+            except AttributeError:
+                # pys_fileis not opened via fileio.BZAopen
+                pass
 
     def to_data_array(self):
-        """Replaces everything in data_array from file_data"""
+        """Replaces everything in data_array from pys_file"""
 
         state = None
+
+        # Reset pys_file to start to enable multiple calls of this method
+        self.pys_file.seek(0)
 
         for line in self.pys_file:
             if line in self._section2reader:
