@@ -387,10 +387,12 @@ class DataArray(object):
 
         return self.dict_grid.cell_attributes
 
-    def _set_cell_attributes(self, cell_attributes):
-        """Sets  macros string"""
+    def _set_cell_attributes(self, value):
+        """Setter for cell_atributes"""
 
-        self.dict_grid.cell_attributes = cell_attributes
+        # Empty cell_attributes first
+        self.cell_attributes[:] = []
+        self.cell_attributes.extend(value)
 
     cell_attributes = attributes = \
         property(_get_cell_attributes, _set_cell_attributes)
@@ -670,13 +672,6 @@ class DataArray(object):
                         yield self[tuple(key_list)]
 
                 break
-
-    def _set_cell_attributes(self, value):
-        """Setter for cell_atributes"""
-
-        # Empty cell_attributes first
-        self.cell_attributes[:] = []
-        self.cell_attributes.extend(value)
 
     def _shift_rowcol(self, insertion_point, no_to_insert, mark_unredo):
         """Shifts row and column sizes when a table is inserted or deleted"""
