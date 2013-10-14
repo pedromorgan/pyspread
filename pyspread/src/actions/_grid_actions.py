@@ -296,9 +296,10 @@ class FileActions(Actions):
                 self.grid.code_array.unredo.active = True
 
                 try:
+                    wx.BeginBusyCursor()
                     self.clear()
                     pys = Pys(self.grid.code_array, infile)
-                    pys.to_data_array()
+                    pys.to_code_array()
 
                 except ValueError, err:
                     post_command_event(self.main_window, self.StatusBarMsg,
@@ -306,6 +307,7 @@ class FileActions(Actions):
 
                 finally:
                     self.grid.GetTable().ResetView()
+                    wx.EndBusyCursor()
 
                 # Execute macros
                 self.main_window.actions.execute_macros()
@@ -382,24 +384,8 @@ class FileActions(Actions):
 
         filepath = event.attr["filepath"]
 
-        dict_grid = self.code_array.dict_grid
-
         io_error_text = _("Error writing to file {filepath}.")
         io_error_text = io_error_text.format(filepath=filepath)
-
-        # The output generators yield the lines for the outfile
-        output_generators = [
-            # Grid content
-            dict_grid.grid_to_strings,
-            # Cell attributes
-            dict_grid.attributes_to_strings,
-            # Row heights
-            dict_grid.heights_to_strings,
-            # Column widths
-            dict_grid.widths_to_strings,
-            # Macros
-            dict_grid.macros_to_strings,
-        ]
 
         # Set state to file saving
         self.saving = True
@@ -418,19 +404,16 @@ class FileActions(Actions):
             with Bz2AOpen(filepath, "wb", main_window=self.main_window) \
                     as outfile:
 
-                # Header
-                outfile.write("[Pyspread save file version]\n")
-                outfile.write("{ver}\n".format(ver=self.pys_versions[-1]))
+                try:
+                    pys = Pys(self.grid.code_array, outfile)
+                    pys.from_code_array()
 
-                # Save cycle
+                except ValueError, err:
+                    post_command_event(self.main_window, self.StatusBarMsg,
+                                       text=err)
 
-                for generator in output_generators:
-                    for line in generator():
-                        outfile.write(line.encode("utf-8"))
-                        if outfile.aborted:
-                            break
-                    if outfile.aborted:
-                            break
+                finally:
+                    wx.EndBusyCursor()
 
         except IOError:
             msg = _("Error writing to file {filepath}.")

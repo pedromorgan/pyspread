@@ -34,7 +34,7 @@ import sys
 from src.interfaces.pys import Pys
 from src.lib.selection import Selection
 from src.lib.testlib import params, pytest_generate_tests
-from src.model.model import DataArray
+from src.model.model import CodeArray
 
 TESTPATH = os.sep.join(os.path.realpath(__file__).split(os.sep)[:-1]) + os.sep
 sys.path.insert(0, TESTPATH)
@@ -46,21 +46,21 @@ class TestPys(object):
     """Unit tests for Pys"""
 
     def setup_method(self, method):
-        """Creates Pys class with data_array and temporary test.pys file"""
+        """Creates Pys class with code_array and temporary test.pys file"""
 
         # All data structures are initially empty
         # The test file pys_file has entries in each category
 
-        self.data_array = DataArray((1000, 100, 3))
+        self.code_array = CodeArray((1000, 100, 3))
         self.pys_infile = bz2.BZ2File(TESTPATH + "pys_test1.pys")
         self.pys_outfile_path = TESTPATH + "pys_test2.pys"
-        self.pys_in = Pys(self.data_array, self.pys_infile)
+        self.pys_in = Pys(self.code_array, self.pys_infile)
 
     def write_pys_out(self, method_name, *args, **kwargs):
         """Helper that writes an pys_out file"""
 
         outfile = bz2.BZ2File(self.pys_outfile_path, "w")
-        pys_out = Pys(self.data_array, outfile)
+        pys_out = Pys(self.code_array, outfile)
         method = getattr(pys_out, method_name)
         method(*args, **kwargs)
         outfile.close()
@@ -139,7 +139,7 @@ class TestPys(object):
     def test_shape2pys(self, shape, res):
         """Test _shape2pys method"""
 
-        self.data_array.dict_grid.shape = shape
+        self.code_array.dict_grid.shape = shape
         self.write_pys_out("_shape2pys")
         assert self.read_pys_out() == res
 
@@ -148,7 +148,7 @@ class TestPys(object):
         """Test _pys2shape method"""
 
         self.pys_in._pys2shape(res)
-        assert self.data_array.dict_grid.shape == shape
+        assert self.code_array.dict_grid.shape == shape
 
     param_code2pys = [
         {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
@@ -157,13 +157,14 @@ class TestPys(object):
         {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
         {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
          'val': "a" * 100},
+        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
     ]
 
     @params(param_code2pys)
     def test_code2pys(self, key, val, code):
         """Test _code2pys method"""
 
-        self.data_array[key] = val
+        self.code_array[key] = val
         self.write_pys_out("_code2pys")
         res = self.read_pys_out()
 
@@ -174,7 +175,7 @@ class TestPys(object):
         """Test _pys2code method"""
 
         self.pys_in._pys2code(code)
-        assert self.data_array[key] == val
+        assert self.code_array(key) == val
 
     param_attributes2pys = [
         {'code': "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
@@ -186,7 +187,7 @@ class TestPys(object):
     def test_attributes2pys(self, selection, table, key, attr, val, code):
         """Test _attributes2pys method"""
 
-        self.data_array.dict_grid.cell_attributes.undoable_append(
+        self.code_array.dict_grid.cell_attributes.undoable_append(
             (selection, table, {attr: val}), mark_unredo=False)
 
         self.write_pys_out("_attributes2pys")
@@ -198,7 +199,7 @@ class TestPys(object):
 
         self.pys_in._pys2attributes(code)
 
-        attrs = self.data_array.dict_grid.cell_attributes[key]
+        attrs = self.code_array.dict_grid.cell_attributes[key]
         assert attrs[attr] == val
 
     param_row_heights2pys = [
@@ -213,7 +214,7 @@ class TestPys(object):
     def test_row_heights2pys(self, row, tab, height, code):
         """Test _row_heights2pys method"""
 
-        self.data_array.dict_grid.row_heights[(row, tab)] = height
+        self.code_array.dict_grid.row_heights[(row, tab)] = height
         self.write_pys_out("_row_heights2pys")
         assert self.read_pys_out() == code
 
@@ -222,7 +223,7 @@ class TestPys(object):
         """Test _pys2row_heights method"""
 
         self.pys_in._pys2row_heights(code)
-        assert self.data_array.dict_grid.row_heights[(row, tab)] == height
+        assert self.code_array.dict_grid.row_heights[(row, tab)] == height
 
     param_col_widths2pys = [
         {'col': 0, 'tab': 0, 'width': 0.1, 'code': "0\t0\t0.1\n"},
@@ -236,7 +237,7 @@ class TestPys(object):
     def test_col_widths2pys(self, col, tab, width, code):
         """Test _col_widths2pys method"""
 
-        self.data_array.dict_grid.col_widths[(col, tab)] = width
+        self.code_array.dict_grid.col_widths[(col, tab)] = width
         self.write_pys_out("_col_widths2pys")
         assert self.read_pys_out() == code
 
@@ -245,7 +246,7 @@ class TestPys(object):
         """Test _pys2col_widths method"""
 
         self.pys_in._pys2col_widths(code)
-        assert self.data_array.dict_grid.col_widths[(col, tab)] == width
+        assert self.code_array.dict_grid.col_widths[(col, tab)] == width
 
     param_macros2pys = [
         {'code': u"Test"},
@@ -258,7 +259,7 @@ class TestPys(object):
     def test_macros2pys(self, code):
         """Test _macros2pys method"""
 
-        self.data_array.dict_grid.macros = code
+        self.code_array.dict_grid.macros = code
         self.write_pys_out("_macros2pys")
         res = self.read_pys_out().decode("utf-8")
         assert res == code
@@ -268,17 +269,17 @@ class TestPys(object):
         """Test _pys2macros method"""
 
         self.pys_in._pys2macros(code.encode("utf-8"))
-        assert self.data_array.dict_grid.macros == code
+        assert self.code_array.dict_grid.macros == code
 
-    def test_from_data_array(self):
-        """Test from_data_array method"""
+    def test_from_code_array(self):
+        """Test from_code_array method"""
 
         self.pys_infile.seek(0)
-        self.pys_in.to_data_array()
+        self.pys_in.to_code_array()
 
         outfile = bz2.BZ2File(self.pys_outfile_path, "w")
-        pys_out = Pys(self.data_array, outfile)
-        pys_out.from_data_array()
+        pys_out = Pys(self.code_array, outfile)
+        pys_out.from_code_array()
         outfile.close()
 
         self.pys_infile.seek(0)
@@ -293,9 +294,9 @@ class TestPys(object):
 
         assert in_data == out_data
 
-    def test_to_data_array(self):
-        """Test to_data_array method"""
+    def test_to_code_array(self):
+        """Test to_code_array method"""
 
-        self.pys_in.to_data_array()
+        self.pys_in.to_code_array()
 
-        assert self.data_array[(0, 0, 0)] == '"Hallo"'
+        assert self.code_array((0, 0, 0)) == '"Hallo"'

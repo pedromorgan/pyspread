@@ -197,121 +197,7 @@ class CellAttributes(list):
 # End of class CellAttributes
 
 
-class StringGeneratorMixin(object):
-    """String generation methods for DictGrid"""
-
-    def grid_to_strings(self):
-        """Yields a string that represents the grid content for saving
-
-        Format
-        ------
-        [shape]
-        rows\tcols\ttabs\n
-        [grid]
-        row\tcol\ttab\tcode\n
-        row\tcol\ttab\tcode\n
-        ...
-
-        """
-
-        yield u"[shape]\n"
-        yield u"\t".join(map(unicode, self.shape)) + u"\n"
-
-        yield u"[grid]\n"
-
-        for key in self:
-            key_str = u"\t".join(repr(ele) for ele in key)
-            code_str = unicode(self[key])
-
-            yield key_str + u"\t" + code_str + u"\n"
-
-    def attributes_to_strings(self):
-        """Yields a string that represents the cell attributes for saving
-
-        Format
-        ------
-
-        [attributes]
-        selection[0]\t...\tselection[5]\ttab\tkey\tvalue\t...\tkey\tvalue\n
-        ...
-
-        """
-
-        yield u"[attributes]\n"
-
-        for selection, tab, attr_dict in self.cell_attributes:
-            sel_list = [selection.block_tl, selection.block_br,
-                        selection.rows, selection.cols, selection.cells]
-
-            tab_list = [tab]
-
-            attr_dict_list = []
-            for key in attr_dict:
-                attr_dict_list.append(key)
-                attr_dict_list.append(attr_dict[key])
-
-            line_list = map(repr, sel_list + tab_list + attr_dict_list)
-
-            yield u"\t".join(line_list) + u"\n"
-
-    def heights_to_strings(self):
-        """Yields a string that represents the row heights for saving
-
-        Format
-        ------
-
-        [row_heights]
-        row\ttab\tvalue\n
-        ...
-
-        """
-
-        yield u"[row_heights]\n"
-
-        for row, tab in self.row_heights:
-            height = self.row_heights[(row, tab)]
-            height_strings = map(repr, [row, tab, height])
-            yield u"\t".join(height_strings) + u"\n"
-
-    def widths_to_strings(self):
-        """Yields a string that represents the column widths for saving
-
-        Format
-        ------
-
-        [col_widths]
-        col\ttab\tvalue\n
-        ...
-
-        """
-
-        yield u"[col_widths]\n"
-
-        for col, tab in self.col_widths:
-            width = self.col_widths[(col, tab)]
-            width_strings = map(repr, [col, tab, width])
-            yield u"\t".join(width_strings) + u"\n"
-
-    def macros_to_strings(self):
-        """Yields a string that represents the content for saving
-
-        Format
-        ------
-
-        [macros]
-        Macro code
-
-        """
-
-        yield u"[macros]\n"
-
-        for line in self.macros.split("\n"):
-            yield line + u"\n"
-
-# End of class StringGeneratorMixin
-
-
-class DictGrid(KeyValueStore, StringGeneratorMixin):
+class DictGrid(KeyValueStore):
     """The core data class with all information that is stored in a pys file.
 
     Besides grid code access via standard dict operations, it provides
@@ -1344,8 +1230,7 @@ class CodeArray(DataArray):
         """Clears all newly assigned globals"""
 
         base_keys = ['cStringIO', 'IntType', 'KeyValueStore', 'UnRedo',
-                     'is_generator_like', 'StringGeneratorMixin',
-                     'is_string_like', 'bz2', 'base64',
+                     'is_generator_like', 'is_string_like', 'bz2', 'base64',
                      '__package__', 're', 'config', '__doc__', 'SliceType',
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'charts', 'sys', 'is_slice_like', '__name__',

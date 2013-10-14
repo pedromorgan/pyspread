@@ -49,7 +49,7 @@ _ = i18n.language.ugettext
 
 
 class Pys(object):
-    """Interface between data_array and pys file
+    """Interface between code_array and pys file
 
     The pys file is read from disk with the read method.
     The pys file is written to disk with the write method.
@@ -57,15 +57,15 @@ class Pys(object):
     Parameters
     ----------
 
-    data_array: model.DataArray object
-    \tThe data_array object data structure
+    code_array: model.CodeArray object
+    \tThe code_array object data structure
     pys_file: file
     \tFile like object in pys format
 
     """
 
-    def __init__(self, data_array, pys_file):
-        self.data_array = data_array
+    def __init__(self, code_array, pys_file):
+        self.code_array = code_array
         self.pys_file = pys_file
 
         self._section2reader = {
@@ -126,13 +126,13 @@ class Pys(object):
 
         """
 
-        shape_line = u"\t".join(map(unicode, self.data_array.shape)) + u"\n"
+        shape_line = u"\t".join(map(unicode, self.code_array.shape)) + u"\n"
         self.pys_file.write(shape_line)
 
     def _pys2shape(self, line):
-        """Updates shape in data_array"""
+        """Updates shape in code_array"""
 
-        self.data_array.shape = self._get_key(*self._split_tidy(line))
+        self.code_array.shape = self._get_key(*self._split_tidy(line))
 
     def _code2pys(self):
         """Writes code to pys file
@@ -141,20 +141,20 @@ class Pys(object):
 
         """
 
-        for key in self.data_array:
+        for key in self.code_array:
             key_str = u"\t".join(repr(ele) for ele in key)
-            code_str = self.data_array[key]
+            code_str = self.code_array(key)
             out_str = key_str + u"\t" + code_str + u"\n"
 
             self.pys_file.write(out_str.encode("utf-8"))
 
     def _pys2code(self, line):
-        """Updates code in pys data_array"""
+        """Updates code in pys code_array"""
 
         row, col, tab, code = self._split_tidy(line, maxsplit=3)
         key = self._get_key(row, col, tab)
 
-        self.data_array[key] = unicode(code, encoding='utf-8')
+        self.code_array[key] = unicode(code, encoding='utf-8')
 
     def _attributes2pys(self):
         """Writes attributes to pys file
@@ -164,7 +164,7 @@ class Pys(object):
 
         """
 
-        for selection, tab, attr_dict in self.data_array.cell_attributes:
+        for selection, tab, attr_dict in self.code_array.cell_attributes:
             sel_list = [selection.block_tl, selection.block_br,
                         selection.rows, selection.cols, selection.cells]
 
@@ -180,7 +180,7 @@ class Pys(object):
             self.pys_file.write(u"\t".join(line_list) + u"\n")
 
     def _pys2attributes(self, line):
-        """Updates attributes in data_array"""
+        """Updates attributes in code_array"""
 
         splitline = self._split_tidy(line)
 
@@ -199,7 +199,7 @@ class Pys(object):
                 # Even cols are values
                 attrs[key] = ast.literal_eval(ele)
 
-        self.data_array.cell_attributes.append((selection, tab, attrs))
+        self.code_array.cell_attributes.append((selection, tab, attrs))
 
     def _row_heights2pys(self):
         """Writes row_heights to pys file
@@ -208,20 +208,20 @@ class Pys(object):
 
         """
 
-        for row, tab in self.data_array.dict_grid.row_heights:
-            height = self.data_array.dict_grid.row_heights[(row, tab)]
+        for row, tab in self.code_array.dict_grid.row_heights:
+            height = self.code_array.dict_grid.row_heights[(row, tab)]
             height_strings = map(repr, [row, tab, height])
             self.pys_file.write(u"\t".join(height_strings) + u"\n")
 
     def _pys2row_heights(self, line):
-        """Updates row_heights in data_array"""
+        """Updates row_heights in code_array"""
 
         # Split with maxsplit 3
         row, tab, height = self._split_tidy(line)
         key = self._get_key(row, tab)
 
         try:
-            self.data_array.row_heights[key] = float(height)
+            self.code_array.row_heights[key] = float(height)
 
         except ValueError:
             pass
@@ -233,20 +233,20 @@ class Pys(object):
 
         """
 
-        for col, tab in self.data_array.dict_grid.col_widths:
-            width = self.data_array.dict_grid.col_widths[(col, tab)]
+        for col, tab in self.code_array.dict_grid.col_widths:
+            width = self.code_array.dict_grid.col_widths[(col, tab)]
             width_strings = map(repr, [col, tab, width])
             self.pys_file.write(u"\t".join(width_strings) + u"\n")
 
     def _pys2col_widths(self, line):
-        """Updates col_widths in data_array"""
+        """Updates col_widths in code_array"""
 
         # Split with maxsplit 3
         col, tab, width = self._split_tidy(line)
         key = self._get_key(col, tab)
 
         try:
-            self.data_array.col_widths[key] = float(width)
+            self.code_array.col_widths[key] = float(width)
 
         except ValueError:
             pass
@@ -258,26 +258,26 @@ class Pys(object):
 
         """
 
-        macros = self.data_array.dict_grid.macros
+        macros = self.code_array.dict_grid.macros
         pys_macros = macros.encode("utf-8")
         self.pys_file.write(pys_macros)
 
     def _pys2macros(self, line):
-        """Updates macros in data_array"""
+        """Updates macros in code_array"""
 
-        if self.data_array.dict_grid.macros and \
-           self.data_array.dict_grid.macros[-1] != "\n":
+        if self.code_array.dict_grid.macros and \
+           self.code_array.dict_grid.macros[-1] != "\n":
             # The last macro line does not end with \n
             # Therefore, if not new line is inserted, the codeis broken
-            self.data_array.dict_grid.macros += "\n"
+            self.code_array.dict_grid.macros += "\n"
 
-        self.data_array.dict_grid.macros += line.decode("utf-8")
+        self.code_array.dict_grid.macros += line.decode("utf-8")
 
     # Access via model.py data
     # ------------------------
 
-    def from_data_array(self):
-        """Replaces everything in pys_file from data_array"""
+    def from_code_array(self):
+        """Replaces everything in pys_file from code_array"""
 
         for key in self._section2writer:
             self.pys_file.write(key)
@@ -290,8 +290,8 @@ class Pys(object):
                 # pys_fileis not opened via fileio.BZAopen
                 pass
 
-    def to_data_array(self):
-        """Replaces everything in data_array from pys_file"""
+    def to_code_array(self):
+        """Replaces everything in code_array from pys_file"""
 
         state = None
 
