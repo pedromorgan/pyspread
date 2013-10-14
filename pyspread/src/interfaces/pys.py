@@ -39,9 +39,13 @@ It is split into the following sections
 
 import ast
 from collections import OrderedDict
+import src.lib.i18n as i18n
 from itertools import imap
 
 from src.lib.selection import Selection
+
+#use ugettext instead of getttext to avoid unicode errors
+_ = i18n.language.ugettext
 
 
 class Pys(object):
@@ -100,7 +104,11 @@ class Pys(object):
     def _pys_assert_version(self, line):
         """Asserts pys file version"""
 
-        assert line == "0.1\n"
+        if line != "0.1\n":
+            # Abort if file version not supported
+            msg = _("File version {version} unsupported (not 0.1).").format(
+                version=line.strip())
+            raise ValueError(msg)
 
     def _version2pys(self):
         """Writes pys file version to pys file
@@ -287,10 +295,21 @@ class Pys(object):
 
         state = None
 
+        # Check if version section starts with first line
+        first_line = True
+
         # Reset pys_file to start to enable multiple calls of this method
         self.pys_file.seek(0)
 
         for line in self.pys_file:
+            if first_line:
+                # If Version section does not start with first line then
+                # the file is invalid.
+                if line == "[Pyspread save file version]\n":
+                    first_line = False
+                else:
+                    raise ValueError(_("File format unsupported."))
+
             if line in self._section2reader:
                 state = line
 

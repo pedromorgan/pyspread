@@ -197,91 +197,6 @@ class CellAttributes(list):
 # End of class CellAttributes
 
 
-class ParserMixin(object):
-    """Provides parser methods for DictGrid"""
-
-    def _split_tidy(self, string, maxsplit=None):
-        """Rstrips string for \n and splits string for \t"""
-
-        if maxsplit is None:
-            return string.rstrip("\n").split("\t")
-        else:
-            return string.rstrip("\n").split("\t", maxsplit)
-
-    def _get_key(self, *keystrings):
-        """Returns int key tuple from key string list"""
-
-        return tuple(imap(int, keystrings))
-
-    def parse_to_shape(self, line):
-        """Parses line and adjusts grid shape"""
-
-        self.shape = self._get_key(*self._split_tidy(line))
-
-    def parse_to_grid(self, line):
-        """Parses line and inserts grid data"""
-
-        row, col, tab, code = self._split_tidy(line, maxsplit=3)
-        key = self._get_key(row, col, tab)
-
-        self[key] = unicode(code, encoding='utf-8')
-
-    def parse_to_attribute(self, line):
-        """Parses line and appends cell attribute"""
-
-        splitline = self._split_tidy(line)
-
-        selection_data = map(ast.literal_eval, splitline[:5])
-        selection = Selection(*selection_data)
-
-        tab = int(splitline[5])
-
-        attrs = {}
-        for col, ele in enumerate(splitline[6:]):
-            if not (col % 2):
-                # Odd entries are keys
-                key = ast.literal_eval(ele)
-
-            else:
-                # Even cols are values
-                attrs[key] = ast.literal_eval(ele)
-
-        self.cell_attributes.append((selection, tab, attrs))
-
-    def parse_to_height(self, line):
-        """Parses line and inserts row hight"""
-
-        # Split with maxsplit 3
-        row, tab, height = self._split_tidy(line)
-        key = self._get_key(row, tab)
-
-        try:
-            self.row_heights[key] = float(height)
-
-        except ValueError:
-            pass
-
-    def parse_to_width(self, line):
-        """Parses line and inserts column width"""
-
-        # Split with maxsplit 3
-        col, tab, width = self._split_tidy(line)
-        key = self._get_key(col, tab)
-
-        try:
-            self.col_widths[key] = float(width)
-
-        except ValueError:
-            pass
-
-    def parse_to_macro(self, line):
-        """Appends line to macro"""
-
-        self.macros += line
-
-# End of class ParserMixin
-
-
 class StringGeneratorMixin(object):
     """String generation methods for DictGrid"""
 
@@ -396,7 +311,7 @@ class StringGeneratorMixin(object):
 # End of class StringGeneratorMixin
 
 
-class DictGrid(KeyValueStore, ParserMixin, StringGeneratorMixin):
+class DictGrid(KeyValueStore, StringGeneratorMixin):
     """The core data class with all information that is stored in a pys file.
 
     Besides grid code access via standard dict operations, it provides
@@ -1430,7 +1345,7 @@ class CodeArray(DataArray):
 
         base_keys = ['cStringIO', 'IntType', 'KeyValueStore', 'UnRedo',
                      'is_generator_like', 'StringGeneratorMixin',
-                     'is_string_like', 'ParserMixin', 'bz2', 'base64',
+                     'is_string_like', 'bz2', 'base64',
                      '__package__', 're', 'config', '__doc__', 'SliceType',
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'charts', 'sys', 'is_slice_like', '__name__',

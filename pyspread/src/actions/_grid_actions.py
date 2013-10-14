@@ -53,8 +53,8 @@ import wx
 
 from src.config import config
 from src.sysvars import get_default_font, is_gtk
-
 from src.gui._grid_table import GridTable
+from src.interfaces.pys import Pys
 
 try:
     from src.lib.gpg import sign, verify
@@ -283,21 +283,7 @@ class FileActions(Actions):
 
         filepath = event.attr["filepath"]
 
-        # Content parsers
-
-        dict_grid = self.code_array.dict_grid
-
-        section_readers = {
-            "[shape]": dict_grid.parse_to_shape,
-            "[grid]": dict_grid.parse_to_grid,
-            "[attributes]": dict_grid.parse_to_attribute,
-            "[row_heights]": dict_grid.parse_to_height,
-            "[col_widths]": dict_grid.parse_to_width,
-            "[macros]": dict_grid.parse_to_macro,
-        }
-
-        # Set states for file open
-
+        # Set state for file open
         self.opening = True
 
         try:
@@ -306,36 +292,20 @@ class FileActions(Actions):
                 # Make loading safe
                 self.approve(filepath)
 
-                # Abort if file version not supported
-
-                version = self._get_file_version(infile)
-
-                if version not in self.pys_versions:
-                    text = _("File version {version} unsupported (not 0.1).")
-                    text = text.format(version=version,
-                                       allver=self.pys_versions)
-                    post_command_event(self.main_window, self.StatusBarMsg,
-                                       text=text)
-                    return False
-
                 # Disable undo
                 self.grid.code_array.unredo.active = True
 
-                for line in infile:
-                    stripped_line = line.decode("utf-8").strip()
-                    if stripped_line:
-                        # There is content in this line
-                        if stripped_line in section_readers:
-                            # Switch parser
-                            parser = section_readers[stripped_line]
-                        else:
-                            # Parse line
-                            parser(line)
-                            if parser == dict_grid.parse_to_shape:
-                                # Empty grid
-                                self.clear(self.code_array.shape)
+                try:
+                    self.clear()
+                    pys = Pys(self.grid.code_array, infile)
+                    pys.to_data_array()
 
-                                self.grid.GetTable().ResetView()
+                except ValueError, err:
+                    post_command_event(self.main_window, self.StatusBarMsg,
+                                       text=err)
+
+                finally:
+                    self.grid.GetTable().ResetView()
 
                 # Execute macros
                 self.main_window.actions.execute_macros()
@@ -360,6 +330,7 @@ class FileActions(Actions):
             pass
 
         finally:
+            # Unset state for file open
             self.opening = False
 
     def sign_file(self, filepath):

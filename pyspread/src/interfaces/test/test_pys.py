@@ -120,7 +120,7 @@ class TestPys(object):
             self.pys_in._pys_assert_version(line)
             assert res
 
-        except AssertionError:
+        except ValueError:
             assert not res
 
     def test_version2pys(self):
