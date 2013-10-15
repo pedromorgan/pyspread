@@ -28,7 +28,10 @@ This file contains interfaces to Excel xls file format.
 
 """
 
+from datetime import datetime
 from itertools import product
+
+import xlrd
 
 import src.lib.i18n as i18n
 
@@ -58,6 +61,42 @@ class Xls(object):
         self.code_array = code_array
         self.workbook = workbook
 
+    def _code2xls(self):
+        """Writes code to xls file
+
+        Format: <row>\t<col>\t<tab>\t<code>\n
+
+        """
+
+#        for key in self.code_array:
+#            key_str = u"\t".join(repr(ele) for ele in key)
+#            code_str = self.code_array(key)
+#            out_str = key_str + u"\t" + code_str + u"\n"
+#
+#            self.pys_file.write(out_str.encode("utf-8"))
+
+    def _xls2code(self, worksheet, tab):
+        """Updates code in pys code_array"""
+
+        type2mapper = {
+            0: lambda x: None,  # Empty cell
+            1: lambda x: repr(x),  # Text cell
+            2: lambda x: repr(x),  # Number cell
+            3: lambda x: repr(datetime(
+                xlrd.xldate_as_tuple(x, self.workbook.datemode))),  # Date
+            4: lambda x: repr(bool(x)),  # Boolean cell
+            5: lambda x: repr(x),  # Error cell
+            6: lambda x: None,  # Blank cell
+        }
+
+        rows, cols = worksheet.nrows, worksheet.ncols
+        for row, col in product(xrange(rows), xrange(cols)):
+            cell_type = worksheet.cell_type(row, col)
+            cell_value = worksheet.cell_value(row, col)
+
+            key = row, col, tab
+            self.code_array[key] = type2mapper[cell_type](cell_value)
+
     # Access via model.py data
     # ------------------------
 
@@ -68,10 +107,6 @@ class Xls(object):
         """Replaces everything in code_array from xls_file"""
 
         worksheets = self.workbook.sheet_names()
-        for worksheet_name in worksheets:
+        for tab, worksheet_name in enumerate(worksheets):
             worksheet = self.workbook.sheet_by_name(worksheet_name)
-
-            for row, col in product(worksheet.nrows, worksheet.ncols):
-                # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-                cell_type = worksheet.cell_type(curr_row, curr_cell)
-                cell_value = worksheet.cell_value(curr_row, curr_cell)
+            self._xls2code(worksheet, tab)

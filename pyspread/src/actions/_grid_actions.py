@@ -49,12 +49,18 @@ import itertools
 import src.lib.i18n as i18n
 import os
 
+try:
+    import xlrd
+except ImportError:
+    xlrd = None
+
 import wx
 
 from src.config import config
 from src.sysvars import get_default_font, is_gtk
 from src.gui._grid_table import GridTable
 from src.interfaces.pys import Pys
+from src.interfaces.xls import Xls
 
 try:
     from src.lib.gpg import sign, verify
@@ -282,13 +288,32 @@ class FileActions(Actions):
         """
 
         filepath = event.attr["filepath"]
+        try:
+            filetype = event.attr["filetype"]
+
+        except KeyError:
+            filetype = "pys"
+
+        type2opener = {"pys": (Bz2AOpen, [filepath, "r"],
+                               {"main_window": self.main_window})}
+        if xlrd is not None:
+            type2opener["xls"] = (xlrd.open_workbook, [filepath], {})
+
+        type2interface = {
+            "pys": Pys,
+            "xls": Xls,
+        }
+
+        # Specify the interface that shall be used
+
+        opener, op_args, op_kwargs = type2opener[filetype]
+        Interface = type2interface[filetype]
 
         # Set state for file open
         self.opening = True
 
         try:
-            with Bz2AOpen(filepath, "r", main_window=self.main_window) \
-                    as infile:
+            with opener(*op_args, **op_kwargs) as infile:
                 # Make loading safe
                 self.approve(filepath)
 
@@ -298,8 +323,8 @@ class FileActions(Actions):
                 try:
                     wx.BeginBusyCursor()
                     self.clear()
-                    pys = Pys(self.grid.code_array, infile)
-                    pys.to_code_array()
+                    interface = Interface(self.grid.code_array, infile)
+                    interface.to_code_array()
 
                 except ValueError, err:
                     post_command_event(self.main_window, self.StatusBarMsg,

@@ -654,10 +654,21 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Pyspread file") + " (*.pys)|*.pys|" + \
-            _("All files") + " (*.*)|*.*"
-        message = _("Choose pyspread file to open.")
+        try:
+            import xlrd
+            wildcard = \
+                _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Excel file") + " (*.xls)|*.xls|" + \
+                _("All files") + " (*.*)|*.*"
+
+        except ImportError:
+            wildcard = \
+                _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Excel file") + " (*.xls)|*.xls|" + \
+                _("All files") + " (*.*)|*.*"
+            xlrd = None
+
+        message = _("Choose file to open.")
         style = wx.OPEN
         filepath, filterindex = \
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
@@ -666,6 +677,8 @@ class MainWindowEventHandlers(EventMixin):
         if filepath is None:
             return
 
+        filetype = "pys" if xlrd is None or filterindex != 1 else "xls"
+
         # Change the main window filepath state
 
         self.main_window.filepath = filepath
@@ -673,7 +686,7 @@ class MainWindowEventHandlers(EventMixin):
         # Load file into grid
         post_command_event(self.main_window,
                            self.main_window.GridActionOpenMsg,
-                           attr={"filepath": filepath})
+                           attr={"filepath": filepath, "filetype": filetype})
 
         # Set Window title to new filepath
 
