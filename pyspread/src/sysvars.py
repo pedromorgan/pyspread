@@ -103,3 +103,9 @@ def get_font_list():
     font_list.sort()
 
     return font_list
+
+
+def get_default_text_extent(text):
+    """Returns the text extent for the default font"""
+
+    return wx.GetApp().GetTopWindow().GetTextExtent(text)

@@ -5,18 +5,18 @@
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
-# pyspread is free software: you can redistribute it and/or modify
+# xlspread is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# pyspread is distributed in the hope that it will be useful,
+# xlspread is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
+# along with xlspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
 """
@@ -36,6 +36,9 @@ import xlrd
 import src.lib.i18n as i18n
 
 from src.lib.selection import Selection
+
+from src.sysvars import get_dpi, get_default_text_extent
+
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -61,6 +64,26 @@ class Xls(object):
         self.code_array = code_array
         self.workbook = workbook
 
+    def _shape2xls(self):
+        """Writes shape to xls file
+
+        Format: <rows>\t<cols>\t<tabs>\n
+
+        """
+
+#        shape_line = u"\t".join(map(unicode, self.code_array.shape)) + u"\n"
+#        self.xls_file.write(shape_line)
+
+    def _xls2shape(self):
+        """Updates shape in code_array"""
+
+        sheets = self.workbook.sheets()
+        nrows = sheets[0].nrows
+        ncols = sheets[0].ncols
+        ntabs = len(sheets)
+
+        self.code_array.shape = nrows, ncols, ntabs
+
     def _code2xls(self):
         """Writes code to xls file
 
@@ -73,10 +96,10 @@ class Xls(object):
 #            code_str = self.code_array(key)
 #            out_str = key_str + u"\t" + code_str + u"\n"
 #
-#            self.pys_file.write(out_str.encode("utf-8"))
+#            self.xls_file.write(out_str.encode("utf-8"))
 
     def _xls2code(self, worksheet, tab):
-        """Updates code in pys code_array"""
+        """Updates code in xls code_array"""
 
         type2mapper = {
             0: lambda x: None,  # Empty cell
@@ -97,6 +120,59 @@ class Xls(object):
             key = row, col, tab
             self.code_array[key] = type2mapper[cell_type](cell_value)
 
+    def _row_heights2xls(self):
+        """Writes row_heights to xls file
+
+        Format: <row>\t<tab>\t<value>\n
+
+        """
+
+#        for row, tab in self.code_array.dict_grid.row_heights:
+#            height = self.code_array.dict_grid.row_heights[(row, tab)]
+#            height_strings = map(repr, [row, tab, height])
+#            self.xls_file.write(u"\t".join(height_strings) + u"\n")
+
+    def _xls2row_heights(self, worksheet, tab):
+        """Updates row_heights in code_array"""
+
+        for row in xrange(worksheet.nrows):
+            try:
+                height_points = worksheet.rowinfo_map[row].height / 20.0
+                height_inches = height_points / 72.0
+                height_pixels = height_inches * get_dpi()[1]
+
+                self.code_array.row_heights[row, tab] = height_pixels
+
+            except KeyError:
+                pass
+
+    def _col_widths2xls(self):
+        """Writes col_widths to xls file
+
+        Format: <col>\t<tab>\t<value>\n
+
+        """
+
+#        for col, tab in self.code_array.dict_grid.col_widths:
+#            width = self.code_array.dict_grid.col_widths[(col, tab)]
+#            width_strings = map(repr, [col, tab, width])
+#            self.xls_file.write(u"\t".join(width_strings) + u"\n")
+
+    def _xls2col_widths(self, worksheet, tab):
+        """Updates col_widths in code_array"""
+
+        for col in xrange(worksheet.ncols):
+            try:
+                width_0_char = worksheet.colinfo_map[col].width / 256.0
+                width_0 = get_default_text_extent("0")[0]
+                # Scale relative to 10 point font instead of 12 point
+                width_pixels = width_0_char * width_0 / 1.2
+
+                self.code_array.col_widths[col, tab] = width_pixels
+
+            except KeyError:
+                pass
+
     # Access via model.py data
     # ------------------------
 
@@ -106,7 +182,12 @@ class Xls(object):
     def to_code_array(self):
         """Replaces everything in code_array from xls_file"""
 
+        self._xls2shape()
+
         worksheets = self.workbook.sheet_names()
+
         for tab, worksheet_name in enumerate(worksheets):
             worksheet = self.workbook.sheet_by_name(worksheet_name)
             self._xls2code(worksheet, tab)
+            self._xls2row_heights(worksheet, tab)
+            self._xls2col_widths(worksheet, tab)

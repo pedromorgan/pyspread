@@ -297,7 +297,8 @@ class FileActions(Actions):
         type2opener = {"pys": (Bz2AOpen, [filepath, "r"],
                                {"main_window": self.main_window})}
         if xlrd is not None:
-            type2opener["xls"] = (xlrd.open_workbook, [filepath], {})
+            type2opener["xls"] = \
+                (xlrd.open_workbook, [filepath], {"formatting_info": True})
 
         type2interface = {
             "pys": Pys,
@@ -332,6 +333,8 @@ class FileActions(Actions):
 
                 finally:
                     self.grid.GetTable().ResetView()
+                    post_command_event(self.main_window, self.ResizeGridMsg,
+                                       shape=self.grid.code_array.shape)
                     wx.EndBusyCursor()
 
                 # Execute macros
