@@ -120,6 +120,43 @@ class Xls(object):
             key = row, col, tab
             self.code_array[key] = type2mapper[cell_type](cell_value)
 
+    def _attributes2xls(self):
+        """Writes attributes to xls file
+
+        Format:
+        <selection[0]>\t[...]\t<tab>\t<key>\t<value>\t[...]\n
+
+        """
+
+#        for selection, tab, attr_dict in self.code_array.cell_attributes:
+#            sel_list = [selection.block_tl, selection.block_br,
+#                        selection.rows, selection.cols, selection.cells]
+#
+#            tab_list = [tab]
+#
+#            attr_dict_list = []
+#            for key in attr_dict:
+#                attr_dict_list.append(key)
+#                attr_dict_list.append(attr_dict[key])
+#
+#            line_list = map(repr, sel_list + tab_list + attr_dict_list)
+#
+#            self.xls_file.write(u"\t".join(line_list) + u"\n")
+
+    def _xls2attributes(self, worksheet, tab):
+        """Updates attributes in code_array"""
+
+        # Merged cells
+        for top, bottom, left, right in worksheet.merged_cells:
+            attrs = {"merge_area": (top, left, bottom, right)}
+            selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+            self.code_array.cell_attributes.append((selection, tab, attrs))
+
+        # Alignment
+        # Background
+        # Border
+        # Font
+
     def _row_heights2xls(self):
         """Writes row_heights to xls file
 
@@ -189,5 +226,6 @@ class Xls(object):
         for tab, worksheet_name in enumerate(worksheets):
             worksheet = self.workbook.sheet_by_name(worksheet_name)
             self._xls2code(worksheet, tab)
+            self._xls2attributes(worksheet, tab)
             self._xls2row_heights(worksheet, tab)
             self._xls2col_widths(worksheet, tab)
