@@ -152,10 +152,76 @@ class Xls(object):
             selection = Selection([(top, left)], [(bottom, right)], [], [], [])
             self.code_array.cell_attributes.append((selection, tab, attrs))
 
-        # Alignment
-        # Background
-        # Border
-        # Font
+        # Which cell comprise which format ids
+        xf2cell = dict((xfid, []) for xfid in xrange(self.workbook.xfcount))
+        rows, cols = worksheet.nrows, worksheet.ncols
+        for row, col in product(xrange(rows), xrange(cols)):
+            xfid = worksheet.cell_xf_index(row, col)
+            xf2cell[xfid].append((row, col))
+
+        # Make selection from cells
+        xf2selection = {}
+        for xfid in xf2cell:
+            selection = Selection([], [], [], [], xf2cell[xfid])
+            xf2selection[xfid] = selection
+
+        for xfid, xf in enumerate(self.workbook.xf_list):
+            attributes = {}
+
+            # Alignment
+
+            xfalign2justification = {
+                0: "left",
+                1: "left",
+                2: "center",
+                3: "right",
+                4: "left",
+                5: "left",
+                6: "center",
+                7: "left",
+            }
+
+            xfalign2vertical_align = {
+                0: "top",
+                1: "middle",
+                2: "bottom",
+                3: "middle",
+                4: "middle",
+            }
+
+            def xfrotation2angle(xfrotation):
+                """Returns angle from xlrotatation"""
+
+                # angle is counterclockwise
+                if 0 <= xfrotation <= 90:
+                    return xfrotation
+
+                elif 90 < xfrotation <= 180:
+                    return - (xfrotation - 90)
+
+                return 0
+
+            try:
+                attributes["justification"] = \
+                    xfalign2justification[xf.alignment.hor_align]
+
+                attributes["vertical_align"] = \
+                    xfalign2vertical_align[xf.alignment.vert_align]
+
+                attributes["angle"] = \
+                    xfrotation2angle(xf.alignment.rotation)
+
+            except AttributeError:
+                pass
+
+            # Background
+
+            # Border
+
+            # Font
+
+            self.code_array.cell_attributes.append(
+                (xf2selection[xfid], tab, attributes))
 
     def _row_heights2xls(self):
         """Writes row_heights to xls file
