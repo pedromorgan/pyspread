@@ -62,6 +62,10 @@ from src.gui._events import MainWindowEventMixin, GridEventMixin
 from src.lib.__csv import Digest, sniff, get_first_line, encode_gen
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
 
+import ast
+from traceback import print_exception
+from StringIO import StringIO
+from sys import exc_info
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
@@ -844,7 +848,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
         self.splitter.SplitHorizontally(self.upper_panel,
                                         self.lower_panel,
-                                        500)
+                                        400)
         dialog_main_sizer.Add(self.splitter, 1, wx.EXPAND, 0)
         self.SetSizer(dialog_main_sizer)
         self.Layout()
@@ -877,12 +881,9 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         
         # See if we have valid python
         try:
-            exec self.macros
+            ast.parse(self.macros)
         except:
             # Grab the traceback and print it for the user
-            from traceback import print_exception
-            from StringIO import StringIO
-            from sys import exc_info
             s = StringIO()
             print_exception(exc_info()[0], exc_info()[1], 
                             exc_info()[2], None, s)
@@ -890,11 +891,12 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
             success = False
         else:
             self.result_ctrl.SetValue('')
+            post_command_event(self.parent, self.MacroReplaceMsg,
+                   macros=self.macros)
+            post_command_event(self.parent, self.MacroExecuteMsg)
             success = True
 
-        post_command_event(self.parent, self.MacroReplaceMsg,
-                           macros=self.macros)
-        post_command_event(self.parent, self.MacroExecuteMsg)      
+    
         event.Skip()        
         return success
 
