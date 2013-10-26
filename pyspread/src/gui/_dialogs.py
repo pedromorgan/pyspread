@@ -825,6 +825,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.Bind(wx.EVT_BUTTON, self.OnOk, self.ok_button)
         self.Bind(wx.EVT_BUTTON, self.OnApply, self.apply_button)
         self.Bind(wx.EVT_BUTTON, self.OnCancel, self.cancel_button)
+        self.Bind(self.EVT_CMD_MACROERR, self.update_result_ctrl)
 
     def _do_layout(self):
         """Layout sizers"""
@@ -878,14 +879,14 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
     def OnApply(self, event):
         """Event handler for Apply button"""
-        
+
         # See if we have valid python
         try:
             ast.parse(self.macros)
         except:
             # Grab the traceback and print it for the user
             s = StringIO()
-            print_exception(exc_info()[0], exc_info()[1], 
+            print_exception(exc_info()[0], exc_info()[1],
                             exc_info()[2], None, s)
             self.result_ctrl.SetValue(s.getvalue())
             success = False
@@ -896,14 +897,18 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
             post_command_event(self.parent, self.MacroExecuteMsg)
             success = True
 
-    
-        event.Skip()        
+
+        event.Skip()
         return success
 
     def OnCancel(self, event):
         """Event handler for Cancel button"""
 
         self.Destroy()
+
+    def update_result_ctrl(self, event):
+        """Update event result following execution by main window"""
+        self.result_ctrl.SetValue(event.msg)
 
 
 # end of class MacroDialog
