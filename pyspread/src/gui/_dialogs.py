@@ -869,34 +869,18 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
     def OnOk(self, event):
         """Event handler for Ok button"""
 
-        if self.OnApply(event):
-            self.Destroy()
+        self.OnApply(event)
+
+        self.Destroy()
 
     def OnApply(self, event):
         """Event handler for Apply button"""
-        
-        # See if we have valid python
-        try:
-            exec self.macros
-        except:
-            # Grab the traceback and print it for the user
-            from traceback import print_exception
-            from StringIO import StringIO
-            from sys import exc_info
-            s = StringIO()
-            print_exception(exc_info()[0], exc_info()[1], 
-                            exc_info()[2], None, s)
-            self.result_ctrl.SetValue(s.getvalue())
-            success = False
-        else:
-            self.result_ctrl.SetValue('')
-            success = True
 
         post_command_event(self.parent, self.MacroReplaceMsg,
                            macros=self.macros)
-        post_command_event(self.parent, self.MacroExecuteMsg)      
-        event.Skip()        
-        return success
+        post_command_event(self.parent, self.MacroExecuteMsg)
+
+        event.Skip()
 
     def OnCancel(self, event):
         """Event handler for Cancel button"""
