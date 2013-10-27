@@ -1235,24 +1235,39 @@ class GridEventHandlers(object):
 
         row = event.GetRowOrCol()
         tab = self.grid.current_table
-
         rowsize = self.grid.GetRowSize(row) / self.grid.grid_renderer.zoom
 
-        self.grid.code_array.set_row_height(row, tab, rowsize)
+        # Detect for resizing group of rows
+        rows = self.grid.GetSelectedRows()
+        if len(rows) == 0:
+            rows = [row,]
+
+        for row in rows:
+            self.grid.code_array.set_row_height(row, tab, rowsize)
+            self.grid.SetRowSize(row, rowsize)
 
         event.Skip()
+        self.grid.Refresh()
+
 
     def OnColSize(self, event):
         """Column size event handler"""
 
         col = event.GetRowOrCol()
         tab = self.grid.current_table
-
         colsize = self.grid.GetColSize(col) / self.grid.grid_renderer.zoom
 
-        self.grid.code_array.set_col_width(col, tab, colsize)
+        # Detect for resizing group of cols
+        cols = self.grid.GetSelectedCols()
+        if len(cols) == 0:
+            cols = [col,]
+
+        for col in cols:
+            self.grid.code_array.set_col_width(col, tab, colsize)
+            self.grid.SetColSize(col, colsize)
 
         event.Skip()
+        self.grid.Refresh()
 
     # Undo and redo events
 
