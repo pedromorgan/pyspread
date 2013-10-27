@@ -288,7 +288,12 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.RefreshSelectionMsg,
                         _("Refresh selected cells") + "\tF5",
                         _("Refresh selected cells even when frozen"),
-                        wx.ID_REFRESH]]]],
+                        wx.ID_REFRESH]],
+                ["Separator"],
+                [item, [self.ViewFrozenMsg, _("Show Frozen"),
+                        _("Shows which cells are currently forzen in a "
+                        "crosshatch.")],
+                        wx.ITEM_CHECK]]],
             [wx.Menu, _("F&ormat"), [
                 [item, [self.FontDialogMsg, _("Font..."),
                         _("Launch font dialog.")]],
