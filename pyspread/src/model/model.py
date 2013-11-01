@@ -44,7 +44,6 @@ from itertools import imap, ifilter, product
 import re
 import sys
 from types import SliceType, IntType
-import traceback
 
 import numpy
 
@@ -1267,13 +1266,12 @@ class CodeArray(DataArray):
 
         except Exception, err:
             # Print exception
-            import traceback
+            # (Because of how the globals are handled during execution we must import modules here)
+            from traceback import print_exception
+            from src.lib.exception_handeling import get_user_codeframe
             exc_info = sys.exc_info()
-            try:
-                traceback.print_exception(exc_info[0],exc_info[1],exc_info[2],None,err_msg)
-            except Exception, err2:
-                print (err2)
-
+            user_tb = get_user_codeframe(exc_info[2]) or exc_info[2]
+            print_exception(exc_info[0],exc_info[1],user_tb,None,err_msg)
         # Restore stdout and stderr
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__

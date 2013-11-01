@@ -61,6 +61,7 @@ from src.gui._events import post_command_event
 from src.gui._events import MainWindowEventMixin, GridEventMixin
 from src.lib.__csv import Digest, sniff, get_first_line, encode_gen
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
+from src.lib.exception_handeling import get_user_codeframe
 
 import ast
 from traceback import print_exception
@@ -886,8 +887,9 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         except:
             # Grab the traceback and print it for the user
             s = StringIO()
-            print_exception(exc_info()[0], exc_info()[1],
-                            exc_info()[2], None, s)
+            e = exc_info()
+            usr_tb = get_user_codeframe(e[2]) or None   # More than likely a syntax error occurs outside the frame
+            print_exception(e[0], e[1], usr_tb, None, s)
             self.result_ctrl.SetValue(s.getvalue())
             success = False
         else:
