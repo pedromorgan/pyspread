@@ -560,7 +560,12 @@ class ClipboardActions(Actions):
 
             except Exception, err:
                 # This must just be text.
-                obj = [line.split('\t') for line in data.split('\n')]
+                try:
+                    obj = [line.split('\t') for line in data.split('\n')]
+                except Exception, err:
+                    # Now I really have no idea
+                    error_msg(err)
+                    return
 
         except ValueError, err:
             error_msg(err)
