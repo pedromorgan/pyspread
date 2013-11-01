@@ -44,6 +44,7 @@ from itertools import imap, ifilter, product
 import re
 import sys
 from types import SliceType, IntType
+import traceback
 
 import numpy
 
@@ -1255,6 +1256,7 @@ class CodeArray(DataArray):
         # Create file-like string to capture output
         code_out = cStringIO.StringIO()
         code_err = cStringIO.StringIO()
+        err_msg = cStringIO.StringIO()
 
         # Capture output and errors
         sys.stdout = code_out
@@ -1264,13 +1266,19 @@ class CodeArray(DataArray):
             exec(self.macros, globals())
 
         except Exception, err:
-            print err
+            # Print exception
+            import traceback
+            exc_info = sys.exc_info()
+            try:
+                traceback.print_exception(exc_info[0],exc_info[1],exc_info[2],None,err_msg)
+            except Exception, err2:
+                print (err2)
 
         # Restore stdout and stderr
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
-        outstring = code_out.getvalue() + code_err.getvalue()
+        outstring = code_out.getvalue() + code_err.getvalue() + err_msg.getvalue()
 
         code_out.close()
         code_err.close()
