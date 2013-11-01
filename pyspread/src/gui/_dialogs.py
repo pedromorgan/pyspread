@@ -805,7 +805,9 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.codetext_ctrl = PythonSTC(self.upper_panel, -1, style=style)
 
         style = wx.TE_MULTILINE | wx.TE_READONLY
+        font = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL)
         self.result_ctrl = wx.TextCtrl(self.lower_panel, -1, style=style)
+        self.result_ctrl.SetFont(font)
 
         self.ok_button = wx.Button(self.lower_panel, wx.ID_OK)
         self.apply_button = wx.Button(self.lower_panel, wx.ID_APPLY)
