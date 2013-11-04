@@ -304,6 +304,9 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_PRINT_PREVIEW, handlers.OnPrintPreview)
         self.Bind(self.EVT_CMD_PRINT, handlers.OnPrint)
 
+        # Edit Events
+        self.Bind(self.EVT_CMD_SELECT_ALL, handlers.OnSelectAll)
+
         # Clipboard events
 
         self.Bind(self.EVT_CMD_CUT, handlers.OnCut)
@@ -1051,6 +1054,11 @@ class MainWindowEventHandlers(EventMixin):
         self.main_window.grid.ForceRefresh()
 
         event.Skip()
+
+    # Edit events
+    def OnSelectAll(self, event):
+        """Select all cells event handler"""
+        self.main_window.grid.SelectAll()
 
     # View events
 

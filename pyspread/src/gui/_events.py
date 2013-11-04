@@ -166,6 +166,7 @@ class GridEventMixin(object):
 
     # Grid edit mode events
 
+    SelectAll, EVT_CMD_SELECT_ALL = new_command_event()
     EnterSelectionModeMsg, EVT_CMD_ENTER_SELECTION_MODE = new_command_event()
     ExitSelectionModeMsg, EVT_CMD_EXIT_SELECTION_MODE = new_command_event()
     SelectionMsg, EVT_CMD_SELECTION = new_command_event()
