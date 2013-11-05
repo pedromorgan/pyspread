@@ -1097,7 +1097,7 @@ class AboutDialog(object):
             350, wx.ClientDC(parent))
         info.WebSite = ("http://manns.github.io/pyspread/",
                         _("Pyspread Web site"))
-        info.Developers = ["Martin Manns"]
+        info.Developers = ["Martin Manns", "jsexauer"]
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
@@ -1330,12 +1330,15 @@ class PasteAsDialog(wx.Dialog):
 
         self.dim_label = wx.StaticText(self, -1, _("Dimension of object"))
         self.dim_spinctrl = wx.SpinCtrl(self, -1, "Dim", (30, 50))
-        self.dim_spinctrl.SetRange(0, self.get_max_dim(obj))
+        max_dim = self.get_max_dim(obj)
+        self.dim_spinctrl.SetRange(0, max_dim)
+        self.dim_spinctrl.SetValue(max_dim)
 
         self.transpose_label = wx.StaticText(self, -1, _("Transpose"))
         self.transpose_checkbox = wx.CheckBox(self, -1)
 
         ok_button = wx.Button(self, wx.ID_OK)
+        ok_button.SetDefault()
         cancel_button = wx.Button(self, wx.ID_CANCEL)
 
         sizer.Add(self.dim_label)

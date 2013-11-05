@@ -232,6 +232,8 @@ class MainMenu(_filledMenu, EventMixin):
                         _("Paste cells from clipboard"), wx.ID_PASTE]],
                 [item, [self.PasteAsMsg, _("Paste &As...") + "\tShift+Ctrl+v",
                         _("Transform clipboard and paste cells into grid")]],
+                [item, [self.SelectAll, _("Select A&ll") + "\tCtrl+A",
+                        _("Select All Cells")]],
                 ["Separator"],
                 [item, [self.FindFocusMsg, _("&Find") + "\tCtrl+f",
                         _("Find cell by content"), wx.ID_FIND]],
