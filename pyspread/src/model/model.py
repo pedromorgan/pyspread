@@ -1276,7 +1276,8 @@ class CodeArray(DataArray):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
-        outstring = code_out.getvalue() + code_err.getvalue() + err_msg.getvalue()
+        results = code_out.getvalue()
+        errs = code_err.getvalue() + err_msg.getvalue()
 
         code_out.close()
         code_err.close()
@@ -1287,7 +1288,7 @@ class CodeArray(DataArray):
         # Reset frozen cache
         self.frozen_cache.clear()
 
-        return outstring
+        return results, errs
 
     def _sorted_keys(self, keys, startkey, reverse=False):
         """Generator that yields sorted keys starting with startkey

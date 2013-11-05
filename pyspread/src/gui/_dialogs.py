@@ -809,7 +809,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
             wx.TE_MULTILINE
         self.codetext_ctrl = PythonSTC(self.upper_panel, -1, style=style)
 
-        style = wx.TE_MULTILINE | wx.TE_READONLY
+        style = wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH
         self.result_ctrl = wx.TextCtrl(self.lower_panel, -1, style=style)
 
         self.ok_button = wx.Button(self.lower_panel, wx.ID_OK)
@@ -827,6 +827,9 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.Bind(wx.EVT_BUTTON, self.OnApply, self.apply_button)
         self.Bind(wx.EVT_BUTTON, self.OnCancel, self.cancel_button)
         parent.Bind(self.EVT_CMD_MACROERR, self.update_result_ctrl)
+
+        # States
+        self._ok_pressed = False
 
     def _do_layout(self):
         """Layout sizers"""
@@ -875,8 +878,10 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
     def OnOk(self, event):
         """Event handler for Ok button"""
 
-        if self.OnApply(event):
-            self.Destroy()
+        self._ok_pressed = True
+        self.OnApply(event)
+
+
 
     def OnApply(self, event):
         """Event handler for Apply button"""
@@ -888,9 +893,13 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
             # Grab the traceback and print it for the user
             s = StringIO()
             e = exc_info()
-            usr_tb = get_user_codeframe(e[2]) or None   # More than likely a syntax error occurs outside the frame
+            # usr_tb will more than likely be none because ast throws
+            #   SytnaxErrorsas occurring outside of the current
+            #   execution frame
+            usr_tb = get_user_codeframe(e[2]) or None
             print_exception(e[0], e[1], usr_tb, None, s)
-            self.result_ctrl.SetValue(s.getvalue())
+            post_command_event(self.parent, self.MacroErrorMsg,
+                               err=s.getvalue())
             success = False
         else:
             self.result_ctrl.SetValue('')
@@ -910,7 +919,24 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
     def update_result_ctrl(self, event):
         """Update event result following execution by main window"""
-        self.result_ctrl.SetValue(event.msg)
+        printLen = 0
+        self.result_ctrl.SetValue('')
+        if hasattr(event, 'msg'):
+            # Output of script (from print statements, for example)
+            self.result_ctrl.AppendText(event.msg)
+            printLen = len(event.msg)
+        if hasattr(event, 'err'):
+            # Error messages
+            errLen = len(event.err)
+            errStyle = wx.TextAttr(wx.RED)
+            self.result_ctrl.AppendText(event.err)
+            self.result_ctrl.SetStyle(printLen, printLen+errLen, errStyle)
+
+        if not hasattr(event, 'err') or event.err == '':
+            # No error passed.  Close dialog if user requested it.
+            if self._ok_pressed:
+                self.Destroy()
+        self._ok_pressed = False
 
 
 # end of class MacroDialog
