@@ -593,13 +593,8 @@ class MacroActions(Actions):
 
         result = self.grid.code_array.execute_macros()
 
-        # Find the macro dialog
-        for d in self.main_window.Children:
-            if hasattr(d, 'update_result_ctrl'):
-                macro_dialog = d
-                break
         # Post event to macro dialog
-        post_command_event(d, self.MacroErrorMsg, msg=result)
+        post_command_event(self.main_window, self.MacroErrorMsg, msg=result)
 
     def open_macros(self, filepath):
         """Loads macros from file and marks grid as changed

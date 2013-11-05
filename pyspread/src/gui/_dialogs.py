@@ -826,7 +826,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.Bind(wx.EVT_BUTTON, self.OnOk, self.ok_button)
         self.Bind(wx.EVT_BUTTON, self.OnApply, self.apply_button)
         self.Bind(wx.EVT_BUTTON, self.OnCancel, self.cancel_button)
-        self.Bind(self.EVT_CMD_MACROERR, self.update_result_ctrl)
+        parent.Bind(self.EVT_CMD_MACROERR, self.update_result_ctrl)
 
     def _do_layout(self):
         """Layout sizers"""
