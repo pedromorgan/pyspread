@@ -32,6 +32,7 @@ from datetime import datetime
 from itertools import product
 
 import xlrd
+import wx
 
 import src.lib.i18n as i18n
 
@@ -215,6 +216,10 @@ class Xls(object):
                 pass
 
             # Background
+            if xf.background.fill_pattern == 1:
+                color_idx = xf.background.pattern_colour_index
+                color = wx.Colour(*self.workbook.colour_map[color_idx])
+                attributes["bgcolor"] = color.GetRGB()
 
             # Border
 
