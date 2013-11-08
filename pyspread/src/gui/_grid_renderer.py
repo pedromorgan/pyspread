@@ -680,8 +680,7 @@ class Background(object):
             color.SetRGB(rgb)
             if self.grid._view_frozen and attr['frozen']:
                 style = wx.FDIAGONAL_HATCH
-                if rgb == default_bg:
-                    color = get_color(config["selection_color"])
+                color = get_color(config['freeze_color'])
 
 
 
