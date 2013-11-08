@@ -668,7 +668,6 @@ class Background(object):
     def draw_background(self, dc):
         """Draws the background of the background"""
 
-        style = wx.SOLID
         attr = self.data_array.cell_attributes[self.key]
         default_bg = (self.data_array.cell_attributes
                             .default_cell_attributes["bgcolor"])
@@ -678,15 +677,17 @@ class Background(object):
             rgb = attr["bgcolor"]
             color = wx.Colour()
             color.SetRGB(rgb)
-            if self.grid._view_frozen and attr['frozen']:
-                style = wx.FDIAGONAL_HATCH
-                color = get_color(config['freeze_color'])
+        bgbrush = wx.Brush(color, wx.SOLID)
 
-
-
-        bgbrush = wx.Brush(color, style)
-
-        dc.SetBrush(bgbrush)
+        if self.grid._view_frozen and attr['frozen']:
+            style = wx.FDIAGONAL_HATCH
+            freeze_color = get_color(config['freeze_color'])
+            fgbrush = wx.Brush(freeze_color, style)
+            dc.SetBrush(fgbrush)
+            dc.SetBackgroundMode(wx.TRANSPARENT)
+            dc.SetBackground(bgbrush)
+        else:
+            dc.SetBrush(bgbrush)
         dc.SetPen(wx.TRANSPARENT_PEN)
         dc.DrawRectangle(0, 0, self.rect.width, self.rect.height)
 
