@@ -578,6 +578,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             bg_components = ["bgcolor",
                              "borderwidth_bottom", "borderwidth_right",
                              "bordercolor_bottom", "bordercolor_right"]
+            if grid._view_frozen:
+                bg_components += ['frozen',]
 
             bg_key = tuple([width, height] +
                            [self.data_array.cell_attributes[key][bgc]
@@ -666,16 +668,26 @@ class Background(object):
     def draw_background(self, dc):
         """Draws the background of the background"""
 
+        attr = self.data_array.cell_attributes[self.key]
+        default_bg = (self.data_array.cell_attributes
+                            .default_cell_attributes["bgcolor"])
         if self.selection:
             color = get_color(config["selection_color"])
         else:
-            rgb = self.data_array.cell_attributes[self.key]["bgcolor"]
+            rgb = attr["bgcolor"]
             color = wx.Colour()
             color.SetRGB(rgb)
-
         bgbrush = wx.Brush(color, wx.SOLID)
 
-        dc.SetBrush(bgbrush)
+        if self.grid._view_frozen and attr['frozen']:
+            style = wx.FDIAGONAL_HATCH
+            freeze_color = get_color(config['freeze_color'])
+            fgbrush = wx.Brush(freeze_color, style)
+            dc.SetBrush(fgbrush)
+            dc.SetBackgroundMode(wx.TRANSPARENT)
+            dc.SetBackground(bgbrush)
+        else:
+            dc.SetBrush(bgbrush)
         dc.SetPen(wx.TRANSPARENT_PEN)
         dc.DrawRectangle(0, 0, self.rect.width, self.rect.height)
 

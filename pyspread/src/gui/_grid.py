@@ -124,6 +124,10 @@ class Grid(wx.grid.Grid, EventMixin):
         # The cell that has been selected before the latest selection
         self._last_selected_cell = 0, 0, 0
 
+        # If we are viewing cells based on their frozen status or normally
+        #  (When true, a cross-hatch is displayed for frozen cells)
+        self._view_frozen = False
+
     def _layout(self):
         """Initial layout of grid"""
 
@@ -215,6 +219,7 @@ class Grid(wx.grid.Grid, EventMixin):
 
         # Grid view events
 
+        main_window.Bind(self.EVT_CMD_VIEW_FROZEN, handlers.OnViewFrozen)
         main_window.Bind(self.EVT_CMD_REFRESH_SELECTION,
                          handlers.OnRefreshSelectedCells)
         main_window.Bind(self.EVT_CMD_DISPLAY_GOTO_CELL_DIALOG,
@@ -880,6 +885,15 @@ class GridEventHandlers(object):
                                    selection=selection)
 
     # Grid view events
+
+    def OnViewFrozen(self, event):
+        """Show cells as frozen status"""
+
+        self.grid._view_frozen = not self.grid._view_frozen
+
+        self.grid.ForceRefresh()
+
+        event.Skip()
 
     def OnDisplayGoToCellDialog(self, event):
         """Shift a given cell into view"""

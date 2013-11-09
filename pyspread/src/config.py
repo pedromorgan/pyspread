@@ -79,6 +79,7 @@ class DefaultConfig(object):
         self.selection_color = repr(wx.SYS_COLOUR_HIGHLIGHT)
         self.background_color = repr(wx.SYS_COLOUR_WINDOW)
         self.text_color = repr(wx.SYS_COLOUR_WINDOWTEXT)
+        self.freeze_color = repr(wx.SYS_COLOUR_HIGHLIGHT)
 
         # Fonts
 
