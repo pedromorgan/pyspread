@@ -814,7 +814,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
         self.ok_button = wx.Button(self.lower_panel, wx.ID_OK)
         self.apply_button = wx.Button(self.lower_panel, wx.ID_APPLY)
-        self.cancel_button = wx.Button(self.lower_panel, wx.ID_CANCEL)
+        self.close_button = wx.Button(self.lower_panel, wx.ID_CLOSE)
 
         self._set_properties()
         self._do_layout()
@@ -825,7 +825,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.Bind(stc.EVT_STC_MODIFIED, self.OnText, self.codetext_ctrl)
         self.Bind(wx.EVT_BUTTON, self.OnOk, self.ok_button)
         self.Bind(wx.EVT_BUTTON, self.OnApply, self.apply_button)
-        self.Bind(wx.EVT_BUTTON, self.OnCancel, self.cancel_button)
+        self.Bind(wx.EVT_BUTTON, self.OnClose, self.close_button)
         parent.Bind(self.EVT_CMD_MACROERR, self.update_result_ctrl)
 
         # States
@@ -846,7 +846,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         lower_sizer.Add(button_sizer, 1, wx.EXPAND, 0)
         button_sizer.Add(self.ok_button, 1, wx.EXPAND, 0)
         button_sizer.Add(self.apply_button, 1, wx.EXPAND, 0)
-        button_sizer.Add(self.cancel_button, 1, wx.EXPAND, 0)
+        button_sizer.Add(self.close_button, 1, wx.EXPAND, 0)
 
         self.upper_panel.SetSizer(upper_sizer)
         self.lower_panel.SetSizer(lower_sizer)
@@ -866,7 +866,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.codetext_ctrl.SetToolTipString(_("Enter python code here."))
         self.ok_button.SetToolTipString(_("Accept all changes"))
         self.apply_button.SetToolTipString(_("Apply changes to current macro"))
-        self.cancel_button.SetToolTipString(_("Remove current macro"))
+        self.close_button.SetToolTipString(_("Remove current macro"))
         self.splitter.SetBackgroundStyle(wx.BG_STYLE_COLOUR)
         self.result_ctrl.SetMinSize((10, 10))
 
@@ -912,8 +912,17 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         event.Skip()
         return success
 
-    def OnCancel(self, event):
+    def OnClose(self, event):
         """Event handler for Cancel button"""
+
+        # Warn if any unsaved changes
+        if self.parent.grid.code_array.macros != self.macros:
+            dlg = wx.MessageDialog(self, _("There are changes in the macro editor "
+                "which have not yet been applied.  Are you sure you "
+                "wish to close the editor?"), _("Close Editor"),
+                wx.YES_NO | wx.ICON_WARNING)
+            if dlg.ShowModal() == wx.ID_NO:
+                return
 
         self.Destroy()
 
