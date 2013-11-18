@@ -222,11 +222,36 @@ class Xls(object):
                 attributes["bgcolor"] = color.GetRGB()
 
             # Border
+            border_line_style2width = {
+                0: 1,
+                1: 2,
+                2: 4,
+                5: 6,
+            }
+
+            bottom_color_idx = xf.border.bottom_colour_index
+            if self.workbook.colour_map[bottom_color_idx] is not None:
+                bottom_color = \
+                    wx.Colour(*self.workbook.colour_map[bottom_color_idx])
+                attributes["bordercolor_bottom"] = bottom_color.GetRGB()
+
+            right_color_idx = xf.border.right_colour_index
+            if self.workbook.colour_map[right_color_idx] is not None:
+                right_color = \
+                    wx.Colour(*self.workbook.colour_map[right_color_idx])
+                attributes["bordercolor_right"] = right_color.GetRGB()
+
+            bottom_width = border_line_style2width[xf.border.bottom_line_style]
+            attributes["borderwidth_bottom"] = bottom_width
+
+            right_width = border_line_style2width[xf.border.right_line_style]
+            attributes["borderwidth_right"] = right_width
 
             # Font
 
             self.code_array.cell_attributes.append(
                 (xf2selection[xfid], tab, attributes))
+            print self.code_array.cell_attributes
 
     def _row_heights2xls(self):
         """Writes row_heights to xls file

@@ -707,17 +707,29 @@ class Background(object):
 
         # Bottom line pen
 
-        color = cell_attributes[key]["bordercolor_bottom"]
-        width = cell_attributes[key]["borderwidth_bottom"]
-        bottom_pen = get_pen_from_data((color, width, int(wx.SOLID)))
+        bottom_color = cell_attributes[key]["bordercolor_bottom"]
+        bottom_width = cell_attributes[key]["borderwidth_bottom"]
+        bottom_pen = get_pen_from_data(
+            (bottom_color, bottom_width, int(wx.SOLID)))
 
         # Right line pen
 
-        color = cell_attributes[key]["bordercolor_right"]
-        width = cell_attributes[key]["borderwidth_right"]
-        right_pen = get_pen_from_data((color, width, int(wx.SOLID)))
+        right_color = cell_attributes[key]["bordercolor_right"]
+        right_width = cell_attributes[key]["borderwidth_right"]
+        right_pen = get_pen_from_data(
+            (right_color, right_width, int(wx.SOLID)))
 
         borderpens = [bottom_pen, right_pen]
+
+        # If 0 width then no border is drawn
+
+        if bottom_width == 0:
+            borderpens.pop(0)
+            lines.pop(0)
+
+        if right_width == 0:
+            borderpens.pop(-1)
+            lines.pop(-1)
 
         # Topmost line if in topmost cell
 
