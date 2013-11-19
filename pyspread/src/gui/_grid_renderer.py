@@ -579,7 +579,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                              "borderwidth_bottom", "borderwidth_right",
                              "bordercolor_bottom", "bordercolor_right"]
             if grid._view_frozen:
-                bg_components += ['frozen',]
+                bg_components += ['frozen']
 
             bg_key = tuple([width, height] +
                            [self.data_array.cell_attributes[key][bgc]
@@ -669,8 +669,7 @@ class Background(object):
         """Draws the background of the background"""
 
         attr = self.data_array.cell_attributes[self.key]
-        default_bg = (self.data_array.cell_attributes
-                            .default_cell_attributes["bgcolor"])
+
         if self.selection:
             color = get_color(config["selection_color"])
         else:
@@ -678,18 +677,17 @@ class Background(object):
             color = wx.Colour()
             color.SetRGB(rgb)
         bgbrush = wx.Brush(color, wx.SOLID)
+        dc.SetBrush(bgbrush)
+        dc.SetPen(wx.TRANSPARENT_PEN)
+        dc.DrawRectangle(0, 0, self.rect.width, self.rect.height)
 
+        # Draw frozen cell background rect
         if self.grid._view_frozen and attr['frozen']:
             style = wx.FDIAGONAL_HATCH
             freeze_color = get_color(config['freeze_color'])
-            fgbrush = wx.Brush(freeze_color, style)
-            dc.SetBrush(fgbrush)
-            dc.SetBackgroundMode(wx.TRANSPARENT)
-            dc.SetBackground(bgbrush)
-        else:
-            dc.SetBrush(bgbrush)
-        dc.SetPen(wx.TRANSPARENT_PEN)
-        dc.DrawRectangle(0, 0, self.rect.width, self.rect.height)
+            freeze_brush = wx.Brush(freeze_color, style)
+            dc.SetBrush(freeze_brush)
+            dc.DrawRectangle(0, 0, self.rect.width, self.rect.height)
 
     def draw_border_lines(self, dc):
         """Draws lines"""
