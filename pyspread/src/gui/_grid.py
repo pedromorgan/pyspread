@@ -306,26 +306,25 @@ class Grid(wx.grid.Grid, EventMixin):
                     yield dist, pos
                     yield -dist, pos
 
-        def get_max_visible_distance(row, col):
-            """Returns maximum distance between current and any visible cell"""
+        vis_cell_slice = self.get_visiblecell_slice()
+        vis_row_min = vis_cell_slice[0].start
+        vis_row_max = vis_cell_slice[0].stop
+        vis_col_min = vis_cell_slice[1].start
+        vis_col_max = vis_cell_slice[1].stop
 
-            vis_cell_slice = self.get_visiblecell_slice()
-            vis_row_min = vis_cell_slice[0].start
-            vis_row_max = vis_cell_slice[0].stop
-            vis_col_min = vis_cell_slice[1].start
-            vis_col_max = vis_cell_slice[1].stop
+        max_visible_distance = max(vis_row_max - row, vis_col_max - col,
+                                   row - vis_row_min, col - vis_col_min)
 
-            return max(vis_row_max - row, vis_col_max - col,
-                       row - vis_row_min, col - vis_col_min)
-
-        for dist in xrange(get_max_visible_distance(row, col)):
+        for dist in xrange(max_visible_distance):
             all_empty = True
 
-            for radius_cell in l1_radius_cells(dist + 1):
-                __row = radius_cell[0] + row
-                __col = radius_cell[1] + col
+            for radius_row, radius_col in l1_radius_cells(dist + 1):
+                __row = radius_row + row
+                __col = radius_col + col
 
-                if self.IsVisible(__row, __col, wholeCellVisible=False):
+                if vis_row_min <= __row <= vis_row_max and \
+                   vis_col_min <= __col <= vis_col_max and \
+                   self.IsVisible(__row, __col, wholeCellVisible=False):
                     cell_rect = self.CellToRect(__row, __col)
                     cell_rect = xrect.Rect(cell_rect.x, cell_rect.y,
                                            cell_rect.width, cell_rect.height)

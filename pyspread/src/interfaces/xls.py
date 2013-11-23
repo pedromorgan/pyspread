@@ -253,9 +253,6 @@ class Xls(object):
 
             # Font
 
-            self.code_array.cell_attributes.append(
-                (xf2selection[xfid], tab, attributes))
-
             # Handle cells above for top borders
 
             cells_above = [(row - 1, col) for row, col in xf2cell[xfid]]
@@ -289,6 +286,9 @@ class Xls(object):
 
             self.code_array.cell_attributes.append(
                 (selection_left, tab, attributes_left))
+
+            self.code_array.cell_attributes.append(
+                (xf2selection[xfid], tab, attributes))
 
     def _row_heights2xls(self):
         """Writes row_heights to xls file
