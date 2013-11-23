@@ -149,8 +149,9 @@ class Xls(object):
 
         # Merged cells
         for top, bottom, left, right in worksheet.merged_cells:
-            attrs = {"merge_area": (top, left, bottom, right)}
-            selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+            attrs = {"merge_area": (top, left, bottom - 1, right - 1)}
+            selection = Selection([(top, left)], [(bottom - 1, right - 1)],
+                                  [], [], [])
             self.code_array.cell_attributes.append((selection, tab, attrs))
 
         # Which cell comprise which format ids

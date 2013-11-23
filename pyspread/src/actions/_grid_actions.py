@@ -329,7 +329,7 @@ class FileActions(Actions):
 
                 except ValueError, err:
                     post_command_event(self.main_window, self.StatusBarMsg,
-                                       text=err)
+                                       text=str(err))
 
                 finally:
                     self.grid.GetTable().ResetView()
