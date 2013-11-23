@@ -1266,9 +1266,11 @@ class GridEventHandlers(object):
                 rows += range(box[0][0], box[1][0]+1)
 
         for row in rows:
-            self.grid.code_array.set_row_height(row, tab, rowsize)
+            self.grid.code_array.set_row_height(row, tab, rowsize,
+                                                mark_unredo=False)
             self.grid.SetRowSize(row, rowsize)
-
+        self.grid.code_array.unredo.mark()
+        
         event.Skip()
         self.grid.Refresh()
 
@@ -1295,8 +1297,10 @@ class GridEventHandlers(object):
                 cols += range(box[0][1], box[1][1]+1)
 
         for col in cols:
-            self.grid.code_array.set_col_width(col, tab, colsize)
+            self.grid.code_array.set_col_width(col, tab, colsize,
+                                               mark_unredo=False)
             self.grid.SetColSize(col, colsize)
+        self.grid.code_array.unredo.mark()
 
         event.Skip()
         self.grid.Refresh()
