@@ -928,6 +928,11 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
     def update_result_ctrl(self, event):
         """Update event result following execution by main window"""
+
+        # Check to see if macro window still exists
+        if not self:
+            return
+
         printLen = 0
         self.result_ctrl.SetValue('')
         if hasattr(event, 'msg'):

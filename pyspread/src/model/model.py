@@ -1244,7 +1244,7 @@ class CodeArray(DataArray):
         """
 
         if self.safe_mode:
-            return "Safe mode activated. Code not executed."
+            return '', "Safe mode activated. Code not executed."
 
         # Windows exec does not like Windows newline
         self.macros = self.macros.replace('\r\n', '\n')
