@@ -147,6 +147,11 @@ class Xls(object):
     def _xls2attributes(self, worksheet, tab):
         """Updates attributes in code_array"""
 
+        def idx2colour(idx):
+            """Returns wx.Colour"""
+
+            return wx.Colour(*self.workbook.colour_map[idx])
+
         # Merged cells
         for top, bottom, left, right in worksheet.merged_cells:
             attrs = {"merge_area": (top, left, bottom - 1, right - 1)}
@@ -219,7 +224,7 @@ class Xls(object):
             # Background
             if xf.background.fill_pattern == 1:
                 color_idx = xf.background.pattern_colour_index
-                color = wx.Colour(*self.workbook.colour_map[color_idx])
+                color = idx2colour(color_idx)
                 attributes["bgcolor"] = color.GetRGB()
 
             # Border
@@ -232,14 +237,12 @@ class Xls(object):
 
             bottom_color_idx = xf.border.bottom_colour_index
             if self.workbook.colour_map[bottom_color_idx] is not None:
-                bottom_color = \
-                    wx.Colour(*self.workbook.colour_map[bottom_color_idx])
+                bottom_color = idx2colour(bottom_color_idx)
                 attributes["bordercolor_bottom"] = bottom_color.GetRGB()
 
             right_color_idx = xf.border.right_colour_index
             if self.workbook.colour_map[right_color_idx] is not None:
-                right_color = \
-                    wx.Colour(*self.workbook.colour_map[right_color_idx])
+                right_color = idx2colour(right_color_idx)
                 attributes["bordercolor_right"] = right_color.GetRGB()
 
             bottom_width = border_line_style2width[xf.border.bottom_line_style]
@@ -252,7 +255,40 @@ class Xls(object):
 
             self.code_array.cell_attributes.append(
                 (xf2selection[xfid], tab, attributes))
-            print self.code_array.cell_attributes
+
+            # Handle cells above for top borders
+
+            cells_above = [(row - 1, col) for row, col in xf2cell[xfid]]
+            selection_above = Selection([], [], [], [], cells_above)
+            attributes_above = {}
+            top_width = border_line_style2width[xf.border.top_line_style]
+            if top_width != 1:
+                attributes_above["borderwidth_bottom"] = top_width
+            top_color_idx = xf.border.top_colour_index
+            if self.workbook.colour_map[top_color_idx] is not None:
+                top_color = idx2colour(top_color_idx)
+                if top_color != wx.Colour(0, 0, 0):
+                    attributes_above["bordercolor_bottom"] = top_color.GetRGB()
+
+            self.code_array.cell_attributes.append(
+                (selection_above, tab, attributes_above))
+
+            # Handle cells above for left borders
+
+            cells_left = [(row, col - 1) for row, col in xf2cell[xfid]]
+            selection_left = Selection([], [], [], [], cells_left)
+            attributes_left = {}
+            left_width = border_line_style2width[xf.border.left_line_style]
+            if left_width != 1:
+                attributes_left["borderwidth_right"] = left_width
+            left_color_idx = xf.border.left_colour_index
+            if self.workbook.colour_map[left_color_idx] is not None:
+                left_color = idx2colour(left_color_idx)
+                if left_color != wx.Colour(0, 0, 0):
+                    attributes_above["bordercolor_right"] = left_color.GetRGB()
+
+            self.code_array.cell_attributes.append(
+                (selection_left, tab, attributes_left))
 
     def _row_heights2xls(self):
         """Writes row_heights to xls file
