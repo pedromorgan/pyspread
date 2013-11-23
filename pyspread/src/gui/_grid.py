@@ -1256,6 +1256,15 @@ class GridEventHandlers(object):
         if len(rows) == 0:
             rows = [row,]
 
+        # Detect for selection of rows spanning all columns
+        selection = self.grid.selection
+        num_cols = self.grid.code_array.shape[1]-1
+        for box in zip(selection.block_tl, selection.block_br):
+            leftmost_col = box[0][1]
+            rightmost_col = box[1][1]
+            if leftmost_col == 0 and rightmost_col == num_cols:
+                rows += range(box[0][0], box[1][0]+1)
+
         for row in rows:
             self.grid.code_array.set_row_height(row, tab, rowsize)
             self.grid.SetRowSize(row, rowsize)
@@ -1275,6 +1284,15 @@ class GridEventHandlers(object):
         cols = self.grid.GetSelectedCols()
         if len(cols) == 0:
             cols = [col,]
+
+        # Detect for selection of rows spanning all columns
+        selection = self.grid.selection
+        num_rows = self.grid.code_array.shape[0]-1
+        for box in zip(selection.block_tl, selection.block_br):
+            top_row = box[0][0]
+            bottom_row = box[1][0]
+            if top_row == 0 and bottom_row == num_rows:
+                cols += range(box[0][1], box[1][1]+1)
 
         for col in cols:
             self.grid.code_array.set_col_width(col, tab, colsize)
