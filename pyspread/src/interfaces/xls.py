@@ -28,6 +28,7 @@ This file contains interfaces to Excel xls file format.
 
 """
 
+from copy import copy
 from datetime import datetime
 from itertools import product
 
@@ -166,13 +167,11 @@ class Xls(object):
             xfid = worksheet.cell_xf_index(row, col)
             xf2cell[xfid].append((row, col))
 
-        # Make selection from cells
-        xf2selection = {}
-        for xfid in xf2cell:
-            selection = Selection([], [], [], [], xf2cell[xfid])
-            xf2selection[xfid] = selection
-
         for xfid, xf in enumerate(self.workbook.xf_list):
+            selection = Selection([], [], [], [], xf2cell[xfid])
+            selection_above = selection.shifted(-1, 0)
+            selection_left = selection.shifted(0, -1)
+
             attributes = {}
 
             # Alignment
@@ -230,9 +229,9 @@ class Xls(object):
             # Border
             border_line_style2width = {
                 0: 1,
-                1: 2,
-                2: 4,
-                5: 6,
+                1: 3,
+                2: 5,
+                5: 7,
             }
 
             bottom_color_idx = xf.border.bottom_colour_index
@@ -255,8 +254,6 @@ class Xls(object):
 
             # Handle cells above for top borders
 
-            cells_above = [(row - 1, col) for row, col in xf2cell[xfid]]
-            selection_above = Selection([], [], [], [], cells_above)
             attributes_above = {}
             top_width = border_line_style2width[xf.border.top_line_style]
             if top_width != 1:
@@ -264,16 +261,10 @@ class Xls(object):
             top_color_idx = xf.border.top_colour_index
             if self.workbook.colour_map[top_color_idx] is not None:
                 top_color = idx2colour(top_color_idx)
-                if top_color != wx.Colour(0, 0, 0):
-                    attributes_above["bordercolor_bottom"] = top_color.GetRGB()
-
-            self.code_array.cell_attributes.append(
-                (selection_above, tab, attributes_above))
+                attributes_above["bordercolor_bottom"] = top_color.GetRGB()
 
             # Handle cells above for left borders
 
-            cells_left = [(row, col - 1) for row, col in xf2cell[xfid]]
-            selection_left = Selection([], [], [], [], cells_left)
             attributes_left = {}
             left_width = border_line_style2width[xf.border.left_line_style]
             if left_width != 1:
@@ -281,14 +272,60 @@ class Xls(object):
             left_color_idx = xf.border.left_colour_index
             if self.workbook.colour_map[left_color_idx] is not None:
                 left_color = idx2colour(left_color_idx)
-                if left_color != wx.Colour(0, 0, 0):
-                    attributes_above["bordercolor_right"] = left_color.GetRGB()
+                attributes_above["bordercolor_right"] = left_color.GetRGB()
 
-            self.code_array.cell_attributes.append(
-                (selection_left, tab, attributes_left))
+            if attributes_above:
+                self._cell_attribute_append(selection_above, tab,
+                                            attributes_above)
+            if attributes_left:
+                self._cell_attribute_append(selection_left, tab,
+                                            attributes_left)
+            if attributes:
+                self._cell_attribute_append(selection, tab, attributes)
 
-            self.code_array.cell_attributes.append(
-                (xf2selection[xfid], tab, attributes))
+    def _cell_attribute_append(self, selection, tab, attributes):
+        """Appends to cell_attributes with checks"""
+
+        cell_attributes = self.code_array.cell_attributes
+
+        thick_bottom_cells = []
+        thick_right_cells = []
+
+        # Does any cell in selection.cells have a larger bottom border?
+
+        if "borderwidth_bottom" in attributes:
+            bwidth = attributes["borderwidth_bottom"]
+            for row, col in selection.cells:
+                __bwidth = cell_attributes[row, col, tab]["borderwidth_bottom"]
+                if __bwidth > bwidth:
+                    thick_bottom_cells.append((row, col))
+
+        # Does any cell in selection.cells have a larger right border?
+        if "borderwidth_right" in attributes:
+            rwidth = attributes["borderwidth_right"]
+            for row, col in selection.cells:
+                __rwidth = cell_attributes[row, col, tab]["borderwidth_right"]
+                if __rwidth > rwidth:
+                    thick_right_cells.append((row, col))
+
+        for thick_cell in thick_bottom_cells + thick_right_cells:
+            selection.cells.pop(selection.cells.index(thick_cell))
+
+        cell_attributes.append((selection, tab, attributes))
+
+        if thick_bottom_cells:
+            bsel = copy(selection)
+            bsel.cells = thick_bottom_cells
+            battrs = copy(attributes)
+            battrs.pop("borderwidth_bottom")
+            cell_attributes.append((bsel, tab, battrs))
+
+        if thick_right_cells:
+            rsel = copy(selection)
+            rsel.cells = thick_right_cells
+            rattrs = copy(attributes)
+            rattrs.pop("borderwidth_right")
+            cell_attributes.append((bsel, tab, battrs))
 
     def _row_heights2xls(self):
         """Writes row_heights to xls file
