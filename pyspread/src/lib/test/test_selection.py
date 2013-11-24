@@ -210,3 +210,59 @@ class TestSelection(object):
         """Unit test for get_bbox"""
 
         assert sel.get_bbox() == res
+
+    param_get_access_string = [
+        {'sel': Selection([], [], [], [], [(32, 53), (34, 56)]),
+         'shape': (1000, 100, 3), 'table': 0,
+         'res': "[S[key] for key in [(32, 53, 0)] + [(34, 56, 0)] "
+                "if S[key] is not None]"},
+        {'sel': Selection([], [], [4, 5], [53], []),
+         'shape': (1000, 100, 3), 'table': 2,
+         'res': "[S[key] for key in [(4, c, 2) for c in xrange(100)] + "
+                "[(5, c, 2) for c in xrange(100)] + [(r, 53, 2) for r in "
+                "xrange(1000)] if S[key] is not None]"},
+        {'sel': Selection([(0, 0), (2, 2)], [(1, 1), (7, 5)], [], [], []),
+         'shape': (1000, 100, 3), 'table': 0,
+         'res': "[S[key] for key in [(r, c, 0) for r in xrange(0, 2) for c in "
+                "xrange(0, 2)] + [(r, c, 0) for r in xrange(2, 8) for c in "
+                "xrange(2, 6)] if S[key] is not None]"},
+    ]
+
+    @params(param_get_access_string)
+    def test_get_access_string(self, sel, shape, table, res):
+        """Unit test for get_access_string"""
+
+        assert sel.get_access_string(shape, table) == res
+
+    param_test_shifted = [
+        {'sel': Selection([], [], [], [], [(32, 53), (34, 56)]),
+         'rows': 0, 'cols': 0,
+         'res': Selection([], [], [], [], [(32, 53), (34, 56)])},
+        {'sel': Selection([], [], [], [], [(32, 53), (34, 56)]),
+         'rows': 1, 'cols': 1,
+         'res': Selection([], [], [], [], [(33, 54), (35, 57)])},
+        {'sel': Selection([], [], [], [], [(32, 53), (34, 56)]),
+         'rows': -1, 'cols': 0,
+         'res': Selection([], [], [], [], [(31, 53), (33, 56)])},
+        {'sel': Selection([], [], [], [], [(32, 53), (34, 56)]),
+         'rows': -1, 'cols': -1,
+         'res': Selection([], [], [], [], [(31, 52), (33, 55)])},
+        {'sel': Selection([], [], [], [], [(32, 53), (34, 56)]),
+         'rows': -1, 'cols': 1,
+         'res': Selection([], [], [], [], [(31, 54), (33, 57)])},
+        {'sel': Selection([], [], [], [], [(32, 53), (34, 56)]),
+         'rows': -100, 'cols': 100,
+         'res': Selection([], [], [], [], [(-68, 153), (-66, 156)])},
+        {'sel': Selection([(0, 0), (1, 1)], [(10, 10), (50, 50)], [], [], []),
+         'rows': 1, 'cols': 0,
+         'res': Selection([(1, 0), (2, 1)], [(11, 10), (51, 50)], [], [], [])},
+        {'sel': Selection([], [], [1, 4, 6], [3, 4], []),
+         'rows': 2, 'cols': 1,
+         'res': Selection([], [], [3, 6, 8], [4, 5], [])},
+    ]
+
+    @params(param_test_shifted)
+    def test_shifted(self, sel, rows, cols, res):
+        """Unit test for shifted"""
+
+        assert sel.shifted(rows, cols) == res

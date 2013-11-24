@@ -321,3 +321,29 @@ class Selection(object):
         else:
             template = "[S[key] for key in {} if S[key] is not None]"
             return template.format(key_string)
+
+    def shifted(self, rows, cols):
+        """Returns a new selection that is shifted by rows and cols.
+
+        Negative values for rows and cols may result in a selection
+        that addresses negative cells.
+
+        Parameters
+        ----------
+        rows: Integer
+        \tNumber of rows that the new selection is shifted down
+        cols: Integer
+        \tNumber of columns that the new selection is shifted right
+
+        """
+
+        shifted_block_tl = \
+            [(row + rows, col + cols) for row, col in self.block_tl]
+        shifted_block_br = \
+            [(row + rows, col + cols) for row, col in self.block_br]
+        shifted_rows = [row + rows for row in self.rows]
+        shifted_cols = [col + cols for col in self.cols]
+        shifted_cells = [(row + rows, col + cols) for row, col in self.cells]
+
+        return Selection(shifted_block_tl, shifted_block_br, shifted_rows,
+                         shifted_cols, shifted_cells)
