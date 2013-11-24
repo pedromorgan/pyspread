@@ -810,9 +810,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.codetext_ctrl = PythonSTC(self.upper_panel, -1, style=style)
 
         style = wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH
-        font = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL)
         self.result_ctrl = wx.TextCtrl(self.lower_panel, -1, style=style)
-        self.result_ctrl.SetFont(font)
 
         self.ok_button = wx.Button(self.lower_panel, wx.ID_OK)
         self.apply_button = wx.Button(self.lower_panel, wx.ID_APPLY)
@@ -883,25 +881,36 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self._ok_pressed = True
         self.OnApply(event)
 
+
+
     def OnApply(self, event):
         """Event handler for Apply button"""
 
-        ast.parse(self.macros)
-        e = exc_info()
-        # usr_tb will more than likely be none because ast throws
-        #   SytnaxErrorsas occurring outside of the current
-        #   execution frame
-        usr_tb = get_user_codeframe(e[2]) or None
-        print_exception(e[0], e[1], usr_tb, None, s)
-        post_command_event(self.parent, self.MacroErrorMsg,
-                           err=s.getvalue())
-        post_command_event(self.parent, self.MacroReplaceMsg,
-               macros=self.macros)
-        post_command_event(self.parent, self.MacroExecuteMsg)
-        success = True
+        # See if we have valid python
+        try:
+            ast.parse(self.macros)
+        except:
+            # Grab the traceback and print it for the user
+            s = StringIO()
+            e = exc_info()
+            # usr_tb will more than likely be none because ast throws
+            #   SytnaxErrorsas occurring outside of the current
+            #   execution frame
+            usr_tb = get_user_codeframe(e[2]) or None
+            print_exception(e[0], e[1], usr_tb, None, s)
+            post_command_event(self.parent, self.MacroErrorMsg,
+                               err=s.getvalue())
+            success = False
+        else:
+            self.result_ctrl.SetValue('')
+            post_command_event(self.parent, self.MacroReplaceMsg,
+                   macros=self.macros)
+            post_command_event(self.parent, self.MacroExecuteMsg)
+            success = True
 
 
         event.Skip()
+        return success
 
     def OnClose(self, event):
         """Event handler for Cancel button"""
@@ -1153,7 +1162,7 @@ class AboutDialog(object):
             350, wx.ClientDC(parent))
         info.WebSite = ("http://manns.github.io/pyspread/",
                         _("Pyspread Web site"))
-        info.Developers = ["Martin Manns", "Jason Sexauer"]
+        info.Developers = ["Martin Manns"]
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
@@ -1386,15 +1395,12 @@ class PasteAsDialog(wx.Dialog):
 
         self.dim_label = wx.StaticText(self, -1, _("Dimension of object"))
         self.dim_spinctrl = wx.SpinCtrl(self, -1, "Dim", (30, 50))
-        max_dim = self.get_max_dim(obj)
-        self.dim_spinctrl.SetRange(0, max_dim)
-        self.dim_spinctrl.SetValue(max_dim)
+        self.dim_spinctrl.SetRange(0, self.get_max_dim(obj))
 
         self.transpose_label = wx.StaticText(self, -1, _("Transpose"))
         self.transpose_checkbox = wx.CheckBox(self, -1)
 
         ok_button = wx.Button(self, wx.ID_OK)
-        ok_button.SetDefault()
         cancel_button = wx.Button(self, wx.ID_CANCEL)
 
         sizer.Add(self.dim_label)
