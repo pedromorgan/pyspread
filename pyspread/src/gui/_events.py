@@ -85,6 +85,7 @@ class MainWindowEventMixin(object):
     MacroExecuteMsg, EVT_CMD_MACROEXECUTE = new_command_event()
     MacroLoadMsg, EVT_CMD_MACROLOAD = new_command_event()
     MacroSaveMsg, EVT_CMD_MACROSAVE = new_command_event()
+    MacroErrorMsg, EVT_CMD_MACROERR = new_command_event()
 
     MainToolbarToggleMsg, EVT_CMD_MAINTOOLBAR_TOGGLE = new_command_event()
     MacroToolbarToggleMsg, EVT_CMD_MACROTOOLBAR_TOGGLE = new_command_event()

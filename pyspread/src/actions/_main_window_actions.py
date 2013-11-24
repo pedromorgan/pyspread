@@ -596,7 +596,11 @@ class MacroActions(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.grid.code_array.execute_macros()
+        (result, err) = self.grid.code_array.execute_macros()
+
+        # Post event to macro dialog
+        post_command_event(self.main_window, self.MacroErrorMsg,
+                           msg=result, err=err)
 
     def open_macros(self, filepath):
         """Loads macros from file and marks grid as changed

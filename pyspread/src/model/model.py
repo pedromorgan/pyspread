@@ -1244,7 +1244,7 @@ class CodeArray(DataArray):
         """
 
         if self.safe_mode:
-            return "Safe mode activated. Code not executed."
+            return '', "Safe mode activated. Code not executed."
 
         # Windows exec does not like Windows newline
         self.macros = self.macros.replace('\r\n', '\n')
@@ -1255,6 +1255,7 @@ class CodeArray(DataArray):
         # Create file-like string to capture output
         code_out = cStringIO.StringIO()
         code_err = cStringIO.StringIO()
+        err_msg = cStringIO.StringIO()
 
         # Capture output and errors
         sys.stdout = code_out
@@ -1264,13 +1265,19 @@ class CodeArray(DataArray):
             exec(self.macros, globals())
 
         except Exception, err:
-            print err
-
+            # Print exception
+            # (Because of how the globals are handled during execution we must import modules here)
+            from traceback import print_exception
+            from src.lib.exception_handeling import get_user_codeframe
+            exc_info = sys.exc_info()
+            user_tb = get_user_codeframe(exc_info[2]) or exc_info[2]
+            print_exception(exc_info[0],exc_info[1],user_tb,None,err_msg)
         # Restore stdout and stderr
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
-        outstring = code_out.getvalue() + code_err.getvalue()
+        results = code_out.getvalue()
+        errs = code_err.getvalue() + err_msg.getvalue()
 
         code_out.close()
         code_err.close()
@@ -1281,7 +1288,7 @@ class CodeArray(DataArray):
         # Reset frozen cache
         self.frozen_cache.clear()
 
-        return outstring
+        return results, errs
 
     def _sorted_keys(self, keys, startkey, reverse=False):
         """Generator that yields sorted keys starting with startkey
