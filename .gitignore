@@ -5,3 +5,4 @@ MANIFEST
 *.sig
 .spyderproject
 .spyderworkspace
+*.psproj
