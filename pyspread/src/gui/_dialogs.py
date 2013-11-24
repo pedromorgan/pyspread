@@ -881,8 +881,6 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self._ok_pressed = True
         self.OnApply(event)
 
-
-
     def OnApply(self, event):
         """Event handler for Apply button"""
 
@@ -904,10 +902,9 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         else:
             self.result_ctrl.SetValue('')
             post_command_event(self.parent, self.MacroReplaceMsg,
-                   macros=self.macros)
+                               macros=self.macros)
             post_command_event(self.parent, self.MacroExecuteMsg)
             success = True
-
 
         event.Skip()
         return success
@@ -917,9 +914,10 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
         # Warn if any unsaved changes
         if self.parent.grid.code_array.macros != self.macros:
-            dlg = wx.MessageDialog(self, _("There are changes in the macro editor "
-                "which have not yet been applied.  Are you sure you "
-                "wish to close the editor?"), _("Close Editor"),
+            dlg = wx.MessageDialog(
+                self, _("There are changes in the macro editor "
+                        "which have not yet been applied.  Are you sure you "
+                        "wish to close the editor?"), _("Close Editor"),
                 wx.YES_NO | wx.ICON_WARNING)
             if dlg.ShowModal() == wx.ID_NO:
                 return
