@@ -416,6 +416,82 @@ class TestTableColumnActionsMixin(object):
         col_widths = self.grid.code_array.col_widths
         assert col_widths[col, tab] == width
 
+    param_set_col_width_selection = [
+        {'cursorCol': 1, 'tab': 0, 'width': 7,
+         'cols':[0,1,2], 'fullboxes': [], 'partialboxes':[]},
+        {'cursorCol': 1, 'tab': 0, 'width': 8,
+         'cols':[], 'fullboxes': [0,1,2], 'partialboxes':[]},
+        {'cursorCol': 1, 'tab': 0, 'width': 9,
+         'cols':[], 'fullboxes': [], 'partialboxes':[0,1,2]},
+        {'cursorCol': 7, 'tab': 0, 'width': 10,
+         'cols':[0,1,2], 'fullboxes': [], 'partialboxes':[]},
+        {'cursorCol': 7, 'tab': 0, 'width': 11,
+         'cols':[], 'fullboxes': [0,1,2], 'partialboxes':[]},
+        {'cursorCol': 7, 'tab': 0, 'width': 12,
+         'cols':[], 'fullboxes': [], 'partialboxes':[0,1,2]},
+        {'cursorCol': 1, 'tab': 1, 'width': 13,
+         'cols':[], 'fullboxes': [], 'partialboxes':[]},
+        {'cursorCol': 1, 'tab': 1, 'width': 13,
+         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[4,5]},
+        {'cursorCol': 1, 'tab': 1, 'width': 14,
+         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[3,4]},
+        {'cursorCol': 1, 'tab': 1, 'width': 14,
+         'cols':[0,1], 'fullboxes': [1,2], 'partialboxes':[3,4]},
+        {'cursorCol': 1, 'tab': 1, 'width': 15.15,
+         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[4,5]},
+        {'cursorCol': 1, 'tab': 1, 'width': 0,
+         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[4,5]},
+    ]
+
+    @params(param_set_col_width_selection)
+    def test_set_col_width_selection(self, cursorCol, cols, fullboxes,
+                                     partialboxes, tab, width):
+        """
+        cursorCol: Column user was dragging when trying resize multiple
+        cols: Full columns selected to be edited
+        fullboxes: Columns which are fully selected via a box in the selection
+        partialboxes: Columns which are part of a selection, but do
+                    do not include the full columns.
+        tab: Current table
+        width: Desired new width for all columns
+        To run: In this directory !python -m pytest -k test_set_col_width_s
+        """
+        class event_test_harness(object):
+            def __init__(self, cursorCol):
+                self.cursorCol = cursorCol
+            def GetRowOrCol(self):
+                return self.cursorCol
+            def Skip(self):
+                pass
+
+        # Setup For Test
+        max_rows = self.grid.code_array.shape[0]-1
+        event = event_test_harness(cursorCol)
+        self.grid.current_table = tab
+        self.grid.ClearSelection()
+        for col in cols:
+            self.grid.SelectCol(col, addToSelected=True)
+        for col in fullboxes:
+            self.grid.SelectBlock(0,col,max_rows,col,addToSelected=True)
+        for col in partialboxes:
+            self.grid.SelectBlock(0,col,max_rows-1,col,addToSelected=True)
+        # Perform test
+        self.grid.actions.set_col_width(cursorCol, width)
+        self.grid.handlers.OnColSize(event)
+        # Check results -- Cursor col should always be resized
+        col_widths = self.grid.code_array.col_widths
+        assert col_widths[cursorCol, tab] == width
+        # Check results -- Full selected columns
+        for col in cols:
+            assert col_widths[col, tab] == width
+        # Check results -- Boxes of full columns selected
+        for col in fullboxes:
+            assert col_widths[col, tab] == width
+        # Check results -- Boxes of full columns selected
+        for col in partialboxes:
+            if col != cursorCol and col not in fullboxes:
+                assert col_widths.get((col, tab),-1) != width
+
     param_insert_cols = [
         {'col': -1, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'col': -1, 'no_cols': 1, 'test_key': (0, 0, 0), 'test_val': None},
