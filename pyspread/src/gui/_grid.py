@@ -1351,7 +1351,7 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         *Must Override*
         """
         self.log.write("MyCellEditor: Create\n")
-        self._tc = wx.TextCtrl(parent, id, "", style=wx.BORDER_DOUBLE)
+        self._tc = wx.TextCtrl(parent, id, "")
         self._tc.SetInsertionPoint(0)
         self.SetControl(self._tc)
 
@@ -1425,11 +1425,8 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         oldVal = self.startValue
         val = self._tc.GetValue()
         self.log.write("MyCellEditor: EndEdit (%s --> %s)\n" % (oldVal, val))
-        if val != oldVal:
-            self.log.write("MyCellEditor: >> returning new val\n")
-            self.ApplyEdit(row, col, grid)
-        else:
-            return None
+        self.ApplyEdit(row, col, grid)
+
 
     def ApplyEdit(self, row, col, grid):
         """
@@ -1450,9 +1447,13 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Reset the value in the control back to its starting value.
         *Must Override*
         """
-        self.log.write("MyCellEditor: Reset\n")
+        self.log.write("MyCellEditor: Reset %s to %s\n" %
+                       (self._tc.GetValue(), self.startValue))
         self._tc.SetValue(self.startValue)
         self._tc.SetInsertionPointEnd()
+        # Update the Entry Line
+        post_command_event(self.main_window, self.TableChangedMsg,
+                           updated_cell=self.startValue)
 
     def IsAcceptedKey(self, evt):
         """
@@ -1525,7 +1526,7 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
     def _update_control_length(self):
         val = self._tc.GetValue()
-        extent = self._tc.GetTextExtent(val)[0] + 30 # Small margin
+        extent = self._tc.GetTextExtent(val)[0] + 10 # Small margin
         width, height = self._tc.GetSizeTuple()
         if width < extent:
             pos = self._tc.GetPosition()
