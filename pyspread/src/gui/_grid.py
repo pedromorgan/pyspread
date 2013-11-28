@@ -1351,7 +1351,7 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         *Must Override*
         """
         self.log.write("MyCellEditor: Create\n")
-        self._tc = wx.TextCtrl(parent, id, "")
+        self._tc = wx.TextCtrl(parent, id, "", style=wx.BORDER_DOUBLE)
         self._tc.SetInsertionPoint(0)
         self.SetControl(self._tc)
 
@@ -1368,6 +1368,7 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self.log.write("MyCellEditor: SetSize %s\n" % rect)
         self._tc.SetDimensions(rect.x, rect.y, rect.width+2, rect.height+2,
                                wx.SIZE_ALLOW_MINUS_ONE)
+        self._tc.Layout()
 
     def Show(self, show, attr):
         """
@@ -1397,7 +1398,12 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         self.log.write("MyCellEditor: BeginEdit (%d,%d)\n" % (row, col))
         self.startValue = grid.GetTable().GetValue(row, col)
+        # Set up the textcontrol to look like this cell
         self._tc.SetValue(str(self.startValue)) # was self.startValue
+        self._tc.SetFont(grid.GetCellFont(row, col))
+        self._tc.SetBackgroundColour(grid.GetCellBackgroundColour(row, col))
+        self._update_control_length()
+
         self._tc.SetInsertionPointEnd()
         self._tc.SetFocus()
 
@@ -1512,5 +1518,16 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
     def OnKeyUp(self, event):
         self.log.write("Sending Table changed message\n")
+        self._update_control_length()
+        val = self._tc.GetValue()
         post_command_event(self.main_window, self.TableChangedMsg,
-                           updated_cell=self._tc.GetValue())
+                           updated_cell=val)
+
+    def _update_control_length(self):
+        val = self._tc.GetValue()
+        extent = self._tc.GetTextExtent(val)[0] + 30 # Small margin
+        width, height = self._tc.GetSizeTuple()
+        if width < extent:
+            pos = self._tc.GetPosition()
+            self.SetSize(wx.Rect(pos[0],pos[1],extent, height-2))
+        self.log.write(">>>>>> width: %s, extent: %s\n" % (width, extent))
