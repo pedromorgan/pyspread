@@ -31,6 +31,7 @@ Provides
 """
 
 import wx.grid
+import string
 
 from _events import post_command_event, EventMixin
 
@@ -47,6 +48,7 @@ import src.lib.xrect as xrect
 from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
+from src.gui._widgets import GridEventMixin
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -78,7 +80,7 @@ class Grid(wx.grid.Grid, EventMixin):
         self.sel_mode_cursor = None
 
         # Set multi line editor
-        self.SetDefaultEditor(wx.grid.GridCellAutoWrapStringEditor())
+        self.SetDefaultEditor(MyCellEditor(main_window))
 
         # Create new grid
         if S is None:
@@ -1331,3 +1333,184 @@ class GridEventHandlers(object):
         self.grid.update_attribute_toolbar()
 
 # End of class GridEventHandlers
+
+class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
+    """In grid cell editor for entering code
+    Refer to :
+    https://github.com/wxWidgets/wxPython/blob/master/demo/GridCustEditor.py
+    """
+    def __init__(self, main_window):
+        self.main_window = main_window
+        self.log = open(r"C:\log.txt", 'a')
+        self.log.write("MyCellEditor creator\n")
+        wx.grid.PyGridCellEditor.__init__(self)
+
+    def Create(self, parent, id, evtHandler):
+        """
+        Called to create the control, which must derive from wx.Control.
+        *Must Override*
+        """
+        self.log.write("MyCellEditor: Create\n")
+        self._tc = wx.TextCtrl(parent, id, "")
+        self._tc.SetInsertionPoint(0)
+        self.SetControl(self._tc)
+
+        if evtHandler:
+            self._tc.PushEventHandler(evtHandler)
+
+
+    def SetSize(self, rect):
+        """
+        Called to position/size the edit control within the cell rectangle.
+        If you don't fill the cell (the rect) then be sure to override
+        PaintBackground and do something meaningful there.
+        """
+        self.log.write("MyCellEditor: SetSize %s\n" % rect)
+        self._tc.SetDimensions(rect.x, rect.y, rect.width+2, rect.height+2,
+                               wx.SIZE_ALLOW_MINUS_ONE)
+
+    def Show(self, show, attr):
+        """
+        Show or hide the edit control.  You can use the attr (if not None)
+        to set colours or fonts for the control.
+        """
+        self.log.write("MyCellEditor: Show(self, %s, %s)\n" % (show, attr))
+        super(MyCellEditor, self).Show(show, attr)
+
+    def PaintBackground(self, rect, attr):
+        """
+        Draws the part of the cell not occupied by the edit control.  The
+        base  class version just fills it with background colour from the
+        attribute.  In this class the edit control fills the whole cell so
+        don't do anything at all in order to reduce flicker.
+        """
+        self.log.write("MyCellEditor: PaintBackground\n")
+
+    def BeginEdit(self, row, col, grid):
+        """
+        Fetch the value from the table and prepare the edit control
+        to begin editing.  Set the focus to the edit control.
+        *Must Override*
+        """
+        # Mirror our changes onto the main_window's code bar
+        self._tc.Bind(wx.EVT_KEY_UP, self.OnKeyUp)
+
+        self.log.write("MyCellEditor: BeginEdit (%d,%d)\n" % (row, col))
+        self.startValue = grid.GetTable().GetValue(row, col)
+        self._tc.SetValue(str(self.startValue)) # was self.startValue
+        self._tc.SetInsertionPointEnd()
+        self._tc.SetFocus()
+
+        # For this example, select the text
+        self._tc.SetSelection(0, self._tc.GetLastPosition())
+
+    def EndEdit(self, row, col, grid):
+        """
+        End editing the cell.  This function must check if the current
+        value of the editing control is valid and different from the
+        original value (available as oldval in its string form.)  If
+        it has not changed then simply return None, otherwise return
+        the value in its string form.
+        *Must Override*
+        """
+        # Mirror our changes onto the main_window's code bar
+        self._tc.Unbind(wx.EVT_KEY_UP)
+
+        oldVal = self.startValue
+        val = self._tc.GetValue()
+        self.log.write("MyCellEditor: EndEdit (%s --> %s)\n" % (oldVal, val))
+        if val != oldVal:
+            self.log.write("MyCellEditor: >> returning new val\n")
+            self.ApplyEdit(row, col, grid)
+        else:
+            return None
+
+    def ApplyEdit(self, row, col, grid):
+        """
+        This function should save the value of the control into the
+        grid or grid table. It is called only after EndEdit() returns
+        a non-None value.
+        *Must Override*
+        """
+        self.log.write("MyCellEditor: ApplyEdit (%d,%d)\n" % (row, col))
+        val = self._tc.GetValue()
+        grid.GetTable().SetValue(row, col, val) # update the table
+
+        self.startValue = ''
+        self._tc.SetValue('')
+
+    def Reset(self):
+        """
+        Reset the value in the control back to its starting value.
+        *Must Override*
+        """
+        self.log.write("MyCellEditor: Reset\n")
+        self._tc.SetValue(self.startValue)
+        self._tc.SetInsertionPointEnd()
+
+    def IsAcceptedKey(self, evt):
+        """
+        Return True to allow the given key to start editing: the base class
+        version only checks that the event has no modifiers.  F2 is special
+        and will always start the editor.
+        """
+        self.log.write("MyCellEditor: IsAcceptedKey: %d\n" % (evt.GetKeyCode()))
+
+        ## We can ask the base class to do it
+        #return super(MyCellEditor, self).IsAcceptedKey(evt)
+
+        # or do it ourselves
+        return (not (evt.ControlDown() or evt.AltDown()) and
+                evt.GetKeyCode() != wx.WXK_SHIFT)
+
+    def StartingKey(self, evt):
+        """
+        If the editor is enabled by pressing keys on the grid, this will be
+        called to let the editor do something about that first key if desired.
+        """
+        self.log.write("MyCellEditor: StartingKey %d\n" % evt.GetKeyCode())
+        key = evt.GetKeyCode()
+        ch = None
+        if key in [ wx.WXK_NUMPAD0, wx.WXK_NUMPAD1, wx.WXK_NUMPAD2, wx.WXK_NUMPAD3,
+                    wx.WXK_NUMPAD4, wx.WXK_NUMPAD5, wx.WXK_NUMPAD6, wx.WXK_NUMPAD7,
+                    wx.WXK_NUMPAD8, wx.WXK_NUMPAD9
+                    ]:
+
+            ch = ch = chr(ord('0') + key - wx.WXK_NUMPAD0)
+
+        elif key < 256 and key >= 0 and chr(key) in string.printable:
+            ch = chr(key)
+
+        if ch is not None:
+            # For this example, replace the text.  Normally we would append it.
+            #self._tc.AppendText(ch)
+            self._tc.SetValue(ch)
+            self._tc.SetInsertionPointEnd()
+        else:
+            evt.Skip()
+
+    def StartingClick(self):
+        """
+        If the editor is enabled by clicking on the cell, this method will be
+        called to allow the editor to simulate the click on the control if
+        needed.
+        """
+        self.log.write("MyCellEditor: StartingClick\n")
+
+    def Destroy(self):
+        """final cleanup"""
+        self.log.write("MyCellEditor: Destroy\n")
+        super(MyCellEditor, self).Destroy()
+
+    def Clone(self):
+        """
+        Create a new object which is the copy of this one
+        *Must Override*
+        """
+        self.log.write("MyCellEditor: Clone\n")
+        return MyCellEditor()
+
+    def OnKeyUp(self, event):
+        self.log.write("Sending Table changed message\n")
+        post_command_event(self.main_window, self.TableChangedMsg,
+                           updated_cell=self._tc.GetValue())

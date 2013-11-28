@@ -854,13 +854,18 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
     def OnTableChanged(self, event):
         """Table changed event handler"""
 
-        current_cell = self.main_window.grid.actions.cursor
-        current_cell_code = self.main_window.grid.code_array(current_cell)
-
-        if current_cell_code is None:
-            self.SetValue(u"")
+        if hasattr(event, 'updated_cell'):
+            # Event posted by cell edit widget.  Even more up to date
+            #  than the current cell's contents
+            self.SetValue(event.updated_cell)
         else:
-            self.SetValue(current_cell_code)
+            current_cell = self.main_window.grid.actions.cursor
+            current_cell_code = self.main_window.grid.code_array(current_cell)
+
+            if current_cell_code is None:
+                self.SetValue(u"")
+            else:
+                self.SetValue(current_cell_code)
 
         event.Skip()
 
@@ -1029,7 +1034,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     def OnTableChanged(self, event):
         """Table changed event handler"""
 
-        self.SetValue(event.table)
+        if hasattr(event, 'table'):
+            self.SetValue(event.table)
 
         event.Skip()
 
