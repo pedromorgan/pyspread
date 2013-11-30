@@ -1396,9 +1396,14 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         # Mirror our changes onto the main_window's code bar
         self._tc.Bind(wx.EVT_CHAR, self.OnChar)
 
+        # Save cell and grid info
+        self._row = row
+        self._col = [col,]  # List of columns we are occupying
+        self._grid = grid
+
         self.log.write("MyCellEditor: BeginEdit (%d,%d)\n" % (row, col))
         self.startValue = grid.GetTable().GetValue(row, col)
-        # Set up the textcontrol to look like this cell
+        # Set up the textcontrol to look like this cell (TODO: Does not work)
         self._tc.SetValue(str(self.startValue)) # was self.startValue
         self._tc.SetFont(grid.GetCellFont(row, col))
         self._tc.SetBackgroundColour(grid.GetCellBackgroundColour(row, col))
@@ -1426,6 +1431,10 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         val = self._tc.GetValue()
         self.log.write("MyCellEditor: EndEdit (%s --> %s)\n" % (oldVal, val))
         self.ApplyEdit(row, col, grid)
+
+        del self._col
+        del self._row
+        del self._grid
 
 
     def ApplyEdit(self, row, col, grid):
@@ -1529,7 +1538,14 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         val = self._tc.GetValue()
         extent = self._tc.GetTextExtent(val)[0] + 15 # Small margin
         width, height = self._tc.GetSizeTuple()
-        if width < extent:
+        new_width = None
+        while width < extent:
+            # We need to reszie into the next cell's column
+            next_col = self._col[-1] + 1
+            new_width = width + self._grid.GetColSize(next_col)
+            self._col.append(next_col)
+            width = new_width
+        if new_width:
             pos = self._tc.GetPosition()
-            self.SetSize(wx.Rect(pos[0],pos[1],extent, height-2))
+            self.SetSize(wx.Rect(pos[0],pos[1],new_width-2, height-2))
         self.log.write(">>>>>> width: %s, extent: %s\n" % (width, extent))
