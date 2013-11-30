@@ -1394,7 +1394,7 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         *Must Override*
         """
         # Mirror our changes onto the main_window's code bar
-        self._tc.Bind(wx.EVT_KEY_UP, self.OnKeyUp)
+        self._tc.Bind(wx.EVT_CHAR, self.OnChar)
 
         self.log.write("MyCellEditor: BeginEdit (%d,%d)\n" % (row, col))
         self.startValue = grid.GetTable().GetValue(row, col)
@@ -1517,16 +1517,17 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self.log.write("MyCellEditor: Clone\n")
         return MyCellEditor()
 
-    def OnKeyUp(self, event):
+    def OnChar(self, event):
         self.log.write("Sending Table changed message\n")
         self._update_control_length()
         val = self._tc.GetValue()
         post_command_event(self.main_window, self.TableChangedMsg,
                            updated_cell=val)
+        event.Skip()
 
     def _update_control_length(self):
         val = self._tc.GetValue()
-        extent = self._tc.GetTextExtent(val)[0] + 10 # Small margin
+        extent = self._tc.GetTextExtent(val)[0] + 15 # Small margin
         width, height = self._tc.GetSizeTuple()
         if width < extent:
             pos = self._tc.GetPosition()
