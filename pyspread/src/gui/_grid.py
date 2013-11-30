@@ -1340,10 +1340,18 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
     https://github.com/wxWidgets/wxPython/blob/master/demo/GridCustEditor.py
     """
     def __init__(self, main_window):
+        DEBUG = False   # Write editor event log out to file (see below)
+
         self.main_window = main_window
-        self.log = open(r"C:\log.txt", 'a')
-        self.log.write("MyCellEditor creator\n")
         wx.grid.PyGridCellEditor.__init__(self)
+
+        class blank_log(object):
+            def write(self, str): pass
+        if DEBUG:
+            self.log = open(r"C:\log.txt", 'a')
+        else:
+            self.log = blank_log()
+        self.log.write("MyCellEditor creator\n")
 
     def Create(self, parent, id, evtHandler):
         """
