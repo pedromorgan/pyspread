@@ -1345,20 +1345,12 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self.main_window = main_window
         wx.grid.PyGridCellEditor.__init__(self)
 
-        class blank_log(object):
-            def write(self, str): pass
-        if DEBUG:
-            self.log = open(r"C:\log.txt", 'a')
-        else:
-            self.log = blank_log()
-        self.log.write("MyCellEditor creator\n")
 
     def Create(self, parent, id, evtHandler):
         """
         Called to create the control, which must derive from wx.Control.
         *Must Override*
         """
-        self.log.write("MyCellEditor: Create\n")
         self._tc = wx.TextCtrl(parent, id, "")
         self._tc.SetInsertionPoint(0)
         self.SetControl(self._tc)
@@ -1373,7 +1365,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         If you don't fill the cell (the rect) then be sure to override
         PaintBackground and do something meaningful there.
         """
-        self.log.write("MyCellEditor: SetSize %s\n" % rect)
         self._tc.SetDimensions(rect.x, rect.y, rect.width+2, rect.height+2,
                                wx.SIZE_ALLOW_MINUS_ONE)
         self._tc.Layout()
@@ -1383,7 +1374,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Show or hide the edit control.  You can use the attr (if not None)
         to set colours or fonts for the control.
         """
-        self.log.write("MyCellEditor: Show(self, %s, %s)\n" % (show, attr))
         super(MyCellEditor, self).Show(show, attr)
 
     def PaintBackground(self, rect, attr):
@@ -1393,7 +1383,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         attribute.  In this class the edit control fills the whole cell so
         don't do anything at all in order to reduce flicker.
         """
-        self.log.write("MyCellEditor: PaintBackground\n")
 
     def BeginEdit(self, row, col, grid):
         """
@@ -1409,7 +1398,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self._col = [col,]  # List of columns we are occupying
         self._grid = grid
 
-        self.log.write("MyCellEditor: BeginEdit (%d,%d)\n" % (row, col))
         self.startValue = grid.GetTable().GetValue(row, col)
         # Set up the textcontrol to look like this cell (TODO: Does not work)
         self._tc.SetValue(str(self.startValue)) # was self.startValue
@@ -1437,7 +1425,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         oldVal = self.startValue
         val = self._tc.GetValue()
-        self.log.write("MyCellEditor: EndEdit (%s --> %s)\n" % (oldVal, val))
         self.ApplyEdit(row, col, grid)
 
         del self._col
@@ -1452,7 +1439,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         a non-None value.
         *Must Override*
         """
-        self.log.write("MyCellEditor: ApplyEdit (%d,%d)\n" % (row, col))
         val = self._tc.GetValue()
         grid.GetTable().SetValue(row, col, val) # update the table
 
@@ -1464,8 +1450,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Reset the value in the control back to its starting value.
         *Must Override*
         """
-        self.log.write("MyCellEditor: Reset %s to %s\n" %
-                       (self._tc.GetValue(), self.startValue))
         self._tc.SetValue(self.startValue)
         self._tc.SetInsertionPointEnd()
         # Update the Entry Line
@@ -1478,7 +1462,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         version only checks that the event has no modifiers.  F2 is special
         and will always start the editor.
         """
-        self.log.write("MyCellEditor: IsAcceptedKey: %d\n" % (evt.GetKeyCode()))
 
         ## We can ask the base class to do it
         #return super(MyCellEditor, self).IsAcceptedKey(evt)
@@ -1492,7 +1475,6 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         If the editor is enabled by pressing keys on the grid, this will be
         called to let the editor do something about that first key if desired.
         """
-        self.log.write("MyCellEditor: StartingKey %d\n" % evt.GetKeyCode())
         key = evt.GetKeyCode()
         ch = None
         if key in [ wx.WXK_NUMPAD0, wx.WXK_NUMPAD1, wx.WXK_NUMPAD2, wx.WXK_NUMPAD3,
@@ -1519,11 +1501,9 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         called to allow the editor to simulate the click on the control if
         needed.
         """
-        self.log.write("MyCellEditor: StartingClick\n")
 
     def Destroy(self):
         """final cleanup"""
-        self.log.write("MyCellEditor: Destroy\n")
         super(MyCellEditor, self).Destroy()
 
     def Clone(self):
@@ -1531,11 +1511,9 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Create a new object which is the copy of this one
         *Must Override*
         """
-        self.log.write("MyCellEditor: Clone\n")
         return MyCellEditor()
 
     def OnChar(self, event):
-        self.log.write("Sending Table changed message\n")
         self._update_control_length()
         val = self._tc.GetValue()
         post_command_event(self.main_window, self.TableChangedMsg,
@@ -1556,4 +1534,3 @@ class MyCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         if new_width:
             pos = self._tc.GetPosition()
             self.SetSize(wx.Rect(pos[0],pos[1],new_width-2, height-2))
-        self.log.write(">>>>>> width: %s, extent: %s\n" % (width, extent))
