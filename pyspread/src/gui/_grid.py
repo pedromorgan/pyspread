@@ -47,6 +47,7 @@ import src.lib.xrect as xrect
 from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
+from src.gui._grid_cell_editor import GridCellEditor
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -78,7 +79,7 @@ class Grid(wx.grid.Grid, EventMixin):
         self.sel_mode_cursor = None
 
         # Set multi line editor
-        self.SetDefaultEditor(wx.grid.GridCellAutoWrapStringEditor())
+        self.SetDefaultEditor(GridCellEditor(main_window))
 
         # Create new grid
         if S is None:
