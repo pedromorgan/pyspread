@@ -252,6 +252,27 @@ class Xls(object):
 
             # Font
 
+            font = self.workbook.font_list[xf.font_index]
+
+            attributes["textfont"] = font.name
+            attributes["pointsize"] = font.height / 20.0
+
+            fontweight = wx.BOLD if font.weight == 700 else wx.NORMAL
+            attributes["fontweight"] = fontweight
+
+            if font.italic:
+                attributes["fontstyle"] = wx.ITALIC
+
+            if self.workbook.colour_map[font.colour_index] is not None:
+                attributes["textcolor"] = \
+                    idx2colour(font.colour_index).GetRGB()
+
+            if font.underline_type:
+                attributes["underline"] = True
+
+            if font.struck_out:
+                attributes["strikethrough"] = True
+
             # Handle cells above for top borders
 
             attributes_above = {}
