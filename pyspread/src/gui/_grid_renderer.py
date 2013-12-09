@@ -510,10 +510,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
                 rect = wx.Rect(ul_rect.x, ul_rect.y, width, height)
 
-                # Adjust rect to 1 pixel error
-                rect.width -= 1
-                rect.height -= 1
-
                 return rect
 
     def draw_bitmap(self, dc, bmp, rect, grid, key, scale=True):
