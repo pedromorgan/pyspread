@@ -1176,12 +1176,12 @@ class SelectionActions(Actions):
                            changed=True)
 
         selection = self.get_selection()
+        current_table = self.grid.current_table
 
-        del_keys = \
-            [key for key in self.grid.code_array if key[:2] in selection]
-
-        for key in del_keys:
-            self.grid.actions.delete_cell(key, mark_unredo=False)
+        for row, col, tab in self.grid.code_array.dict_grid.keys():
+            if tab == current_table and (row, col) in selection:
+                self.grid.actions.delete_cell((row, col, tab),
+                                              mark_unredo=False)
 
         self.grid.code_array.unredo.mark()
 

@@ -418,29 +418,29 @@ class TestTableColumnActionsMixin(object):
 
     param_set_col_width_selection = [
         {'cursorCol': 1, 'tab': 0, 'width': 7,
-         'cols':[0,1,2], 'fullboxes': [], 'partialboxes':[]},
+         'cols': [0, 1, 2], 'fullboxes': [], 'partialboxes': []},
         {'cursorCol': 1, 'tab': 0, 'width': 8,
-         'cols':[], 'fullboxes': [0,1,2], 'partialboxes':[]},
+         'cols': [], 'fullboxes': [0, 1, 2], 'partialboxes': []},
         {'cursorCol': 1, 'tab': 0, 'width': 9,
-         'cols':[], 'fullboxes': [], 'partialboxes':[0,1,2]},
+         'cols': [], 'fullboxes': [], 'partialboxes': [0, 1, 2]},
         {'cursorCol': 7, 'tab': 0, 'width': 10,
-         'cols':[0,1,2], 'fullboxes': [], 'partialboxes':[]},
+         'cols': [0, 1, 2], 'fullboxes': [], 'partialboxes': []},
         {'cursorCol': 7, 'tab': 0, 'width': 11,
-         'cols':[], 'fullboxes': [0,1,2], 'partialboxes':[]},
+         'cols': [], 'fullboxes': [0, 1, 2], 'partialboxes': []},
         {'cursorCol': 7, 'tab': 0, 'width': 12,
-         'cols':[], 'fullboxes': [], 'partialboxes':[0,1,2]},
+         'cols': [], 'fullboxes': [], 'partialboxes': [0, 1, 2]},
         {'cursorCol': 1, 'tab': 1, 'width': 13,
-         'cols':[], 'fullboxes': [], 'partialboxes':[]},
+         'cols': [], 'fullboxes': [], 'partialboxes': []},
         {'cursorCol': 1, 'tab': 1, 'width': 13,
-         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[4,5]},
+         'cols': [0, 1], 'fullboxes': [2, 3], 'partialboxes': [4, 5]},
         {'cursorCol': 1, 'tab': 1, 'width': 14,
-         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[3,4]},
+         'cols': [0, 1], 'fullboxes': [2, 3], 'partialboxes': [3, 4]},
         {'cursorCol': 1, 'tab': 1, 'width': 14,
-         'cols':[0,1], 'fullboxes': [1,2], 'partialboxes':[3,4]},
-        {'cursorCol': 1, 'tab': 1, 'width': 15.15,
-         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[4,5]},
-        {'cursorCol': 1, 'tab': 1, 'width': 0,
-         'cols':[0,1], 'fullboxes': [2,3], 'partialboxes':[4,5]},
+         'cols': [0, 1], 'fullboxes': [1, 2], 'partialboxes': [3, 4]},
+        {'cursorCol': 1, 'tab': 1, 'width': 15,
+         'cols': [0, 1], 'fullboxes': [2, 3], 'partialboxes': [4, 5]},
+        {'cursorCol': 1, 'tab': 1, 'width': 1,
+         'cols': [0, 1], 'fullboxes': [2, 3], 'partialboxes': [4, 5]},
     ]
 
     @params(param_set_col_width_selection)
@@ -459,38 +459,45 @@ class TestTableColumnActionsMixin(object):
         class event_test_harness(object):
             def __init__(self, cursorCol):
                 self.cursorCol = cursorCol
+
             def GetRowOrCol(self):
                 return self.cursorCol
+
             def Skip(self):
                 pass
 
         # Setup For Test
-        max_rows = self.grid.code_array.shape[0]-1
+        max_rows = self.grid.code_array.shape[0] - 1
         event = event_test_harness(cursorCol)
         self.grid.current_table = tab
         self.grid.ClearSelection()
         for col in cols:
             self.grid.SelectCol(col, addToSelected=True)
         for col in fullboxes:
-            self.grid.SelectBlock(0,col,max_rows,col,addToSelected=True)
+            self.grid.SelectBlock(0, col, max_rows, col, addToSelected=True)
         for col in partialboxes:
-            self.grid.SelectBlock(0,col,max_rows-1,col,addToSelected=True)
+            self.grid.SelectBlock(0, col, max_rows-1, col, addToSelected=True)
+
         # Perform test
         self.grid.actions.set_col_width(cursorCol, width)
         self.grid.handlers.OnColSize(event)
+
         # Check results -- Cursor col should always be resized
         col_widths = self.grid.code_array.col_widths
         assert col_widths[cursorCol, tab] == width
+
         # Check results -- Full selected columns
         for col in cols:
             assert col_widths[col, tab] == width
+
         # Check results -- Boxes of full columns selected
         for col in fullboxes:
             assert col_widths[col, tab] == width
+
         # Check results -- Boxes of full columns selected
         for col in partialboxes:
             if col != cursorCol and col not in fullboxes:
-                assert col_widths.get((col, tab),-1) != width
+                assert col_widths.get((col, tab), -1) != width
 
     param_insert_cols = [
         {'col': -1, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -736,11 +743,13 @@ class TestSelectionActions(object):
         """Tests for delete_selection"""
 
         self.grid.code_array[(0, 0, 0)] = "Test"
+        self.grid.code_array[(0, 0, 1)] = "Not deleted"
 
         self.grid.actions.select_cell(0, 0)
         self.grid.actions.delete_selection()
 
         assert self.grid.code_array[(0, 0, 0)] is None
+        assert self.grid.code_array((0, 0, 1)) == "Not deleted"
 
         # Make sure that the result cache is empty
         assert not self.grid.code_array.result_cache
