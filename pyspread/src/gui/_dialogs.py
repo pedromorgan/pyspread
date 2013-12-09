@@ -35,7 +35,7 @@ Provides:
   - DimensionsEntryDialog
   - CellEntryDialog
   - AboutDialog
-  - ConfigDialog
+  - PreferencesDialog
   - GPGParamsDialog
   - PasteAsDialog
 
