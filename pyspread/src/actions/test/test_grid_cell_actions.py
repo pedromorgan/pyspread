@@ -71,6 +71,18 @@ class TestCellActions(object):
         assert self.grid.code_array(key) == result
 
     @params(param_set_code)
+    def test_quote_code(self, key, code, result):
+        """Unit test for quote_code"""
+
+        self.grid.actions.set_code(key, code)
+        self.grid.actions.quote_code(key)
+
+        if code and code[0] not in ['"', "'"] and code[-1] not in ['"', "'"]:
+            assert self.grid.code_array(key) == '"' + code + '"'
+        elif code and code is not None:
+            assert self.grid.code_array(key) == code
+
+    @params(param_set_code)
     def test_delete_cell(self, key, code, result):
         """Unit test for delete_cell"""
 

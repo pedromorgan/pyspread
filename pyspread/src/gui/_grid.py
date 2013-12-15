@@ -827,15 +827,19 @@ class GridEventHandlers(object):
                 grid = self.grid
                 grid.DisableCellEditControl()
 
-                row = self.grid.GetGridCursorRow()
-                col = self.grid.GetGridCursorCol()
-                tab = grid.current_table
-                key = row, col, tab
+                # Is a selection present?
+                if self.grid.IsSelection():
+                    # Enclose all selected cells
+                    self.grid.actions.quote_selection()
 
-                val = grid.code_array(key)
-                grid.actions.set_code(key, '"' + val + '"')
+                else:
+                    row = self.grid.GetGridCursorRow()
+                    col = self.grid.GetGridCursorCol()
+                    key = row, col, grid.current_table
 
-                grid.MoveCursorDown(False)
+                    self.grid.actions.quote_code(key)
+
+                    grid.MoveCursorDown(False)
 
         else:
             # No Ctrl pressed
@@ -1270,7 +1274,7 @@ class GridEventHandlers(object):
                                                 mark_unredo=False)
             self.grid.SetRowSize(row, rowsize)
         self.grid.code_array.unredo.mark()
-        
+
         event.Skip()
         self.grid.Refresh()
 

@@ -1187,6 +1187,19 @@ class SelectionActions(Actions):
 
         self.grid.code_array.result_cache.clear()
 
+    def quote_selection(self):
+        """Quotes selected cells, marks content as changed"""
+
+        selection = self.get_selection()
+        current_table = self.grid.current_table
+        for row, col, tab in self.grid.code_array.dict_grid.keys():
+            if tab == current_table and (row, col) in selection:
+                self.grid.actions.quote_code((row, col, tab),
+                                             mark_unredo=False)
+
+        self.grid.code_array.unredo.mark()
+
+        self.grid.code_array.result_cache.clear()
 
 class FindActions(Actions):
     """Actions for finding inside the grid"""

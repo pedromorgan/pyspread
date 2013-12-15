@@ -46,7 +46,7 @@ Provides:
 class CellActions(Actions):
     """Mixin class that supplies Cell code additions, changes and deletion"""
 
-    def set_code(self, key, code):
+    def set_code(self, key, code, mark_unredo=True):
         """Sets code of cell key, marks grid as changed"""
 
         old_code = self.grid.code_array(key)
@@ -63,7 +63,15 @@ class CellActions(Actions):
                                changed=True)
 
         # Set cell code
-        self.grid.code_array[key] = code
+        self.grid.code_array.__setitem__(key, code, mark_unredo=mark_unredo)
+
+    def quote_code(self, key, mark_unredo=True):
+        """Returns string quoted code """
+
+        old_code = self.grid.code_array(key)
+        if old_code and old_code[0] + old_code[-1] not in ('""', "''") and \
+            '"' not in old_code:
+            self.set_code(key, '"' + old_code + '"', mark_unredo=mark_unredo)
 
     def delete_cell(self,  key, mark_unredo=True):
         """Deletes key cell"""

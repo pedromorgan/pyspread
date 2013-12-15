@@ -754,6 +754,19 @@ class TestSelectionActions(object):
         # Make sure that the result cache is empty
         assert not self.grid.code_array.result_cache
 
+    def test_quote_selection(self):
+        """Tests for quote_selection"""
+
+        self.grid.code_array[(1, 0, 0)] = "Q1"
+        self.grid.code_array[(2, 0, 0)] = '"NQ1"'
+
+        self.grid.actions.select_cell(1, 0)
+        self.grid.actions.select_cell(2, 0, add_to_selected=True)
+
+        self.grid.actions.quote_selection()
+
+        assert self.grid.code_array((1, 0, 0)) == '"Q1"'
+        assert self.grid.code_array((2, 0, 0)) == '"NQ1"'
 
 class TestFindActions(object):
     """FindActions test class"""
