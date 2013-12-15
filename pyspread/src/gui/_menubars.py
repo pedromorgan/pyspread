@@ -297,7 +297,11 @@ class MainMenu(_filledMenu, EventMixin):
             [wx.Menu, _("F&ormat"), [
                 [item, [self.FontDialogMsg, _("Font..."),
                         _("Launch font dialog.")]],
-                [item, [self.FontUnderlineMsg, _("Underline"),
+                [item, [self.FontBoldMsg, _("Bold") + "\tCtrl+B",
+                        _("Toggles underline."), wx.ID_BOLD]],
+                [item, [self.FontItalicsMsg, _("Italics") + "\tCtrl+I",
+                        _("Toggles underline."), wx.ID_ITALIC]],
+                [item, [self.FontUnderlineMsg, _("Underline") + "\tCtrl+U",
                         _("Toggles underline."), wx.ID_UNDERLINE]],
                 [item, [self.FontStrikethroughMsg, _("Strikethrough"),
                         _("Toggles strikethrough.")]],
