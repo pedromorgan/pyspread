@@ -240,6 +240,11 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.ReplaceMsg, _("Replace...") + "\tCtrl+Shift+f",
                         _("Replace strings in cells"), wx.ID_REPLACE]],
                 ["Separator"],
+                [item, [self.QuoteMsg, _("Quote cell(s)") + "\tCtrl+Enter",
+                        _('Converts cell content to strings by adding quotes '
+                          '("). If a selection is present then its cells are '
+                          'quoted.')]],
+                ["Separator"],
                 [item, [self.InsertRowsMsg, _("Insert &rows"),
                         _("Insert rows at cursor")]],
                 [item, [self.InsertColsMsg, _("&Insert columns"),

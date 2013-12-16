@@ -251,6 +251,7 @@ class Grid(wx.grid.Grid, EventMixin):
 
         main_window.Bind(self.EVT_CMD_SHOW_RESIZE_GRID_DIALOG,
                          handlers.OnResizeGridDialog)
+        main_window.Bind(self.EVT_CMD_QUOTE, handlers.OnQuote)
 
         main_window.Bind(wx.grid.EVT_GRID_ROW_SIZE, handlers.OnRowSize)
         main_window.Bind(wx.grid.EVT_GRID_COL_SIZE, handlers.OnColSize)
@@ -822,28 +823,6 @@ class GridEventHandlers(object):
                 # Ctrl + - pressed
                 post_command_event(self.grid, self.grid.ZoomOutMsg)
 
-            elif keycode == 13:
-            # <Ctrl> + <Enter>
-                grid = self.grid
-                grid.DisableCellEditControl()
-
-                # Is a selection present?
-                if self.grid.IsSelection():
-                    # Enclose all selected cells
-                    self.grid.actions.quote_selection()
-
-                    # Update grid
-                    self.grid.ForceRefresh()
-
-                else:
-                    row = self.grid.GetGridCursorRow()
-                    col = self.grid.GetGridCursorCol()
-                    key = row, col, grid.current_table
-
-                    self.grid.actions.quote_code(key)
-
-                    grid.MoveCursorDown(False)
-
         else:
             # No Ctrl pressed
 
@@ -1248,6 +1227,29 @@ class GridEventHandlers(object):
                            text=statustext)
 
         event.Skip()
+
+    def OnQuote(self, event):
+        """Quotes selection or if none the current cell"""
+
+        grid = self.grid
+        grid.DisableCellEditControl()
+
+        # Is a selection present?
+        if self.grid.IsSelection():
+            # Enclose all selected cells
+            self.grid.actions.quote_selection()
+
+            # Update grid
+            self.grid.ForceRefresh()
+
+        else:
+            row = self.grid.GetGridCursorRow()
+            col = self.grid.GetGridCursorCol()
+            key = row, col, grid.current_table
+
+            self.grid.actions.quote_code(key)
+
+            grid.MoveCursorDown(False)
 
     # Grid attribute events
 

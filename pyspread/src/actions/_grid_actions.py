@@ -1201,6 +1201,7 @@ class SelectionActions(Actions):
 
         self.grid.code_array.result_cache.clear()
 
+
 class FindActions(Actions):
     """Actions for finding inside the grid"""
 

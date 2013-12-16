@@ -177,7 +177,7 @@ class GridEventMixin(object):
     ViewFrozenMsg, EVT_CMD_VIEW_FROZEN = new_command_event()
     RefreshSelectionMsg, EVT_CMD_REFRESH_SELECTION = new_command_event()
     DisplayGotoCellDialogMsg, EVT_CMD_DISPLAY_GOTO_CELL_DIALOG = \
-                                                        new_command_event()
+        new_command_event()
     GotoCellMsg, EVT_CMD_GOTO_CELL = new_command_event()
     ZoomInMsg, EVT_CMD_ZOOM_IN = new_command_event()
     ZoomOutMsg, EVT_CMD_ZOOM_OUT = new_command_event()
@@ -199,7 +199,9 @@ class GridEventMixin(object):
     DeleteTabsMsg, EVT_CMD_DELETE_TABS = new_command_event()
 
     ShowResizeGridDialogMsg, EVT_CMD_SHOW_RESIZE_GRID_DIALOG = \
-                                                    new_command_event()
+        new_command_event()
+
+    QuoteMsg, EVT_CMD_QUOTE = new_command_event()
 
     TableChangedMsg, EVT_CMD_TABLE_CHANGED = new_command_event()
 
