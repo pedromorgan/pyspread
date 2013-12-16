@@ -832,6 +832,9 @@ class GridEventHandlers(object):
                     # Enclose all selected cells
                     self.grid.actions.quote_selection()
 
+                    # Update grid
+                    self.grid.ForceRefresh()
+
                 else:
                     row = self.grid.GetGridCursorRow()
                     col = self.grid.GetGridCursorCol()
