@@ -86,6 +86,7 @@ class GtkArtProvider(wx.ArtProvider):
             "pie": action_path + "chart_pie.png",  # matplotlib pie chart
             "hist": action_path + "chart_histogram.png",  # matplotlib hist
             "annotate": action_path + "chart_annotate.png",  # matplotlib
+            "contour": action_path + "chart_contour.png",  # matplotlib
             "safe_mode": icon_path + "status/dialog-warning.png",
         }
 

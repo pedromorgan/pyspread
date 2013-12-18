@@ -133,6 +133,7 @@ class ChartFigure(Figure):
         "boxplot": ["x"],
         "hist": ["x"],
         "pie": ["x"],
+        "contour": ["X", "Y", "Z"]
     }
 
     plot_type_xy_mapping = {
@@ -142,6 +143,13 @@ class ChartFigure(Figure):
         "hist": ["label", "x"],
         "pie": ["labels", "x"],
         "annotate": ["xy", "xy"],
+        "contour": ["X", "Y"]
+    }
+
+    contour_label_attrs = {
+        "contour_labels": "contour_labels",
+        "contour_label_fontsize": "fontsize",
+        "contour_label_colors": "colors",
     }
 
     def __init__(self, *attributes):
@@ -266,12 +274,34 @@ class ChartFigure(Figure):
                     except KeyError:
                         fixed_attrs.append(())
 
-            if not fixed_attrs or all(fixed_attrs):
+            # Remove contour chart label info from series
+            cl_attrs = {}
+            for contour_label_attr in self.contour_label_attrs:
+                if contour_label_attr in series:
+                    cl_attrs[self.contour_label_attrs[contour_label_attr]] = \
+                        series.pop(contour_label_attr)
 
+            if not fixed_attrs or all(fixed_attrs):
                 # Draw series to axes
 
                 chart_method = getattr(self.__axes, chart_type_string)
-                chart_method(*fixed_attrs, **series)
+                plot = chart_method(*fixed_attrs, **series)
+
+                # Do we have a contour chart label?
+                try:
+                    if cl_attrs.pop("contour_labels"):
+                        self.__axes.clabel(plot, **cl_attrs)
+                except KeyError:
+                    pass
 
         # The legend has to be set up after all series are drawn
         self._setup_legend(self.attributes[0])
+
+
+class BasemapFigure(Figure):
+    """Basemap figure class with drawing method"""
+
+    def draw_basemap(self):
+        """Plots basemap from self.attributes"""
+
+        raise NotImplementedError

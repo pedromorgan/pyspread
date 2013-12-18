@@ -438,19 +438,11 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
 
     """
 
-    choice_labels = [_("Inside"),
-                     _("Outside"),
-                     _("Both"),
-    ]
-
-    choice_params = ["in",
-                     "out",
-                     "inout",
-    ]
+    choice_labels = [_("Inside"), _("Outside"), _("Both")]
+    choice_params = ["in", "out", "inout"]
 
     choice_label2param = dict(zip(choice_labels, choice_params))
     choice_param2label = dict(zip(choice_params, choice_labels))
-
 
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
@@ -466,13 +458,15 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
         self.direction_choicectrl = wx.Choice(self, -1,
                                               choices=self.choice_labels)
         self.pad_label = wx.StaticText(self, -1, _("Padding"), size=(-1, 15))
-        self.pad_intctrl = IntCtrl(self, -1, allow_none = True, value=None,
+        self.pad_intctrl = IntCtrl(self, -1, allow_none=True, value=None,
                                    limited=True)
         self.size_label = wx.StaticText(self, -1, _("Size"), size=(-1, 15))
         self.labelsize_intctrl = IntCtrl(self, -1, allow_none=True, value=None,
                                          min=1, max=99, limited=True)
+
+        style = wx.ALIGN_RIGHT | wx.CHK_3STATE
         self.sec_checkboxctrl = wx.CheckBox(self, -1, label=_("Secondary"),
-                                    style=wx.ALIGN_RIGHT | wx.CHK_3STATE)
+                                            style=style)
 
         self.sec_checkboxctrl.Set3StateValue(wx.CHK_UNDETERMINED)
         self.__bindings()
@@ -1057,6 +1051,87 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
     }
 
 
+class AnnotateAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides annotation attributes in multiple boxed panels"""
+
+    # Data for annotation
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "s": (_("Text"), StringEditor, ""),
+        "xy": (_("Point"), StringEditor, ""),
+        "xycoords": (_("Coordinates"), CoordinatesEditor, "data"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Annotation"), ["s", "xy", "xycoords"]),
+    ]
+
+    tooltips = {
+        "s": _(u"Annotation text"),
+        "xy": _(u"Point that is annotated"),
+        "xycoords": _(u"String that indicates the coordinates of xy"),
+        "xytext": _(u"Location of annotation text"),
+        "textcoords": _(u"String that indicates the coordinates of xytext."),
+    }
+
+
+class ContourAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides annotation attributes in multiple boxed panels"""
+
+    # Data for contour plot
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "X": (_("X"), StringEditor, ""),
+        "Y": (_("Y"), StringEditor, ""),
+        "Z": (_("Z"), StringEditor, ""),
+        "colors":  (_("Colors"), StringEditor, ""),
+        "alpha": (_("Alpha"), StringEditor, "1.0"),
+        "linestyles": (_("Style"), LineStyleEditor, '-'),
+        "linewidths": (_("Width"), IntegerEditor, "1"),
+        "contour_labels": (_("Contour labels"), BoolEditor, True),
+        "contour_label_fontsize": (_("Font size"), IntegerEditor, "10"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["X", "Y", "Z"]),
+        (_("Lines"), ["linestyles", "linewidths", "colors", "alpha"]),
+        (_("Labels"), ["contour_labels", "contour_label_fontsize"]),
+    ]
+
+    tooltips = {
+        "X": _(u"X coordinates of the surface"),
+        "Y": _(u"Y coordinates of the surface"),
+        "Z": _(u"Z coordinates of the surface (contour height)"),
+        "colors":  _(u"If None, the colormap specified by cmap will be used.\n"
+                     u"If a string, like ‘r’ or ‘red’, all levels will be "
+                     u"plotted in this color.\nIf a tuple of matplotlib color "
+                     u"args (string, float, rgb, etc), different levels will "
+                     u"be plotted in different colors in the order"
+                     u" specified."),
+        "alpha": _(u"The alpha blending value"),
+        "linestyles": _(u"Contour line style"),
+        "linewidths": _(u"All contour levels will be plotted with this "
+                        u"linewidth."),
+        "contour_labels": _(u"Adds contour labels"),
+        "contour_label_fontsize": _(u"Contour font label size in points"),
+        "contour_label_colors":
+        _(u"If None, the color of each label matches the color of "
+          u"the corresponding contour.\nIf one string color, e.g., "
+          u"colors = ‘r’ or colors = ‘red’, all labels will be "
+          u"plotted in this color.\nIf a tuple of matplotlib color "
+          u"args (string, float, rgb, etc), different labels will "
+          u"be plotted in different colors in the order specified"),
+    }
+
+
 class FigureAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides figure attributes in multiple boxed panels"""
 
@@ -1130,34 +1205,6 @@ Code 	Meaning
     }
 
 
-class AnnotateAttributesPanel(SeriesAttributesPanelBase):
-    """Panel that provides annotation attributes in multiple boxed panels"""
-
-    # Data for annotation
-    # matplotlib_key, label, widget_cls, default_code
-
-    default_data = {
-        "s": (_("Text"), StringEditor, ""),
-        "xy": (_("Point"), StringEditor, ""),
-        "xycoords": (_("Coordinates"), CoordinatesEditor, "data"),
-    }
-
-    # Boxes and their widgets' matplotlib_keys
-    # label, [matplotlib_key, ...]
-
-    boxes = [
-        (_("Annotation"), ["s", "xy", "xycoords"]),
-    ]
-
-    tooltips = {
-        "s": _(u"Annotation text"),
-        "xy": _(u"Point that is annotated"),
-        "xycoords": _(u"String that indicates the coordinates of xy"),
-        "xytext": _(u"Location of annotation text"),
-        "textcoords": _(u"String that indicates the coordinates of xytext."),
-    }
-
-
 class SeriesPanel(wx.Panel):
     """Panel that holds attribute information for one series of the chart"""
 
@@ -1168,6 +1215,7 @@ class SeriesPanel(wx.Panel):
         {"type": "boxplot", "panel_class": BoxplotAttributesPanel},
         {"type": "pie", "panel_class": PieAttributesPanel},
         {"type": "annotate", "panel_class": AnnotateAttributesPanel},
+        {"type": "contour", "panel_class": ContourAttributesPanel},
     ]
 
     def __init__(self, grid, series_dict):
@@ -1512,12 +1560,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
                   "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
-                  "title", "xlabel", "ylabel", "label"]
+                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z"]
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "xgrid",
                    "ygrid", "notch", "sym", "normed", "cumulative",
-                   "xdate_format", "xycoords", "textcoords"]
+                   "xdate_format", "xycoords", "textcoords", "linestyles",
+                   "contour_labels"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]
