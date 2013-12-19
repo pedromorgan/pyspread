@@ -44,6 +44,7 @@ import types
 import wx
 
 from matplotlib.figure import Figure
+from matplotlib.sankey import Sankey
 from matplotlib import dates
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
@@ -135,6 +136,7 @@ class ChartFigure(Figure):
         "pie": ["x"],
         "contour": ["X", "Y", "Z"],
         "contourf": ["X", "Y", "Z"],
+        "Sankey": [],
     }
 
     plot_type_xy_mapping = {
@@ -145,7 +147,8 @@ class ChartFigure(Figure):
         "pie": ["labels", "x"],
         "annotate": ["xy", "xy"],
         "contour": ["X", "Y"],
-        "contourf": ["X", "Y", "Z"]
+        "contourf": ["X", "Y", "Z"],
+        "Sankey": ["flows", "orientations"],
     }
 
     contour_label_attrs = {
@@ -298,8 +301,13 @@ class ChartFigure(Figure):
             if not fixed_attrs or all(fixed_attrs):
                 # Draw series to axes
 
-                chart_method = getattr(self.__axes, chart_type_string)
-                plot = chart_method(*fixed_attrs, **series)
+                # Do we have a Sankey plot --> build it
+                if chart_type_string == "Sankey":
+                    Sankey(self.__axes, **series).finish()
+
+                else:
+                    chart_method = getattr(self.__axes, chart_type_string)
+                    plot = chart_method(*fixed_attrs, **series)
 
                 # Do we have a filled contour?
                 try:

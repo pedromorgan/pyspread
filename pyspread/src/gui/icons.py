@@ -87,6 +87,7 @@ class GtkArtProvider(wx.ArtProvider):
             "hist": action_path + "chart_histogram.png",  # matplotlib hist
             "annotate": action_path + "chart_annotate.png",  # matplotlib
             "contour": action_path + "chart_contour.png",  # matplotlib
+            "Sankey": action_path + "chart_sankey.png",  # matplotlib
             "safe_mode": icon_path + "status/dialog-warning.png",
         }
 

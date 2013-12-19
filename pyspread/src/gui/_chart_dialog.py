@@ -1146,6 +1146,74 @@ class ContourAttributesPanel(SeriesAttributesPanelBase):
     }
 
 
+class SankeyAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides Sankey plot attributes in multiple boxed panels"""
+
+    # Data for Sankey plot
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "flows": (_("Flows"), StringEditor, ""),
+        "orientations": (_("Orientations"), StringEditor, ""),
+        "labels": (_("Labels"), StringEditor, ""),
+        "format": (_("Format"), TextEditor, "%f"),
+        "unit": (_("Unit"), TextEditor, ""),
+        "rotation": (_("Rotation"), IntegerEditor, "0"),
+        "gap": (_("Gap"), StringEditor, "0.25"),
+        "radius": (_("Radius"), StringEditor, "0.1"),
+        "shoulder": (_("Shoulder"), StringEditor, "0.03"),
+        "offset": (_("Offset"), StringEditor, "0.15"),
+        "head_angle": (_("Angle"), IntegerEditor, "100"),
+        "edgecolor": (_("Edge"), ColorEditor, "(0, 0, 1)"),
+        "facecolor": (_("Face"), ColorEditor, "(0, 0, 1)"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["flows", "orientations", "labels", "format", "unit"]),
+        (_("Diagram"), ["rotation", "gap", "radius", "shoulder", "offset",
+                        "head_angle"]),
+        (_("Area"), ["edgecolor", "facecolor"]),
+    ]
+
+    tooltips = {
+        "flows": _(u"Array of flow values.\nBy convention, inputs are positive"
+                   u" and outputs are negative."),
+        "orientations": _(u"List of orientations of the paths.\nValid values "
+                          u"are 1 (from/to the top), 0 (from/to the left or "
+                          u"right), or -1 (from/to the bottom).\nIf "
+                          u"orientations == 0, inputs will break in from the "
+                          u"left and outputs will break away to the right."),
+        "labels": _(u"List of specifications of the labels for the flows.\n"
+                    u"Each value may be None (no labels), ‘’ (just label the "
+                    u"quantities), or a labeling string. If a single value is "
+                    u"provided, it will be applied to all flows. If an entry "
+                    u"is a non-empty string, then the quantity for the "
+                    u"corresponding flow will be shown below the string. "
+                    u"However, if the unit of the main diagram is None, then "
+                    u"quantities are never shown, regardless of the value of "
+                    u"this argument."),
+        "unit": _(u"String representing the physical unit associated with "
+                  u"the flow quantities.\nIf unit is None, then none of the "
+                  u"quantities are labeled."),
+        "format": _(u"A Python number formatting string to be used in "
+                    u"labeling the flow as a quantity (i.e., a number times a "
+                    u"unit, where the unit is given)"),
+        "rotation": _(u"Angle of rotation of the diagram [deg]"),
+        "gap": _(u"Space between paths that break in/break away to/from the "
+                 u"top or bottom."),
+        "radius": _(u"Inner radius of the vertical paths"),
+        "shoulder": _(u"Size of the shoulders of output arrows"),
+        "offset": _(u"Text offset (from the dip or tip of the arrow)"),
+        "head_angle": _(u"Angle of the arrow heads (and negative of the angle "
+                        u"of the tails) [deg]"),
+        "edgecolor": _(u"Edge color of Sankey diagram"),
+        "facecolor": _(u"Face color of Sankey diagram"),
+    }
+
+
 class FigureAttributesPanel(SeriesAttributesPanelBase):
     """Panel that provides figure attributes in multiple boxed panels"""
 
@@ -1230,6 +1298,7 @@ class SeriesPanel(wx.Panel):
         {"type": "pie", "panel_class": PieAttributesPanel},
         {"type": "annotate", "panel_class": AnnotateAttributesPanel},
         {"type": "contour", "panel_class": ContourAttributesPanel},
+        {"type": "Sankey", "panel_class": SankeyAttributesPanel},
     ]
 
     def __init__(self, grid, series_dict):
@@ -1575,13 +1644,13 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
                   "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
                   "title", "xlabel", "ylabel", "label", "X", "Y", "Z",
-                  "hatches"]
+                  "hatches", "flows", "orientations", "labels"]
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "xgrid",
                    "ygrid", "notch", "sym", "normed", "cumulative",
                    "xdate_format", "xycoords", "textcoords", "linestyles",
-                   "contour_labels", "contour_fill"]
+                   "contour_labels", "contour_fill", "format", "unit"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]
