@@ -1080,7 +1080,7 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
 
 
 class ContourAttributesPanel(SeriesAttributesPanelBase):
-    """Panel that provides annotation attributes in multiple boxed panels"""
+    """Panel that provides contour attributes in multiple boxed panels"""
 
     # Data for contour plot
     # matplotlib_key, label, widget_cls, default_code
@@ -1089,12 +1089,14 @@ class ContourAttributesPanel(SeriesAttributesPanelBase):
         "X": (_("X"), StringEditor, ""),
         "Y": (_("Y"), StringEditor, ""),
         "Z": (_("Z"), StringEditor, ""),
-        "colors":  (_("Colors"), StringEditor, ""),
+        "colors": (_("Colors"), StringEditor, ""),
         "alpha": (_("Alpha"), StringEditor, "1.0"),
         "linestyles": (_("Style"), LineStyleEditor, '-'),
         "linewidths": (_("Width"), IntegerEditor, "1"),
         "contour_labels": (_("Contour labels"), BoolEditor, True),
         "contour_label_fontsize": (_("Font size"), IntegerEditor, "10"),
+        "contour_fill": (_("Fill contour"), BoolEditor, False),
+        "hatches": (_("Hatches"), StringEditor, ""),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -1103,6 +1105,7 @@ class ContourAttributesPanel(SeriesAttributesPanelBase):
     boxes = [
         (_("Data"), ["X", "Y", "Z"]),
         (_("Lines"), ["linestyles", "linewidths", "colors", "alpha"]),
+        (_("Areas"), ["contour_fill", "hatches"]),
         (_("Labels"), ["contour_labels", "contour_label_fontsize"]),
     ]
 
@@ -1122,13 +1125,21 @@ class ContourAttributesPanel(SeriesAttributesPanelBase):
                         u"linewidth."),
         "contour_labels": _(u"Adds contour labels"),
         "contour_label_fontsize": _(u"Contour font label size in points"),
-        "contour_label_colors":
-        _(u"If None, the color of each label matches the color of "
-          u"the corresponding contour.\nIf one string color, e.g., "
-          u"colors = ‘r’ or colors = ‘red’, all labels will be "
-          u"plotted in this color.\nIf a tuple of matplotlib color "
-          u"args (string, float, rgb, etc), different labels will "
-          u"be plotted in different colors in the order specified"),
+        "hatches": _(u"A list of cross hatch patterns to use on the filled "
+                     u"areas. A hatch can be one of:\n"
+                     u"/   - diagonal hatching\n"
+                     u"\   - back diagonal\n"
+                     u"|   - vertical\n"
+                     u"-   - horizontal\n"
+                     u"+   - crossed\n"
+                     u"x   - crossed diagonal\n"
+                     u"o   - small circle\n"
+                     u"O   - large circle\n"
+                     u".   - dots\n"
+                     u"*   - stars\n"
+                     u"Letters can be combined, in which case all the "
+                     u"specified hatchings are done. If same letter repeats, "
+                     u"it increases the density of hatching of that pattern."),
     }
 
 
@@ -1560,13 +1571,14 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
                   "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
-                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z"]
+                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z",
+                  "hatches"]
 
     # String keys need to be put in "
     string_keys = ["type", "linestyle", "marker", "shadow", "vert", "xgrid",
                    "ygrid", "notch", "sym", "normed", "cumulative",
                    "xdate_format", "xycoords", "textcoords", "linestyles",
-                   "contour_labels"]
+                   "contour_labels", "contour_fill"]
 
     # Keys, which have to be None if empty
     empty_none_keys = ["colors", "color"]

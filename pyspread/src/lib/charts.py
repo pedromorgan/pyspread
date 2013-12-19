@@ -133,7 +133,8 @@ class ChartFigure(Figure):
         "boxplot": ["x"],
         "hist": ["x"],
         "pie": ["x"],
-        "contour": ["X", "Y", "Z"]
+        "contour": ["X", "Y", "Z"],
+        "contourf": ["X", "Y", "Z"],
     }
 
     plot_type_xy_mapping = {
@@ -143,13 +144,19 @@ class ChartFigure(Figure):
         "hist": ["label", "x"],
         "pie": ["labels", "x"],
         "annotate": ["xy", "xy"],
-        "contour": ["X", "Y"]
+        "contour": ["X", "Y"],
+        "contourf": ["X", "Y", "Z"]
     }
 
     contour_label_attrs = {
         "contour_labels": "contour_labels",
         "contour_label_fontsize": "fontsize",
         "contour_label_colors": "colors",
+    }
+
+    contourf_attrs = {
+        "contour_fill": "contour_fill",
+        "hatches": "hatches",
     }
 
     def __init__(self, *attributes):
@@ -281,11 +288,32 @@ class ChartFigure(Figure):
                     cl_attrs[self.contour_label_attrs[contour_label_attr]] = \
                         series.pop(contour_label_attr)
 
+            # Remove contourf attributes from series
+            cf_attrs = {}
+            for contourf_attr in self.contourf_attrs:
+                if contourf_attr in series:
+                    cf_attrs[self.contourf_attrs[contourf_attr]] = \
+                        series.pop(contourf_attr)
+
             if not fixed_attrs or all(fixed_attrs):
                 # Draw series to axes
 
                 chart_method = getattr(self.__axes, chart_type_string)
                 plot = chart_method(*fixed_attrs, **series)
+
+                # Do we have a filled contour?
+                try:
+                    if cf_attrs.pop("contour_fill"):
+                        cf_attrs.update(series)
+                        if "linewidths" in cf_attrs:
+                            cf_attrs.pop("linewidths")
+                        if "linestyles" in cf_attrs:
+                            cf_attrs.pop("linestyles")
+                        if not cf_attrs["hatches"]:
+                            cf_attrs.pop("hatches")
+                        self.__axes.contourf(plot, **cf_attrs)
+                except KeyError:
+                    pass
 
                 # Do we have a contour chart label?
                 try:
@@ -293,6 +321,7 @@ class ChartFigure(Figure):
                         self.__axes.clabel(plot, **cl_attrs)
                 except KeyError:
                     pass
+
 
         # The legend has to be set up after all series are drawn
         self._setup_legend(self.attributes[0])
