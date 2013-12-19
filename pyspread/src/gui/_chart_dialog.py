@@ -1023,6 +1023,7 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
         "x": (_("Series"), StringEditor, ""),
         "labels": (_("Labels"), StringEditor, ""),
         "colors": (_("Colors"), StringEditor, ""),
+        "startangle": (_("Start angle"), IntegerEditor, "0"),
         "shadow": (_("Shadow"), BoolEditor, False),
     }
 
@@ -1031,7 +1032,7 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
 
     boxes = [
         (_("Data"), ["x"]),
-        (_("Pie"), ["labels", "colors", "shadow"]),
+        (_("Pie"), ["labels", "colors", "startangle", "shadow"]),
     ]
 
     tooltips = {
@@ -1047,6 +1048,8 @@ class PieAttributesPanel(SeriesAttributesPanelBase):
                     u"as in: '#eeefff'. Finally, legal html names for colors, "
                     u"such as 'red', 'burlywood' and 'chartreuse' are "
                     u"supported."),
+        "startangle": _(u"Rotates the start of the pie chart by angle degrees "
+                        u"counterclockwise from the x-axis."),
         "shadow": _(u"If True then a shadow beneath the pie is drawn"),
     }
 
