@@ -61,7 +61,7 @@ from src.gui._events import post_command_event
 from src.gui._events import MainWindowEventMixin, GridEventMixin
 from src.lib.__csv import Digest, sniff, get_first_line, encode_gen
 from src.lib.__csv import csv_digest_gen, cell_key_val_gen
-from src.lib.exception_handeling import get_user_codeframe
+from src.lib.exception_handling import get_user_codeframe
 
 import ast
 from traceback import print_exception
