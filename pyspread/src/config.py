@@ -43,6 +43,10 @@ class DefaultConfig(object):
 
         self.config_version = VERSION
 
+        # Cell calculation timeout in s
+        # -----------------------------
+        self.timeout = repr(10)
+
         # User defined paths
         # ------------------
 

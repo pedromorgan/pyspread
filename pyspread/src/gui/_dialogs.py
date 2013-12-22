@@ -1266,6 +1266,13 @@ class PreferencesDialog(wx.Dialog):
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
+        ("timeout", {
+            "label": _(u"Timeout"),
+            "tooltip": _(u"Maximum time that an evaluation process may take."),
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "allow_long": True},
+            "prepocessor": int,
+        }),
         ("gpg_key_uid", {
             "label": _(u"GPG key name"),
             "tooltip": _(u"Name of the GPG key for signing files"),

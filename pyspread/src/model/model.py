@@ -1174,15 +1174,28 @@ class CodeArray(DataArray):
             result = assignment_target_error
 
         else:
+
+            import signal
+
+            signal.signal(signal.SIGALRM, self.handler)
+            signal.alarm(config["timeout"])
+
             try:
                 result = eval(expression, env, {})
+                signal.alarm(0)
 
             except AttributeError, err:
                 # Attribute Error includes RunTimeError
                 result = AttributeError(err)
+                signal.alarm(0)
+
+            except RuntimeError, err:
+                result = RuntimeError(err)
+                signal.alarm(0)
 
             except Exception, err:
                 result = Exception(err)
+                signal.alarm(0)
 
         # Change back cell value for evaluation from other cells
         self.dict_grid[key] = _old_code
@@ -1261,8 +1274,14 @@ class CodeArray(DataArray):
         sys.stdout = code_out
         sys.stderr = code_err
 
+        import signal
+
+        signal.signal(signal.SIGALRM, self.handler)
+        signal.alarm(config["timeout"])
+
         try:
             exec(self.macros, globals())
+            signal.alarm(0)
 
         except Exception:
             # Print exception
@@ -1403,5 +1422,8 @@ class CodeArray(DataArray):
         for key in self._sorted_keys(self.keys(), startkey, reverse=reverse):
             if is_matching(key, find_string, flags):
                 return key
+
+    def handler(self, signum, frame):
+        raise RuntimeError("Timeout after {} s.".format(config["timeout"]))
 
 # End of class CodeArray
