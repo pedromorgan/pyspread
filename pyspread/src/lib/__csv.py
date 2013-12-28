@@ -426,8 +426,8 @@ class CsvInterface(StatusBarEventMixin):
                 elif digest_key is not types.CodeType:
                     digest_res = repr(digest_res)
 
-            except Exception, err:
-                digest_res = str(err)
+            except Exception:
+                digest_res = ""
 
             yield digest_res
 
