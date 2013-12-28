@@ -64,13 +64,11 @@ class AOpenMixin(object):
         try:
             self.total_lines = kwargs.pop("total_lines")
             self.statustext = statustext + \
-                _("{nele} of {totalele} elements processed. "
-                  "Press <Esc> to abort.")
+                _("{nele} of {totalele} elements processed.")
 
         except KeyError:
             self.total_lines = None
-            self.statustext = statustext + \
-                _("{nele} elements processed. Press <Esc> to abort.")
+            self.statustext = statustext + _("{nele} elements processed.")
 
         try:
             self.freq = kwargs.pop("freq")

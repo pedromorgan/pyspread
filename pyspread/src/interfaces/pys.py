@@ -154,7 +154,7 @@ class Pys(object):
         row, col, tab, code = self._split_tidy(line, maxsplit=3)
         key = self._get_key(row, col, tab)
 
-        self.code_array[key] = unicode(code, encoding='utf-8')
+        self.code_array.dict_grid[key] = unicode(code, encoding='utf-8')
 
     def _attributes2pys(self):
         """Writes attributes to pys file

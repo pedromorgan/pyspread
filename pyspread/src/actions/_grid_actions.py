@@ -323,6 +323,7 @@ class FileActions(Actions):
 
                 try:
                     wx.BeginBusyCursor()
+                    self.grid.Disable()
                     self.clear()
                     interface = Interface(self.grid.code_array, infile)
                     interface.to_code_array()
@@ -335,6 +336,7 @@ class FileActions(Actions):
                     self.grid.GetTable().ResetView()
                     post_command_event(self.main_window, self.ResizeGridMsg,
                                        shape=self.grid.code_array.shape)
+                    self.grid.Enable()
                     wx.EndBusyCursor()
 
                 # Execute macros
@@ -429,7 +431,8 @@ class FileActions(Actions):
 
         try:
             wx.BeginBusyCursor()
-            with Bz2AOpen(filepath, "wb", main_window=self.main_window) \
+            self.grid.Disable()
+            with Bz2AOpen(tmpfile, "wb", main_window=self.main_window) \
                     as outfile:
 
                 try:
@@ -445,7 +448,7 @@ class FileActions(Actions):
 
         except IOError:
             msg = _("Error writing to file {filepath}.")
-            msg = msg.format(filepath=filepath)
+            msg = msg.format(filepath=tmpfile)
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
                                    text=msg)
@@ -453,24 +456,21 @@ class FileActions(Actions):
                 # The main window does not exist any more
                 pass
 
-            wx.EndBusyCursor()
-
             return False
 
         finally:
             # Remove partial save file if save has been aborted
 
             try:
-                if outfile.aborted:
-                    os.rename(tmpfile, filepath)
-                else:
-                    os.remove(tmpfile)
+                os.rename(tmpfile, filepath)
+
             except OSError:
                 # No tmp file present
                 pass
 
             self.saving = False
             wx.EndBusyCursor()
+            self.grid.Enable()
 
         # Mark content as unchanged
         try:
