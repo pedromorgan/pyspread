@@ -101,8 +101,8 @@ def digested_line(line, digest_types):
         try:
             digested_line.append(repr(digest(ele)))
 
-        except Exception, err:
-            digested_line.append(str(err))
+        except Exception:
+            digested_line.append("")
 
     return digested_line
 
