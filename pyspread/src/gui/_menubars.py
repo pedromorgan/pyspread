@@ -296,7 +296,7 @@ class MainMenu(_filledMenu, EventMixin):
                         wx.ID_REFRESH]],
                 ["Separator"],
                 [item, [self.ViewFrozenMsg, _("Show Frozen"),
-                        _("Shows which cells are currently forzen in a "
+                        _("Shows which cells are currently frozen in a "
                         "crosshatch.")],
                         wx.ITEM_CHECK]]],
             [wx.Menu, _("F&ormat"), [
