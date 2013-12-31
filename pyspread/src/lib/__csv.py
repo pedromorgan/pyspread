@@ -101,8 +101,8 @@ def digested_line(line, digest_types):
         try:
             digested_line.append(repr(digest(ele)))
 
-        except Exception, err:
-            digested_line.append(str(err))
+        except Exception:
+            digested_line.append("")
 
     return digested_line
 
@@ -426,8 +426,8 @@ class CsvInterface(StatusBarEventMixin):
                 elif digest_key is not types.CodeType:
                     digest_res = repr(digest_res)
 
-            except Exception, err:
-                digest_res = str(err)
+            except Exception:
+                digest_res = ""
 
             yield digest_res
 

@@ -551,8 +551,12 @@ class CSVPreviewGrid(wx.grid.Grid):
 
         # Fill in the rest of the lines
 
-        self.dtypes = \
-            [self.digest_types[key] for key in self.get_digest_keys()]
+        self.dtypes = []
+        for key in self.get_digest_keys():
+            try:
+                self.dtypes.append(self.digest_types[key])
+            except KeyError:
+                self.dtypes.append(types.NoneType)
 
         topleft = (has_header + 1, 0)
 

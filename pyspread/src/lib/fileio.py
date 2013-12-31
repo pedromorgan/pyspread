@@ -64,13 +64,11 @@ class AOpenMixin(object):
         try:
             self.total_lines = kwargs.pop("total_lines")
             self.statustext = statustext + \
-                _("{nele} of {totalele} elements processed. "
-                  "Press <Esc> to abort.")
+                _("{nele} of {totalele} elements processed.")
 
         except KeyError:
             self.total_lines = None
-            self.statustext = statustext + \
-                _("{nele} elements processed. Press <Esc> to abort.")
+            self.statustext = statustext + _("{nele} elements processed.")
 
         try:
             self.freq = kwargs.pop("freq")
@@ -122,12 +120,20 @@ class AOpenMixin(object):
         if self.line % self.freq == 0:
             text = self.statustext.format(nele=self.line,
                                           totalele=self.total_lines)
-            try:
-                post_command_event(self.main_window,
-                                   self.main_window.StatusBarMsg, text=text)
-            except TypeError:
-                # The main window does not exist any more
-                pass
+
+            if self.main_window.grid.actions.pasting:
+                try:
+                    post_command_event(self.main_window,
+                                       self.main_window.StatusBarMsg,
+                                       text=text)
+                except TypeError:
+                    # The main window does not exist any more
+                    pass
+            else:
+                # Write directly to the status bar because the event queue
+                # is not emptied during file access
+
+                self.main_window.GetStatusBar().SetStatusText(text)
 
             # Now wait for the statusbar update to be written on screen
             if is_gtk():

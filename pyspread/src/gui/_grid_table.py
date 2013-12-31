@@ -90,8 +90,6 @@ class GridTable(wx.grid.PyGridTableBase):
         if table is None:
             table = self.grid.current_table
 
-        wx.BeginBusyCursor()
-
         try:
             cell_code = self.data_array((row, col, table))
         except IndexError:
@@ -104,8 +102,6 @@ class GridTable(wx.grid.PyGridTableBase):
             chunk = 80
             cell_code = "\n".join(cell_code[i:i + chunk]
                                   for i in xrange(0, len(cell_code), chunk))
-
-        wx.EndBusyCursor()
 
         return cell_code
 
