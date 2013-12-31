@@ -148,7 +148,14 @@ class Config(object):
         if key == "version":
             return self.version
 
-        return literal_eval(getattr(self.data, key))
+        try:
+            return literal_eval(getattr(self.data, key))
+
+        except KeyError:
+            # Probably, there is a problem with the config file --> use default
+            setattr(self.data, key, getattr(DefaultConfig(), key))
+
+            return literal_eval(getattr(self.data, key))
 
     def __setitem__(self, key, value):
         """Main config element write access"""
