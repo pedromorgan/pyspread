@@ -1,14 +1,14 @@
 # Brazilian Portuguese translation for pyspread
 # Copyright (C) 2013 Free Software Foundation, Inc.
 # This file is distributed under the same license as the pyspread package.
-# Enrico Nicoletto <liverig@gmail.com>, 2013.
+# Enrico Nicoletto <liverig@gmail.com>, 2013, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: pyspread 0.2.6-pre1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-12-31 14:32+0100\n"
-"PO-Revision-Date: 2013-12-31 19:40-0300\n"
+"PO-Revision-Date: 2013-12-31 11:52-0300\n"
 "Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <ldpbr-translation@lists.sourceforge.net>\n"
 "Language: pt_BR\n"
@@ -486,6 +486,9 @@ msgid ""
 "If a string, like ‘r’ or ‘red’, all levels will be plotted in this color.\n"
 "If a tuple of matplotlib color args (string, float, rgb, etc), different levels will be plotted in different colors in the order specified."
 msgstr ""
+"Se for nenhuma (none), será usado o mapa de cores especificado pelo cmap.\n"
+"Se for uma string, como ‘r’ ou ‘red’ (vermelho), todos os níveis serão traçados nesta cor.\n"
+"Se for uma tupla ou argumentos de cores do matplotlib (string, float, rgb, etc), os diferentes níveis serão traçados com diferentes cores e na ordem especificada."
 
 #: src/gui/_chart_dialog.py:1125
 msgid "The alpha blending value"
@@ -614,16 +617,20 @@ msgid ""
 "List of specifications of the labels for the flows.\n"
 "Each value may be None (no labels), ‘’ (just label the quantities), or a labeling string. If a single value is provided, it will be applied to all flows. If an entry is a non-empty string, then the quantity for the corresponding flow will be shown below the string. However, if the unit of the main diagram is None, then quantities are never shown, regardless of the value of this argument."
 msgstr ""
+"Lista de especificações dos rótulos para os fluxos.\n"
+"Cada valor pode ser nenhum/none (sem rótulos), ‘’ (apenas rotular quantidades), ou uma string de rotulação. Se for fornecido um único valor, este será aplicado a todos os fluxos. Se uma entrada é uma string não-vazia, então a quantidade para o fluxo correspondente será mostrado abaixo da string. Contudo, se a unidade do diagrama principal for nenhuma/none, então as quantidades nunca serão mostradas, independentemente do valor deste argumento."
 
 #: src/gui/_chart_dialog.py:1198
 msgid ""
 "String representing the physical unit associated with the flow quantities.\n"
 "If unit is None, then none of the quantities are labeled."
 msgstr ""
+"String representando a unidade física associada com as quantidades de fluxo.\n"
+"Se a unidade for nenhuma (none), então nenhuma das quantidades serão rotuladas."
 
 #: src/gui/_chart_dialog.py:1201
 msgid "A Python number formatting string to be used in labeling the flow as a quantity (i.e., a number times a unit, where the unit is given)"
-msgstr ""
+msgstr "Uma string de formatação de número em Python a ser usada na rotulação do fluxo como quantidade (por exemplo: um número vezes uma unidade, onde a unidade é fornecida)"
 
 #: src/gui/_chart_dialog.py:1204
 msgid "Angle of rotation of the diagram [deg]"
@@ -1038,7 +1045,7 @@ msgstr "Citar célula(s)"
 
 #: src/gui/_menubars.py:244
 msgid "Converts cell content to strings by adding quotes (\"). If a selection is present then its cells are quoted."
-msgstr ""
+msgstr "Converte o conteúdo de células para strings ao adicionar aspas (\"). Se uma seleção estiver presente, então suas células serão citadas (aspas)."
 
 #: src/gui/_menubars.py:252
 msgid "Insert &table"
