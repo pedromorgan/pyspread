@@ -247,8 +247,7 @@ class RotoRect(object):
         self.y = y
         self.width = width
         self.height = height
-        self.angle_rad = angle / 180.0 * pi
-        self.angle_deg = angle
+        self.angle = angle
 
     def __str__(self):
         return "RotoRect(" + \
@@ -256,23 +255,64 @@ class RotoRect(object):
                                 self.width, self.height, self.angle))) + \
             ")"
 
+    def sin_a(self):
+        """Returns sin of rect angle"""
+
+        return sin(self.angle / 180.0 * pi)
+
+    def cos_a(self):
+        """Returns cos of rect angle"""
+
+        return cos(self.angle / 180.0 * pi)
+
+    def get_vec_lr(self):
+        """Returns vector from left to right"""
+
+        return self.width * self.cos_a(), -self.width * self.sin_a()
+
+    def get_vec_tb(self):
+        """Returns vector from top to bottom"""
+
+        return self.height * self.sin_a(), self.height * self.cos_a()
+
+
     def get_center(self):
         """Returns rectangle center"""
 
-        c_a = cos(self.angle_rad)
-        s_a = sin(self.angle_rad)
+        lr_x, lr_y = self.get_vec_lr()
+        tb_x, tb_y = self.get_vec_tb()
 
-        center_x = self.x + self.width / 2.0 * c_a - self.height / 2.0 * s_a
-        center_y = self.y - self.height / 2.0 * c_a - self.width / 2.0 * s_a
+        center_x = self.x + (lr_x + tb_x) / 2.0
+        center_y = self.y + (lr_y + tb_y) / 2.0
 
         return center_x, center_y
+
+    def get_edges(self):
+        """Returns 2-tuples for each edge
+
+        top_left
+        top_right
+        bottom_left
+        bottom_right
+
+        """
+
+        lr_x, lr_y = self.get_vec_lr()
+        tb_x, tb_y = self.get_vec_tb()
+
+        top_left = self.x, self.y
+        top_right = self.x + lr_x, self.y + lr_y
+        bottom_left = self.x + tb_x, self.y + tb_y
+        bottom_right = self.x + lr_x + tb_x, self.y + lr_y + tb_y
+
+        return top_left, top_right, bottom_left, bottom_right
 
     def collides_axisaligned_rect(self, other):
         """Returns collision with axis aligned other rect"""
 
         # Shift both rects so that self is centered at origin
 
-        self_shifted = RotoOriginRect(self.width, self.height, -self.angle_deg)
+        self_shifted = RotoOriginRect(self.width, self.height, -self.angle)
 
         ##self_shifted_bbox = self_shifted.get_bbox()
 

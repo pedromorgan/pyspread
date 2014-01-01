@@ -293,6 +293,9 @@ class Grid(wx.grid.Grid, EventMixin):
         \tRow of cell that is tested for collision
         col: Integer
         \tColumn of cell that is tested for collision
+        textbox: RotoRect
+        \tRotated rectangle that is checked for colliding cells
+
         """
 
         def l1_radius_cells(dist):
@@ -314,6 +317,18 @@ class Grid(wx.grid.Grid, EventMixin):
         vis_col_min = vis_cell_slice[1].start
         vis_col_max = vis_cell_slice[1].stop
 
+        textbox_edge_cells = \
+            [self.XYToCell(*edge) for edge in textbox.get_edges()]
+        textbox_cells = []
+        if (-1, -1) not in textbox_edge_cells:
+            tb_min_row = min(row for row, col in textbox_edge_cells)
+            tb_max_row = max(row for row, col in textbox_edge_cells)
+            tb_min_col = min(col for row, col in textbox_edge_cells)
+            tb_max_col = max(col for row, col in textbox_edge_cells)
+            for tb_row in xrange(tb_min_row, tb_max_row + 1):
+                for tb_col in xrange(tb_min_col, tb_max_col + 1):
+                    textbox_cells.append((tb_row, tb_col))
+
         max_visible_distance = max(vis_row_max - row, vis_col_max - col,
                                    row - vis_row_min, col - vis_col_min)
 
@@ -326,6 +341,7 @@ class Grid(wx.grid.Grid, EventMixin):
 
                 if vis_row_min <= __row <= vis_row_max and \
                    vis_col_min <= __col <= vis_col_max and \
+                   (not textbox_cells or (__row, __col) in textbox_cells) and \
                    self.IsVisible(__row, __col, wholeCellVisible=False):
                     cell_rect = self.CellToRect(__row, __col)
                     cell_rect = xrect.Rect(cell_rect.x, cell_rect.y,

@@ -206,6 +206,35 @@ class TestRotoOriginRect(object):
 class TestRotoRect(object):
     """Unit tests for RotoRect"""
 
+    param_get_center = [
+        {'x': 0, 'y': 0, 'w': 20, 'h': 10, 'angle': 0, 'res': (10, 5)},
+        {'x': 50, 'y': 0, 'w': 20, 'h': 10, 'angle': 0, 'res': (60, 5)},
+        {'x': 50, 'y': 0, 'w': 20, 'h': 10, 'angle': 90, 'res': (55, -10)},
+        {'x': 50, 'y': 0, 'w': 20, 'h': 10, 'angle': 270, 'res': (45, 10)},
+    ]
+
+    @params(param_get_center)
+    def test_get_center(self, x, y, w, h, angle, res):
+        rect = xrect.RotoRect(x, y, w, h, angle)
+        center = rect.get_center()
+        assert map(round, center) == map(round, res)
+
+    param_get_edges = [
+        {'x': 0, 'y': 0, 'w': 20, 'h': 10, 'angle': 0,
+         'res': ((0, 0), (20, 0), (0, 10), (20, 10))},
+        {'x': 50, 'y': 0, 'w': 20, 'h': 10, 'angle': 0,
+         'res': ((50, 0), (70, 0), (50, 10), (70, 10))},
+        {'x': 50, 'y': 0, 'w': 20, 'h': 10, 'angle': 90,
+         'res': ((50, 0), (50, -20), (60, 0), (60, -20))},
+    ]
+
+    @params(param_get_edges)
+    def test_get_edges(self, x, y, w, h, angle, res):
+        rect = xrect.RotoRect(x, y, w, h, angle)
+        edges = rect.get_edges()
+        for edge, resele in zip(edges, res):
+            assert map(round, edge) == map(round, resele)
+
     param_collides_axisaligned_rect = [
         # Identity
         {'x': 0, 'y': 0, 'w': 20, 'h': 10, 'angle': 0,
