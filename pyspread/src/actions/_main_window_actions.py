@@ -613,7 +613,19 @@ class MacroActions(Actions):
         """
 
         try:
-            macro_infile = open(filepath, "r")
+            wx.BeginBusyCursor()
+            with open(filepath) as macro_infile:
+                # Enter safe mode ()
+                self.main_window.grid.actions.enter_safe_mode()
+                post_command_event(self.main_window, self.SafeModeEntryMsg)
+
+                # Mark content as changed
+                post_command_event(self.main_window, self.ContentChangedMsg,
+                                   changed=True)
+
+                macrocode = macro_infile.read()
+
+                self.grid.code_array.macros += "\n" + macrocode.strip("\n")
 
         except IOError:
             msg = _("Error opening file {filepath}.").format(filepath=filepath)
@@ -621,17 +633,8 @@ class MacroActions(Actions):
 
             return False
 
-        # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
-
-        macrocode = macro_infile.read()
-        macro_infile.close()
-
-        self.grid.code_array.macros += "\n" + macrocode.strip("\n")
-
-        self.main_window.grid.actions.enter_safe_mode()
-        post_command_event(self.main_window, self.SafeModeEntryMsg)
+        finally:
+            wx.EndBusyCursor()
 
     def save_macros(self, filepath, macros):
         """Saves macros to file
@@ -648,22 +651,34 @@ class MacroActions(Actions):
         io_error_text = _("Error writing to file {filepath}.")
         io_error_text = io_error_text.format(filepath=filepath)
 
+        # Make sure that old macro file does not get lost on abort save
+        tmpfile = filepath + "~"
+
         try:
-            with open(filepath, "w") as macro_outfile:
+            wx.BeginBusyCursor()
+            with open(tmpfile, "w") as macro_outfile:
                 macro_outfile.write(macros)
 
+            # Move save file from temp file to filepath
+            try:
+                os.rename(tmpfile, filepath)
+
+            except OSError:
+                # No tmp file present
+                pass
+
         except IOError:
-            txt = _("Error opening file {filepath}.").format(filepath=filepath)
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=txt)
+                                   text=io_error_text)
             except TypeError:
                 # The main window does not exist any more
                 pass
 
-            wx.EndBusyCursor()
-
             return False
+
+        finally:
+            wx.EndBusyCursor()
 
 
 class HelpActions(Actions):

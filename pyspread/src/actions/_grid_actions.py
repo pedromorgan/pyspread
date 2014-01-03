@@ -421,13 +421,7 @@ class FileActions(Actions):
         self.saving = True
 
         # Make sure that old save file does not get lost on abort save
-        try:
-            tmpfile = filepath + "~"
-            os.rename(filepath, tmpfile)
-
-        except OSError:
-            # No file present
-            pass
+        tmpfile = filepath + "~"
 
         try:
             wx.BeginBusyCursor()
@@ -443,24 +437,7 @@ class FileActions(Actions):
                     post_command_event(self.main_window, self.StatusBarMsg,
                                        text=err)
 
-                finally:
-                    wx.EndBusyCursor()
-
-        except IOError:
-            msg = _("Error writing to file {filepath}.")
-            msg = msg.format(filepath=tmpfile)
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=msg)
-            except TypeError:
-                # The main window does not exist any more
-                pass
-
-            return False
-
-        finally:
-            # Remove partial save file if save has been aborted
-
+            # Move save file from temp file to filepath
             try:
                 os.rename(tmpfile, filepath)
 
@@ -468,6 +445,17 @@ class FileActions(Actions):
                 # No tmp file present
                 pass
 
+        except IOError:
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=io_error_text)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+            return False
+
+        finally:
             self.saving = False
             wx.EndBusyCursor()
             self.grid.Enable()

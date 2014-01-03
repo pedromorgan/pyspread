@@ -1,3 +1,4 @@
+
 def eq(code, **kwargs):
 	from matplotlib.figure import Figure
 	if "horizontalalignment" not in kwargs:
