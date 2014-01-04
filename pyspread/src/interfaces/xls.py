@@ -32,7 +32,12 @@ from copy import copy
 from datetime import datetime
 from itertools import product
 
-import xlrd
+try:
+    import xlrd
+
+except ImportError:
+    xlrd = None
+
 import wx
 
 import src.lib.i18n as i18n
