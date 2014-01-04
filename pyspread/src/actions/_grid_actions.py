@@ -993,6 +993,20 @@ class GridActions(Actions):
     def on_mouse_over(self, key):
         """Displays cell code of cell key in status bar"""
 
+        def split_lines(string, line_length=80):
+            """Returns string that is split into lines of length line_length"""
+
+            result = u""
+            line = 0
+
+            while len(string) > line_length * line:
+                line_start = line * line_length
+                result += string[line_start:line_start+line_length]
+                result += '\n'
+                line += 1
+
+            return result[:-1]
+
         row, col, tab = key
 
         if (row, col) != self.prev_rowcol and row >= 0 and col >= 0:
@@ -1007,6 +1021,22 @@ class GridActions(Actions):
 
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=hinttext)
+
+            cell_res = self.grid.code_array[row, col, tab]
+
+            if cell_res is None:
+                self.grid.SetToolTip(None)
+                return
+
+            try:
+                cell_res_str = unicode(cell_res)
+            except UnicodeEncodeError:
+                cell_res_str = unicode(cell_res, encoding='utf-8')
+
+            if len(cell_res_str) > max_result_length:
+                cell_res_str = cell_res_str[:max_result_length] + ' [...]'
+
+            self.grid.SetToolTipString(split_lines(cell_res_str))
 
     def get_visible_area(self):
         """Returns visible area

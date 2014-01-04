@@ -260,7 +260,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         text_x, text_y = self.get_text_position(dc, rect, res_text, angle,
                                                 vertical_align, justification)
 
-        __rect = xrect.Rect(rect.x, rect.y, rect.width, rect.height)
+        #__rect = xrect.Rect(rect.x, rect.y, rect.width, rect.height)
 
         text_extent = dc.GetTextExtent(res_text)
 
@@ -271,30 +271,39 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         text_pos = text_x, text_y, angle
 
-        if all(__rect.is_point_in_rect(*textedge) for textedge in
-               self.get_textbox_edges(text_pos, text_extent)):
-            clipping = False
-        else:
-            clipping = True
-            clip_rects = \
-                self._get_available_space_rects(dc, grid, key, rect, text_pos,
-                                                text_extent, res_text)
+        dc.SetClippingRect(rect)
+        dc.DrawRotatedText(res_text, *text_pos)
+        text_extent = dc.GetTextExtent(res_text)
+        if strikethrough:
+            self._draw_strikethrough_line(grid, dc, rect, text_x,
+                                          text_y, angle, text_extent)
+        dc.DestroyClippingRegion()
 
-        if clipping:
-            for clip_rect in clip_rects:
-                dc.SetClippingRect(clip_rect)
-                dc.DrawRotatedText(res_text, *text_pos)
-                text_extent = dc.GetTextExtent(res_text)
-                if strikethrough:
-                    self._draw_strikethrough_line(grid, dc, rect, text_x,
-                                                  text_y, angle, text_extent)
-                dc.DestroyClippingRegion()
-        else:
-            dc.DrawRotatedText(res_text, *text_pos)
-            text_extent = dc.GetTextExtent(res_text)
-            if strikethrough:
-                self._draw_strikethrough_line(grid, dc, rect, text_x, text_y,
-                                              angle, text_extent)
+
+#        if all(__rect.is_point_in_rect(*textedge) for textedge in
+#               self.get_textbox_edges(text_pos, text_extent)):
+#            clipping = False
+#        else:
+#            clipping = True
+#            clip_rects = \
+#                self._get_available_space_rects(dc, grid, key, rect, text_pos,
+#                                                text_extent, res_text)
+#
+#        if clipping:
+#            for clip_rect in clip_rects:
+#                dc.SetClippingRect(clip_rect)
+#                dc.DrawRotatedText(res_text, *text_pos)
+#                text_extent = dc.GetTextExtent(res_text)
+#                if strikethrough:
+#                    self._draw_strikethrough_line(grid, dc, rect, text_x,
+#                                                  text_y, angle, text_extent)
+#                dc.DestroyClippingRegion()
+#        else:
+#            dc.DrawRotatedText(res_text, *text_pos)
+#            text_extent = dc.GetTextExtent(res_text)
+#            if strikethrough:
+#                self._draw_strikethrough_line(grid, dc, rect, text_x, text_y,
+#                                              angle, text_extent)
 
     def _draw_strikethrough_line(self, grid, dc, rect,
                                  string_x, string_y, angle, text_extent):
