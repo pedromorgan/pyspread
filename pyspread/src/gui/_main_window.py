@@ -667,7 +667,6 @@ class MainWindowEventHandlers(EventMixin):
         except ImportError:
             wildcard = \
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
-                _("Excel file") + " (*.xls)|*.xls|" + \
                 _("All files") + " (*.*)|*.*"
             xlrd = None
 
