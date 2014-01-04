@@ -1497,6 +1497,7 @@ class FigurePanel(wx.Panel):
     def __do_layout(self):
         self.main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
 
+        self.main_sizer.AddGrowableRow(0)
         self.main_sizer.AddGrowableCol(0)
         self.main_sizer.AddGrowableCol(1)
 
@@ -1569,29 +1570,37 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((1000, 600))
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
         self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
 
     def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(2, 3, 2, 2)
+        main_sizer = wx.FlexGridSizer(2, 1, 2, 2)
+        chart_sizer = wx.FlexGridSizer(1, 3, 2, 2)
         figure_attributes_box_sizer = \
             wx.StaticBoxSizer(self.figure_attributes_staticbox, wx.HORIZONTAL)
         series_box_sizer = \
             wx.StaticBoxSizer(self.series_staticbox, wx.VERTICAL)
         button_sizer = wx.FlexGridSizer(1, 3, 0, 3)
 
-        main_sizer.Add(figure_attributes_box_sizer, 1, wx.EXPAND, 0)
-        main_sizer.Add(series_box_sizer, 1, wx.EXPAND, 0)
-        main_sizer.Add(self.figure_panel, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
-        main_sizer.Add(button_sizer, wx.ALL | wx.EXPAND, 3)
+        main_sizer.Add(chart_sizer, 1, wx.EXPAND, 0)
+        main_sizer.Add(button_sizer, 1, wx.FIXED_MINSIZE, 0)
 
+        chart_sizer.Add(figure_attributes_box_sizer, 1, wx.EXPAND, 0)
+        chart_sizer.Add(series_box_sizer, 1, wx.EXPAND, 0)
+        chart_sizer.Add(self.figure_panel, 1, wx.EXPAND, 0)
+
+        main_sizer.SetMinSize((1000, -1))
+        main_sizer.SetFlexibleDirection(wx.BOTH)
+        main_sizer.AddGrowableCol(0)
         main_sizer.AddGrowableRow(0)
-        main_sizer.SetItemMinSize(1, (300, 300))
-        main_sizer.AddGrowableCol(0, proportion=1)
-        main_sizer.AddGrowableCol(1, proportion=1)
-        main_sizer.AddGrowableCol(2, proportion=1.5)
+        main_sizer.RemoveGrowableRow(1)
+
+        chart_sizer.SetMinSize((1000, -1))
+        chart_sizer.AddGrowableRow(0)
+        chart_sizer.AddGrowableCol(0, proportion=1)
+        chart_sizer.AddGrowableCol(1, proportion=1)
+        chart_sizer.AddGrowableCol(2, proportion=1)
 
         figure_attributes_box_sizer.Add(self.figure_attributes_panel,
                                         1, wx.EXPAND, 0)
@@ -1602,8 +1611,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         button_sizer.Add(self.cancel_button, 0, style, 3)
         button_sizer.AddGrowableCol(2)
 
-        self.SetSizer(main_sizer)
         self.Layout()
+        self.SetSizerAndFit(main_sizer)
+
 
     def get_figure(self, code):
         """Returns figure from executing code in grid
