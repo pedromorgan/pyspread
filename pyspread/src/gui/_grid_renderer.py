@@ -142,73 +142,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         dc.DrawLine(pt_lr[0], pt_lr[1], pt_ur[0], pt_ur[1])
         dc.DrawLine(pt_ur[0], pt_ur[1], pt_ul[0], pt_ul[1])
 
-    def _get_full_cells(self, dc, grid, key, text_pos, text_extent):
-        """Generator of full cells from key in direction
-
-        Parameters
-        ----------
-        key: 3-tuple of Integer
-        \tCurrent cell
-        text_pos: 3-tuple
-        \tPosition and direction of text
-
-        """
-
-        row, col, tab = key
-
-        blocking_distance = None
-
-        textbox = self.get_text_rotorect(text_pos, text_extent)
-
-        for distance, __row, __col in grid.colliding_cells(row, col, textbox):
-            # Draw blocking arrows if locking cell is not empty
-
-            if not(
-               (blocking_distance is None or distance == blocking_distance)
-               and not self.data_array[__row, __col, tab]):
-
-                yield __row, __col, tab
-
-    def _get_empty_cells(self, dc, grid, key, text_pos, text_extent):
-        """Generator of empty cells from key in direction
-
-        Parameters
-        ----------
-        key: 3-tuple of Integer
-        \tCurrent cell
-        text_pos: 3-tuple
-        \tPosition and direction of text
-
-        """
-
-        row, col, tab = key
-
-        blocking_distance = None
-
-        textbox = self.get_text_rotorect(text_pos, text_extent)
-
-        for distance, __row, __col in grid.colliding_cells(row, col, textbox):
-
-            if blocking_distance is None or distance == blocking_distance:
-                if self.data_array[__row, __col, tab] is not None and \
-                   self.data_array[__row, __col, tab] != "":
-                    blocking_distance = distance
-                else:
-                    yield __row, __col, tab
-
-    def _get_available_space_rects(self, dc, grid, key, rect, text_pos,
-                                   text_extent, res_text):
-        """Returns rects needed by key cell that are in available space"""
-
-        yield rect
-
-        for cell in self._get_empty_cells(dc, grid, key,
-                                          text_pos, text_extent):
-            __row, __col, _ = cell
-            cell_rect = grid.CellToRect(__row, __col)
-
-            yield cell_rect
-
     def draw_text_label(self, dc, res, rect, grid, key):
         """Draws text label of cell
 
@@ -278,32 +211,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             self._draw_strikethrough_line(grid, dc, rect, text_x,
                                           text_y, angle, text_extent)
         dc.DestroyClippingRegion()
-
-
-#        if all(__rect.is_point_in_rect(*textedge) for textedge in
-#               self.get_textbox_edges(text_pos, text_extent)):
-#            clipping = False
-#        else:
-#            clipping = True
-#            clip_rects = \
-#                self._get_available_space_rects(dc, grid, key, rect, text_pos,
-#                                                text_extent, res_text)
-#
-#        if clipping:
-#            for clip_rect in clip_rects:
-#                dc.SetClippingRect(clip_rect)
-#                dc.DrawRotatedText(res_text, *text_pos)
-#                text_extent = dc.GetTextExtent(res_text)
-#                if strikethrough:
-#                    self._draw_strikethrough_line(grid, dc, rect, text_x,
-#                                                  text_y, angle, text_extent)
-#                dc.DestroyClippingRegion()
-#        else:
-#            dc.DrawRotatedText(res_text, *text_pos)
-#            text_extent = dc.GetTextExtent(res_text)
-#            if strikethrough:
-#                self._draw_strikethrough_line(grid, dc, rect, text_x, text_y,
-#                                              angle, text_extent)
 
     def _draw_strikethrough_line(self, grid, dc, rect,
                                  string_x, string_y, angle, text_extent):
@@ -602,13 +509,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 bg = self.backgrounds[bg_key] = \
                     Background(grid, rect, self.data_array, *key)
 
-        if is_gtk() and not printing:
-            mask_type = wx.AND
-        else:
-            mask_type = wx.COPY
-
         dc.Blit(rect.x, rect.y, rect.width, rect.height,
-                bg.dc, 0, 0, mask_type)
+                bg.dc, 0, 0, wx.COPY)
 
         # Check if the dc is drawn manually be a return func
         try:
