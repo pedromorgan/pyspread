@@ -65,6 +65,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         # bordercolor_bottom, bordercolor_right)
         self.backgrounds = {}
 
+        # Fontcache speeds up font retrieval
+        self.font_cache = {}
+
+        # Bitmap cache speeds up bitmap scaling
+        self.bmp_cache = {}
+
         # Zoom of grid
         self.zoom = 1.0
 
@@ -266,13 +272,21 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         """
 
+        fontsize = self.get_zoomed_size(pointsize)
+
+        font_key = textfont, fontsize, fontweight, fontstyle, underline
+        if font_key in self.font_cache:
+            return self.font_cache[font_key]
+
         # Get a real font from textfont string
 
         font = get_font_from_data(textfont)
-        font.SetPointSize(self.get_zoomed_size(pointsize))
+        font.SetPointSize(fontsize)
         font.SetWeight(fontweight)
         font.SetStyle(fontstyle)
         font.SetUnderlined(underline)
+
+        self.font_cache[font_key] = font
 
         return font
 
@@ -435,15 +449,22 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         """
 
-        def scale(bmp, width, height):
+        def scale(img, width, height):
             """Returns a scaled version of the bitmap bmp"""
 
-            img = bmp.ConvertToImage()
             img = img.Scale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
             return wx.BitmapFromImage(img)
 
+
         if scale:
-            bmp = scale(bmp, rect.width, rect.height)
+            img = bmp.ConvertToImage()
+            bmp_key = img, rect.width, rect.height
+
+            if bmp_key in self.bmp_cache:
+                return self.bmp_cache[bmp_key]
+
+            bmp = scale(*bmp_key)
+            self.bmp_cache[bmp_key] = bmp
 
         dc.DrawBitmap(bmp, rect.x, rect.y)
 
