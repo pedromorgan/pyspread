@@ -193,7 +193,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         font = self.get_font(textfont, pointsize, fontweight, fontstyle,
                              underline)
-        font.SetFaceName(textfont)  # Windows hack
         dc.SetFont(font)
 
         text_x, text_y = self.get_text_position(dc, rect, res_text, angle,
@@ -285,6 +284,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         font.SetWeight(fontweight)
         font.SetStyle(fontstyle)
         font.SetUnderlined(underline)
+        font.SetFaceName(textfont)  # Windows hack
 
         self.font_cache[font_key] = font
 

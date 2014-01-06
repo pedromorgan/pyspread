@@ -163,7 +163,6 @@ class Grid(wx.grid.Grid, EventMixin):
         # Grid events
 
         self.GetGridWindow().Bind(wx.EVT_MOTION, handlers.OnMouseMotion)
-        self.Bind(wx.EVT_SCROLLWIN, handlers.OnScroll)
         self.Bind(wx.grid.EVT_GRID_RANGE_SELECT, handlers.OnRangeSelected)
 
         # Context menu
@@ -755,11 +754,6 @@ class GridEventHandlers(object):
             elif keycode == 27:
                 # Esc pressed
                 self.grid.actions.need_abort = True
-
-        event.Skip()
-
-    def OnScroll(self, event):
-        """Event handler for grid scroll event"""
 
         event.Skip()
 
