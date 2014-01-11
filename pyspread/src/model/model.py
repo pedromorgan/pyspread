@@ -1175,27 +1175,35 @@ class CodeArray(DataArray):
 
         else:
 
-            import signal
+            try:
+                import signal
 
-            signal.signal(signal.SIGALRM, self.handler)
-            signal.alarm(config["timeout"])
+                signal.signal(signal.SIGALRM, self.handler)
+                signal.alarm(config["timeout"])
+
+            except:
+                # No POSIX system
+                pass
 
             try:
                 result = eval(expression, env, {})
-                signal.alarm(0)
 
             except AttributeError, err:
                 # Attribute Error includes RunTimeError
                 result = AttributeError(err)
-                signal.alarm(0)
 
             except RuntimeError, err:
                 result = RuntimeError(err)
-                signal.alarm(0)
 
             except Exception, err:
                 result = Exception(err)
-                signal.alarm(0)
+
+            finally:
+                try:
+                    signal.alarm(0)
+                except:
+                    # No POSIX system
+                    pass
 
         # Change back cell value for evaluation from other cells
         self.dict_grid[key] = _old_code
@@ -1274,14 +1282,23 @@ class CodeArray(DataArray):
         sys.stdout = code_out
         sys.stderr = code_err
 
-        import signal
+        try:
+            import signal
 
-        signal.signal(signal.SIGALRM, self.handler)
-        signal.alarm(config["timeout"])
+            signal.signal(signal.SIGALRM, self.handler)
+            signal.alarm(config["timeout"])
+
+        except:
+            # No POSIX system
+            pass
 
         try:
             exec(self.macros, globals())
-            signal.alarm(0)
+            try:
+                signal.alarm(0)
+            except:
+                # No POSIX system
+                pass
 
         except Exception:
             # Print exception
