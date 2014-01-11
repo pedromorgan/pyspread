@@ -62,7 +62,7 @@ def object2code(key, code):
             code = False
 
     else:
-        code = str(code)
+        code = unicode(code)
 
     return code
 
