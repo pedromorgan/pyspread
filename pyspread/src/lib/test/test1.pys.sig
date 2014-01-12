@@ -1,7 +1,7 @@
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.15 (GNU/Linux)
+Version: GnuPG v1
 
-iF4EABEIAAYFAlLILowACgkQKXdVVrbtfeasTQEAjITrxV0b1zcaXA1Kkj2w2/ld
-znZiiD8ktKKGEs5xCjgA/3I0/RRp+prpgxPGcop0NRBeQXswgU0oN3x171VvmUom
-=pY07
+iF4EABEIAAYFAlLSgeMACgkQKXdVVrbtfeZkoQD/btl0N3/vFJD0C62+V4ldwWid
+tByZzvcFawNViUxLsH0BALRSr1Mzu8Q6/2gqvrkBpwl6Nd2UauFrv+UBDNAJhHir
+=KvEp
 -----END PGP SIGNATURE-----

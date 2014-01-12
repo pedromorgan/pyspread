@@ -3,6 +3,37 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+0.2.6
+-----
+
+New interface concept for loading and saving files
+Fonts in charts can now be changed in chart dialog
+Chart ticks can now be edited in chart dialog
+Windows compatibility added to pypi category meta-data
+Excel xls files can now be opened
+New dependency xlrd introduced
+Macro dialog now shows error messages
+Multiple rows/columns that are selected are now resized together
+"Select All" added to Edit menu
+Text can now be imported via Past As
+"Show frozen" added to View menu, which changes the background of frozen cells
+Display area of merged cells has been corrected on GTK platforms
+Error messages are now displayed in the StatusBar
+Cell editor now is resized when the text grows too large for a cell
+Multiple selected cells can now be quotated together
+Tooltips for Bold and Italics corrected
+Example macro for in cell LaTeX equations added
+Contour plots added to chart dialog
+Pie cart rotation angle ccan now be changed in chart dialog
+Sankey diagrams added to chart dialog
+Timeout for cell evaluation added (Unix only, fixes many pyspread freeze-ups)
+Error message when removing the header flag in the csv dialog fixed
+Status bad updates when pasting into the grid are now enforced
+Cells are now always clipped (performance). Tooltips show longer results
+Chart dialog now always shows the OK and the Cancel button
+Parsing error of Unicode chaaracters in chart dialog fixed
+
+
 0.2.5
 -----
 
@@ -15,11 +46,11 @@ Pyspread now displays dates with matplotlib 1.3.0
 Translator information and Thanks file updated
 CSV import now allows different file encodings
 Chart padding fixed
-Translator added to About dialog 
+Translator added to About dialog
 PATHs in test files are now set system independently
 Save file dialog styles switched to file choice
 Tooltip text for pie chart colors is extended
-Chart grid lines are now separately selectable for each axis 
+Chart grid lines are now separately selectable for each axis
 Annotation texts are now treated as code instead of strings
 All unit tests now succeed in Windows
 Ukranian mo file updated
