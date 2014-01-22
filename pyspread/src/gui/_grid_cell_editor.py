@@ -113,7 +113,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         # For this example, select the text
         self._tc.SetSelection(0, self._tc.GetLastPosition())
 
-    def EndEdit(self, row, col, grid):
+    def EndEdit(self, row, col, grid, oldVal=None):
         """
         End editing the cell.  This function must check if the current
         value of the editing control is valid and different from the
