@@ -1057,7 +1057,15 @@ class MainWindowEventHandlers(EventMixin):
     # Edit events
     def OnSelectAll(self, event):
         """Select all cells event handler"""
-        self.main_window.grid.SelectAll()
+
+        entry_line = \
+            self.main_window.entry_line_panel.entry_line_panel.entry_line
+
+        if wx.Window.FindFocus() != entry_line:
+            self.main_window.grid.SelectAll()
+
+        else:
+            entry_line.SelectAll()
 
     # View events
 
