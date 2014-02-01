@@ -980,10 +980,18 @@ class MainWindowEventHandlers(EventMixin):
     def OnCut(self, event):
         """Clipboard cut event handler"""
 
-        data = self.main_window.actions.cut(self.main_window.grid.selection)
-        self.main_window.clipboard.set_clipboard(data)
+        entry_line = \
+            self.main_window.entry_line_panel.entry_line_panel.entry_line
 
-        self.main_window.grid.ForceRefresh()
+        if wx.Window.FindFocus() != entry_line:
+            selection = self.main_window.grid.selection
+            data = self.main_window.actions.cut(selection)
+            self.main_window.clipboard.set_clipboard(data)
+
+            self.main_window.grid.ForceRefresh()
+
+        else:
+            entry_line.Cut()
 
         event.Skip()
 
