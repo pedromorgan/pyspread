@@ -31,8 +31,11 @@ Error message when removing the header flag in the csv dialog fixed
 Status bad updates when pasting into the grid are now enforced
 Cells are now always clipped (performance). Tooltips show longer results
 Chart dialog now always shows the OK and the Cancel button
-Parsing error of Unicode chaaracters in chart dialog fixed
-
+Parsing error of Unicode characters in chart dialog fixed
+Danish translation updated
+First bug fixes for wxPython 3 compatibility (not there yet)
+Ctrl + A inside the entry line now selects the whole entry line instead of the whole grid
+Ctrl + X inside the entry line now does not cut the whole cell any more
 
 0.2.5
 -----
