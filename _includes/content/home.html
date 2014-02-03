@@ -71,25 +71,29 @@
             <th style="vertical-align: top;">news<br></th>
 
             <td style="vertical-align: top; text-align: left;">
-                January 2014: Pyspread 0.2.6 is out. Get it <a href=
-                "">
+                February 2014: Pyspread 0.2.6 is out. Get it <a href=
+                "https://pypi.python.org/packages/source/p/pyspread/pyspread-0.2.6.tar.gz#md5=58777ac67dfe044370331f2a7f887a40">
                 here</a>.
                 <div style="margin-left: 40px;">
                     <br>
                     New features:<br>
 
                     <ul>
-                        <li>String representation of S removed to prevent lockups in large grids</li>
 
-                        <li>Brazilian Portuguese localization added<br></li>
+                        <li>Reading support for Excel xls files (requires dependency xlrd)</li>
 
-                        <li>CSV file import now allows different file encodings<br></li>
+                        <li>Code execution timeout, i. e. buggy code such as infinite loops does
+			    not lock up pyspread any more.
+			    Note: The timeout does not work for C operations such as
+		            a ** <big number><br></li>
 
-                        <li>Improved chart dialog<br></li>
+                        <li>Macro dialog now provides an error message field<br></li>
 
-                        <li>Unit tests now succeed in Windows<br></li>
+                        <li>Contour plots and Sankey charts added to chart dialog<br></li>
 
-                        <li>Various bug fixes<br></li>
+                        <li>Chart dialog further improved<br></li>
+
+                        <li>Example macro for in cell LaTeX equations added<br></li>
                     </ul>
                 </div>
                 <br>
@@ -215,6 +219,11 @@
                         "http://code.google.com/p/python-gnupg/">python-gnupg</a>
                         (&gt;=0.3.0)<br>
                     </li>
+                    <li>
+                        <a href=
+                        "http://www.python-excel.org/">xlrd (optional for opening Excel files)</a>
+                        (&gt;=0.9.2)<br>
+                    </li>
                 </ul>
             </td>
 
@@ -258,4 +267,4 @@
 <p><span style="font-style: italic;">Copyright Martin Manns<br>
 Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br style=
 "font-style: italic;"></span> <span style="font-style: italic;">Last changed:
-31. December 2013</span></p>
+03. February 2014</span></p>
