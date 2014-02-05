@@ -31,7 +31,7 @@ import wx
 
 ##from sysvars import get_color, get_font_string
 
-VERSION = "0.2.6"
+VERSION = "0.2.7"
 
 
 class DefaultConfig(object):
