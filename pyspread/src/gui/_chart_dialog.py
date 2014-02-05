@@ -1594,7 +1594,10 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         main_sizer.SetFlexibleDirection(wx.BOTH)
         main_sizer.AddGrowableCol(0)
         main_sizer.AddGrowableRow(0)
-        main_sizer.RemoveGrowableRow(1)
+        try:
+            main_sizer.RemoveGrowableRow(1)
+        except:
+            pass
 
         chart_sizer.SetMinSize((1000, -1))
         chart_sizer.AddGrowableRow(0)
