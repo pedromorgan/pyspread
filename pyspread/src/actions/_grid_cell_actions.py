@@ -69,6 +69,13 @@ class CellActions(Actions):
         """Returns string quoted code """
 
         old_code = self.grid.code_array(key)
+        try:
+            old_code = old_code.rstrip()
+
+        except AttributeError:
+            # Old code is None --> There is no code to quote
+            return
+
         if old_code and old_code[0] + old_code[-1] not in ('""', "''") and \
             '"' not in old_code:
             self.set_code(key, '"' + old_code + '"', mark_unredo=mark_unredo)
