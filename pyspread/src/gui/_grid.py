@@ -713,57 +713,45 @@ class GridEventHandlers(object):
     def OnKey(self, event):
         """Handles non-standard shortcut events"""
 
+        grid = self.grid
+        actions = grid.actions
+
+        shift, alt, ctrl = 1, 1 << 1, 1 << 2
+
+        # Shortcuts key tuple: (modifier, keycode)
+        # Modifier may be e. g. shift | ctrl
+
+        shortcuts = {
+            # <Esc> pressed
+            (0, 27): lambda: setattr(actions, "need_abort", True),
+            # <Del> pressed
+            (0, 127): actions.delete,
+            # <Home> pressed
+            (0, 313): lambda: actions.set_cursor((grid.GetGridCursorRow(), 0)),
+            # <Ctrl> + + pressed
+            (ctrl, 388): actions.zoom_in,
+            # <Ctrl> + - pressed
+            (ctrl, 390): actions.zoom_out,
+        }
+
         keycode = event.GetKeyCode()
         #print keycode
 
-        # If in selection mode and <Enter> is pressed end it
-        if not self.grid.IsEditable() and keycode == 13:
-            ## TODO!
-            pass
+        modifier = 0
+        if event.ShiftDown():
+            modifier |= shift
 
-        elif event.ControlDown():
-            if keycode == 388:
-                # Ctrl + + pressed
-                post_command_event(self.grid, self.grid.ZoomInMsg)
+        if event.AltDown():
+            modifier |= alt
 
-            elif keycode == 390:
-                # Ctrl + - pressed
-                post_command_event(self.grid, self.grid.ZoomOutMsg)
+        if event.ControlDown():
+            modifier |= ctrl
+
+        if (modifier, keycode) in shortcuts:
+            shortcuts[(modifier, keycode)]()
 
         else:
-            # No Ctrl pressed
-
-            if keycode == 127:
-                # Del pressed
-
-                # Is grid selection present? --> Delete it
-                if self.grid.IsSelection():
-                    # Delete selection
-                    self.grid.actions.delete_selection()
-
-                else:
-                    # Delete cell at cursor
-                    cursor = self.grid.actions.cursor
-                    self.grid.actions.delete_cell(cursor)
-
-                # Update grid
-                self.grid.ForceRefresh()
-
-                # Do not enter cell
-                return
-
-            elif keycode == 27:
-                # Esc pressed
-                self.grid.actions.need_abort = True
-
-            elif keycode == 313:
-                # Home pressed: Switch to first column
-                self.grid.actions.set_cursor((self.grid.GetGridCursorRow(), 0))
-
-                # Do not enter cell
-                return
-
-        event.Skip()
+            event.Skip()
 
     def OnRangeSelected(self, event):
         """Event handler for grid selection"""

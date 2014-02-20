@@ -142,7 +142,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         *Must Override*
         """
         val = self._tc.GetValue()
-        grid.GetTable().SetValue(row, col, val) # update the table
+        grid.GetTable().SetValue(row, col, val)  # update the table
 
         self.startValue = ''
         self._tc.SetValue('')
@@ -152,7 +152,12 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Reset the value in the control back to its starting value.
         *Must Override*
         """
-        self._tc.SetValue(self.startValue)
+
+        try:
+            self._tc.SetValue(self.startValue)
+        except TypeError:
+            # Start value was None
+            pass
         self._tc.SetInsertionPointEnd()
         # Update the Entry Line
         post_command_event(self.main_window, self.TableChangedMsg,

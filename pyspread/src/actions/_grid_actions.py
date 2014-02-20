@@ -1205,6 +1205,25 @@ class SelectionActions(Actions):
 
         self.grid.code_array.result_cache.clear()
 
+    def delete(self):
+        """Deletes a selection if any else deletes the cursor cell
+
+        Refreshes grid after deletion
+
+        """
+
+        if self.grid.IsSelection():
+            # Delete selection
+            self.grid.actions.delete_selection()
+
+        else:
+            # Delete cell at cursor
+            cursor = self.grid.actions.cursor
+            self.grid.actions.delete_cell(cursor)
+
+        # Update grid
+        self.grid.ForceRefresh()
+
     def quote_selection(self):
         """Quotes selected cells, marks content as changed"""
 

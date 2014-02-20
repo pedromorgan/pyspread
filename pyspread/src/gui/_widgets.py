@@ -857,7 +857,13 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
         if hasattr(event, 'updated_cell'):
             # Event posted by cell edit widget.  Even more up to date
             #  than the current cell's contents
-            self.SetValue(event.updated_cell)
+            try:
+                self.SetValue(event.updated_cell)
+
+            except TypeError:
+                # None instead of string present
+                pass
+
         else:
             current_cell = self.main_window.grid.actions.cursor
             current_cell_code = self.main_window.grid.code_array(current_cell)
