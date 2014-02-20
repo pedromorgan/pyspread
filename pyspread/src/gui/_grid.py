@@ -732,20 +732,19 @@ class GridEventHandlers(object):
             (ctrl, 388): actions.zoom_in,
             # <Ctrl> + - pressed
             (ctrl, 390): actions.zoom_out,
+            # <Shift> + <Space> pressed
+            (shift, 32): lambda: grid.SelectRow(grid.GetGridCursorRow()),
+            # <Ctrl> + <Space> pressed
+            (ctrl, 32): lambda: grid.SelectCol(grid.GetGridCursorCol()),
+            # <Shift> + <Ctrl> + <Space> pressed
+            (shift | ctrl, 32): grid.SelectAll,
         }
 
         keycode = event.GetKeyCode()
         #print keycode
 
-        modifier = 0
-        if event.ShiftDown():
-            modifier |= shift
-
-        if event.AltDown():
-            modifier |= alt
-
-        if event.ControlDown():
-            modifier |= ctrl
+        modifier = shift * event.ShiftDown() | \
+            alt * event.AltDown() | ctrl * event.ControlDown()
 
         if (modifier, keycode) in shortcuts:
             shortcuts[(modifier, keycode)]()
