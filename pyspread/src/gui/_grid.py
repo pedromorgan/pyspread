@@ -714,6 +714,7 @@ class GridEventHandlers(object):
         """Handles non-standard shortcut events"""
 
         keycode = event.GetKeyCode()
+        #print keycode
 
         # If in selection mode and <Enter> is pressed end it
         if not self.grid.IsEditable() and keycode == 13:
@@ -735,7 +736,7 @@ class GridEventHandlers(object):
             if keycode == 127:
                 # Del pressed
 
-                # Is grid selection present? --> Delete current cell
+                # Is grid selection present? --> Delete it
                 if self.grid.IsSelection():
                     # Delete selection
                     self.grid.actions.delete_selection()
@@ -754,6 +755,13 @@ class GridEventHandlers(object):
             elif keycode == 27:
                 # Esc pressed
                 self.grid.actions.need_abort = True
+
+            elif keycode == 313:
+                # Home pressed: Switch to first column
+                self.grid.actions.set_cursor((self.grid.GetGridCursorRow(), 0))
+
+                # Do not enter cell
+                return
 
         event.Skip()
 
