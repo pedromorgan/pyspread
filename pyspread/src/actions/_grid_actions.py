@@ -1238,6 +1238,33 @@ class SelectionActions(Actions):
 
         self.grid.code_array.result_cache.clear()
 
+    def copy_selection_access_string(self):
+        """Copys access_string to selection to the clipboard
+
+        An access string is Python code to reference the selection
+        If there is no selection then a reference to the current cell is copied
+
+        """
+
+        selection = self.get_selection()
+        if not selection:
+            cursor = self.grid.actions.cursor
+            selection = Selection([], [], [], [], [tuple(cursor[:2])])
+        shape = self.grid.code_array.shape
+        tab = self.grid.current_table
+
+        access_string = selection.get_access_string(shape, tab)
+
+        # Copy access string to clipboard
+        self.grid.main_window.clipboard.set_clipboard(access_string)
+
+        # Display copy operation and access string in status bar
+        statustext = _("Cell reference copied to clipboard: {access_string}")
+        statustext = statustext.format(access_string=access_string)
+
+        post_command_event(self.main_window, self.StatusBarMsg,
+                           text=statustext)
+
 
 class FindActions(Actions):
     """Actions for finding inside the grid"""

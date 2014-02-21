@@ -728,6 +728,8 @@ class GridEventHandlers(object):
             (0, 127): actions.delete,
             # <Home> pressed
             (0, 313): lambda: actions.set_cursor((grid.GetGridCursorRow(), 0)),
+            # <Ctrl> + R pressed
+            (ctrl, 82): actions.copy_selection_access_string,
             # <Ctrl> + + pressed
             (ctrl, 388): actions.zoom_in,
             # <Ctrl> + - pressed
