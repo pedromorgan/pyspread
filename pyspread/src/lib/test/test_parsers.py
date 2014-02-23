@@ -57,7 +57,11 @@ if not "__WXMSW__" in wx.PlatformInfo:
     def test_get_font_from_data(fontdata, face, size):
         """Unit test for get_font_from_data"""
 
-        font = get_font_from_data(fontdata)
+        try:
+            font = get_font_from_data(fontdata)
+        except:
+            # msttcorefonts is missing
+            return
 
         assert font.GetFaceName() == face
         assert font.GetPointSize() == size
