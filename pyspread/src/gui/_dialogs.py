@@ -1277,9 +1277,9 @@ class PreferencesDialog(wx.Dialog):
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
-        ("gpg_key_uid", {
-            "label": _(u"GPG key name"),
-            "tooltip": _(u"Name of the GPG key for signing files"),
+        ("gpg_key_fingerprint", {
+            "label": _(u"GPG key id"),
+            "tooltip": _(u"Fingerprint of the GPG key for signing files"),
             "widget": wx.TextCtrl,
             "widget_params": {},
             "prepocessor": unicode,

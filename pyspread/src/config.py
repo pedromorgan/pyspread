@@ -104,7 +104,8 @@ class DefaultConfig(object):
         # GPG parameters
         # --------------
 
-        self.gpg_key_uid = repr('')
+        #self.gpg_key_uid = repr('')  # Deprecated
+        self.gpg_key_fingerprint = repr('')
 
         # CSV parameters for import and export
         # ------------------------------------
@@ -181,12 +182,13 @@ class Config(object):
                 setattr(self.data, key, getattr(DefaultConfig(), key))
             self.data.config_version = self.version
 
-        # Reset GPG key if version prior 0.2.4
-        # because of pyme -> gnupg migration
+        # Delete gpg_key_uid and insert fingerprint key
 
-        if old_config:
-            key = "gpg_key_uid"
-            setattr(self.data, key, getattr(DefaultConfig(), key))
+        if hasattr(self.data, "gpg_key_uid"):
+            oldkey = "gpg_key_uid"
+            delattr(self.data, oldkey)
+            newkey = "gpg_key_fingerprint"
+            setattr(self.data, newkey, getattr(DefaultConfig(), newkey))
 
     def save(self):
         """Saves configuration file"""

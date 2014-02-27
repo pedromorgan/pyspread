@@ -94,22 +94,26 @@ def genkey():
 
     # Check if standard key is already present
 
-    pyspread_key_uid = str(config["gpg_key_uid"])
-    gpg_private_keylist = gpg.list_keys(True)
+    pyspread_key_fingerprint = str(config["gpg_key_fingerprint"])
+    gpg_private_keys = gpg.list_keys(True)
+    gpg_private_fingerprints = gpg.list_keys(True).fingerprints
 
     pyspread_key = None
 
-    for private_key in gpg_private_keylist:
-        if pyspread_key_uid in private_key["uids"]:
+    for private_key, fingerprint in zip(gpg_private_keys,
+                                        gpg_private_fingerprints):
+        if pyspread_key_fingerprint == fingerprint:
             pyspread_key = private_key
 
     if pyspread_key is None:
         # If no GPG key is set in config, choose one
-        pyspread_key_uid, pyspread_key = choose_uid_key(gpg_private_keylist)
+        pyspread_key_uid, pyspread_key = choose_uid_key(gpg_private_keys)
 
     if pyspread_key:
         # A key has been chosen
-        config["gpg_key_uid"] = repr(pyspread_key_uid)
+        fingerprint = \
+            gpg_private_fingerprints[gpg_private_keys.index(pyspread_key)]
+        config["gpg_key_fingerprint"] = repr(fingerprint)
 
     else:
         # No key has been chosen --> Create new one
@@ -138,7 +142,8 @@ def genkey():
 
             for private_key in gpg.list_keys(True):
                 if str(fingerprint) == private_key['fingerprint']:
-                    config["gpg_key_uid"] = repr(private_key['uids'][0])
+                    config["gpg_key_fingerprint"] = repr(
+                        private_key.fingerprint)
 
         else:
             dlg.Destroy()
@@ -152,7 +157,7 @@ def sign(filename):
 
     signfile = open(filename, "rb")
 
-    signed_data = gpg.sign_file(signfile, keyid=config["gpg_key_uid"],
+    signed_data = gpg.sign_file(signfile, keyid=config["gpg_key_fingerprint"],
                                 detach=True)
     signfile.close()
 
