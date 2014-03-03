@@ -49,21 +49,22 @@ from src.gui._gui_interfaces import get_key_params_from_user
 _ = i18n.language.ugettext
 
 
-def choose_uid_key(keylist):
-    """Displays gpg key choice and returns uid and key dict"""
+def choose_key(gpg_private_keys, gpg_private_fingerprints):
+    """Displays gpg key choice and returns key"""
 
-    uid_strings = []
-    uid_string2key = {}
+    uid_strings_fp = []
+    uid_string_fp2key = {}
 
-    for key in keylist:
+    for key, fingerprint in zip(gpg_private_keys, gpg_private_fingerprints):
         for uid_string in key['uids']:
-            uid_strings.append(uid_string)
-            uid_string2key[uid_string] = key
+            uid_string_fp = '"' + uid_string + '" fingerprint=' + fingerprint
+            uid_strings_fp.append(uid_string_fp)
+            uid_string_fp2key[uid_string_fp] = key
 
     msg = _('Choose a GPG key for signing pyspread save files.\n'
             'The GPG key must not have a passphrase set.')
 
-    dlg = wx.SingleChoiceDialog(None, msg, _('Choose key'), uid_strings,
+    dlg = wx.SingleChoiceDialog(None, msg, _('Choose key'), uid_strings_fp,
                                 wx.CHOICEDLG_STYLE)
 
     dlg.SetBestFittingSize()
@@ -73,16 +74,15 @@ def choose_uid_key(keylist):
     childlist[-2].SetLabel(_("Create new key"))
 
     if dlg.ShowModal() == wx.ID_OK:
-        uid = dlg.GetStringSelection()
-        key = uid_string2key[uid]
+        uid_string_fp = dlg.GetStringSelection()
+        key = uid_string_fp2key[uid_string_fp]
 
     else:
-        uid = None
         key = None
 
     dlg.Destroy()
 
-    return uid, key
+    return key
 
 
 def genkey():
@@ -107,7 +107,7 @@ def genkey():
 
     if pyspread_key is None:
         # If no GPG key is set in config, choose one
-        pyspread_key_uid, pyspread_key = choose_uid_key(gpg_private_keys)
+        pyspread_key = choose_key(gpg_private_keys, gpg_private_fingerprints)
 
     if pyspread_key:
         # A key has been chosen
