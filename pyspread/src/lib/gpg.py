@@ -57,7 +57,7 @@ def choose_key(gpg_private_keys, gpg_private_fingerprints):
 
     for key, fingerprint in zip(gpg_private_keys, gpg_private_fingerprints):
         for uid_string in key['uids']:
-            uid_string_fp = '"' + uid_string + '" fingerprint=' + fingerprint
+            uid_string_fp = '"' + uid_string + ' (' + fingerprint + ')'
             uid_strings_fp.append(uid_string_fp)
             uid_string_fp2key[uid_string_fp] = key
 
