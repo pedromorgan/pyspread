@@ -31,7 +31,7 @@ import wx
 
 ##from sysvars import get_color, get_font_string
 
-VERSION = "0.2.7"
+VERSION = "0.2.8"
 
 
 class DefaultConfig(object):
@@ -74,6 +74,8 @@ class DefaultConfig(object):
         self.grid_tables = "3"
 
         self.max_unredo = "5000"
+
+        self.timer_interval = "1000"
 
         # Maximum result length in a cell in characters
         self.max_result_length = "1000"

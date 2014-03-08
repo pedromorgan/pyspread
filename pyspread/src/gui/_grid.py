@@ -42,8 +42,10 @@ from _chart_dialog import ChartDialog
 
 import src.lib.i18n as i18n
 from src.sysvars import is_gtk
+from src.config import config
 
 import src.lib.xrect as xrect
+from src.lib.selection import Selection
 from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
@@ -128,6 +130,9 @@ class Grid(wx.grid.Grid, EventMixin):
         # If we are viewing cells based on their frozen status or normally
         #  (When true, a cross-hatch is displayed for frozen cells)
         self._view_frozen = False
+
+        # Timer for updating frozen cells
+        self.timer_running = False
 
     def _layout(self):
         """Initial layout of grid"""
@@ -222,6 +227,9 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_VIEW_FROZEN, handlers.OnViewFrozen)
         main_window.Bind(self.EVT_CMD_REFRESH_SELECTION,
                          handlers.OnRefreshSelectedCells)
+        main_window.Bind(self.EVT_CMD_TIMER_TOGGLE,
+                         handlers.OnTimerToggle)
+        self.Bind(wx.EVT_TIMER, handlers.OnTimer)
         main_window.Bind(self.EVT_CMD_DISPLAY_GOTO_CELL_DIALOG,
                          handlers.OnDisplayGoToCellDialog)
         main_window.Bind(self.EVT_CMD_GOTO_CELL, handlers.OnGoToCell)
@@ -817,6 +825,29 @@ class GridEventHandlers(object):
         self.grid.ForceRefresh()
 
         event.Skip()
+
+    def OnTimerToggle(self, event):
+        """Toggles the timer for updating frozen cells"""
+
+        if self.grid.timer_running:
+            # Stop timer
+            self.grid.timer_running = False
+            self.grid.timer.Stop()
+            del self.grid.timer
+
+        else:
+            # Start timer
+            self.grid.timer_running = True
+            self.grid.timer = wx.Timer(self.grid)
+            self.grid.timer.Start(config["timer_interval"])
+
+    def OnTimer(self, event):
+        """Update all frozen cells because of timer call"""
+
+        shape = self.grid.code_array.shape[:2]
+        selection = Selection([(0, 0)], [(shape)], [], [], [])
+        self.grid.actions.refresh_selected_frozen_cells(selection)
+        self.grid.ForceRefresh()
 
     def OnZoomIn(self, event):
         """Event handler for increasing grid zoom"""

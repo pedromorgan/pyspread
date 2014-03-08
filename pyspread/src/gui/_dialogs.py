@@ -1277,6 +1277,13 @@ class PreferencesDialog(wx.Dialog):
             "widget_params": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
+        ("timer_interval", {
+            "label": _(u"Timer interval"),
+            "tooltip": _(u"Interval for periodic updating of timed cells."),
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "allow_long": True},
+            "prepocessor": int,
+        }),
         ("gpg_key_fingerprint", {
             "label": _(u"GPG key id"),
             "tooltip": _(u"Fingerprint of the GPG key for signing files"),

@@ -467,6 +467,13 @@ class CellActions(Actions):
             # Default next value
             return self.attr_toggle_values[attr_key][1]
 
+    def refresh_frozen_cell(self, key):
+        """Refreshes a frozen cell"""
+
+        code = self.grid.code_array(key)
+        result = self.grid.code_array._eval_cell(key, code)
+        self.grid.code_array.frozen_cache[repr(key)] = result
+
     def refresh_selected_frozen_cells(self, selection=None):
         """Refreshes content of frozen cells that are currently selected
 
@@ -489,6 +496,8 @@ class CellActions(Actions):
 
         cell_attributes = self.grid.code_array.cell_attributes
 
+        refreshed_keys = []
+
         for attr_selection, tab, attr_dict in cell_attributes:
             if tab == self.grid.actions.cursor[2] and \
                "frozen" in attr_dict and attr_dict["frozen"]:
@@ -496,8 +505,9 @@ class CellActions(Actions):
                 skey = attr_selection.cells[0]
                 if skey in selection:
                     key = tuple(list(skey) + [tab])
-                    code = self.grid.code_array(key)
-                    result = self.grid.code_array._eval_cell(key, code)
-                    self.grid.code_array.frozen_cache[repr(key)] = result
+                    if key not in refreshed_keys and \
+                       cell_attributes[key]["frozen"]:
+                        self.refresh_frozen_cell(key)
+                        refreshed_keys.append(key)
 
         cell_attributes._attr_cache.clear()

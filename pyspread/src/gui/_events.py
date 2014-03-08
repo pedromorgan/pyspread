@@ -176,6 +176,7 @@ class GridEventMixin(object):
 
     ViewFrozenMsg, EVT_CMD_VIEW_FROZEN = new_command_event()
     RefreshSelectionMsg, EVT_CMD_REFRESH_SELECTION = new_command_event()
+    TimerToggleMsg, EVT_CMD_TIMER_TOGGLE = new_command_event()
     DisplayGotoCellDialogMsg, EVT_CMD_DISPLAY_GOTO_CELL_DIALOG = \
         new_command_event()
     GotoCellMsg, EVT_CMD_GOTO_CELL = new_command_event()

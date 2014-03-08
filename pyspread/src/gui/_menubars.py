@@ -226,8 +226,9 @@ class MainMenu(_filledMenu, EventMixin):
                         _("Copy the input strings of the cells to clipboard"),
                         wx.ID_COPY]],
                 [item, [self.CopyResultMsg,
-                        _("Copy &Results") + "\tShift+Ctrl+c", _("Copy the "
-                        "result strings of the cells to the clipboard")]],
+                        _("Copy &Results") + "\tShift+Ctrl+c",
+                        _("Copy the result strings of the cells to the "
+                          "clipboard")]],
                 [item, [self.PasteMsg, _("&Paste") + "\tCtrl+v",
                         _("Paste cells from clipboard"), wx.ID_PASTE]],
                 [item, [self.PasteAsMsg, _("Paste &As...") + "\tShift+Ctrl+v",
@@ -294,11 +295,15 @@ class MainMenu(_filledMenu, EventMixin):
                         _("Refresh selected cells") + "\tF5",
                         _("Refresh selected cells even when frozen"),
                         wx.ID_REFRESH]],
+                [item, [self.TimerToggleMsg,
+                        _("Toggle periodic updates"),
+                        _("Toggles periodic cell updates for frozen cells")],
+                 wx.ITEM_CHECK],
                 ["Separator"],
                 [item, [self.ViewFrozenMsg, _("Show Frozen"),
                         _("Shows which cells are currently frozen in a "
-                        "crosshatch.")],
-                        wx.ITEM_CHECK]]],
+                          "crosshatch.")],
+                 wx.ITEM_CHECK]]],
             [wx.Menu, _("F&ormat"), [
                 [item, [self.FontDialogMsg, _("Font..."),
                         _("Launch font dialog.")]],
@@ -314,7 +319,7 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.FrozenMsg, _("Frozen"),
                         _("Toggles frozen state of cell. ") +
                         _("Frozen cells are updated only "
-                        "when F5 is pressed.")]],
+                          "when F5 is pressed.")]],
                 [item, [self.MergeMsg, _("Merge cells"),
                         _("Merges / unmerges selected cells. ")]],
 
@@ -335,7 +340,7 @@ class MainMenu(_filledMenu, EventMixin):
                         _("Launch color dialog to specify text color.")]],
                 [item, [self.BgColorDialogMsg, _("Background color..."),
                         _("Launch color dialog to specify background "
-                        "color.")]],
+                          "color.")]],
                 ["Separator"],
                 [item, [self.RotationDialogMsg, _("Rotation..."),
                         _("Set text rotation.")]]]],
