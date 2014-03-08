@@ -1281,7 +1281,7 @@ class PreferencesDialog(wx.Dialog):
             "label": _(u"Timer interval"),
             "tooltip": _(u"Interval for periodic updating of timed cells."),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_params": {"min": 100, "allow_long": True},
             "prepocessor": int,
         }),
         ("gpg_key_fingerprint", {

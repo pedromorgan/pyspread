@@ -844,6 +844,8 @@ class GridEventHandlers(object):
     def OnTimer(self, event):
         """Update all frozen cells because of timer call"""
 
+        self.timer_updating = True
+
         shape = self.grid.code_array.shape[:2]
         selection = Selection([(0, 0)], [(shape)], [], [], [])
         self.grid.actions.refresh_selected_frozen_cells(selection)
