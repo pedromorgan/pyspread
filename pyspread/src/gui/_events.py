@@ -165,6 +165,10 @@ class GridEventMixin(object):
     PasteMsg, EVT_CMD_PASTE = new_command_event()
     PasteAsMsg, EVT_CMD_PASTE_AS = new_command_event()
 
+    # Sorting events
+    SortAscendingMsg, EVT_SORT_ASCENDING = new_command_event()
+    SortDescendingMsg, EVT_SORT_DESCENDING = new_command_event()
+
     # Grid edit mode events
 
     SelectAll, EVT_CMD_SELECT_ALL = new_command_event()

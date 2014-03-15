@@ -89,6 +89,8 @@ class GtkArtProvider(wx.ArtProvider):
             "contour": action_path + "chart_contour.png",  # matplotlib
             "Sankey": action_path + "chart_sankey.png",  # matplotlib
             "safe_mode": icon_path + "status/dialog-warning.png",
+            "SortAscending": action_path + "edit-sort-ascending.png",
+            "SortDescending": action_path + "edit-sort-descending.png",
         }
 
     def get_paths(self, theme, icon_size):

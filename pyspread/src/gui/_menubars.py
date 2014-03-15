@@ -246,6 +246,13 @@ class MainMenu(_filledMenu, EventMixin):
                           '("). If a selection is present then its cells are '
                           'quoted.')]],
                 ["Separator"],
+                [item, [self.SortAscendingMsg, _("Sort &ascending"),
+                        _("Sort rows in selection or current table ascending "
+                          "corresponding to row at cursor.")]],
+                [item, [self.SortDescendingMsg, _("Sort &descending"),
+                        _("Sort rows in selection or current table descending "
+                          "corresponding to row at cursor.")]],
+                ["Separator"],
                 [item, [self.InsertRowsMsg, _("Insert &rows"),
                         _("Insert rows at cursor")]],
                 [item, [self.InsertColsMsg, _("&Insert columns"),

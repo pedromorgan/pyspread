@@ -164,6 +164,10 @@ class MainToolbar(ToolbarBase):
             ["T", self.CopyResultMsg, "EditCopyRes", _("Copy Results")],
             ["T", self.PasteMsg, "EditPaste", _("Paste")],
             ["S"],
+            ["T", self.SortAscendingMsg, "SortAscending", _("Sort ascending")],
+            ["T", self.SortDescendingMsg, "SortDescending",
+             _("Sort descending")],
+            ["S"],
             ["T", self.PrintMsg, "FilePrint", _("Print")],
         ]
 
