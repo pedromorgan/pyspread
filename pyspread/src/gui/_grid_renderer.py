@@ -45,7 +45,7 @@ import src.lib.i18n as i18n
 from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
-from src.sysvars import get_color, is_gtk
+from src.sysvars import get_color
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -500,11 +500,15 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             else:
                 return
 
+        lower_right_rect_extents = self.get_lower_right_rect_extents(key, rect)
+
+
         if isSelected:
             grid.selection_present = True
 
-            bg = Background(grid, rect, self.data_array, row, col,
-                            grid.current_table, isSelected)
+            bg = Background(grid, rect, lower_right_rect_extents,
+                            self.data_array, row, col, grid.current_table,
+                            isSelected)
         else:
             width, height = rect.width, rect.height
 
@@ -514,9 +518,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             if grid._view_frozen:
                 bg_components += ['frozen']
 
+            bg_components += [lower_right_rect_extents]
+
             bg_key = tuple([width, height] +
                            [self.data_array.cell_attributes[key][bgc]
-                               for bgc in bg_components])
+                               for bgc in bg_components[:-1]] + \
+                           [bg_components[-1]])
 
             try:
                 bg = self.backgrounds[bg_key]
@@ -528,7 +535,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                     self.backgrounds = {}
 
                 bg = self.backgrounds[bg_key] = \
-                    Background(grid, rect, self.data_array, *key)
+                    Background(grid, rect, lower_right_rect_extents,
+                               self.data_array, *key)
 
         dc.Blit(rect.x, rect.y, rect.width, rect.height,
                 bg.dc, 0, 0, wx.COPY)
@@ -562,13 +570,38 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         if grid.actions.cursor[:2] == (row, col):
             self.update_cursor(dc, grid, row, col)
 
+    def get_lower_right_rect_extents(self, key, rect):
+        """Returns lower right rect x,y,w,h tuple if rect needed else None"""
+
+        row, col, tab = key
+        cell_attributes = self.data_array.cell_attributes
+        x, y, w, h = 0, 0, rect.width - 1, rect.height - 1
+
+        # Do we need to draw a lower right rectangle?
+        bottom_key = row + 1, col, tab
+        right_key = row, col + 1, tab
+
+
+        right_width = cell_attributes[key]["borderwidth_right"]
+        bottom_width = cell_attributes[key]["borderwidth_bottom"]
+
+        bottom_width_right = cell_attributes[right_key]["borderwidth_bottom"]
+        right_width_bottom = cell_attributes[bottom_key]["borderwidth_right"]
+
+        if bottom_width < bottom_width_right and \
+           right_width < right_width_bottom:
+            return (x + w - right_width_bottom,
+                    y + h - bottom_width_right,
+                    right_width_bottom, bottom_width_right)
+
 # end of class TextRenderer
 
 
 class Background(object):
     """Memory DC with background content for given cell"""
 
-    def __init__(self, grid, rect, data_array, row, col, tab, selection=False):
+    def __init__(self, grid, rect, lower_right_rect_extents, data_array,
+                 row, col, tab, selection=False):
         self.grid = grid
         self.data_array = data_array
 
@@ -577,6 +610,8 @@ class Background(object):
         self.dc = wx.MemoryDC()
         self.rect = rect
         self.bmp = wx.EmptyBitmap(rect.width, rect.height)
+
+        self.lower_right_rect_extents = lower_right_rect_extents
 
         self.selection = selection
 
@@ -692,5 +727,33 @@ class Background(object):
             zoomed_pens.append(zoomed_pen)
 
         dc.DrawLineList(lines, zoomed_pens)
+
+        # Draw lower right rectangle if
+        # 1) the next cell to the right has a greater bottom width and
+        # 2) the next cell to the bottom has a greater right width
+
+        if self.lower_right_rect_extents is not None:
+            rx, ry, rw, rh = self.lower_right_rect_extents
+            rwz = get_zoomed_size(rw)
+            rhz = get_zoomed_size(rh)
+            rxz = round(rx + rw - rwz / 2.0)
+            ryz = round(ry + rh - rhz / 2.0)
+            rect = wx.Rect(rxz, ryz, rwz, rhz)
+
+            # The color of the lower right rectangle is the color of the
+            # bottom line of the next cell to the right
+
+            rightkey = row, col + 1, tab
+            lr_color = wx.Colour()
+
+            lr_color.SetRGB(cell_attributes[rightkey]["bordercolor_bottom"])
+
+            lr_brush = wx.Brush(lr_color, wx.SOLID)
+
+            dc.SetPen(wx.TRANSPARENT_PEN)
+            dc.SetBrush(lr_brush)
+
+            dc.DrawRectangle(*rect)
+
 
 # end of class Background
