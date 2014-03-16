@@ -263,6 +263,10 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(wx.grid.EVT_GRID_ROW_SIZE, handlers.OnRowSize)
         main_window.Bind(wx.grid.EVT_GRID_COL_SIZE, handlers.OnColSize)
 
+        main_window.Bind(self.EVT_CMD_SORT_ASCENDING, handlers.OnSortAscending)
+        main_window.Bind(self.EVT_CMD_SORT_DESCENDING,
+                         handlers.OnSortDescending)
+
         # Undo/Redo events
 
         main_window.Bind(self.EVT_CMD_UNDO, handlers.OnUndo)
@@ -1244,6 +1248,16 @@ class GridEventHandlers(object):
 
         event.Skip()
         self.grid.Refresh()
+
+    def OnSortAscending(self, event):
+        """Sort ascending event handler"""
+
+        self.grid.actions.sort_ascending(self.grid.actions.cursor)
+
+    def OnSortDescending(self, event):
+        """Sort descending event handler"""
+
+        self.grid.actions.sort_descending(self.grid.actions.cursor)
 
     # Undo and redo events
 

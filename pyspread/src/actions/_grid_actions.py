@@ -857,6 +857,67 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         self.code_array.unredo.reset()
         self.code_array.result_cache.clear()
 
+    def replace_cells(self, key, sorted_row_idxs):
+        """Replaces cells in current selection so that they are sorted"""
+
+        row, col, tab = key
+
+        new_keys = {}
+        del_keys = []
+
+        selection = self.grid.actions.get_selection()
+
+        for __row, __col, __tab in self.grid.code_array:
+            if __tab == tab and \
+               (not selection or (__row, __col) in selection):
+                new_row = sorted_row_idxs.index(__row)
+                if __row != new_row:
+                    new_keys[(new_row, __col, __tab)] = \
+                        self.grid.code_array((__row, __col, __tab))
+                    del_keys.append((__row, __col, __tab))
+
+        for key in del_keys:
+            self.grid.code_array.pop(key, mark_unredo=False)
+
+        for key in new_keys:
+            self.grid.code_array.__setitem__(key, new_keys[key],
+                                             mark_unredo=False)
+
+        self.grid.code_array.unredo.mark()
+
+    def sort_ascending(self, key):
+        """Sorts selection (or grid if none) corresponding to column of key"""
+
+        row, col, tab = key
+
+        scells = self.grid.code_array[:, col, tab]
+
+        def sorter(i):
+            sorted_ele = scells[i]
+            return sorted_ele is None, sorted_ele
+
+        sorted_row_idxs = sorted(xrange(len(scells)), key=sorter)
+
+        self.replace_cells(key, sorted_row_idxs)
+
+        self.grid.ForceRefresh()
+
+    def sort_descending(self, key):
+        """Sorts inversely selection (or grid if none)
+
+        corresponding to column of key
+
+        """
+
+        row, col, tab = key
+
+        scells = self.grid.code_array[:, col, tab]
+        sorted_row_idxs = sorted(xrange(len(scells)), key=scells.__getitem__)
+        sorted_row_idxs.reverse()
+
+        self.replace_cells(key, sorted_row_idxs)
+
+        self.grid.ForceRefresh()
 
 class UnRedoActions(Actions):
     """Undo and redo operations"""
