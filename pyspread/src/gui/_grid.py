@@ -1252,12 +1252,28 @@ class GridEventHandlers(object):
     def OnSortAscending(self, event):
         """Sort ascending event handler"""
 
-        self.grid.actions.sort_ascending(self.grid.actions.cursor)
+        try:
+            self.grid.actions.sort_ascending(self.grid.actions.cursor)
+            statustext = _(u"Sorting complete.")
+
+        except Exception, err:
+            statustext = _(u"Sorting failed: {}").format(err)
+
+        post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
+                           text=statustext)
 
     def OnSortDescending(self, event):
         """Sort descending event handler"""
 
-        self.grid.actions.sort_descending(self.grid.actions.cursor)
+        try:
+            self.grid.actions.sort_descending(self.grid.actions.cursor)
+            statustext = _(u"Sorting complete.")
+
+        except Exception, err:
+            statustext = _(u"Sorting failed: {}").format(err)
+
+        post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
+                           text=statustext)
 
     # Undo and redo events
 
