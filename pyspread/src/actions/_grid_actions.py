@@ -457,8 +457,8 @@ class FileActions(Actions):
 
         finally:
             self.saving = False
-            wx.EndBusyCursor()
             self.grid.Enable()
+            wx.EndBusyCursor()
 
         # Mark content as unchanged
         try:

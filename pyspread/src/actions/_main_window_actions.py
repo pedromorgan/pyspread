@@ -614,8 +614,10 @@ class MacroActions(Actions):
 
         try:
             wx.BeginBusyCursor()
+            self.main_window.grid.Disable()
+
             with open(filepath) as macro_infile:
-                # Enter safe mode ()
+                # Enter safe mode
                 self.main_window.grid.actions.enter_safe_mode()
                 post_command_event(self.main_window, self.SafeModeEntryMsg)
 
@@ -634,7 +636,17 @@ class MacroActions(Actions):
             return False
 
         finally:
+            self.main_window.grid.Enable()
             wx.EndBusyCursor()
+
+        # Mark content as changed
+        try:
+            post_command_event(self.main_window, self.ContentChangedMsg,
+                               changed=True)
+        except TypeError:
+            # The main window does not exist any more
+            pass
+
 
     def save_macros(self, filepath, macros):
         """Saves macros to file
@@ -656,6 +668,7 @@ class MacroActions(Actions):
 
         try:
             wx.BeginBusyCursor()
+            self.main_window.grid.Disable()
             with open(tmpfile, "w") as macro_outfile:
                 macro_outfile.write(macros)
 
@@ -678,6 +691,7 @@ class MacroActions(Actions):
             return False
 
         finally:
+            self.main_window.grid.Enable()
             wx.EndBusyCursor()
 
 
