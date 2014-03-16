@@ -347,3 +347,22 @@ class Selection(object):
 
         return Selection(shifted_block_tl, shifted_block_br, shifted_rows,
                          shifted_cols, shifted_cells)
+
+    def grid_select(self, grid, clear_selection=True):
+        """Selects cells of grid with selection content"""
+
+        if clear_selection:
+            grid.ClearSelection()
+
+        for (tl, br) in zip(self.block_tl, self.block_br):
+            grid.SelectBlock(tl[0], tl[1], br[0], br[1], addToSelected=True)
+
+        for row in self.rows:
+            grid.SelectRow(row, addToSelected=True)
+
+        for col in self.cols:
+            grid.SelectCol(col, addToSelected=True)
+
+        for cell in self.cells:
+            grid.SelectBlock(cell[0], cell[1], cell[0], cell[1],
+                             addToSelected=True)

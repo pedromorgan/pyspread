@@ -647,6 +647,137 @@ class TestTableActions(object):
         br_key = tuple(dim - 1 for dim in shape)
         assert self.grid.code_array(br_key) is None
 
+    param_replace_cells = [
+        {'key': (0, 0, 0), 'sorted_row_idxs': [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+         'res_key': (0, 0, 0), 'res': "3"},
+        {'key': (0, 0, 0), 'sorted_row_idxs': [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+         'res_key': (1, 0, 0), 'res': "1"},
+        {'key': (0, 0, 0), 'sorted_row_idxs': [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+         'res_key': (2, 0, 0), 'res': "45"},
+        {'key': (0, 0, 0), 'sorted_row_idxs': [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+         'res_key': (9, 0, 0), 'res': '33'},
+        {'key': (0, 0, 0), 'sorted_row_idxs': [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+         'res_key': (3, 0, 1), 'res': "1"},
+        {'key': (5, 1, 0), 'sorted_row_idxs': [0, 5, 2, 3, 4, 5, 6, 1, 8, 9],
+         'res_key': (1, 1, 0), 'res': "3.2"},
+        {'key': (0, 0, 0), 'sorted_row_idxs': [0, 5, 2, 3, 4, 5, 6, 1, 8, 9],
+         'res_key': (5, 1, 0), 'res': None},
+        {'key': (0, 2, 0), 'sorted_row_idxs': [1, 0, 2, 3, 4, 5, 9, 7, 8, 6],
+         'res_key': (9, 2, 0), 'res': "1j"},
+    ]
+
+    @params(param_replace_cells)
+    def test_replace_cells(self, key, sorted_row_idxs, res_key, res):
+        """Tests replace_cells method"""
+
+        self.grid.actions.change_grid_shape((10, 3, 2))
+
+        data = {
+            (0, 0, 0): "1",
+            (1, 0, 0): "3",
+            (2, 0, 0): "45",
+            (9, 0, 0): "33",
+            (3, 1, 0): "'Test'",
+            (5, 1, 0): "3.2",
+            (6, 2, 0): "1j",
+            (3, 0, 1): "1",
+        }
+        for __key in data:
+            self.grid.code_array[__key] = data[__key]
+
+        self.grid.actions.replace_cells(key, sorted_row_idxs)
+
+        assert self.grid.code_array(res_key) == res
+
+    param_sort_ascending = [
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (0, 0, 0), 'res': "1"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (2, 0, 0), 'res': "33"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (3, 0, 0), 'res': "45"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (4, 0, 0), 'res': None},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (3, 1, 0), 'res': "'Test'"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], [(1, 1)]),
+         'res_key': (2, 0, 0), 'res': "45"},
+    ]
+
+    @params(param_sort_ascending)
+    def test_sort_ascending(self, key, selection, res_key, res):
+        """Tests sort_ascending method"""
+
+        self.grid.actions.change_grid_shape((10, 3, 2))
+
+        data = {
+            (0, 0, 0): "1",
+            (1, 0, 0): "3",
+            (2, 0, 0): "45",
+            (9, 0, 0): "33",
+            (2, 1, 0): "'Test'",
+            (5, 1, 0): "3.2",
+            (6, 2, 0): "1j",
+            (3, 0, 1): "1",
+        }
+
+        for __key in data:
+            self.grid.code_array[__key] = data[__key]
+
+
+        selection.grid_select(self.grid)
+
+        try:
+            self.grid.actions.sort_ascending(key)
+            assert self.grid.code_array(res_key) == res
+
+        except TypeError:
+            assert res == 'fail'
+
+    param_sort_descending = [
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (0, 0, 0), 'res': "45"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (2, 0, 0), 'res': "3"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (3, 0, 0), 'res': "1"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (4, 0, 0), 'res': None},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
+         'res_key': (0, 1, 0), 'res': "'Test'"},
+        {'key': (0, 0, 0), 'selection': Selection([], [], [], [], [(1, 1)]),
+         'res_key': (2, 0, 0), 'res': "45"},
+    ]
+
+    @params(param_sort_descending)
+    def test_sort_descending(self, key, selection, res_key, res):
+        """Tests sort_descending method"""
+
+        self.grid.actions.change_grid_shape((10, 3, 2))
+
+        data = {
+            (0, 0, 0): "1",
+            (1, 0, 0): "3",
+            (2, 0, 0): "45",
+            (9, 0, 0): "33",
+            (2, 1, 0): "'Test'",
+            (5, 1, 0): "3.2",
+            (6, 2, 0): "1j",
+            (3, 0, 1): "1",
+        }
+
+        for __key in data:
+            self.grid.code_array[__key] = data[__key]
+
+        selection.grid_select(self.grid)
+
+        try:
+            self.grid.actions.sort_descending(key)
+            assert self.grid.code_array(res_key) == res
+
+        except TypeError:
+            assert res == 'fail'
+
 
 class TestUnRedoActions(object):
     """Unit test class for undo and redo actions"""

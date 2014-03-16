@@ -43,9 +43,15 @@ from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.selection import Selection
 
+from src.gui._main_window import MainWindow
+
 
 class TestSelection(object):
     """Unit tests for Selection"""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
 
     param_test_nonzero = [
         {'sel': Selection([], [], [], [], [(32), (34)])},
@@ -266,3 +272,28 @@ class TestSelection(object):
         """Unit test for shifted"""
 
         assert sel.shifted(rows, cols) == res
+
+    param_test_grid_select = [
+        {'sel': Selection([], [], [], [], [(1, 0), (2, 0)]),
+         'key': (1, 0), 'res': True},
+        {'sel': Selection([], [], [], [], [(1, 0), (2, 0)]),
+         'key': (0, 0), 'res': False},
+        {'sel': Selection([], [], [1, 2], [], []),
+         'key': (0, 0), 'res': False},
+        {'sel': Selection([], [], [1, 2], [], []),
+         'key': (1, 0), 'res': True},
+        {'sel': Selection([], [], [], [3], []),
+         'key': (0, 3), 'res': True},
+        {'sel': Selection([], [], [], [3], []),
+         'key': (0, 0), 'res': False},
+        {'sel': Selection([(0, 0)], [(2, 2)], [], [], []),
+         'key': (1, 1), 'res': True},
+    ]
+
+    @params(param_test_grid_select)
+    def test_grid_select(self, sel, key, res):
+        """Unit test for grid_select"""
+
+        sel.grid_select(self.grid)
+        assert self.grid.IsInSelection(*key) == res
+
