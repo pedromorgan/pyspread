@@ -712,6 +712,12 @@ class MainWindowEventHandlers(EventMixin):
     def OnSave(self, event):
         """File save event handler"""
 
+        try:
+            filetype = event.attr["filetype"]
+
+        except (KeyError, AttributeError):
+            filetype = "pys"
+
         # If there is no filepath then jump to save as
 
         if self.main_window.filepath is None:
@@ -723,7 +729,8 @@ class MainWindowEventHandlers(EventMixin):
 
         post_command_event(self.main_window,
                            self.main_window.GridActionSaveMsg,
-                           attr={"filepath": self.main_window.filepath})
+                           attr={"filepath": self.main_window.filepath,
+                                 "filetype": filetype})
 
         # Display file save in status bar
 
@@ -737,9 +744,18 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Pyspread file") + " (*.pys)|*.pys|" + \
-            _("All files") + " (*.*)|*.*"
+        try:
+            import xlwt
+            wildcard = \
+                _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Excel file") + " (*.xls)|*.xls|" + \
+                _("All files") + " (*.*)|*.*"
+
+        except ImportError:
+            wildcard = \
+                _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("All files") + " (*.*)|*.*"
+
         message = _("Choose filename for saving.")
         style = wx.SAVE
         filepath, filterindex = \
@@ -748,6 +764,8 @@ class MainWindowEventHandlers(EventMixin):
 
         if filepath is None:
             return 0
+
+        filetype = "pys" if xlwt is None or filterindex != 1 else "xls"
 
         # Look if path is already present
         if os.path.exists(filepath):
@@ -787,7 +805,8 @@ class MainWindowEventHandlers(EventMixin):
                            text=title_text)
 
         # Now jump to save
-        post_command_event(self.main_window, self.main_window.SaveMsg)
+        post_command_event(self.main_window, self.main_window.SaveMsg,
+                           attr={"filetype": filetype})
 
     def OnImport(self, event):
         """File import event handler"""

@@ -647,7 +647,6 @@ class MacroActions(Actions):
             # The main window does not exist any more
             pass
 
-
     def save_macros(self, filepath, macros):
         """Saves macros to file
 

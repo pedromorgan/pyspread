@@ -38,6 +38,12 @@ try:
 except ImportError:
     xlrd = None
 
+try:
+    import xlwt
+
+except ImportError:
+    xlwt = None
+
 import wx
 
 import src.lib.i18n as i18n
@@ -410,7 +416,7 @@ class Xls(object):
     # ------------------------
 
     def from_code_array(self):
-        """Replaces everything in xls_file from code_array"""
+        """Returns xls workbook object with everything from code_array"""
 
     def to_code_array(self):
         """Replaces everything in code_array from xls_file"""

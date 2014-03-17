@@ -54,6 +54,11 @@ try:
 except ImportError:
     xlrd = None
 
+try:
+    import xlwt
+except ImportError:
+    xlwt = None
+
 import wx
 
 from src.config import config
@@ -95,6 +100,11 @@ class FileActions(Actions):
 
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_OPEN, self.open)
         self.main_window.Bind(self.EVT_CMD_GRID_ACTION_SAVE, self.save)
+
+        self.type2interface = {
+            "pys": Pys,
+            "xls": Xls,
+        }
 
     def _is_aborted(self, cycle, statustext, total_elements=None, freq=None):
         """Displays progress and returns True if abort
@@ -300,15 +310,10 @@ class FileActions(Actions):
             type2opener["xls"] = \
                 (xlrd.open_workbook, [filepath], {"formatting_info": True})
 
-        type2interface = {
-            "pys": Pys,
-            "xls": Xls,
-        }
-
         # Specify the interface that shall be used
 
         opener, op_args, op_kwargs = type2opener[filetype]
-        Interface = type2interface[filetype]
+        Interface = self.type2interface[filetype]
 
         # Set state for file open
         self.opening = True
@@ -414,6 +419,14 @@ class FileActions(Actions):
 
         filepath = event.attr["filepath"]
 
+        try:
+            filetype = event.attr["filetype"]
+
+        except KeyError:
+            filetype = "pys"
+
+        Interface = self.type2interface[filetype]
+
         io_error_text = _("Error writing to file {filepath}.")
         io_error_text = io_error_text.format(filepath=filepath)
 
@@ -426,16 +439,21 @@ class FileActions(Actions):
         try:
             wx.BeginBusyCursor()
             self.grid.Disable()
-            with Bz2AOpen(tmpfile, "wb", main_window=self.main_window) \
-                    as outfile:
 
-                try:
-                    pys = Pys(self.grid.code_array, outfile)
-                    pys.from_code_array()
+            if filetype == "pys":
+                with Bz2AOpen(tmpfile, "wb", main_window=self.main_window) \
+                        as outfile:
 
-                except ValueError, err:
-                    post_command_event(self.main_window, self.StatusBarMsg,
-                                       text=err)
+                    try:
+                        interface = Interface(self.grid.code_array, outfile)
+                        interface.from_code_array()
+
+                    except ValueError, err:
+                        post_command_event(self.main_window, self.StatusBarMsg,
+                                           text=err)
+
+            elif filetype == "xls":
+                raise NotImplementedError("xls writing not yet implemented")
 
             # Move save file from temp file to filepath
             try:
