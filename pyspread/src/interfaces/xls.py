@@ -418,6 +418,8 @@ class Xls(object):
     def from_code_array(self):
         """Returns xls workbook object with everything from code_array"""
 
+        self.workbook.add_sheet("1")
+
     def to_code_array(self):
         """Replaces everything in code_array from xls_file"""
 

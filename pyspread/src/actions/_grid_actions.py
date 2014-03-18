@@ -453,7 +453,10 @@ class FileActions(Actions):
                                            text=err)
 
             elif filetype == "xls":
-                raise NotImplementedError("xls writing not yet implemented")
+                workbook = xlwt.Workbook()
+                interface = Interface(self.grid.code_array, workbook)
+                interface.from_code_array()
+                workbook.save(tmpfile)
 
             # Move save file from temp file to filepath
             try:
@@ -496,7 +499,7 @@ class FileActions(Actions):
                 # The main window does not exist any more
                 pass
 
-        elif not outfile.aborted:
+        elif filetype == "pys" and not outfile.aborted:
             self.sign_file(filepath)
 
 
