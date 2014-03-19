@@ -106,6 +106,7 @@ class CellAttributes(list):
         "textcolor": get_color(config["text_color"]).GetRGB(),
         "underline": False,
         "strikethrough": False,
+        "locked": False,
         "angle": 0.0,
         "column-width": 150,
         "row-height": 26,

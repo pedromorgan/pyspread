@@ -65,6 +65,7 @@ class GtkArtProvider(wx.ArtProvider):
             "AlignCenter": action_path + "format-text-aligncenter.png",
             "AlignBottom": action_path + "format-text-alignbottom.png",
             "Freeze": action_path + "frozen_small.png",
+            "Lock": action_path + "lock.png",
             "Merge": action_path + "format-merge-table-cells.png",
             "AllBorders": toggle_path + "border_all.xpm",
             "LeftBorders": toggle_path + "border_left.xpm",

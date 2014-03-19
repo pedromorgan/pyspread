@@ -341,7 +341,6 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         ("RightBorders",     (0, 0, 0, 1, 1, 1)),
         ("TopBorders",       (1, 0, 0, 0, 1, 1)),
         ("BottomBorders",    (0, 1, 0, 0, 1, 1)),
-        ##("InsideBorders",    (1, 1, 1, 1, 1, 0)),
         ("OutsideBorders",   (1, 1, 1, 1, 0, 1)),
         ("TopBottomBorders", (1, 1, 0, 0, 0, 1)),
     ]
@@ -352,7 +351,6 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         "RightBorders":     ("right"),
         "TopBorders":       ("top"),
         "BottomBorders":    ("bottom"),
-        ##"InsideBorders":    ("inner"),
         "OutsideBorders":   ("top", "bottom", "left", "right"),
         "TopBottomBorders": ("top", "bottom"),
     }
@@ -427,6 +425,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
             (wx.FONTFLAG_STRIKETHROUGH, "OnStrikethrough",
                 "FormatTextStrikethrough", _("Strikethrough")),
             (wx.FONTFLAG_MASK, "OnFreeze", "Freeze", _("Freeze")),
+            (wx.FONTFLAG_NOT_ANTIALIASED, "OnLock", "Lock", _("Lock cell")),
         ]
 
         for __id, method, iconname, helpstring in font_face_buttons:
@@ -626,6 +625,19 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         self.ToggleTool(wx.FONTFLAG_MASK, toggle_state)
 
+    def _update_lockedcell(self, locked):
+        """Updates frozen cell widget
+
+        Parameters
+        ----------
+
+        locked: Bool or string
+        \tUntoggled iif False
+
+        """
+
+        self.ToggleTool(wx.FONTFLAG_NOT_ANTIALIASED, locked)
+
     def _update_underline(self, underlined):
         """Updates underline widget
 
@@ -748,6 +760,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         self._update_font_weight(attributes["fontweight"])
         self._update_font_style(attributes["fontstyle"])
         self._update_frozencell(attributes["frozen"])
+        self._update_lockedcell(attributes["locked"])
         self._update_underline(attributes["underline"])
         self._update_strikethrough(attributes["strikethrough"])
         self._update_justification(attributes["justification"])
@@ -831,24 +844,29 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         post_command_event(self, self.FontBoldMsg)
 
     def OnItalics(self, event):
-        """Bold toggle button event handler"""
+        """Italics toggle button event handler"""
 
         post_command_event(self, self.FontItalicsMsg)
 
     def OnUnderline(self, event):
-        """Bold toggle button event handler"""
+        """Underline toggle button event handler"""
 
         post_command_event(self, self.FontUnderlineMsg)
 
     def OnStrikethrough(self, event):
-        """Bold toggle button event handler"""
+        """Strikethrough toggle button event handler"""
 
         post_command_event(self, self.FontStrikethroughMsg)
 
     def OnFreeze(self, event):
-        """Bold toggle button event handler"""
+        """Frozen toggle button event handler"""
 
         post_command_event(self, self.FrozenMsg)
+
+    def OnLock(self, event):
+        """Lock toggle button event handler"""
+
+        post_command_event(self, self.LockMsg)
 
     def OnJustification(self, event):
         """Justification toggle button event handler"""

@@ -780,6 +780,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
 
         main_window.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
         main_window.Bind(self.EVT_CMD_SELECTION, self.OnGridSelection)
+        main_window.Bind(self.EVT_ENTRYLINE_LOCK, self.OnLock)
 
         self.SetToolTip(wx.ToolTip(_("Enter Python expression here.")))
 
@@ -817,6 +818,11 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
 
         post_command_event(self, self.GridActionTableSwitchMsg,
                            newtable=current_table)
+
+    def OnLock(self, event):
+        """Event handler for locking the entry line"""
+
+        self.Enable(not event.lock)
 
     def OnText(self, event):
         """Text event method evals the cell and updates the grid"""

@@ -116,6 +116,7 @@ class GridCellEventMixin(object):
     FontUnderlineMsg, EVT_CMD_FONTUNDERLINE = new_command_event()
     FontStrikethroughMsg, EVT_CMD_FONTSTRIKETHROUGH = new_command_event()
     FrozenMsg, EVT_CMD_FROZEN = new_command_event()
+    LockMsg, EVT_CMD_LOCK = new_command_event()
     MergeMsg, EVT_CMD_MERGE = new_command_event()
     JustificationMsg, EVT_CMD_JUSTIFICATION = new_command_event()
     AlignmentMsg, EVT_CMD_ALIGNMENT = new_command_event()
@@ -242,6 +243,7 @@ class EntryLineEventMixin(object):
     """Mixin class for entry line events"""
 
     EntryLineMsg, EVT_ENTRYLINE_MSG = new_command_event()
+    LockEntryLineMsg, EVT_ENTRYLINE_LOCK = new_command_event()
     ##EntryLineSelectionMsg, EVT_ENTRYLINE_SELECTION_MSG = new_command_event()
 
 

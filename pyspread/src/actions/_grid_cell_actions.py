@@ -355,6 +355,11 @@ class CellActions(Actions):
         selection = Selection([], [], [], [], [cursor[:2]])
         self.set_attr("frozen", not frozen, selection=selection)
 
+    def change_locked_attr(self):
+        """Changes locked state of cell if there is no selection"""
+
+        raise NotImplementedError
+
     def unmerge(self, unmerge_area, tab):
         """Unmerges all cells in unmerge_area"""
 
@@ -408,6 +413,7 @@ class CellActions(Actions):
         "fontstyle": [wx.NORMAL, wx.ITALIC],
         "underline": [False, True],
         "strikethrough": [False, True],
+        "locked": [False, True],
         "vertical_align": ["top", "middle", "bottom"],
         "justification": ["left", "center", "right"],
         "frozen": [True, False],

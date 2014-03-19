@@ -327,6 +327,8 @@ class MainMenu(_filledMenu, EventMixin):
                         _("Toggles frozen state of cell. ") +
                         _("Frozen cells are updated only "
                           "when F5 is pressed.")]],
+                [item, [self.LockMsg, _("Lock"),
+                        _("Lock cell. Locked cells cannot be changed.")]],
                 [item, [self.MergeMsg, _("Merge cells"),
                         _("Merges / unmerges selected cells. ")]],
 

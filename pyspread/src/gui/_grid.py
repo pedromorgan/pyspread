@@ -44,7 +44,6 @@ import src.lib.i18n as i18n
 from src.sysvars import is_gtk
 from src.config import config
 
-import src.lib.xrect as xrect
 from src.lib.selection import Selection
 from src.model.model import CodeArray
 
@@ -195,6 +194,7 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_FONTSTRIKETHROUGH,
                          c_handlers.OnCellFontStrikethrough)
         main_window.Bind(self.EVT_CMD_FROZEN, c_handlers.OnCellFrozen)
+        main_window.Bind(self.EVT_CMD_LOCK, c_handlers.OnCellLocked)
         main_window.Bind(self.EVT_CMD_MERGE, c_handlers.OnMerge)
         main_window.Bind(self.EVT_CMD_JUSTIFICATION,
                          c_handlers.OnCellJustification)
@@ -341,6 +341,18 @@ class Grid(wx.grid.Grid, EventMixin):
         cell_code = self.GetTable().GetValue(*key)
 
         post_command_event(self, self.EntryLineMsg, text=cell_code)
+
+    def lock_entry_line(self, lock):
+        """Lock or unlock entry line
+
+        Parameters
+        ----------
+        lock: Bool
+        \tIf True then the entry line is locked if Falsse unlocked
+
+        """
+
+        post_command_event(self, self.LockEntryLineMsg, lock=lock)
 
     def update_attribute_toolbar(self, key=None):
         """Updates the attribute toolbar
@@ -546,6 +558,17 @@ class GridCellEventHandlers(object):
 
         event.Skip()
 
+    def OnCellLocked(self, event):
+        """Cell locked event handler"""
+
+        self.grid.actions.toggle_attr("locked")
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
+        event.Skip()
+
     def OnMerge(self, event):
         """Merge cells event handler"""
 
@@ -680,6 +703,10 @@ class GridCellEventHandlers(object):
 
         # Redraw cursor
         self.grid.ForceRefresh()
+
+        # Disable entry line if cell is locked
+        self.grid.lock_entry_line(
+            self.grid.code_array.cell_attributes[key]["locked"])
 
         # Update entry line
         self.grid.update_entry_line(key)

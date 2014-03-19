@@ -36,7 +36,6 @@ from _events import post_command_event
 from src.gui._widgets import GridEventMixin
 
 
-
 class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
     """In grid cell editor for entering code
     Refer to :
@@ -46,7 +45,6 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         self.main_window = main_window
         wx.grid.PyGridCellEditor.__init__(self)
-
 
     def Create(self, parent, id, evtHandler):
         """
@@ -59,7 +57,6 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         if evtHandler:
             self._tc.PushEventHandler(evtHandler)
-
 
     def SetSize(self, rect):
         """
@@ -97,12 +94,12 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         # Save cell and grid info
         self._row = row
-        self._col = [col,]  # List of columns we are occupying
+        self._col = [col, ]  # List of columns we are occupying
         self._grid = grid
 
         self.startValue = grid.GetTable().GetValue(row, col)
         # Set up the textcontrol to look like this cell (TODO: Does not work)
-        self._tc.SetValue(str(self.startValue)) # was self.startValue
+        self._tc.SetValue(str(self.startValue))  # was self.startValue
         self._tc.SetFont(grid.GetCellFont(row, col))
         self._tc.SetBackgroundColour(grid.GetCellBackgroundColour(row, col))
         self._update_control_length()
@@ -132,7 +129,6 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         del self._col
         del self._row
         del self._grid
-
 
     def ApplyEdit(self, row, col, grid):
         """
@@ -184,10 +180,10 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         """
         key = evt.GetKeyCode()
         ch = None
-        if key in [ wx.WXK_NUMPAD0, wx.WXK_NUMPAD1, wx.WXK_NUMPAD2, wx.WXK_NUMPAD3,
-                    wx.WXK_NUMPAD4, wx.WXK_NUMPAD5, wx.WXK_NUMPAD6, wx.WXK_NUMPAD7,
-                    wx.WXK_NUMPAD8, wx.WXK_NUMPAD9
-                    ]:
+        if key in [
+                wx.WXK_NUMPAD0, wx.WXK_NUMPAD1, wx.WXK_NUMPAD2, wx.WXK_NUMPAD3,
+                wx.WXK_NUMPAD4, wx.WXK_NUMPAD5, wx.WXK_NUMPAD6, wx.WXK_NUMPAD7,
+                wx.WXK_NUMPAD8, wx.WXK_NUMPAD9]:
 
             ch = ch = chr(ord('0') + key - wx.WXK_NUMPAD0)
 
@@ -229,7 +225,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
     def _update_control_length(self):
         val = self._tc.GetValue()
-        extent = self._tc.GetTextExtent(val)[0] + 15 # Small margin
+        extent = self._tc.GetTextExtent(val)[0] + 15  # Small margin
         width, height = self._tc.GetSizeTuple()
         new_width = None
         while width < extent:
