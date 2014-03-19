@@ -391,6 +391,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         self.font_choice_combo = \
             _widgets.FontChoiceCombobox(self, choices=self.fonts,
                                         style=wx.CB_READONLY, size=(125, -1))
+
+        self.font_choice_combo.SetToolTipString(_(u"Text font"))
+
         self.AddControl(self.font_choice_combo)
 
         self.Bind(wx.EVT_COMBOBOX, self.OnTextFont, self.font_choice_combo)
@@ -405,6 +408,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
             wx.ComboBox(self, -1, value=font_size, size=(60, -1),
                         choices=map(unicode, self.std_font_sizes),
                         style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
+
+        self.font_size_combo.SetToolTipString(_(u"Text size\n(points)"))
+
         self.AddControl(self.font_size_combo)
         self.Bind(wx.EVT_COMBOBOX, self.OnTextSize, self.font_size_combo)
         self.Bind(wx.EVT_TEXT_ENTER, self.OnTextSize, self.font_size_combo)
@@ -435,6 +441,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         iconnames = ["JustifyLeft", "JustifyCenter", "JustifyRight"]
         bmplist = [icons[iconname] for iconname in iconnames]
         self.justify_tb = _widgets.BitmapToggleButton(self, bmplist)
+        self.justify_tb.SetToolTipString(_(u"Justification"))
         self.Bind(wx.EVT_BUTTON, self.OnJustification, self.justify_tb)
         self.AddControl(self.justify_tb)
 
@@ -445,6 +452,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         bmplist = [icons[iconname] for iconname in iconnames]
 
         self.alignment_tb = _widgets.BitmapToggleButton(self, bmplist)
+        self.alignment_tb.SetToolTipString(_(u"Alignment"))
         self.Bind(wx.EVT_BUTTON, self.OnAlignment, self.alignment_tb)
         self.AddControl(self.alignment_tb)
 
@@ -455,6 +463,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         self.borderchoice_combo = \
             _widgets.BorderEditChoice(self, choices=choices,
                                       style=wx.CB_READONLY, size=(50, -1))
+
+        self.borderchoice_combo.SetToolTipString(
+            _(u"Choose borders for which attributes are changed"))
 
         self.borderstate = self.border_toggles[0][0]
 
@@ -473,6 +484,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
             _widgets.PenWidthComboBox(self, choices=choices,
                                       style=wx.CB_READONLY, size=(50, -1))
 
+        self.pen_width_combo.SetToolTipString(_(u"Border width"))
         self.AddControl(self.pen_width_combo)
         self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.pen_width_combo)
 
@@ -498,6 +510,10 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         self.textcolor_choice = \
             csel.ColourSelect(self, -1, "A", (0, 0, 0),
                               size=button_size, style=button_style)
+
+        self.linecolor_choice.SetToolTipString(_(u"Border line color"))
+        self.bgcolor_choice.SetToolTipString(_(u"Cell background"))
+        self.textcolor_choice.SetToolTipString(_(u"Text color"))
 
         self.AddControl(self.linecolor_choice)
         self.AddControl(self.bgcolor_choice)
@@ -525,6 +541,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         # For compatibility with toggle buttons
         self.rotation_spinctrl.GetToolState = lambda x: None
+        self.rotation_spinctrl.SetToolTipString(_(u"Cell text rotation"))
 
         self.AddControl(self.rotation_spinctrl)
 
