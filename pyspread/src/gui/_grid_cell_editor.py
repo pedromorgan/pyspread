@@ -52,6 +52,14 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         *Must Override*
         """
         self._tc = wx.TextCtrl(parent, id, "")
+
+        # Disable if cell is clocked, enable if cell is not locked
+        grid = self.main_window.grid
+        key = grid.actions.cursor
+        locked = grid.code_array.cell_attributes[key]["locked"]
+        self._tc.Enable(not locked)
+        self._tc.Show(not locked)
+
         self._tc.SetInsertionPoint(0)
         self.SetControl(self._tc)
 
@@ -89,6 +97,14 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         to begin editing.  Set the focus to the edit control.
         *Must Override*
         """
+
+        # Disable if cell is clocked, enable if cell is not locked
+        grid = self.main_window.grid
+        key = grid.actions.cursor
+        locked = grid.code_array.cell_attributes[key]["locked"]
+        self._tc.Enable(not locked)
+        self._tc.Show(not locked)
+
         # Mirror our changes onto the main_window's code bar
         self._tc.Bind(wx.EVT_CHAR, self.OnChar)
 
@@ -190,7 +206,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         elif key < 256 and key >= 0 and chr(key) in string.printable:
             ch = chr(key)
 
-        if ch is not None:
+        if ch is not None and self._tc.IsEnabled():
             # For this example, replace the text.  Normally we would append it.
             #self._tc.AppendText(ch)
             self._tc.SetValue(ch)

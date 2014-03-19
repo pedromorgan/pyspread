@@ -1225,7 +1225,7 @@ class GridEventHandlers(object):
         # Detect for resizing group of rows
         rows = self.grid.GetSelectedRows()
         if len(rows) == 0:
-            rows = [row,]
+            rows = [row, ]
 
         # Detect for selection of rows spanning all columns
         selection = self.grid.selection
@@ -1245,7 +1245,6 @@ class GridEventHandlers(object):
         event.Skip()
         self.grid.Refresh()
 
-
     def OnColSize(self, event):
         """Column size event handler"""
 
@@ -1256,7 +1255,7 @@ class GridEventHandlers(object):
         # Detect for resizing group of cols
         cols = self.grid.GetSelectedCols()
         if len(cols) == 0:
-            cols = [col,]
+            cols = [col, ]
 
         # Detect for selection of rows spanning all columns
         selection = self.grid.selection
