@@ -77,15 +77,25 @@ class Xls(object):
         self.code_array = code_array
         self.workbook = workbook
 
-    def _shape2xls(self):
+        self.xls_max_rows = 65536
+        self.xls_max_cols = 256
+        self.xls_max_tabs = 256  # Limit tables to 255 to avoid cluttered Excel
+
+    def _shape2xls(self, worksheets):
         """Writes shape to xls file
 
         Format: <rows>\t<cols>\t<tabs>\n
 
         """
 
-#        shape_line = u"\t".join(map(unicode, self.code_array.shape)) + u"\n"
-#        self.xls_file.write(shape_line)
+        __, __, tabs = self.code_array.shape
+
+        if tabs > self.xls_max_tabs:
+            tabs = self.xls_max_tabs
+
+        for tab in xrange(tabs):
+            worksheet = self.workbook.add_sheet(str(tab))
+            worksheets.append(worksheet)
 
     def _xls2shape(self):
         """Updates shape in code_array"""
@@ -97,19 +107,21 @@ class Xls(object):
 
         self.code_array.shape = nrows, ncols, ntabs
 
-    def _code2xls(self):
+    def _code2xls(self, worksheets):
         """Writes code to xls file
 
         Format: <row>\t<col>\t<tab>\t<code>\n
 
         """
 
-#        for key in self.code_array:
-#            key_str = u"\t".join(repr(ele) for ele in key)
-#            code_str = self.code_array(key)
-#            out_str = key_str + u"\t" + code_str + u"\n"
-#
-#            self.xls_file.write(out_str.encode("utf-8"))
+        xls_max_shape = self.xls_max_rows, self.xls_max_cols, self.xls_max_tabs
+
+        for key in self.code_array:
+            if all(kele < mele for kele, mele in zip(key, xls_max_shape)):
+                # Cell lies within Excel boundaries
+                row, col, tab = key
+                code_str = self.code_array(key)
+                worksheets[tab].write(row, col, label=code_str)
 
     def _xls2code(self, worksheet, tab):
         """Updates code in xls code_array"""
@@ -418,7 +430,12 @@ class Xls(object):
     def from_code_array(self):
         """Returns xls workbook object with everything from code_array"""
 
-        self.workbook.add_sheet("1")
+        worksheets = []
+        self._shape2xls(worksheets)
+
+        self._code2xls(worksheets)
+
+        return self.workbook
 
     def to_code_array(self):
         """Replaces everything in code_array from xls_file"""
