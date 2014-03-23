@@ -371,17 +371,25 @@ class Xls(object):
             rattrs.pop("borderwidth_right")
             cell_attributes.append((bsel, tab, battrs))
 
-    def _row_heights2xls(self):
+    def _row_heights2xls(self, worksheets):
         """Writes row_heights to xls file
 
         Format: <row>\t<tab>\t<value>\n
 
         """
 
-#        for row, tab in self.code_array.dict_grid.row_heights:
-#            height = self.code_array.dict_grid.row_heights[(row, tab)]
-#            height_strings = map(repr, [row, tab, height])
-#            self.xls_file.write(u"\t".join(height_strings) + u"\n")
+        xls_max_rows, xls_max_tabs = self.xls_max_rows, self.xls_max_tabs
+
+        dict_grid = self.code_array.dict_grid
+
+        for row, tab in dict_grid.row_heights:
+            if row < xls_max_rows and tab < xls_max_tabs:
+                height_pixels = dict_grid.row_heights[(row, tab)]
+                height_inches = height_pixels / float(get_dpi()[1])
+                height_points = height_inches * 72.0
+
+                worksheets[tab].row(row).height_mismatch = True
+                worksheets[tab].row(row).height = int(height_points * 20.0)
 
     def _xls2row_heights(self, worksheet, tab):
         """Updates row_heights in code_array"""
@@ -397,17 +405,25 @@ class Xls(object):
             except KeyError:
                 pass
 
-    def _col_widths2xls(self):
+    def _col_widths2xls(self, worksheets):
         """Writes col_widths to xls file
 
         Format: <col>\t<tab>\t<value>\n
 
         """
 
-#        for col, tab in self.code_array.dict_grid.col_widths:
-#            width = self.code_array.dict_grid.col_widths[(col, tab)]
-#            width_strings = map(repr, [col, tab, width])
-#            self.xls_file.write(u"\t".join(width_strings) + u"\n")
+        xls_max_cols, xls_max_tabs = self.xls_max_cols, self.xls_max_tabs
+
+        dict_grid = self.code_array.dict_grid
+
+        for col, tab in dict_grid.col_widths:
+            if col < xls_max_cols and tab < xls_max_tabs:
+                width_0 = get_default_text_extent("0")[0]
+                width_pixels = dict_grid.col_widths[(col, tab)]
+                width_0_char = width_pixels * 1.2 / width_0
+
+                worksheets[tab].col(col).width_mismatch = True
+                worksheets[tab].col(col).width = int(width_0_char * 256.0)
 
     def _xls2col_widths(self, worksheet, tab):
         """Updates col_widths in code_array"""
@@ -434,6 +450,9 @@ class Xls(object):
         self._shape2xls(worksheets)
 
         self._code2xls(worksheets)
+
+        self._row_heights2xls(worksheets)
+        self._col_widths2xls(worksheets)
 
         return self.workbook
 
