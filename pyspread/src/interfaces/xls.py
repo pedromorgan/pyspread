@@ -121,7 +121,8 @@ class Xls(object):
                 # Cell lies within Excel boundaries
                 row, col, tab = key
                 code_str = self.code_array(key)
-                worksheets[tab].write(row, col, label=code_str)
+                style = self._get_xfstyle(worksheets, key)  ## Adding crashs
+                worksheets[tab].write(row, col, label=code_str, style=style)
 
     def _xls2code(self, worksheet, tab):
         """Updates code in xls code_array"""
@@ -153,11 +154,11 @@ class Xls(object):
         # Get all cells in selections
 
         pys_style = dict_grid.cell_attributes[key]
-
         xfstyle = xlwt.XFStyle()
 
         # Font
         if "textfont" in pys_style:
+
             font = xlwt.Font()
 
             font.name = pys_style["textfont"]
@@ -171,8 +172,8 @@ class Xls(object):
             if "fontstyle" in pys_style:
                 font.italic = (pys_style["fontstyle"] == wx.ITALIC)
 
-            if "textcolor" in pys_style:
-                font.colour_index = pys_style["textcolor"]
+            #if "textcolor" in pys_style:
+            #    font.colour_index = pys_style["textcolor"]
 
             #if self.workbook.colour_map[font.colour_index] is not None:
             #    attributes["textcolor"] = \
