@@ -145,55 +145,48 @@ class Xls(object):
             key = row, col, tab
             self.code_array[key] = type2mapper[cell_type](cell_value)
 
-    def _attributes2xls(self, worksheets):
-        """Writes attributes to xls file
+    def _get_xfstyle(self, worksheets, key):
+        """Gets XFStyle for cell key"""
 
-        Format:
-        <selection[0]>\t[...]\t<tab>\t<key>\t<value>\t[...]\n
+        dict_grid = self.code_array.dict_grid
 
-        """
+        # Get all cells in selections
 
-        # Unclear how to handle large numbers of cells:
+        pys_style = dict_grid.cell_attributes[key]
 
-#        xls_max_rows = self.xls_max_rows
-#        xls_max_cols = self.xls_max_cols
-#        xls_max_tabs = self.xls_max_tabs
-#
-#        dict_grid = self.code_array.dict_grid
-#
-#        # Get all cells in selections
-#        selection_cells = []
-#
-#        for selection, tab, attributes in dict_grid.cell_attributes:
-#
-#
-#        selection_cell_set = set(selection_cells)
+        xfstyle = xlwt.XFStyle()
 
-
-        # Merged cells
-        # Which cell comprise which format ids
-        # Alignment
-        # Rotation
-        # Background
-        # Border
         # Font
+        if "textfont" in pys_style:
+            font = xlwt.Font()
 
+            font.name = pys_style["textfont"]
 
+            if "pointsize" in pys_style:
+                font.height = pys_style["pointsize"] * 20.0
 
-#        for selection, tab, attr_dict in self.code_array.cell_attributes:
-#            sel_list = [selection.block_tl, selection.block_br,
-#                        selection.rows, selection.cols, selection.cells]
-#
-#            tab_list = [tab]
-#
-#            attr_dict_list = []
-#            for key in attr_dict:
-#                attr_dict_list.append(key)
-#                attr_dict_list.append(attr_dict[key])
-#
-#            line_list = map(repr, sel_list + tab_list + attr_dict_list)
-#
-#            self.xls_file.write(u"\t".join(line_list) + u"\n")
+            if "fontweight" in pys_style:
+                font.bold = (pys_style["fontweight"] == wx.BOLD)
+
+            if "fontstyle" in pys_style:
+                font.italic = (pys_style["fontstyle"] == wx.ITALIC)
+
+            if "textcolor" in pys_style:
+                font.colour_index = pys_style["textcolor"]
+
+            #if self.workbook.colour_map[font.colour_index] is not None:
+            #    attributes["textcolor"] = \
+            #        idx2colour(font.colour_index).GetRGB()
+
+            if "underline" in pys_style:
+                font.underline_type = pys_style["underline"]
+
+            if "strikethrough" in pys_style:
+                font.struck_out = pys_style["strikethrough"]
+
+            xfstyle.font = font
+
+        return xfstyle
 
     def _xls2attributes(self, worksheet, tab):
         """Updates attributes in code_array"""
