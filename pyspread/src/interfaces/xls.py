@@ -145,13 +145,40 @@ class Xls(object):
             key = row, col, tab
             self.code_array[key] = type2mapper[cell_type](cell_value)
 
-    def _attributes2xls(self):
+    def _attributes2xls(self, worksheets):
         """Writes attributes to xls file
 
         Format:
         <selection[0]>\t[...]\t<tab>\t<key>\t<value>\t[...]\n
 
         """
+
+        # Unclear how to handle large numbers of cells:
+
+#        xls_max_rows = self.xls_max_rows
+#        xls_max_cols = self.xls_max_cols
+#        xls_max_tabs = self.xls_max_tabs
+#
+#        dict_grid = self.code_array.dict_grid
+#
+#        # Get all cells in selections
+#        selection_cells = []
+#
+#        for selection, tab, attributes in dict_grid.cell_attributes:
+#
+#
+#        selection_cell_set = set(selection_cells)
+
+
+        # Merged cells
+        # Which cell comprise which format ids
+        # Alignment
+        # Rotation
+        # Background
+        # Border
+        # Font
+
+
 
 #        for selection, tab, attr_dict in self.code_array.cell_attributes:
 #            sel_list = [selection.block_tl, selection.block_br,
