@@ -187,6 +187,33 @@ class Xls(object):
 
             xfstyle.font = font
 
+        # Alignment
+
+        if any(e in pys_style for e in ["justification", "vertical_align"]):
+            alignment = xlwt.Alignment()
+
+        if "justification" in pys_style:
+            justification2xfalign = {
+                "left": 1,
+                "center": 2,
+                "right": 3,
+            }
+
+            alignment.horz = justification2xfalign[pys_style["justification"]]
+
+        if "vertical_align" in pys_style:
+            vertical_align2xfalign = {
+                "top": 0,
+                "middle": 1,
+                "bottom": 2,
+            }
+
+            alignment.vert = \
+                vertical_align2xfalign[pys_style["vertical_align"]]
+
+        if any(e in pys_style for e in ["justification", "vertical_align"]):
+            xfstyle.alignment = alignment
+
         return xfstyle
 
     def _xls2attributes(self, worksheet, tab):
