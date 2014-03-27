@@ -81,6 +81,40 @@ class Xls(object):
         self.xls_max_cols = 256
         self.xls_max_tabs = 256  # Limit tables to 255 to avoid cluttered Excel
 
+    def idx2colour(self, idx):
+        """Returns wx.Colour"""
+
+        return wx.Colour(*self.workbook.colour_map[idx])
+
+    def color2idx(self, red, green, blue):
+        """Get an Excel index from"""
+
+        xlwt_colors = [
+            (0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255),
+            (255, 255, 0), (255, 0, 255), (0, 255, 255), (0, 0, 0),
+            (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255),
+            (255, 255, 0), (255, 0, 255), (0, 255, 255), (128, 0, 0),
+            (0, 128, 0), (0, 0, 128), (128, 128, 0), (128, 0, 128),
+            (0, 128, 128), (192, 192, 192), (128, 128, 128), (153, 153, 255),
+            (153, 51, 102), (255, 255, 204), (204, 255, 255), (102, 0, 102),
+            (255, 128, 128), (0, 102, 204), (204, 204, 255), (0, 0, 128),
+            (255, 0, 255), (255, 255, 0), (0, 255, 255), (128, 0, 128),
+            (128, 0, 0), (0, 128, 128), (0, 0, 255), (0, 204, 255),
+            (204, 255, 255), (204, 255, 204), (255, 255, 153), (153, 204, 255),
+            (255, 153, 204), (204, 153, 255), (255, 204, 153), (51, 102, 255),
+            (51, 204, 204), (153, 204, 0), (255, 204, 0), (255, 153, 0),
+            (255, 102, 0), (102, 102, 153), (150, 150, 150), (0, 51, 102),
+            (51, 153, 102), (0, 51, 0), (51, 51, 0), (153, 51, 0),
+            (153, 51, 102), (51, 51, 153), (51, 51, 51)
+        ]
+
+        distances = [abs(red - r) + abs(green - g) + abs(blue - b)
+                     for r, g, b in xlwt_colors]
+
+        min_dist_idx = distances.index(min(distances))
+
+        return min_dist_idx
+
     def _shape2xls(self, worksheets):
         """Writes shape to xls file
 
@@ -121,7 +155,7 @@ class Xls(object):
                 # Cell lies within Excel boundaries
                 row, col, tab = key
                 code_str = self.code_array(key)
-                style = self._get_xfstyle(worksheets, key)  ## Adding crashs
+                style = self._get_xfstyle(worksheets, key)
                 worksheets[tab].write(row, col, label=code_str, style=style)
 
     def _xls2code(self, worksheet, tab):
@@ -157,6 +191,8 @@ class Xls(object):
         xfstyle = xlwt.XFStyle()
 
         # Font
+        # ----
+
         if "textfont" in pys_style:
 
             font = xlwt.Font()
@@ -172,12 +208,10 @@ class Xls(object):
             if "fontstyle" in pys_style:
                 font.italic = (pys_style["fontstyle"] == wx.ITALIC)
 
-            #if "textcolor" in pys_style:
-            #    font.colour_index = pys_style["textcolor"]
-
-            #if self.workbook.colour_map[font.colour_index] is not None:
-            #    attributes["textcolor"] = \
-            #        idx2colour(font.colour_index).GetRGB()
+            if "textcolor" in pys_style:
+                textcolor = wx.Colour()
+                textcolor.SetRGB(pys_style["textcolor"])
+                font.colour_index = self.color2idx(*textcolor.Get())
 
             if "underline" in pys_style:
                 font.underline_type = pys_style["underline"]
@@ -188,8 +222,10 @@ class Xls(object):
             xfstyle.font = font
 
         # Alignment
+        # ---------
 
-        if any(e in pys_style for e in ["justification", "vertical_align"]):
+        if any(e in pys_style for e in ["justification", "vertical_align",
+                                        "angle"]):
             alignment = xlwt.Alignment()
 
         if "justification" in pys_style:
@@ -211,18 +247,45 @@ class Xls(object):
             alignment.vert = \
                 vertical_align2xfalign[pys_style["vertical_align"]]
 
-        if any(e in pys_style for e in ["justification", "vertical_align"]):
+        if "angle" in pys_style:
+            def angle2xfrotation(angle):
+                """Returns angle from xlrotatation"""
+
+                # angle is counterclockwise
+                if 0 <= angle <= 90:
+                    return angle
+
+                elif -90 <= angle < 0:
+                    return 90 - angle
+
+                return 0
+
+            alignment.rota = angle2xfrotation(pys_style["angle"])
+
+        if any(e in pys_style for e in ["justification", "vertical_align",
+                                        "angle"]):
             xfstyle.alignment = alignment
+
+        # Background
+        # ----------
+
+        if "bgcolor" in pys_style:
+            pattern = xlwt.Pattern()
+            pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+
+            bgcolor = wx.Colour()
+            bgcolor.SetRGB(pys_style["bgcolor"])
+            pattern.pattern_fore_colour = self.color2idx(*bgcolor.Get())
+
+            xfstyle.pattern = pattern
+
+        # Border
+        # ------
 
         return xfstyle
 
     def _xls2attributes(self, worksheet, tab):
         """Updates attributes in code_array"""
-
-        def idx2colour(idx):
-            """Returns wx.Colour"""
-
-            return wx.Colour(*self.workbook.colour_map[idx])
 
         # Merged cells
         for top, bottom, left, right in worksheet.merged_cells:
@@ -294,7 +357,7 @@ class Xls(object):
             # Background
             if xf.background.fill_pattern == 1:
                 color_idx = xf.background.pattern_colour_index
-                color = idx2colour(color_idx)
+                color = self.idx2colour(color_idx)
                 attributes["bgcolor"] = color.GetRGB()
 
             # Border
@@ -307,12 +370,12 @@ class Xls(object):
 
             bottom_color_idx = xf.border.bottom_colour_index
             if self.workbook.colour_map[bottom_color_idx] is not None:
-                bottom_color = idx2colour(bottom_color_idx)
+                bottom_color = self.idx2colour(bottom_color_idx)
                 attributes["bordercolor_bottom"] = bottom_color.GetRGB()
 
             right_color_idx = xf.border.right_colour_index
             if self.workbook.colour_map[right_color_idx] is not None:
-                right_color = idx2colour(right_color_idx)
+                right_color = self.idx2colour(right_color_idx)
                 attributes["bordercolor_right"] = right_color.GetRGB()
 
             bottom_width = border_line_style2width[xf.border.bottom_line_style]
@@ -336,7 +399,7 @@ class Xls(object):
 
             if self.workbook.colour_map[font.colour_index] is not None:
                 attributes["textcolor"] = \
-                    idx2colour(font.colour_index).GetRGB()
+                    self.idx2colour(font.colour_index).GetRGB()
 
             if font.underline_type:
                 attributes["underline"] = True
@@ -352,7 +415,7 @@ class Xls(object):
                 attributes_above["borderwidth_bottom"] = top_width
             top_color_idx = xf.border.top_colour_index
             if self.workbook.colour_map[top_color_idx] is not None:
-                top_color = idx2colour(top_color_idx)
+                top_color = self.idx2colour(top_color_idx)
                 attributes_above["bordercolor_bottom"] = top_color.GetRGB()
 
             # Handle cells above for left borders
@@ -363,7 +426,7 @@ class Xls(object):
                 attributes_left["borderwidth_right"] = left_width
             left_color_idx = xf.border.left_colour_index
             if self.workbook.colour_map[left_color_idx] is not None:
-                left_color = idx2colour(left_color_idx)
+                left_color = self.idx2colour(left_color_idx)
                 attributes_above["bordercolor_right"] = left_color.GetRGB()
 
             if attributes_above:
