@@ -282,6 +282,72 @@ class Xls(object):
         # Border
         # ------
 
+#        width2border_line_style = {
+#            1: 0,
+#            1: 1,
+#            2: 1,
+#            3: 1,
+#            4: 1,
+#            5: 2,
+#            6: 2,
+#            7: 5,
+#            8: 5,
+#            9: 5,
+#        }
+#
+#        border_keys = [
+#            "borderwidth_right",
+#            "borderwidth_bottom",
+#            "bordercolor_right"
+#            "bordercolor_bottom"
+#        ]
+#
+#        if any(border_key in pys_style for border_key in border_keys):
+#            border = xlwt.Borders()
+#
+#        try:
+#            border_pys_style = pys_style["borderwidth_right"]
+#            border_line_style = width2border_line_style[border_pys_style]
+#            border.right_line_style = border_line_style
+#
+#        except KeyError:
+#            # No or unknown border width
+#            pass
+#
+#        try:
+#            border_pys_style = pys_style["borderwidth_bottom"]
+#            border_line_style = width2border_line_style[border_pys_style]
+#            border.bottom_line_style = border_line_style
+#
+#        except KeyError:
+#            # No or unknown border width
+#            pass
+#
+#        try:
+#            print pys_style["bordercolor_right"]
+#            border_pys_style = pys_style["bordercolor_right"]
+#            bcolor = wx.Colour()
+#            bcolor.SetRGB(border_pys_style)
+#            border.right_colour_index = self.color2idx(*bgcolor.Get())
+#            print bcolor, border.right_colour_index
+#
+#        except KeyError:
+#            # No or unknown border color
+#            pass
+#
+#        try:
+#            border_pys_style = pys_style["bordercolor_bottom"]
+#            bcolor = wx.Colour()
+#            bcolor.SetRGB(border_pys_style)
+#            border.bottom_colour_index = self.color2idx(*bgcolor.Get())
+#
+#        except KeyError:
+#            # No or unknown border color
+#            pass
+#
+#        if any(border_key in pys_style for border_key in border_keys):
+#            xfstyle.border = border
+
         return xfstyle
 
     def _xls2attributes(self, worksheet, tab):
