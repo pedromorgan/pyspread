@@ -137,7 +137,10 @@ class AOpenMixin(object):
 
             # Now wait for the statusbar update to be written on screen
             if is_gtk():
-                wx.Yield()
+                try:
+                    wx.Yield()
+                except AssertionError:
+                    pass
 
         self.line += 1
 
