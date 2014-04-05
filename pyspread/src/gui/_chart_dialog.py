@@ -481,7 +481,7 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
         self.labelsize_intctrl.Bind(EVT_INT, self.OnLabelSizeIntCtrl)
 
     def __do_layout(self):
-        grid_sizer = wx.FlexGridSizer(1, 3, 0, 0)
+        grid_sizer = wx.FlexGridSizer(2, 3, 0, 0)
         grid_sizer.Add(self.sec_checkboxctrl, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer.Add(self.pad_label, 1, wx.ALL | wx.EXPAND, 2)
         grid_sizer.Add(self.pad_intctrl, 1, wx.ALL | wx.EXPAND, 2)
@@ -775,7 +775,7 @@ class SeriesBoxPanel(wx.Panel):
 
     def __do_layout(self):
         box_sizer = wx.StaticBoxSizer(self.staticbox, wx.HORIZONTAL)
-        grid_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+        grid_sizer = wx.FlexGridSizer(len(self.labels), 2, 0, 0)
 
         for label, widget in zip(self.labels, self.widgets):
             grid_sizer.Add(label, 1, wx.ALL | wx.EXPAND, 2)
@@ -826,7 +826,7 @@ class SeriesAttributesPanelBase(wx.Panel):
         self.__do_layout()
 
     def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+        main_sizer = wx.FlexGridSizer(max(3, len(self.box_panels)), 1, 0, 0)
 
         for box_panel in self.box_panels:
             main_sizer.Add(box_panel, 1, wx.ALL | wx.EXPAND, 2)
@@ -1336,7 +1336,7 @@ class SeriesPanel(wx.Panel):
         self.chart_type_book.SetImageList(self.il)
 
     def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
         main_sizer.Add(self.chart_type_book, 1, wx.ALL | wx.EXPAND, 2)
 
         self.SetSizer(main_sizer)
@@ -1499,7 +1499,6 @@ class FigurePanel(wx.Panel):
 
         self.main_sizer.AddGrowableRow(0)
         self.main_sizer.AddGrowableCol(0)
-        self.main_sizer.AddGrowableCol(1)
 
         self.SetSizer(self.main_sizer)
 
@@ -1601,9 +1600,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         chart_sizer.SetMinSize((1000, -1))
         chart_sizer.AddGrowableRow(0)
-        chart_sizer.AddGrowableCol(0, proportion=1)
-        chart_sizer.AddGrowableCol(1, proportion=1)
-        chart_sizer.AddGrowableCol(2, proportion=1)
+        chart_sizer.AddGrowableCol(0, proportion=0.5)
+        chart_sizer.AddGrowableCol(1, proportion=2)
+        chart_sizer.AddGrowableCol(2, proportion=2)
 
         figure_attributes_box_sizer.Add(self.figure_attributes_panel,
                                         1, wx.EXPAND, 0)

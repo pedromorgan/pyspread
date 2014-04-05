@@ -1016,7 +1016,10 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
             post_command_event(self, self.GridActionTableSwitchMsg,
                                newtable=event.GetValue())
             if is_gtk():
-                wx.Yield()
+                try:
+                    wx.Yield()
+                except AssertionError:
+                    pass
             self.switching = False
 
     def OnMouseWheel(self, event):

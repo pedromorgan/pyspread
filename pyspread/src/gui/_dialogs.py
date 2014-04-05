@@ -320,7 +320,7 @@ class CsvParameterWidgets(object):
     def _do_layout(self):
         """Sizer hell, returns a sizer that contains all widgets"""
 
-        sizer_csvoptions = wx.FlexGridSizer(3, 4, 5, 5)
+        sizer_csvoptions = wx.FlexGridSizer(5, 4, 5, 5)
 
         # Adding parameter widgets to sizer_csvoptions
         leftpos = wx.LEFT | wx.ADJUST_MINSIZE
