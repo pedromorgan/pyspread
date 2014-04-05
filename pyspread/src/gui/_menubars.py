@@ -187,7 +187,7 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.SaveMsg, _("&Save") + "\tCtrl+s",
                         _("Save spreadsheet"), wx.ID_SAVE]],
                 [item, [self.SaveAsMsg, _("Save &As") + "\tShift+Ctrl+s",
-                        _("Save spreadsheet to a new file")], wx.ID_SAVEAS],
+                        _("Save spreadsheet to a new file")]],
                 ["Separator"],
                 [item, [self.ImportMsg, _("&Import"),
                         _("Import a file and paste it into current grid")]],
