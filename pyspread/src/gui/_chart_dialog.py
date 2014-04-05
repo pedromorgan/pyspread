@@ -1600,9 +1600,16 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         chart_sizer.SetMinSize((1000, -1))
         chart_sizer.AddGrowableRow(0)
-        chart_sizer.AddGrowableCol(0, proportion=0.5)
-        chart_sizer.AddGrowableCol(1, proportion=2)
-        chart_sizer.AddGrowableCol(2, proportion=2)
+
+        if wx.version().startswith("2."):
+            chart_sizer.AddGrowableCol(0, proportion=1)
+            chart_sizer.AddGrowableCol(1, proportion=1)
+            chart_sizer.AddGrowableCol(2, proportion=1)
+        else:
+            # wxPython3 has changed widow layout
+            chart_sizer.AddGrowableCol(0, proportion=0.5)
+            chart_sizer.AddGrowableCol(1, proportion=2)
+            chart_sizer.AddGrowableCol(2, proportion=2)
 
         figure_attributes_box_sizer.Add(self.figure_attributes_panel,
                                         1, wx.EXPAND, 0)
