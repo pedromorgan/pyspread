@@ -161,8 +161,6 @@ class MainApplication(wx.App, GridActionEventMixin):
         # Get command line options and arguments
         self.get_cmd_args()
 
-        # Initialize the prerequisitions to construct the main window
-        wx.InitAllImageHandlers()
 
         # Main window creation
         from src.gui._main_window import MainWindow
