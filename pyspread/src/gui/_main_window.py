@@ -1275,6 +1275,8 @@ class MainWindowEventHandlers(EventMixin):
     def OnPythonTutorial(self, event):
         """Python tutorial launch event handler"""
 
+        # Doas not work any more
+
         self.main_window.actions.launch_help("Python tutorial",
                                              get_python_tutorial_path())
 

@@ -375,9 +375,6 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.FaqMsg, _("&FAQ"),
                         _("Frequently asked questions")]],
                 ["Separator"],
-                [item, [self.PythonTutorialMsg, _("&Python tutorial"),
-                        _("Python tutorial for coding information (online)")]],
-                ["Separator"],
                 [item, [self.AboutMsg, _("&About"), _("About pyspread"),
                         wx.ID_ABOUT]]]]
         ]
