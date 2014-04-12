@@ -830,7 +830,18 @@ class GridEventHandlers(object):
 
         row, col, tab = event.key
 
-        self.grid.actions.cursor = row, col, tab
+        try:
+            self.grid.actions.cursor = row, col, tab
+
+        except ValueError:
+            msg = _("Cell {key} outside grid shape {shape}").format(
+                key=event.key, shape=self.grid.code_array.shape)
+            post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
+                               text=msg)
+
+            event.Skip()
+            return
+
         self.grid.MakeCellVisible(row, col)
 
         event.Skip()

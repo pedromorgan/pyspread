@@ -940,6 +940,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         self.grid.ForceRefresh()
 
+
 class UnRedoActions(Actions):
     """Undo and redo operations"""
 
@@ -1192,8 +1193,14 @@ class GridActions(Actions):
 
         """
 
+        shape = self.grid.code_array.shape
+
         if len(value) == 3:
             self.grid._last_selected_cell = row, col, tab = value
+            if row < 0 or col < 0 or tab < 0 or \
+               row >= shape[0] or col >= shape[1] or tab >= shape[2]:
+                raise ValueError("Cell {value} outside of {shape}".format(
+                                 value=value, shape=shape))
 
             if tab != self.cursor[2]:
                 post_command_event(self.main_window,
@@ -1202,6 +1209,10 @@ class GridActions(Actions):
                     wx.Yield()
         else:
             row, col = value
+            if row < 0 or col < 0 or row >= shape[0] or col >= shape[1]:
+                raise ValueError("Cell {value} outside of {shape}".format(
+                                 value=value, shape=shape))
+
             self.grid._last_selected_cell = row, col, self.grid.current_table
 
         if not (row is None and col is None):
