@@ -806,7 +806,11 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
         post_command_event(self, self.GridActionTableSwitchMsg,
                            newtable=self.last_table)
         if is_gtk():
+            try:
                 wx.Yield()
+            except:
+                pass
+
         sel_start, sel_stop = self.last_selection
 
         shape = self.main_window.grid.code_array.shape
@@ -1018,8 +1022,9 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
             if is_gtk():
                 try:
                     wx.Yield()
-                except AssertionError:
+                except:
                     pass
+
             self.switching = False
 
     def OnMouseWheel(self, event):

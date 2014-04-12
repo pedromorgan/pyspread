@@ -671,7 +671,10 @@ class GridCellEventHandlers(object):
         self.grid.update_attribute_toolbar()
 
         if is_gtk():
-            wx.Yield()
+            try:
+                wx.Yield()
+            except:
+                pass
 
         event.Skip()
 

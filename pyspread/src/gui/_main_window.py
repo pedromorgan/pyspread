@@ -614,7 +614,10 @@ class MainWindowEventHandlers(EventMixin):
                            shape=shape)
 
         if is_gtk():
-            wx.Yield()
+            try:
+                wx.Yield()
+            except:
+                pass
 
         self.main_window.grid.actions.change_grid_shape(shape)
 
@@ -629,7 +632,10 @@ class MainWindowEventHandlers(EventMixin):
         self.main_window.grid.ForceRefresh()
 
         if is_gtk():
-            wx.Yield()
+            try:
+                wx.Yield()
+            except:
+                pass
 
         # Mark content as unchanged
         try:
@@ -699,7 +705,10 @@ class MainWindowEventHandlers(EventMixin):
         self.main_window.grid.ForceRefresh()
 
         if is_gtk():
-            wx.Yield()
+            try:
+                wx.Yield()
+            except:
+                pass
 
         # Mark content as unchanged
         try:
@@ -1139,7 +1148,10 @@ class MainWindowEventHandlers(EventMixin):
                                style=font.GetStyleString())
 
             if is_gtk():
-                wx.Yield()
+                try:
+                    wx.Yield()
+                except:
+                    pass
 
             self.main_window.grid.update_attribute_toolbar()
 

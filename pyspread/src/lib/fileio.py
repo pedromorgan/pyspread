@@ -139,7 +139,7 @@ class AOpenMixin(object):
             if is_gtk():
                 try:
                     wx.Yield()
-                except AssertionError:
+                except:
                     pass
 
         self.line += 1

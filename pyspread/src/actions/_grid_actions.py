@@ -148,7 +148,10 @@ class FileActions(Actions):
 
             # Now wait for the statusbar update to be written on screen
             if is_gtk():
-                wx.Yield()
+                try:
+                    wx.Yield()
+                except:
+                    pass
 
             # Abort if we have to
             if self.need_abort:
@@ -1206,7 +1209,10 @@ class GridActions(Actions):
                 post_command_event(self.main_window,
                                    self.GridActionTableSwitchMsg, newtable=tab)
                 if is_gtk():
-                    wx.Yield()
+                    try:
+                        wx.Yield()
+                    except:
+                        pass
         else:
             row, col = value
             if row < 0 or col < 0 or row >= shape[0] or col >= shape[1]:
