@@ -186,8 +186,13 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         #return super(MyCellEditor, self).IsAcceptedKey(evt)
 
         # or do it ourselves
-        return (not (evt.ControlDown() or evt.AltDown()) and
-                evt.GetKeyCode() != wx.WXK_SHIFT)
+
+        accepted = super(GridCellEditor, self).IsAcceptedKey(evt)
+        accepted = accepted and not evt.ControlDown()
+        accepted = accepted and not evt.AltDown()
+        accepted = accepted and (evt.GetKeyCode() != wx.WXK_SHIFT)
+
+        return accepted
 
     def StartingKey(self, evt):
         """
