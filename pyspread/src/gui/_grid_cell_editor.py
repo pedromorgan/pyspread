@@ -252,9 +252,18 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         while width < extent:
             # We need to reszie into the next cell's column
             next_col = self._col[-1] + 1
-            new_width = width + self._grid.GetColSize(next_col)
+            try:
+                next_col_width = self._grid.GetColSize(next_col)
+            except:
+                # No nex col because grid is on its right border
+                next_col_width = self._grid.GetColSize(self._col[0])
+
+            new_width = width + next_col_width
+
             self._col.append(next_col)
+
             width = new_width
+
         if new_width:
             pos = self._tc.GetPosition()
-            self.SetSize(wx.Rect(pos[0],pos[1],new_width-2, height-2))
+            self.SetSize(wx.Rect(pos[0], pos[1], new_width-2, height-2))
