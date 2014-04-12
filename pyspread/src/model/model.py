@@ -1438,8 +1438,13 @@ class CodeArray(DataArray):
         reverse = "UP" in flags
 
         for key in self._sorted_keys(self.keys(), startkey, reverse=reverse):
-            if is_matching(key, find_string, flags):
-                return key
+            try:
+                if is_matching(key, find_string, flags):
+                    return key
+
+            except Exception:
+                # re errors are cryptical: sre_constants,...
+                pass
 
     def handler(self, signum, frame):
         raise RuntimeError("Timeout after {} s.".format(config["timeout"]))

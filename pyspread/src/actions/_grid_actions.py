@@ -1451,6 +1451,8 @@ class FindActions(Actions):
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
+        self.grid.ForceRefresh()
+
     def replace(self, findpos, find_string, replace_string):
         """Replaces occurrences of find_string with replace_string at findpos
 
