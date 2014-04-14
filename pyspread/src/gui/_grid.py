@@ -937,6 +937,9 @@ class GridEventHandlers(object):
             else:
                 post_command_event(self.grid, self.grid.ZoomOutMsg)
         else:
+            x, y = self.grid.GetViewStart()
+            direction = 1 if event.GetWheelRotation() < 0 else -1
+            self.grid.Scroll((x, y + direction))
             event.Skip()
 
     # Find events
