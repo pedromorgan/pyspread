@@ -508,15 +508,17 @@ class CSVPreviewGrid(wx.grid.Grid):
             event.Skip()
             return 0
 
-        self.fill_cells(dialect, self.has_header)
+        self.fill_cells(dialect, self.has_header, choices=False)
 
-    def fill_cells(self, dialect, has_header):
+    def fill_cells(self, dialect, has_header, choices=True):
         """Fills the grid for preview of csv data
 
         Parameters
         ----------
         dialect: csv,dialect
         \tDialect used for csv reader
+        choices: Bool
+        \tCreate and show choices
 
         """
 
@@ -540,14 +542,15 @@ class CSVPreviewGrid(wx.grid.Grid):
             for i, header in enumerate(first_line):
                 self.SetCellValue(0, i, header)
 
-        # Add Choices
-        for col in xrange(self.shape[1]):
-            choice_renderer = ChoiceRenderer(self)
-            choice_editor = \
-                wx.grid.GridCellChoiceEditor(self.digest_types.keys(), False)
-            self.SetCellRenderer(has_header, col, choice_renderer)
-            self.SetCellEditor(has_header, col, choice_editor)
-            self.SetCellValue(has_header, col, digest_keys[col])
+        if choices:
+            # Add Choices
+            for col in xrange(self.shape[1]):
+                choice_renderer = ChoiceRenderer(self)
+                choice_editor = wx.grid.GridCellChoiceEditor(
+                    self.digest_types.keys(), False)
+                self.SetCellRenderer(has_header, col, choice_renderer)
+                self.SetCellEditor(has_header, col, choice_editor)
+                self.SetCellValue(has_header, col, digest_keys[col])
 
         # Fill in the rest of the lines
 
