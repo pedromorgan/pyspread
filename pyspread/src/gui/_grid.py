@@ -939,7 +939,7 @@ class GridEventHandlers(object):
         else:
             x, y = self.grid.GetViewStart()
             direction = 1 if event.GetWheelRotation() < 0 else -1
-            self.grid.Scroll((x, y + direction))
+            self.grid.Scroll(x, y + direction)
             event.Skip()
 
     # Find events
