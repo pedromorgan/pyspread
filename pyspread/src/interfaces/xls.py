@@ -148,15 +148,49 @@ class Xls(object):
 
         """
 
+        code_array = self.code_array
+
         xls_max_shape = self.xls_max_rows, self.xls_max_cols, self.xls_max_tabs
 
-        for key in self.code_array:
+        for key in code_array:
             if all(kele < mele for kele, mele in zip(key, xls_max_shape)):
                 # Cell lies within Excel boundaries
                 row, col, tab = key
-                code_str = self.code_array(key)
+                code_str = code_array(key)
                 style = self._get_xfstyle(worksheets, key)
                 worksheets[tab].write(row, col, label=code_str, style=style)
+
+        # Handle cell formatting in cells without code
+
+        # Get bboxes for all cell_attributes
+        max_shape = [min(xls_max_shape[0], code_array.shape[0]),
+                     min(xls_max_shape[1], code_array.shape[1])]
+
+        # Prevent systems from blocking
+        if max_shape[0] * max_shape[1] > 1024000:
+            # Ignore all cell attributes below row 3999
+            max_shape[0] = 4000
+
+        cell_attributes = code_array.dict_grid.cell_attributes
+        bboxes = [(s.get_grid_bbox(code_array.shape), __tab)
+                  for s, __tab, __ in cell_attributes]
+
+        # Get bbox_cell_set from bboxes
+        cells = []
+        for ((bb_top, bb_left), (bb_bottom, bb_right)), __tab in bboxes:
+            __bb_bottom = min(bb_bottom, max_shape[0])
+            __bb_right = min(bb_right, max_shape[1])
+            for __row, __col in product(xrange(bb_top, __bb_bottom + 1),
+                                        xrange(bb_left, __bb_right + 1)):
+                cells.append((__row, __col, __tab))
+
+        cell_set = set(cells)
+        # Loop over those with non-standard attributes
+        for key in cell_set:
+            if key not in code_array:
+                row, col, tab = key
+                style = self._get_xfstyle(worksheets, key)
+                worksheets[tab].write(row, col, label="", style=style)
 
     def _xls2code(self, worksheet, tab):
         """Updates code in xls code_array"""
