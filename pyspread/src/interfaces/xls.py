@@ -50,7 +50,9 @@ import src.lib.i18n as i18n
 
 from src.lib.selection import Selection
 
-from src.sysvars import get_dpi, get_default_text_extent
+from src.sysvars import get_dpi, get_default_text_extent, get_color
+
+from src.config import config
 
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -172,8 +174,10 @@ class Xls(object):
             max_shape[0] = 4000
 
         cell_attributes = code_array.dict_grid.cell_attributes
-        bboxes = [(s.get_grid_bbox(code_array.shape), __tab)
-                  for s, __tab, __ in cell_attributes]
+        bboxes = []
+        for s, __tab, __ in cell_attributes:
+            if s:
+                bboxes.append((s.get_grid_bbox(code_array.shape), __tab))
 
         # Get bbox_cell_set from bboxes
         cells = []
@@ -187,7 +191,7 @@ class Xls(object):
         cell_set = set(cells)
         # Loop over those with non-standard attributes
         for key in cell_set:
-            if key not in code_array:
+            if key not in code_array and all(ele >= 0 for ele in key):
                 row, col, tab = key
                 style = self._get_xfstyle(worksheets, key)
                 worksheets[tab].write(row, col, label="", style=style)
@@ -197,12 +201,12 @@ class Xls(object):
 
         type2mapper = {
             0: lambda x: None,  # Empty cell
-            1: lambda x: repr(x),  # Text cell
-            2: lambda x: repr(x),  # Number cell
+            1: lambda x: str(x),  # Text cell
+            2: lambda x: str(x),  # Number cell
             3: lambda x: repr(datetime(
                 xlrd.xldate_as_tuple(x, self.workbook.datemode))),  # Date
-            4: lambda x: repr(bool(x)),  # Boolean cell
-            5: lambda x: repr(x),  # Error cell
+            4: lambda x: str(bool(x)),  # Boolean cell
+            5: lambda x: str(x),  # Error cell
             6: lambda x: None,  # Blank cell
         }
 
@@ -214,173 +218,321 @@ class Xls(object):
             key = row, col, tab
             self.code_array[key] = type2mapper[cell_type](cell_value)
 
+    def _get_font(self, pys_style):
+        """Returns xlwt.Font for pyspread style"""
+
+        # Return None if there is no font
+        if "textfont" not in pys_style:
+            return
+
+        font = xlwt.Font()
+
+        font.name = pys_style["textfont"]
+
+        if "pointsize" in pys_style:
+            font.height = pys_style["pointsize"] * 20.0
+
+        if "fontweight" in pys_style:
+            font.bold = (pys_style["fontweight"] == wx.BOLD)
+
+        if "fontstyle" in pys_style:
+            font.italic = (pys_style["fontstyle"] == wx.ITALIC)
+
+        if "textcolor" in pys_style:
+            textcolor = wx.Colour()
+            textcolor.SetRGB(pys_style["textcolor"])
+            font.colour_index = self.color2idx(*textcolor.Get())
+
+        if "underline" in pys_style:
+            font.underline_type = pys_style["underline"]
+
+        if "strikethrough" in pys_style:
+            font.struck_out = pys_style["strikethrough"]
+
+        return font
+
+    def _get_alignment(self, pys_style):
+        """Returns xlwt.Alignment for pyspread style"""
+
+        # Return None if there is no alignment
+        alignment_styles = ["justification", "vertical_align", "angle"]
+        if not any(astyle in pys_style for astyle in alignment_styles):
+            return
+
+        def angle2xfrotation(angle):
+            """Returns angle from xlrotatation"""
+
+            # angle is counterclockwise
+            if 0 <= angle <= 90:
+                return angle
+
+            elif -90 <= angle < 0:
+                return 90 - angle
+
+            return 0
+
+        justification2xfalign = {
+            "left": 1,
+            "center": 2,
+            "right": 3,
+        }
+
+        vertical_align2xfalign = {
+            "top": 0,
+            "middle": 1,
+            "bottom": 2,
+        }
+
+        alignment = xlwt.Alignment()
+
+        try:
+            alignment.horz = justification2xfalign[pys_style["justification"]]
+
+        except KeyError:
+            pass
+
+        try:
+            alignment.vert = \
+                vertical_align2xfalign[pys_style["vertical_align"]]
+
+        except KeyError:
+            pass
+
+        try:
+            alignment.rota = angle2xfrotation(pys_style["angle"])
+
+        except KeyError:
+            pass
+
+        return alignment
+
+    def _get_pattern(self, pys_style):
+        """Returns xlwt.pattern for pyspread style"""
+
+        # Return None if there is no bgcolor
+        if "bgcolor" not in pys_style:
+            return
+
+        pattern = xlwt.Pattern()
+        pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+
+        bgcolor = wx.Colour()
+        bgcolor.SetRGB(pys_style["bgcolor"])
+        pattern.pattern_fore_colour = self.color2idx(*bgcolor.Get())
+
+        return pattern
+
+    def _get_borders(self, pys_style, pys_style_above, pys_style_left):
+        """Returns xlwt.Borders for pyspread style"""
+
+        # Return None if there is no border key
+        border_keys = [
+            "borderwidth_right",
+            "borderwidth_bottom",
+            "bordercolor_right"
+            "bordercolor_bottom"
+        ]
+
+        if not any(border_key in pys_style for border_key in border_keys):
+            return
+
+        def width2border_line_style(width):
+            if width == 0:
+                return xlwt.Borders.NO_LINE
+
+            if 0 < width < 2:
+                return xlwt.Borders.THIN
+
+            if 2 <= width < 6:
+                return xlwt.Borders.MEDIUM
+
+            if width >= 6:
+                return xlwt.Borders.THICK
+
+            raise ValueError("Width {} unknown".format(width))
+
+        DEFAULT_LINE_STYLE = xlwt.Borders.THIN
+        DEFAULT_COLOR_IDX = 0x16  # Tried out with gnumeric and LibreOffice
+
+        borders = xlwt.Borders()
+
+        # Width / style
+        # -------------
+
+        # Bottom width
+
+        try:
+            bottom_pys_style = pys_style["borderwidth_bottom"]
+            bottom_line_style = width2border_line_style(bottom_pys_style)
+
+        except KeyError:
+            # No or unknown border width
+            bottom_line_style = DEFAULT_LINE_STYLE
+
+        finally:
+            borders.bottom = bottom_line_style
+
+        # Right width
+
+        try:
+            right_pys_style = pys_style["borderwidth_right"]
+            right_line_style = width2border_line_style(right_pys_style)
+
+        except KeyError:
+            # No or unknown border width
+            right_line_style = DEFAULT_LINE_STYLE
+
+        finally:
+            borders.right = right_line_style
+
+        # Top width
+
+        try:
+            top_pys_style = pys_style_above["borderwidth_bottom"]
+            top_line_style = width2border_line_style(top_pys_style)
+
+        except KeyError:
+            # No or unknown border width
+            top_line_style = DEFAULT_LINE_STYLE
+
+        finally:
+            borders.top = top_line_style
+
+        # Left width
+
+        try:
+            left_pys_style = pys_style_left["borderwidth_right"]
+            left_line_style = width2border_line_style(left_pys_style)
+
+        except KeyError:
+            # No or unknown border width
+            left_line_style = DEFAULT_LINE_STYLE
+
+        finally:
+            borders.left = left_line_style
+
+        # Border colors
+        # -------------
+
+        # Bottom color
+
+        def _get_color_idx(color):
+            """Converts wx.Colour to Excel color index
+
+            Differs from self.color2idx because it maps
+            the pyspread default grid color to the Excel default color
+
+            Parameters
+            ----------
+            color: wx.Colour
+            \tColor to be converted
+
+            """
+
+            if color == get_color(config["grid_color"]):
+                return DEFAULT_COLOR_IDX
+            else:
+                return self.color2idx(*color.Get())
+
+        try:
+            bottom_color_pys_style = pys_style["bordercolor_bottom"]
+            bcolor = wx.Colour()
+            bcolor.SetRGB(bottom_color_pys_style)
+            bottom_color_idx = _get_color_idx(bcolor)
+
+        except KeyError:
+            # No or unknown border color
+            bottom_color_idx = DEFAULT_COLOR_IDX
+
+        finally:
+            borders.bottom_colour = bottom_color_idx
+
+        # Right color
+
+        try:
+            right_color_pys_style = pys_style["bordercolor_right"]
+            rcolor = wx.Colour()
+            rcolor.SetRGB(right_color_pys_style)
+            right_colour_idx = _get_color_idx(rcolor)
+
+        except KeyError:
+            # No or unknown border color
+            right_colour_idx = DEFAULT_COLOR_IDX
+
+        finally:
+            borders.right_colour = right_colour_idx
+
+        # Top color
+
+        try:
+            top_color_pys_style = pys_style_above["bordercolor_bottom"]
+            tcolor = wx.Colour()
+            tcolor.SetRGB(top_color_pys_style)
+            top_color_idx = _get_color_idx(tcolor)
+
+        except KeyError:
+            # No or unknown border color
+            top_color_idx = DEFAULT_COLOR_IDX
+
+        finally:
+            borders.top_colour = top_color_idx
+
+        # Left color
+
+        try:
+            left_color_pys_style = pys_style_left["bordercolor_right"]
+            lcolor = wx.Colour()
+            lcolor.SetRGB(left_color_pys_style)
+            left_colour_idx = _get_color_idx(lcolor)
+
+        except KeyError:
+            # No or unknown border color
+            left_colour_idx = DEFAULT_COLOR_IDX
+
+        finally:
+            borders.left_colour = left_colour_idx
+
+        return borders
+
     def _get_xfstyle(self, worksheets, key):
         """Gets XFStyle for cell key"""
 
+        row, col, tab = key
         dict_grid = self.code_array.dict_grid
 
-        # Get all cells in selections
-
         pys_style = dict_grid.cell_attributes[key]
+        pys_style_above = dict_grid.cell_attributes[row - 1, col, tab]
+        pys_style_left = dict_grid.cell_attributes[row, col - 1, tab]
+
         xfstyle = xlwt.XFStyle()
 
         # Font
         # ----
 
-        if "textfont" in pys_style:
-
-            font = xlwt.Font()
-
-            font.name = pys_style["textfont"]
-
-            if "pointsize" in pys_style:
-                font.height = pys_style["pointsize"] * 20.0
-
-            if "fontweight" in pys_style:
-                font.bold = (pys_style["fontweight"] == wx.BOLD)
-
-            if "fontstyle" in pys_style:
-                font.italic = (pys_style["fontstyle"] == wx.ITALIC)
-
-            if "textcolor" in pys_style:
-                textcolor = wx.Colour()
-                textcolor.SetRGB(pys_style["textcolor"])
-                font.colour_index = self.color2idx(*textcolor.Get())
-
-            if "underline" in pys_style:
-                font.underline_type = pys_style["underline"]
-
-            if "strikethrough" in pys_style:
-                font.struck_out = pys_style["strikethrough"]
-
+        font = self._get_font(pys_style)
+        if font is not None:
             xfstyle.font = font
 
         # Alignment
         # ---------
 
-        if any(e in pys_style for e in ["justification", "vertical_align",
-                                        "angle"]):
-            alignment = xlwt.Alignment()
-
-        if "justification" in pys_style:
-            justification2xfalign = {
-                "left": 1,
-                "center": 2,
-                "right": 3,
-            }
-
-            alignment.horz = justification2xfalign[pys_style["justification"]]
-
-        if "vertical_align" in pys_style:
-            vertical_align2xfalign = {
-                "top": 0,
-                "middle": 1,
-                "bottom": 2,
-            }
-
-            alignment.vert = \
-                vertical_align2xfalign[pys_style["vertical_align"]]
-
-        if "angle" in pys_style:
-            def angle2xfrotation(angle):
-                """Returns angle from xlrotatation"""
-
-                # angle is counterclockwise
-                if 0 <= angle <= 90:
-                    return angle
-
-                elif -90 <= angle < 0:
-                    return 90 - angle
-
-                return 0
-
-            alignment.rota = angle2xfrotation(pys_style["angle"])
-
-        if any(e in pys_style for e in ["justification", "vertical_align",
-                                        "angle"]):
+        alignment = self._get_alignment(pys_style)
+        if alignment is not None:
             xfstyle.alignment = alignment
 
-        # Background
-        # ----------
+        # Background / pattern
+        # --------------------
 
-        if "bgcolor" in pys_style:
-            pattern = xlwt.Pattern()
-            pattern.pattern = xlwt.Pattern.SOLID_PATTERN
-
-            bgcolor = wx.Colour()
-            bgcolor.SetRGB(pys_style["bgcolor"])
-            pattern.pattern_fore_colour = self.color2idx(*bgcolor.Get())
-
+        pattern = self._get_pattern(pys_style)
+        if pattern is not None:
             xfstyle.pattern = pattern
 
         # Border
         # ------
 
-#        width2border_line_style = {
-#            1: 0,
-#            1: 1,
-#            2: 1,
-#            3: 1,
-#            4: 1,
-#            5: 2,
-#            6: 2,
-#            7: 5,
-#            8: 5,
-#            9: 5,
-#        }
-#
-#        border_keys = [
-#            "borderwidth_right",
-#            "borderwidth_bottom",
-#            "bordercolor_right"
-#            "bordercolor_bottom"
-#        ]
-#
-#        if any(border_key in pys_style for border_key in border_keys):
-#            border = xlwt.Borders()
-#
-#        try:
-#            border_pys_style = pys_style["borderwidth_right"]
-#            border_line_style = width2border_line_style[border_pys_style]
-#            border.right_line_style = border_line_style
-#
-#        except KeyError:
-#            # No or unknown border width
-#            pass
-#
-#        try:
-#            border_pys_style = pys_style["borderwidth_bottom"]
-#            border_line_style = width2border_line_style[border_pys_style]
-#            border.bottom_line_style = border_line_style
-#
-#        except KeyError:
-#            # No or unknown border width
-#            pass
-#
-#        try:
-#            print pys_style["bordercolor_right"]
-#            border_pys_style = pys_style["bordercolor_right"]
-#            bcolor = wx.Colour()
-#            bcolor.SetRGB(border_pys_style)
-#            border.right_colour_index = self.color2idx(*bgcolor.Get())
-#            print bcolor, border.right_colour_index
-#
-#        except KeyError:
-#            # No or unknown border color
-#            pass
-#
-#        try:
-#            border_pys_style = pys_style["bordercolor_bottom"]
-#            bcolor = wx.Colour()
-#            bcolor.SetRGB(border_pys_style)
-#            border.bottom_colour_index = self.color2idx(*bgcolor.Get())
-#
-#        except KeyError:
-#            # No or unknown border color
-#            pass
-#
-#        if any(border_key in pys_style for border_key in border_keys):
-#            xfstyle.border = border
+        borders = self._get_borders(pys_style, pys_style_above, pys_style_left)
+        if borders is not None:
+            xfstyle.borders = borders
 
         return xfstyle
 
@@ -462,9 +614,9 @@ class Xls(object):
 
             # Border
             border_line_style2width = {
-                0: 1,
-                1: 3,
-                2: 5,
+                0: 0,
+                1: 1,
+                2: 4,
                 5: 7,
             }
 
@@ -507,7 +659,7 @@ class Xls(object):
             if font.struck_out:
                 attributes["strikethrough"] = True
 
-            # Handle cells above for top borders
+            # Handle top cells' top borders
 
             attributes_above = {}
             top_width = border_line_style2width[xf.border.top_line_style]
@@ -518,7 +670,7 @@ class Xls(object):
                 top_color = self.idx2colour(top_color_idx)
                 attributes_above["bordercolor_bottom"] = top_color.GetRGB()
 
-            # Handle cells above for left borders
+            # Handle leftmost cells' left borders
 
             attributes_left = {}
             left_width = border_line_style2width[xf.border.left_line_style]
@@ -580,7 +732,7 @@ class Xls(object):
             rsel.cells = thick_right_cells
             rattrs = copy(attributes)
             rattrs.pop("borderwidth_right")
-            cell_attributes.append((bsel, tab, battrs))
+            cell_attributes.append((rsel, tab, rattrs))
 
     def _row_heights2xls(self, worksheets):
         """Writes row_heights to xls file
