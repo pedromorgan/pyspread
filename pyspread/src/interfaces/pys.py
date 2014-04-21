@@ -168,9 +168,9 @@ class Pys(object):
         purged_cell_attributes = []
         purged_cell_attributes_keys = []
         for selection, tab, attr_dict in self.code_array.cell_attributes:
-            if (selection, tab) in purged_cell_attributes_keys:
-                idx = purged_cell_attributes_keys.index((selection, tab))
-                purged_cell_attributes[idx][2].update(attr_dict)
+            if purged_cell_attributes_keys and \
+               (selection, tab) == purged_cell_attributes_keys[-1]:
+                purged_cell_attributes[-1][2].update(attr_dict)
             else:
                 purged_cell_attributes_keys.append((selection, tab))
                 purged_cell_attributes.append([selection, tab, attr_dict])
