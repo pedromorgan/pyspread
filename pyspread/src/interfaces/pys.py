@@ -164,7 +164,18 @@ class Pys(object):
 
         """
 
+        # Remove doublettes
+        purged_cell_attributes = []
+        purged_cell_attributes_keys = []
         for selection, tab, attr_dict in self.code_array.cell_attributes:
+            if (selection, tab) in purged_cell_attributes_keys:
+                idx = purged_cell_attributes_keys.index((selection, tab))
+                purged_cell_attributes[idx][2].update(attr_dict)
+            else:
+                purged_cell_attributes_keys.append((selection, tab))
+                purged_cell_attributes.append([selection, tab, attr_dict])
+
+        for selection, tab, attr_dict in purged_cell_attributes:
             sel_list = [selection.block_tl, selection.block_br,
                         selection.rows, selection.cols, selection.cells]
 
