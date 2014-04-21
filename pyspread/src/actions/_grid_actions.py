@@ -282,6 +282,9 @@ class FileActions(Actions):
         self.code_array.row_heights.clear()
         self.code_array.col_widths.clear()
 
+        # Clear macros
+        self.code_array.macros = ""
+
         # Clear caches
         self.code_array.unredo.reset()
         self.code_array.result_cache.clear()
