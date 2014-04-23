@@ -79,7 +79,7 @@ class TestXls(object):
 
         return res
 
-    param_split_tidy = [
+    param_idx2colour = [
         {'string': "1", 'maxsplit': None, 'res': ["1"]},
         {'string': "1\t2", 'maxsplit': None, 'res': ["1", "2"]},
         {'string': "1\t2\n", 'maxsplit': None, 'res': ["1", "2"]},
@@ -87,13 +87,13 @@ class TestXls(object):
         {'string': "1\t2\t3\n", 'maxsplit': 1, 'res': ["1", "2\t3"]},
     ]
 
-    @params(param_split_tidy)
-    def test_split_tidy(self, string, maxsplit, res):
-        """Test _split_tidy method"""
+    @params(param_idx2colour)
+    def test_idx2colour(self, string, maxsplit, res):
+        """Test idx2colour method"""
 
         assert self.xls_in._split_tidy(string, maxsplit) == res
 
-    param_get_key = [
+    param_color2idx = [
         {'keystrings': ["1", "2", "3"], 'res': (1, 2, 3)},
         {'keystrings': ["0", "0", "0"], 'res': (0, 0, 0)},
         {'keystrings': ["0", "0"], 'res': (0, 0)},
@@ -102,34 +102,11 @@ class TestXls(object):
         {'keystrings': map(unicode, xrange(100)), 'res': tuple(xrange(100))},
     ]
 
-    @params(param_get_key)
-    def test_get_key(self, keystrings, res):
-        """Test _get_key method"""
+    @params(param_color2idx)
+    def test_color2idx(self, keystrings, res):
+        """Test color2idx method"""
 
         assert self.xls_in._get_key(*keystrings) == res
-
-    param_xls_assert_version = [
-        {'line': "\n", 'res': False},
-        {'line': "0.1\n", 'res': True},
-        {'line': "0.2\n", 'res': False},
-    ]
-
-    @params(param_xls_assert_version)
-    def test_xls_assert_version(self, line, res):
-        """Test _xls_assert_version method"""
-
-        try:
-            self.xls_in._xls_assert_version(line)
-            assert res
-
-        except ValueError:
-            assert not res
-
-    def test_version2xls(self):
-        """Test _version2xls method"""
-
-        self.write_xls_out("_version2xls")
-        assert self.read_xls_out() == "0.1\n"
 
     param_shape2xls = [
         {'shape': (1000, 100, 3), 'res': "1000\t100\t3\n"},
@@ -185,15 +162,105 @@ class TestXls(object):
          'key': (3, 4, 0), 'attr': 'borderwidth_bottom', 'val': 42},
     ]
 
-    @params(param_attributes2xls)
-    def test_attributes2xls(self, selection, table, key, attr, val, code):
-        """Test _attributes2xls method"""
+    param_get_font = [
+        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
+        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
+         'key': (10, 0, 0), 'val': u"öäüß"},
+        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
+        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
+         'val': "a" * 100},
+        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
+    ]
 
-        self.code_array.dict_grid.cell_attributes.undoable_append(
-            (selection, table, {attr: val}), mark_unredo=False)
+    @params(param_get_font)
+    def test_get_font(self, key, val, code):
+        """Test _get_font method"""
 
-        self.write_xls_out("_attributes2xls")
-        assert self.read_xls_out() == code
+        self.code_array[key] = val
+        self.write_xls_out("_code2xls")
+        res = self.read_xls_out()
+
+        assert res == code
+
+    param_get_alignment = [
+        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
+        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
+         'key': (10, 0, 0), 'val': u"öäüß"},
+        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
+        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
+         'val': "a" * 100},
+        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
+    ]
+
+    @params(param_get_alignment)
+    def test_get_alignment(self, key, val, code):
+        """Test _get_alignment method"""
+
+        self.code_array[key] = val
+        self.write_xls_out("_code2xls")
+        res = self.read_xls_out()
+
+        assert res == code
+
+    param_get_pattern = [
+        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
+        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
+         'key': (10, 0, 0), 'val': u"öäüß"},
+        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
+        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
+         'val': "a" * 100},
+        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
+    ]
+
+    @params(param_get_pattern)
+    def test_get_pattern(self, key, val, code):
+        """Test _get_pattern method"""
+
+        self.code_array[key] = val
+        self.write_xls_out("_code2xls")
+        res = self.read_xls_out()
+
+        assert res == code
+
+    param_get_borders = [
+        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
+        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
+         'key': (10, 0, 0), 'val': u"öäüß"},
+        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
+        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
+         'val': "a" * 100},
+        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
+    ]
+
+    @params(param_get_borders)
+    def test_get_borders(self, key, val, code):
+        """Test _get_borders method"""
+
+        self.code_array[key] = val
+        self.write_xls_out("_code2xls")
+        res = self.read_xls_out()
+
+        assert res == code
+
+    param_get_xfstyle = [
+        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
+        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
+         'key': (10, 0, 0), 'val': u"öäüß"},
+        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
+        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
+         'val': "a" * 100},
+        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
+    ]
+
+    @params(param_get_xfstyle)
+    def test_get_xfstyle(self, key, val, code):
+        """Test _get_xfstyle method"""
+
+        self.code_array[key] = val
+        self.write_xls_out("_code2xls")
+        res = self.read_xls_out()
+
+        assert res == code
 
     @params(param_attributes2xls)
     def test_xls2attributes(self, selection, table, key, attr, val, code):
@@ -203,6 +270,25 @@ class TestXls(object):
 
         attrs = self.code_array.dict_grid.cell_attributes[key]
         assert attrs[attr] == val
+
+    param_cell_attribute_append = [
+        {'row': 0, 'tab': 0, 'height': 0.1, 'code': "0\t0\t0.1\n"},
+        {'row': 0, 'tab': 0, 'height': 0.0, 'code': "0\t0\t0.0\n"},
+        {'row': 10, 'tab': 0, 'height': 1.0, 'code': "10\t0\t1.0\n"},
+        {'row': 10, 'tab': 10, 'height': 1.0, 'code': "10\t10\t1.0\n"},
+        {'row': 10, 'tab': 10, 'height': 100.0, 'code': "10\t10\t100.0\n"},
+    ]
+
+    @params(param_cell_attribute_append)
+    def test_cell_attribute_append(self, selection, table, key, attr, val,
+                                   code):
+        """Test _cell_attribute_append method"""
+
+        self.code_array.dict_grid.cell_attributes.undoable_append(
+            (selection, table, {attr: val}), mark_unredo=False)
+
+        self.write_xls_out("_attributes2xls")
+        assert self.read_xls_out() == code
 
     param_row_heights2xls = [
         {'row': 0, 'tab': 0, 'height': 0.1, 'code': "0\t0\t0.1\n"},
@@ -249,29 +335,6 @@ class TestXls(object):
 
         self.xls_in._xls2col_widths(code)
         assert self.code_array.dict_grid.col_widths[(col, tab)] == width
-
-    param_macros2xls = [
-        {'code': u"Test"},
-        {'code': u""},
-        {'code': u"Test1\nTest2"},
-        {'code': u"öäüß"},
-    ]
-
-    @params(param_macros2xls)
-    def test_macros2xls(self, code):
-        """Test _macros2xls method"""
-
-        self.code_array.dict_grid.macros = code
-        self.write_xls_out("_macros2xls")
-        res = self.read_xls_out().decode("utf-8")
-        assert res == code
-
-    @params(param_macros2xls)
-    def test_xls2macros(self, code):
-        """Test _xls2macros method"""
-
-        self.xls_in._xls2macros(code.encode("utf-8"))
-        assert self.code_array.dict_grid.macros == code
 
     def test_from_code_array(self):
         """Test from_code_array method"""
