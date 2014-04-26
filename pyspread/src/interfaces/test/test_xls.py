@@ -33,6 +33,8 @@ import bz2
 import os
 import sys
 
+import xlrd
+
 from src.interfaces.xls import Xls
 from src.lib.selection import Selection
 from src.lib.testlib import params, pytest_generate_tests
@@ -54,30 +56,31 @@ class TestXls(object):
         # The test file xls_file has entries in each category
 
         self.code_array = CodeArray((1000, 100, 3))
-        self.xls_infile = bz2.BZ2File(TESTPATH + "xls_test1.xls")
+        self.xls_infile = xlrd.open_workbook(TESTPATH + "xls_test1.xls",
+                                             formatting_info=True)
         self.xls_outfile_path = TESTPATH + "xls_test2.xls"
         self.xls_in = Xls(self.code_array, self.xls_infile)
 
     def write_xls_out(self, method_name, *args, **kwargs):
         """Helper that writes an xls_out file"""
 
-        outfile = bz2.BZ2File(self.xls_outfile_path, "w")
-        xls_out = Xls(self.code_array, outfile)
+        workbook = xlwt.Workbook()
+
+        xls_out = Xls(self.code_array, workbook)
         method = getattr(xls_out, method_name)
         method(*args, **kwargs)
-        outfile.close()
+        workbook.save(self.xls_outfile_path)
 
     def read_xls_out(self):
         """Returns string of xls_out content and removes xls_out"""
 
-        outfile = bz2.BZ2File(self.xls_outfile_path)
-        res = outfile.read()
-        outfile.close()
+        out_workbook = xlrd.open_workbook(self.xls_outfile_path,
+                                          formatting_info=True)
 
         # Clean up the test dir
         os.remove(self.xls_outfile_path)
 
-        return res
+        return out_workbook
 
     param_idx2colour = [
         {'string': "1", 'maxsplit': None, 'res': ["1"]},
