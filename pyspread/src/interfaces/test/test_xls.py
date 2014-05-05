@@ -111,20 +111,23 @@ class TestXls(object):
 
         assert self.xls_in.color2idx(red, green, blue) == res
 
-#    param_shape2xls = [
-#        {'shape': (1000, 100, 3), 'res': "1000\t100\t3\n"},
-#        {'shape': (1, 1, 1), 'res': "1\t1\t1\n"},
-#        {'shape': (1000000, 1000000, 2), 'res': "1000000\t1000000\t2\n"},
-#    ]
-#
-#    @params(param_shape2xls)
-#    def test_shape2xls(self, shape, res):
-#        """Test _shape2xls method"""
-#
-#        self.code_array.dict_grid.shape = shape
-#        self.write_xls_out("_shape2xls")
-#        assert self.read_xls_out() == res
-#
+    param_shape2xls = [
+        {'tabs': 1, 'res': 1},
+        {'tabs': 2, 'res': 2},
+        {'tabs': 100, 'res': 100},
+        {'tabs': 100000, 'res': 256},
+    ]
+
+    @params(param_shape2xls)
+    def test_shape2xls(self, tabs, res):
+        """Test _shape2xls method"""
+
+        self.code_array.dict_grid.shape = (99, 99, tabs)
+        self.write_xls_out("_shape2xls", [])
+        workbook = self.read_xls_out()
+        assert len(workbook.sheets()) == res
+
+
 #    @params(param_shape2xls)
 #    def test_xls2shape(self, res, shape):
 #        """Test _xls2shape method"""
