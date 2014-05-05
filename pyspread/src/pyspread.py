@@ -60,10 +60,10 @@ sys.path.insert(0, get_program_path())
 try:
     sys.modules['wx']
 except KeyError:
-    # Select wx version 2.8 if possible
+    # Select wx version 3.0 if possible
     try:
         import wxversion
-        wxversion.select(['2.8', '2.9'])
+        wxversion.select(['3.0', '2.8', '2.9'])
 
     except ImportError:
         pass

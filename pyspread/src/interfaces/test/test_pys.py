@@ -31,15 +31,18 @@ import bz2
 import os
 import sys
 
-from src.interfaces.pys import Pys
-from src.lib.selection import Selection
-from src.lib.testlib import params, pytest_generate_tests
-from src.model.model import CodeArray
+import wx
+app = wx.App()
 
 TESTPATH = os.sep.join(os.path.realpath(__file__).split(os.sep)[:-1]) + os.sep
 sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
+
+from src.interfaces.pys import Pys
+from src.lib.selection import Selection
+from src.lib.testlib import params, pytest_generate_tests
+from src.model.model import CodeArray
 
 
 class TestPys(object):
