@@ -64,13 +64,10 @@ class TestXls(object):
         self.xls_outfile_path = TESTPATH + "xls_test2.xls"
         self.xls_in = Xls(self.code_array, self.xls_infile)
 
-    def write_xls_out(self, method_name, *args, **kwargs):
-        """Helper that writes an xls_out file"""
+    def write_xls_out(self, xls, workbook, method_name, *args, **kwargs):
+        """Helper that writes an xls file"""
 
-        workbook = xlwt.Workbook()
-
-        xls_out = Xls(self.code_array, workbook)
-        method = getattr(xls_out, method_name)
+        method = getattr(xls, method_name)
         method(*args, **kwargs)
         workbook.save(self.xls_outfile_path)
 
@@ -123,37 +120,41 @@ class TestXls(object):
         """Test _shape2xls method"""
 
         self.code_array.dict_grid.shape = (99, 99, tabs)
-        self.write_xls_out("_shape2xls", [])
+        workbook = xlwt.Workbook()
+        xls_out = Xls(self.code_array, workbook)
+        self.write_xls_out(xls_out, workbook, "_shape2xls", [])
         workbook = self.read_xls_out()
         assert len(workbook.sheets()) == res
 
+    def test_xls2shape(self):
+        """Test _xls2shape method"""
 
-#    @params(param_shape2xls)
-#    def test_xls2shape(self, res, shape):
-#        """Test _xls2shape method"""
-#
-#        self.xls_in._xls2shape(res)
-#        assert self.code_array.dict_grid.shape == shape
-#
-#    param_code2xls = [
-#        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
-#        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
-#         'key': (10, 0, 0), 'val': u"öäüß"},
-#        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
-#        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
-#         'val': "a" * 100},
-#        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
-#    ]
-#
-#    @params(param_code2xls)
-#    def test_code2xls(self, key, val, code):
-#        """Test _code2xls method"""
-#
-#        self.code_array[key] = val
-#        self.write_xls_out("_code2xls")
-#        res = self.read_xls_out()
-#
-#        assert res == code
+        self.xls_in._xls2shape()
+        assert self.code_array.dict_grid.shape == (11, 7, 3)
+
+    param_code2xls = [
+        {'code': [((0, 0, 0), "Test"), ], 'key': (0, 0, 0), 'val': "Test"},
+    ]
+
+    @params(param_code2xls)
+    def test_code2xls(self, key, val, code):
+        """Test _code2xls method"""
+
+        row, col, tab = key
+
+        for __key, __val in code:
+            self.code_array[__key] = __val
+            self.code_array.shape = (1000, 100, 3)
+        workbook = xlwt.Workbook()
+        xls_out = Xls(self.code_array, workbook)
+        worksheets = []
+        xls_out._shape2xls(worksheets)
+        self.write_xls_out(xls_out, workbook, "_code2xls", worksheets)
+        workbook = self.read_xls_out()
+
+        worksheets = workbook.sheets()
+        worksheet = worksheets[tab]
+        assert worksheet.cell_value(row, col) == val
 #
 #    @params(param_code2xls)
 #    def test_xls2code(self, val, code, key):
