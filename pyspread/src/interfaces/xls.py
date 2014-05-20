@@ -199,12 +199,22 @@ class Xls(object):
     def _xls2code(self, worksheet, tab):
         """Updates code in xls code_array"""
 
+        def xlrddate2datetime(xlrd_date):
+            """Returns datetime from xlrd_date"""
+
+            try:
+                xldate_tuple = xlrd.xldate_as_tuple(xlrd_date,
+                                                    self.workbook.datemode)
+                return datetime(xldate_tuple)
+
+            except (ValueError, TypeError):
+                return ''
+
         type2mapper = {
             0: lambda x: None,  # Empty cell
             1: lambda x: str(x),  # Text cell
             2: lambda x: str(x),  # Number cell
-            3: lambda x: repr(datetime(
-                xlrd.xldate_as_tuple(x, self.workbook.datemode))),  # Date
+            3: xlrddate2datetime,  # Date
             4: lambda x: str(bool(x)),  # Boolean cell
             5: lambda x: str(x),  # Error cell
             6: lambda x: None,  # Blank cell
@@ -216,7 +226,8 @@ class Xls(object):
             cell_value = worksheet.cell_value(row, col)
 
             key = row, col, tab
-            self.code_array[key] = type2mapper[cell_type](cell_value)
+            mapper = type2mapper[cell_type]
+            self.code_array[key] = mapper(cell_value)
 
     def _get_font(self, pys_style):
         """Returns xlwt.Font for pyspread style"""

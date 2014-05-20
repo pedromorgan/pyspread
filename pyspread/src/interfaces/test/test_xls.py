@@ -134,6 +134,8 @@ class TestXls(object):
 
     param_code2xls = [
         {'code': [((0, 0, 0), "Test"), ], 'key': (0, 0, 0), 'val': "Test"},
+        {'code': [((10, 1, 1), "Test"), ], 'key': (10, 1, 1), 'val': "Test"},
+        {'code': [((1, 1, 0), "Test"), ], 'key': (0, 0, 0), 'val': ""},
     ]
 
     @params(param_code2xls)
@@ -155,14 +157,26 @@ class TestXls(object):
         worksheets = workbook.sheets()
         worksheet = worksheets[tab]
         assert worksheet.cell_value(row, col) == val
-#
-#    @params(param_code2xls)
-#    def test_xls2code(self, val, code, key):
-#        """Test _xls2code method"""
-#
-#        self.xls_in._xls2code(code)
-#        assert self.code_array(key) == val
-#
+
+    param_xls2code = [
+        {'key': (5, 2, 0), 'res': "34.234"},
+        {'key': (6, 2, 0), 'res': "2.0"},
+        {'key': (3, 4, 0), 'res': "Hi"},
+    ]
+
+    @params(param_xls2code)
+    def test_xls2code(self, key, res):
+        """Test _xls2code method"""
+
+        worksheets = self.xls_in.workbook.sheet_names()
+
+        for tab, worksheet_name in enumerate(worksheets):
+            worksheet = self.xls_in.workbook.sheet_by_name(worksheet_name)
+            self.xls_in._xls2code(worksheet, tab)
+
+        assert self.xls_in.code_array(key) == res
+
+
 #    param_attributes2xls = [
 #        {'code': "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
 #         'selection': Selection([], [], [], [], [(3, 4)]), 'table': 0,
