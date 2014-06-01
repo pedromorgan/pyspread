@@ -58,6 +58,9 @@ class TestXls(object):
         # All data structures are initially empty
         # The test file xls_file has entries in each category
 
+        self.top_window = wx.Frame(None, -1)
+        wx.GetApp().SetTopWindow(self.top_window)
+
         self.code_array = CodeArray((1000, 100, 3))
         self.xls_infile = xlrd.open_workbook(TESTPATH + "xls_test1.xls",
                                              formatting_info=True)
@@ -352,35 +355,49 @@ class TestXls(object):
         self.xls_in._xls2row_heights(worksheet, tab)
         res = self.code_array.dict_grid.row_heights[(row, tab)]
         assert round(res, 3) == height
-#
-#    param_col_widths2xls = [
-#        {'col': 0, 'tab': 0, 'width': 0.1},
-#        {'col': 0, 'tab': 0, 'width': 0.0},
-#        {'col': 10, 'tab': 0, 'width': 1.0},
-#        {'col': 10, 'tab': 10, 'width': 1.0},
-#        {'col': 10, 'tab': 10, 'width': 100.0},
-#    ]
-#
-#    @params(param_col_widths2xls)
-#    def test_col_widths2xls(self, col, tab, width):
-#        """Test _col_widths2xls method"""
-#
-#        self.code_array.dict_grid.col_widths = {(col, tab): width}
-#        wb = xlwt.Workbook()
-#        xls_out = Xls(self.code_array, wb)
-#        workbook = []
-#        self.write_xls_out(xls_out, workbook, "_col_widths2xls",[])
-#        workbook = self.read_xls_out()
-#        worksheet = workbook[tab]
-#        print worksheet
-#        assert worksheet.colinfo_map[col].width / 256.0
-#
-#    @params(param_col_widths2xls)
-#    def test_xls2col_widths(self, col, tab, width, code):
-#        """Test _xls2col_widths method"""
-#
-#        self.xls_in._xls2col_widths(code)
-#        assert self.code_array.dict_grid.col_widths[(col, tab)] == width
+
+    param_col_widths2xls = [
+        {'col': 0, 'tab': 0, 'width': 0.1, 'points': 3},
+        {'col': 0, 'tab': 0, 'width': 0.0, 'points': 0},
+        {'col': 10, 'tab': 0, 'width': 1.0, 'points': 38},
+        {'col': 10, 'tab': 10, 'width': 1.0, 'points': 38},
+        {'col': 10, 'tab': 10, 'width': 100.0, 'points': 3840},
+    ]
+
+    @params(param_col_widths2xls)
+    def test_col_widths2xls(self, col, tab, width, points):
+        """Test _col_widths2xls method"""
+
+        self.code_array.shape = (1000, 100, 30)
+        self.code_array.dict_grid.col_widths = {(col, tab): width}
+
+        wb = xlwt.Workbook()
+        xls_out = Xls(self.code_array, wb)
+        worksheets = []
+        xls_out._shape2xls(worksheets)
+        self.write_xls_out(xls_out, wb, "_col_widths2xls", worksheets)
+        workbook = self.read_xls_out()
+
+        worksheets = workbook.sheets()
+        worksheet = worksheets[tab]
+        assert worksheet.colinfo_map[col].width == points
+
+    param_xls2col_widths = [
+        {'col': 4, 'tab': 0, 'width': 130.339},
+        {'col': 6, 'tab': 0, 'width': 104.661},
+    ]
+
+    @params(param_xls2col_widths)
+    def test_xls2col_widths(self, col, tab, width):
+        """Test _xls2col_widths method"""
+
+        worksheet_names = self.xls_in.workbook.sheet_names()
+        worksheet_name = worksheet_names[tab]
+        worksheet = self.xls_in.workbook.sheet_by_name(worksheet_name)
+
+        self.xls_in._xls2col_widths(worksheet, tab)
+        res = self.code_array.dict_grid.col_widths[(col, tab)]
+        assert round(res, 3) == width
 #
 #    def test_from_code_array(self):
 #        """Test from_code_array method"""
