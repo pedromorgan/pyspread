@@ -147,11 +147,11 @@ class TestXls(object):
         for __key, __val in code:
             self.code_array[__key] = __val
             self.code_array.shape = (1000, 100, 3)
-        workbook = xlwt.Workbook()
-        xls_out = Xls(self.code_array, workbook)
+        wb = xlwt.Workbook()
+        xls_out = Xls(self.code_array, wb)
         worksheets = []
         xls_out._shape2xls(worksheets)
-        self.write_xls_out(xls_out, workbook, "_code2xls", worksheets)
+        self.write_xls_out(xls_out, wb, "_code2xls", worksheets)
         workbook = self.read_xls_out()
 
         worksheets = workbook.sheets()
@@ -175,7 +175,6 @@ class TestXls(object):
             self.xls_in._xls2code(worksheet, tab)
 
         assert self.xls_in.code_array(key) == res
-
 
 #    param_attributes2xls = [
 #        {'code': "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
@@ -311,44 +310,70 @@ class TestXls(object):
 #        self.write_xls_out("_attributes2xls")
 #        assert self.read_xls_out() == code
 #
-#    param_row_heights2xls = [
-#        {'row': 0, 'tab': 0, 'height': 0.1, 'code': "0\t0\t0.1\n"},
-#        {'row': 0, 'tab': 0, 'height': 0.0, 'code': "0\t0\t0.0\n"},
-#        {'row': 10, 'tab': 0, 'height': 1.0, 'code': "10\t0\t1.0\n"},
-#        {'row': 10, 'tab': 10, 'height': 1.0, 'code': "10\t10\t1.0\n"},
-#        {'row': 10, 'tab': 10, 'height': 100.0, 'code': "10\t10\t100.0\n"},
-#    ]
-#
-#    @params(param_row_heights2xls)
-#    def test_row_heights2xls(self, row, tab, height, code):
-#        """Test _row_heights2xls method"""
-#
-#        self.code_array.dict_grid.row_heights[(row, tab)] = height
-#        self.write_xls_out("_row_heights2xls")
-#        assert self.read_xls_out() == code
-#
-#    @params(param_row_heights2xls)
-#    def test_xls2row_heights(self, row, tab, height, code):
-#        """Test _xls2row_heights method"""
-#
-#        self.xls_in._xls2row_heights(code)
-#        assert self.code_array.dict_grid.row_heights[(row, tab)] == height
+    param_row_heights2xls = [
+        {'row': 0, 'tab': 0, 'height': 0.1, 'points': 1},
+        {'row': 0, 'tab': 0, 'height': 0.0, 'points': 0},
+        {'row': 10, 'tab': 0, 'height': 1.0, 'points': 14},
+        {'row': 10, 'tab': 10, 'height': 1.0, 'points': 14},
+        {'row': 10, 'tab': 10, 'height': 100.0, 'points': 1483},
+    ]
+
+    @params(param_row_heights2xls)
+    def test_row_heights2xls(self, row, tab, height, points):
+        """Test _row_heights2xls method"""
+
+        self.code_array.shape = (1000, 100, 30)
+        self.code_array.dict_grid.row_heights = {(row, tab): height}
+
+        wb = xlwt.Workbook()
+        xls_out = Xls(self.code_array, wb)
+        worksheets = []
+        xls_out._shape2xls(worksheets)
+        self.write_xls_out(xls_out, wb, "_row_heights2xls", worksheets)
+        workbook = self.read_xls_out()
+
+        worksheets = workbook.sheets()
+        worksheet = worksheets[tab]
+        assert worksheet.rowinfo_map[row].height == points
+
+    param_xls2row_heights = [
+        {'row': 1, 'tab': 0, 'height': 44.500},
+        {'row': 10, 'tab': 0, 'height': 45.511},
+    ]
+
+    @params(param_xls2row_heights)
+    def test_xls2row_heights(self, row, tab, height):
+        """Test _xls2row_heights method"""
+
+        worksheet_names = self.xls_in.workbook.sheet_names()
+        worksheet_name = worksheet_names[tab]
+        worksheet = self.xls_in.workbook.sheet_by_name(worksheet_name)
+
+        self.xls_in._xls2row_heights(worksheet, tab)
+        res = self.code_array.dict_grid.row_heights[(row, tab)]
+        assert round(res, 3) == height
 #
 #    param_col_widths2xls = [
-#        {'col': 0, 'tab': 0, 'width': 0.1, 'code': "0\t0\t0.1\n"},
-#        {'col': 0, 'tab': 0, 'width': 0.0, 'code': "0\t0\t0.0\n"},
-#        {'col': 10, 'tab': 0, 'width': 1.0, 'code': "10\t0\t1.0\n"},
-#        {'col': 10, 'tab': 10, 'width': 1.0, 'code': "10\t10\t1.0\n"},
-#        {'col': 10, 'tab': 10, 'width': 100.0, 'code': "10\t10\t100.0\n"},
+#        {'col': 0, 'tab': 0, 'width': 0.1},
+#        {'col': 0, 'tab': 0, 'width': 0.0},
+#        {'col': 10, 'tab': 0, 'width': 1.0},
+#        {'col': 10, 'tab': 10, 'width': 1.0},
+#        {'col': 10, 'tab': 10, 'width': 100.0},
 #    ]
 #
 #    @params(param_col_widths2xls)
-#    def test_col_widths2xls(self, col, tab, width, code):
+#    def test_col_widths2xls(self, col, tab, width):
 #        """Test _col_widths2xls method"""
 #
-#        self.code_array.dict_grid.col_widths[(col, tab)] = width
-#        self.write_xls_out("_col_widths2xls")
-#        assert self.read_xls_out() == code
+#        self.code_array.dict_grid.col_widths = {(col, tab): width}
+#        wb = xlwt.Workbook()
+#        xls_out = Xls(self.code_array, wb)
+#        workbook = []
+#        self.write_xls_out(xls_out, workbook, "_col_widths2xls",[])
+#        workbook = self.read_xls_out()
+#        worksheet = workbook[tab]
+#        print worksheet
+#        assert worksheet.colinfo_map[col].width / 256.0
 #
 #    @params(param_col_widths2xls)
 #    def test_xls2col_widths(self, col, tab, width, code):
