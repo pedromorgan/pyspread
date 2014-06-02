@@ -427,4 +427,4 @@ class TestXls(object):
 #
 #        self.xls_in.to_code_array()
 #
-#        assert self.code_array((0, 0, 0)) == '"Hallo"'
+#        assert self.code_array((3, 4, 0)) == '"Hi"'

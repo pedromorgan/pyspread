@@ -1118,10 +1118,16 @@ class CodeArray(DataArray):
     def _eval_cell(self, key, code):
         """Evaluates one cell and returns its result"""
 
+        # Flatten helper function
+        def nn(val):
+            """Returns flat numpy arraz without None values"""
+
+            return numpy.array(filter(None, val.flat))
+
         # Set up environment for evaluation
 
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2], 'bz2': bz2,
-                    'base64': base64, 'charts': charts,
+                    'base64': base64, 'charts': charts, 'nn': nn,
                     'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
 
