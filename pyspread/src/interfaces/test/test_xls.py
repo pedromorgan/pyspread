@@ -179,11 +179,6 @@ class TestXls(object):
 
         assert self.xls_in.code_array(key) == res
 
-#    param_attributes2xls = [
-#        {'code': "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
-#         'selection': Selection([], [], [], [], [(3, 4)]), 'table': 0,
-#         'key': (3, 4, 0), 'attr': 'borderwidth_bottom', 'val': 42},
-#    ]
 #
 #    param_get_font = [
 #        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
@@ -284,6 +279,12 @@ class TestXls(object):
 #        res = self.read_xls_out()
 #
 #        assert res == code
+#
+#    param_attributes2xls = [
+#        {'code': "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
+#         'selection': Selection([], [], [], [], [(3, 4)]), 'table': 0,
+#         'key': (3, 4, 0), 'attr': 'borderwidth_bottom', 'val': 42},
+#    ]
 #
 #    @params(param_attributes2xls)
 #    def test_xls2attributes(self, selection, table, key, attr, val, code):
@@ -421,10 +422,11 @@ class TestXls(object):
 #        os.remove(self.xls_outfile_path)
 #
 #        assert in_data == out_data
-#
-#    def test_to_code_array(self):
-#        """Test to_code_array method"""
-#
-#        self.xls_in.to_code_array()
-#
-#        assert self.code_array((3, 4, 0)) == '"Hi"'
+
+    def test_to_code_array(self):
+        """Test to_code_array method"""
+
+        self.xls_in.to_code_array()
+
+        assert self.code_array((3, 4, 0)) == 'Hi'
+        assert self.code_array((10, 6, 0)) == '465.0'

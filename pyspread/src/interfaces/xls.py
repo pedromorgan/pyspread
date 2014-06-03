@@ -727,7 +727,10 @@ class Xls(object):
                     thick_right_cells.append((row, col))
 
         for thick_cell in thick_bottom_cells + thick_right_cells:
-            selection.cells.pop(selection.cells.index(thick_cell))
+            try:
+                selection.cells.remove(thick_cell)
+            except ValueError:
+                pass
 
         cell_attributes.append((selection, tab, attributes))
 
