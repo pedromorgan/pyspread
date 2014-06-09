@@ -47,6 +47,7 @@ from src.interfaces.xls import Xls
 from src.lib.selection import Selection
 from src.lib.testlib import params, pytest_generate_tests
 from src.model.model import CodeArray
+from src.sysvars import get_dpi
 
 
 class TestXls(object):
@@ -315,11 +316,11 @@ class TestXls(object):
 #        assert self.read_xls_out() == code
 #
     param_row_heights2xls = [
-        {'row': 0, 'tab': 0, 'height': 0.1, 'points': 1},
+        {'row': 0, 'tab': 0, 'height': 0.1, 'points': 0.015343*get_dpi()[1]},
         {'row': 0, 'tab': 0, 'height': 0.0, 'points': 0},
-        {'row': 10, 'tab': 0, 'height': 1.0, 'points': 14},
-        {'row': 10, 'tab': 10, 'height': 1.0, 'points': 14},
-        {'row': 10, 'tab': 10, 'height': 100.0, 'points': 1483},
+        {'row': 10, 'tab': 0, 'height': 1.0, 'points': 0.15343*get_dpi()[1]},
+        {'row': 10, 'tab': 10, 'height': 1.0, 'points': 0.15343*get_dpi()[1]},
+        {'row': 10, 'tab': 10, 'height': 100.0, 'points': 15.343*get_dpi()[1]},
     ]
 
     @params(param_row_heights2xls)
@@ -338,7 +339,7 @@ class TestXls(object):
 
         worksheets = workbook.sheets()
         worksheet = worksheets[tab]
-        assert worksheet.rowinfo_map[row].height == points
+        assert worksheet.rowinfo_map[row].height == int(points)
 
     param_xls2row_heights = [
         {'row': 1, 'tab': 0, 'height': 44.500},
