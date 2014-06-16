@@ -45,7 +45,7 @@ from src.interfaces.xls import Xls
 from src.lib.selection import Selection
 from src.lib.testlib import params, pytest_generate_tests
 from src.model.model import CodeArray
-from src.sysvars import get_dpi
+from src.sysvars import get_dpi, get_default_font
 
 
 class TestXls(object):
@@ -178,46 +178,58 @@ class TestXls(object):
 
         assert self.xls_in.code_array(key) == res
 
-#
-#    param_get_font = [
-#        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
-#        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
-#         'key': (10, 0, 0), 'val': u"öäüß"},
-#        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
-#        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
-#         'val': "a" * 100},
-#        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
-#    ]
-#
-#    @params(param_get_font)
-#    def test_get_font(self, key, val, code):
-#        """Test _get_font method"""
-#
-#        self.code_array[key] = val
-#        self.write_xls_out("_code2xls")
-#        res = self.read_xls_out()
-#
-#        assert res == code
-#
-#    param_get_alignment = [
-#        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
-#        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
-#         'key': (10, 0, 0), 'val': u"öäüß"},
-#        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
-#        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
-#         'val': "a" * 100},
-#        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
-#    ]
-#
-#    @params(param_get_alignment)
-#    def test_get_alignment(self, key, val, code):
-#        """Test _get_alignment method"""
-#
-#        self.code_array[key] = val
-#        self.write_xls_out("_code2xls")
-#        res = self.read_xls_out()
-#
-#        assert res == code
+    param_get_font = [
+        {'pointsize': 100, 'fontweight': wx.NORMAL, "fontstyle": wx.ITALIC,
+         'easyxf': 'font: bold off; font: italic on; font: height 2000'},
+        {'pointsize': 10, 'fontweight': wx.BOLD, "fontstyle": wx.ITALIC,
+         'easyxf': 'font: bold on; font: italic on; font: height 200'},
+    ]
+
+    @params(param_get_font)
+    def test_get_font(self, pointsize, fontweight, fontstyle, easyxf):
+        """Test _get_font method"""
+
+        pys_style = {
+            'textfont': get_default_font().GetFaceName(),
+            'pointsize': pointsize,
+            'fontweight': fontweight,
+            'fontstyle': fontstyle,
+        }
+        font = self.xls_in._get_font(pys_style)
+
+        style = xlwt.easyxf(easyxf)
+
+        assert font.bold == style.font.bold
+        assert font.italic == style.font.italic
+        assert font.height == style.font.height
+
+    param_get_alignment = [
+        {"justification": "left", "vertical_align": "top", "angle": 0,
+         'easyxf': 'align: horz left; align: vert top; align: rota 0;'},
+        {"justification": "right", "vertical_align": "bottom", "angle": 20,
+         'easyxf': 'align: horz right; align: vert bottom; align: rota 20;'},
+        {"justification": "right", "vertical_align": "bottom", "angle": -20,
+         'easyxf': 'align: horz right; align: vert bottom; align: rota -20;'},
+        {"justification": "center", "vertical_align": "middle", "angle": 30,
+         'easyxf': 'align: horz center; align: vert center; align: rota 30;'},
+    ]
+
+    @params(param_get_alignment)
+    def test_get_alignment(self, justification, vertical_align, angle, easyxf):
+        """Test _get_alignment method"""
+
+        pys_style = {
+            'justification': justification,
+            'vertical_align': vertical_align,
+            'angle': angle,
+        }
+        alignment = self.xls_in._get_alignment(pys_style)
+
+        style = xlwt.easyxf(easyxf)
+
+        assert alignment.horz == style.alignment.horz
+        assert alignment.vert == style.alignment.vert
+        assert alignment.rota == style.alignment.rota
 #
 #    param_get_pattern = [
 #        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
@@ -441,7 +453,6 @@ class TestXls(object):
         for height in self.code_array.row_heights:
             assert height in new_code_array.row_heights
         assert self.code_array.col_widths == new_code_array.col_widths
-
 
         # Clean up the test dir
         os.remove(self.xls_outfile_path)
