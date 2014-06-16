@@ -315,20 +315,30 @@ class TestXls(object):
 #        self.write_xls_out("_attributes2xls")
 #        assert self.read_xls_out() == code
 #
+
+    def _hpixels_to_xlsheight(self, hpixels):
+        """Returns xls height from hpixels"""
+
+        hinches = float(hpixels) / get_dpi()[1]
+        hpoints = hinches * 72.0
+        xlsheight = hpoints * 20.0
+
+        return xlsheight
+
     param_row_heights2xls = [
-        {'row': 0, 'tab': 0, 'height': 0.1, 'points': 0.015343*get_dpi()[1]},
-        {'row': 0, 'tab': 0, 'height': 0.0, 'points': 0},
-        {'row': 10, 'tab': 0, 'height': 1.0, 'points': 0.15343*get_dpi()[1]},
-        {'row': 10, 'tab': 10, 'height': 1.0, 'points': 0.15343*get_dpi()[1]},
-        {'row': 10, 'tab': 10, 'height': 100.0, 'points': 15.343*get_dpi()[1]},
+        {'row': 0, 'tab': 0, 'hpixels': 0.1},
+        {'row': 0, 'tab': 0, 'hpixels': 0.0},
+        {'row': 10, 'tab': 0, 'hpixels': 1.0},
+        {'row': 10, 'tab': 10, 'hpixels': 1.0},
+        {'row': 10, 'tab': 10, 'hpixels': 100.0},
     ]
 
     @params(param_row_heights2xls)
-    def test_row_heights2xls(self, row, tab, height, points):
+    def test_row_heights2xls(self, row, tab, hpixels):
         """Test _row_heights2xls method"""
 
         self.code_array.shape = (1000, 100, 30)
-        self.code_array.dict_grid.row_heights = {(row, tab): height}
+        self.code_array.dict_grid.row_heights = {(row, tab): hpixels}
 
         wb = xlwt.Workbook()
         xls_out = Xls(self.code_array, wb)
@@ -339,7 +349,10 @@ class TestXls(object):
 
         worksheets = workbook.sheets()
         worksheet = worksheets[tab]
-        assert worksheet.rowinfo_map[row].height == int(points)
+
+        xlsheight = self._hpixels_to_xlsheight(hpixels)
+
+        assert worksheet.rowinfo_map[row].height == int(xlsheight)
 
     param_xls2row_heights = [
         {'row': 1, 'tab': 0, 'height': 44.500},
