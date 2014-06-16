@@ -230,47 +230,62 @@ class TestXls(object):
         assert alignment.horz == style.alignment.horz
         assert alignment.vert == style.alignment.vert
         assert alignment.rota == style.alignment.rota
-#
-#    param_get_pattern = [
-#        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
-#        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
-#         'key': (10, 0, 0), 'val': u"öäüß"},
-#        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
-#        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
-#         'val': "a" * 100},
-#        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
-#    ]
-#
-#    @params(param_get_pattern)
-#    def test_get_pattern(self, key, val, code):
-#        """Test _get_pattern method"""
-#
-#        self.code_array[key] = val
-#        self.write_xls_out("_code2xls")
-#        res = self.read_xls_out()
-#
-#        assert res == code
-#
-#    param_get_borders = [
-#        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
-#        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
-#         'key': (10, 0, 0), 'val': u"öäüß"},
-#        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
-#        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
-#         'val': "a" * 100},
-#        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
-#    ]
-#
-#    @params(param_get_borders)
-#    def test_get_borders(self, key, val, code):
-#        """Test _get_borders method"""
-#
-#        self.code_array[key] = val
-#        self.write_xls_out("_code2xls")
-#        res = self.read_xls_out()
-#
-#        assert res == code
-#
+
+    param_get_pattern = [
+        {'bgcolor': wx.Colour(0, 0, 0).GetRGB(),
+         'easyxf': 'pattern: fore_colour 0'},
+        {'bgcolor': wx.Colour(255, 255, 0).GetRGB(),
+         'easyxf': 'pattern: fore_colour 5'},
+        {'bgcolor': wx.Colour(60, 10, 10).GetRGB(),
+         'easyxf': 'pattern: fore_colour 59'},
+    ]
+
+    @params(param_get_pattern)
+    def test_get_pattern(self, bgcolor, easyxf):
+        """Test _get_pattern method"""
+
+        pys_style = {
+            'bgcolor': bgcolor,
+        }
+        pattern = self.xls_in._get_pattern(pys_style)
+
+        style = xlwt.easyxf(easyxf)
+
+        assert pattern.pattern_fore_colour == style.pattern.pattern_fore_colour
+
+    param_get_borders = [
+        {'borderwidth_right': 0, 'borderwidth_bottom': 0,
+         'bordercolor_right': wx.Colour(0, 0, 0).GetRGB(),
+         'bordercolor_bottom': wx.Colour(0, 0, 0).GetRGB(),
+         'easyxf': 'borders: right no_line; borders: bottom no_line; '
+                   'borders: right_colour 0; borders: bottom_colour 0'},
+        {'borderwidth_right': 1, 'borderwidth_bottom': 4,
+         'bordercolor_right': wx.Colour(110, 0, 0).GetRGB(),
+         'bordercolor_bottom': wx.Colour(0, 20, 210).GetRGB(),
+         'easyxf': 'borders: right thin; borders: bottom medium; '
+                   'borders: right_colour 16; borders: bottom_colour 4'},
+    ]
+
+    @params(param_get_borders)
+    def test_get_borders(self, borderwidth_right, borderwidth_bottom,
+                         bordercolor_right, bordercolor_bottom, easyxf):
+        """Test _get_borders method"""
+
+        pys_style = {
+            'borderwidth_right': borderwidth_right,
+            'borderwidth_bottom': borderwidth_bottom,
+            'bordercolor_right': bordercolor_right,
+            'bordercolor_bottom': bordercolor_bottom,
+        }
+        borders = self.xls_in._get_borders(pys_style, pys_style, pys_style)
+
+        style = xlwt.easyxf(easyxf)
+
+        assert borders.right == style.borders.right
+        assert borders.bottom == style.borders.bottom
+        assert borders.right_colour == style.borders.right_colour
+        assert borders.bottom_colour == style.borders.bottom_colour
+
 #    param_get_xfstyle = [
 #        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
 #        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",

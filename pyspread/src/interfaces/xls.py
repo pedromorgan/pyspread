@@ -340,8 +340,8 @@ class Xls(object):
         border_keys = [
             "borderwidth_right",
             "borderwidth_bottom",
-            "bordercolor_right"
-            "bordercolor_bottom"
+            "bordercolor_right",
+            "bordercolor_bottom",
         ]
 
         if not any(border_key in pys_style for border_key in border_keys):
