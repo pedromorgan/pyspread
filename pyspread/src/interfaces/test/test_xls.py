@@ -286,25 +286,37 @@ class TestXls(object):
         assert borders.right_colour == style.borders.right_colour
         assert borders.bottom_colour == style.borders.bottom_colour
 
-#    param_get_xfstyle = [
-#        {'code': "0\t0\t0\tTest\n", 'key': (0, 0, 0), 'val': "Test"},
-#        {'code': "10\t0\t0\t" + u"öäüß".encode("utf-8") + "\n",
-#         'key': (10, 0, 0), 'val': u"öäüß"},
-#        {'code': "2\t0\t0\tTest\n", 'key': (2, 0, 0), 'val': "Test"},
-#        {'code': "2\t0\t0\t" + "a" * 100 + '\n', 'key': (2, 0, 0),
-#         'val': "a" * 100},
-#        {'code': '0\t0\t0\t"Test"\n', 'key': (0, 0, 0), 'val': '"Test"'},
-#    ]
-#
-#    @params(param_get_xfstyle)
-#    def test_get_xfstyle(self, key, val, code):
-#        """Test _get_xfstyle method"""
-#
-#        self.code_array[key] = val
-#        self.write_xls_out("_code2xls")
-#        res = self.read_xls_out()
-#
-#        assert res == code
+    param_get_xfstyle = [
+        {'key': (0, 0, 0), 'sec_key': 'pattern',
+         'subsec_key': 'pattern_fore_colour',
+         'style_key': 'bgcolor', 'val': wx.Colour(0, 0, 0).GetRGB(),
+         'easyxf': 'pattern: fore_colour 0'},
+        {'key': (10, 1, 0), 'sec_key': 'pattern',
+         'subsec_key': 'pattern_fore_colour',
+         'style_key': 'bgcolor', 'val': wx.Colour(0, 0, 0).GetRGB(),
+         'easyxf': 'pattern: fore_colour 0'},
+    ]
+
+    @params(param_get_xfstyle)
+    def test_get_xfstyle(self, key, sec_key, subsec_key, style_key, val,
+                         easyxf):
+        """Test _get_xfstyle method"""
+
+        row, col, tab = key
+
+        pys_style = {style_key: val}
+
+        dict_grid = self.code_array.dict_grid
+        selection = Selection([], [], [], [], [(row, col)])
+        dict_grid.cell_attributes.append((selection, tab, pys_style))
+
+        xfstyle = self.xls_in._get_xfstyle([], key)
+
+        style = xlwt.easyxf(easyxf)
+
+        assert getattr(getattr(xfstyle, sec_key), subsec_key) == \
+            getattr(getattr(style, sec_key), subsec_key)
+
 #
 #    param_attributes2xls = [
 #        {'code': "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
