@@ -28,10 +28,8 @@ Unit tests for xls.py
 """
 
 
-import bz2
 import os
 import sys
-
 import xlrd
 import xlwt
 
@@ -413,29 +411,40 @@ class TestXls(object):
         self.xls_in._xls2col_widths(worksheet, tab)
         res = self.code_array.dict_grid.col_widths[(col, tab)]
         assert round(res, 3) == width
-#
-#    def test_from_code_array(self):
-#        """Test from_code_array method"""
-#
-#        self.xls_infile.seek(0)
-#        self.xls_in.to_code_array()
-#
-#        outfile = bz2.BZ2File(self.xls_outfile_path, "w")
-#        xls_out = Xls(self.code_array, outfile)
-#        xls_out.from_code_array()
-#        outfile.close()
-#
-#        self.xls_infile.seek(0)
-#        in_data = self.xls_infile.read()
-#
-#        outfile = bz2.BZ2File(self.xls_outfile_path)
-#        out_data = outfile.read()
-#        outfile.close()
-#
-#        # Clean up the test dir
-#        os.remove(self.xls_outfile_path)
-#
-#        assert in_data == out_data
+
+    def test_from_code_array(self):
+        """Test from_code_array method"""
+
+        self.xls_in.to_code_array()
+
+        wb = xlwt.Workbook()
+        xls_out = Xls(self.code_array, wb)
+        worksheets = []
+        xls_out._shape2xls(worksheets)
+        xls_out._code2xls(worksheets)
+        xls_out._row_heights2xls(worksheets)
+
+        self.write_xls_out(xls_out, wb, "_col_widths2xls", worksheets)
+
+        new_code_array = CodeArray((1000, 100, 3))
+
+        xls_outfile = xlrd.open_workbook(self.xls_outfile_path,
+                                         formatting_info=True)
+        xls_out = Xls(new_code_array, xls_outfile)
+
+        xls_out.to_code_array()
+
+        assert self.code_array.shape == new_code_array.shape
+        assert self.code_array.macros == new_code_array.macros
+        assert self.code_array.dict_grid == new_code_array.dict_grid
+        # There may be additional standard heights in copy --> 1 way test
+        for height in self.code_array.row_heights:
+            assert height in new_code_array.row_heights
+        assert self.code_array.col_widths == new_code_array.col_widths
+
+
+        # Clean up the test dir
+        os.remove(self.xls_outfile_path)
 
     def test_to_code_array(self):
         """Test to_code_array method"""
