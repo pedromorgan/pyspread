@@ -301,6 +301,8 @@ class FileActions(Actions):
         ----------
         event.attr: Dict
         \tkey filepath contains file path of file to be loaded
+        \tkey filetype contains file type of file to be loaded
+        \tFiletypes can be pys, pysu, xls
 
         """
 
@@ -309,12 +311,20 @@ class FileActions(Actions):
             filetype = event.attr["filetype"]
 
         except KeyError:
-            filetype = "pys"
+            try:
+                file_ext = filepath.strip().split(".")[-1]
+            except:
+                file_ext = None
+
+            if file_ext in ["pys", "pysu"]:
+                filetype = file_ext
+            else:
+                filetype = "pys"
 
         type2opener = {
             "pys": (Bz2AOpen, [filepath, "r"], {"main_window":
                                                 self.main_window}),
-            "pysu": (AOpen, [filepath, "r"], {"main_window": self.main_window}),
+            "pysu": (AOpen, [filepath, "r"], {"main_window": self.main_window})
         }
 
         if xlrd is not None:
