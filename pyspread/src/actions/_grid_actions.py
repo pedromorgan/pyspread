@@ -75,7 +75,7 @@ except ImportError:
     GPG_PRESENT = False
 
 from src.lib.selection import Selection
-from src.lib.fileio import Bz2AOpen
+from src.lib.fileio import AOpen, Bz2AOpen
 
 from src.actions._main_window_actions import Actions
 from src.actions._grid_cell_actions import CellActions
@@ -103,6 +103,7 @@ class FileActions(Actions):
 
         self.type2interface = {
             "pys": Pys,
+            "pysu": Pys,
             "xls": Xls,
         }
 
@@ -310,8 +311,12 @@ class FileActions(Actions):
         except KeyError:
             filetype = "pys"
 
-        type2opener = {"pys": (Bz2AOpen, [filepath, "r"],
-                               {"main_window": self.main_window})}
+        type2opener = {
+            "pys": (Bz2AOpen, [filepath, "r"], {"main_window":
+                                                self.main_window}),
+            "pysu": (AOpen, [filepath, "r"], {"main_window": self.main_window}),
+        }
+
         if xlrd is not None:
             type2opener["xls"] = \
                 (xlrd.open_workbook, [filepath], {"formatting_info": True})
@@ -442,14 +447,28 @@ class FileActions(Actions):
         # Make sure that old save file does not get lost on abort save
         tmpfile = filepath + "~"
 
+        type2opener = {
+            "pys":
+            (Bz2AOpen, [tmpfile, "wb"], {"main_window": self.main_window}),
+            "pysu":
+            (AOpen, [tmpfile, "wb"], {"main_window": self.main_window}),
+        }
+
         try:
             wx.BeginBusyCursor()
             self.grid.Disable()
 
-            if filetype == "pys":
-                with Bz2AOpen(tmpfile, "wb", main_window=self.main_window) \
-                        as outfile:
+            if filetype == "xls":
+                workbook = xlwt.Workbook()
+                interface = Interface(self.grid.code_array, workbook)
+                interface.from_code_array()
+                workbook.save(tmpfile)
 
+            else:
+                # Specify the interface that shall be used
+                opener, op_args, op_kwargs = type2opener[filetype]
+
+                with opener(*op_args, **op_kwargs) as outfile:
                     try:
                         interface = Interface(self.grid.code_array, outfile)
                         interface.from_code_array()
@@ -457,12 +476,6 @@ class FileActions(Actions):
                     except ValueError, err:
                         post_command_event(self.main_window, self.StatusBarMsg,
                                            text=err)
-
-            elif filetype == "xls":
-                workbook = xlwt.Workbook()
-                interface = Interface(self.grid.code_array, workbook)
-                interface.from_code_array()
-                workbook.save(tmpfile)
 
             # Move save file from temp file to filepath
             try:
@@ -505,7 +518,7 @@ class FileActions(Actions):
                 # The main window does not exist any more
                 pass
 
-        elif filetype == "pys" and not outfile.aborted:
+        elif filetype in ["pys", "pysu"] and not outfile.aborted:
             self.sign_file(filepath)
 
 

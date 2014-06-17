@@ -664,17 +664,21 @@ class MainWindowEventHandlers(EventMixin):
         # Get filepath from user
 
         try:
+            # Do not offer xls if xlrd is missing
             import xlrd
             wildcard = \
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
                 _("Excel file") + " (*.xls)|*.xls|" + \
                 _("All files") + " (*.*)|*.*"
+            filetypes = ["pys", "pysu", "xls", "pys"]
 
         except ImportError:
             wildcard = \
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
                 _("All files") + " (*.*)|*.*"
-            xlrd = None
+            filetypes = ["pys", "pysu", "pys"]
 
         message = _("Choose file to open.")
         style = wx.OPEN
@@ -685,7 +689,7 @@ class MainWindowEventHandlers(EventMixin):
         if filepath is None:
             return
 
-        filetype = "pys" if xlrd is None or filterindex != 1 else "xls"
+        filetype = filetypes[filterindex]
 
         # Change the main window filepath state
 
@@ -757,13 +761,17 @@ class MainWindowEventHandlers(EventMixin):
             import xlwt
             wildcard = \
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
                 _("Excel file") + " (*.xls)|*.xls|" + \
                 _("All files") + " (*.*)|*.*"
+            filetypes = ["pys", "pysu", "xls", "pys"]
 
         except ImportError:
             wildcard = \
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
                 _("All files") + " (*.*)|*.*"
+            filetypes = ["pys", "pysu", "pys"]
 
         message = _("Choose filename for saving.")
         style = wx.SAVE
@@ -774,7 +782,7 @@ class MainWindowEventHandlers(EventMixin):
         if filepath is None:
             return 0
 
-        filetype = "pys" if xlwt is None or filterindex != 1 else "xls"
+        filetype = filetypes[filterindex]
 
         # Look if path is already present
         if os.path.exists(filepath):
