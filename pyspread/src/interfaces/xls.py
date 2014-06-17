@@ -625,7 +625,7 @@ class Xls(object):
 
             # Border
             border_line_style2width = {
-                0: 0,
+                0: 1,
                 1: 1,
                 2: 4,
                 5: 7,

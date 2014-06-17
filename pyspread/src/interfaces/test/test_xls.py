@@ -132,7 +132,7 @@ class TestXls(object):
         """Test _xls2shape method"""
 
         self.xls_in._xls2shape()
-        assert self.code_array.dict_grid.shape == (11, 7, 3)
+        assert self.code_array.dict_grid.shape == (19, 7, 3)
 
     param_code2xls = [
         {'code': [((0, 0, 0), "Test"), ], 'key': (0, 0, 0), 'val': "Test"},
@@ -317,21 +317,30 @@ class TestXls(object):
         assert getattr(getattr(xfstyle, sec_key), subsec_key) == \
             getattr(getattr(style, sec_key), subsec_key)
 
-#
-#    param_attributes2xls = [
-#        {'code': "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
-#         'selection': Selection([], [], [], [], [(3, 4)]), 'table': 0,
-#         'key': (3, 4, 0), 'attr': 'borderwidth_bottom', 'val': 42},
-#    ]
-#
-#    @params(param_attributes2xls)
-#    def test_xls2attributes(self, selection, table, key, attr, val, code):
-#        """Test _xls2attributes method"""
-#
-#        self.xls_in._xls2attributes(code)
-#
-#        attrs = self.code_array.dict_grid.cell_attributes[key]
-#        assert attrs[attr] == val
+    param_attributes2xls = [
+        {'key': (14, 3, 0), 'attr': 'fontweight', 'val': 92},
+        {'key': (14, 3, 0), 'attr': 'fontstyle', 'val': 90},
+        {'key': (15, 3, 0), 'attr': 'fontstyle', 'val': 93},
+        {'key': (16, 3, 0), 'attr': 'underline', 'val': True},
+        {'key': (17, 3, 0), 'attr': 'textfont', 'val': "Serif"},
+        {'key': (17, 3, 0), 'attr': 'pointsize', 'val': 20},
+        {'key': (18, 3, 0), 'attr': 'borderwidth_bottom', 'val': 7},
+        {'key': (18, 3, 0), 'attr': 'borderwidth_right', 'val': 7},
+        {'key': (17, 3, 0), 'attr': 'borderwidth_bottom', 'val': 7},
+        {'key': (18, 3, 0), 'attr': 'bgcolor', 'val': 52377},
+    ]
+
+    @params(param_attributes2xls)
+    def test_xls2attributes(self, key, attr, val):
+        """Test _xls2attributes method"""
+
+        worksheet = self.xls_in.workbook.sheet_by_name("Sheet1")
+        self.xls_in._xls2code(worksheet, 0)
+        self.xls_in._xls2attributes(worksheet, 0)
+
+        attrs = self.code_array.dict_grid.cell_attributes[key]
+        print attrs
+        assert attrs[attr] == val
 #
 #    param_cell_attribute_append = [
 #        {'row': 0, 'tab': 0, 'height': 0.1, 'code': "0\t0\t0.1\n"},
