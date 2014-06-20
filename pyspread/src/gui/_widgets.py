@@ -43,6 +43,11 @@ Provides:
 import keyword
 from copy import copy
 
+try:
+    import jedi
+except ImportError:
+    jedi = None
+
 import wx
 import wx.grid
 import wx.combo
@@ -672,6 +677,7 @@ class EntryLineToolbarPanel(wx.Panel):
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
+        self.parent = parent
         # Panel with EntryLine and button
         self.entry_line_panel = EntryLinePanel(self, parent, -1)
 
@@ -763,7 +769,8 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
     """"The line for entering cell code"""
 
     def __init__(self, parent, main_window, id=-1, *args, **kwargs):
-        kwargs["style"] = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE
+        kwargs["style"] = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE | \
+            wx.TE_PROCESS_TAB
         wx.TextCtrl.__init__(self, parent, id, *args, **kwargs)
 
         self.SetSize((700, 25))
@@ -857,6 +864,33 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 if event.ControlDown():
                     self.SetValue('"' + self.GetValue() + '"')
 
+                return
+
+            elif keycode == 9 and jedi is not None:
+                # <Tab> pressed --> show docstring tooltip if jedi present
+                code = "".join(self.GetValue().split("\n"))
+                position = self.GetInsertionPoint()
+                print position
+
+                # Get the docstring
+                code_array = self.parent.parent.parent.grid.code_array
+                env = code_array._get_updated_environment()
+                script = jedi.Interpreter(code, [env], line=1, column=position)
+                completions = script.complete()
+                try:
+                    words = [completion.word for completion in completions]
+                    docs = [completion.doc for completion in completions]
+
+                    dws = [": ".join([w, d]) for w, d in zip(words, docs)]
+
+                    tiptext = "\n \n".join(dws)
+
+                    self.SetToolTipString(tiptext)
+
+                except IndexError:
+                    pass
+
+                # Do not process <Tab>
                 return
 
         event.Skip()
