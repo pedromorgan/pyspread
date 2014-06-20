@@ -41,17 +41,22 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
     Refer to :
     https://github.com/wxWidgets/wxPython/blob/master/demo/GridCustEditor.py
     """
-    def __init__(self, main_window):
+    def __init__(self, main_window, max_char_width=50):
 
         self.main_window = main_window
         wx.grid.PyGridCellEditor.__init__(self)
+
+        self.max_char_width = max_char_width
+        self.startValue = u""
 
     def Create(self, parent, id, evtHandler):
         """
         Called to create the control, which must derive from wx.Control.
         *Must Override*
         """
-        self._tc = wx.TextCtrl(parent, id, "")
+
+        style = wx.TE_MULTILINE
+        self._tc = wx.TextCtrl(parent, id, "", style=style)
 
         # Disable if cell is clocked, enable if cell is not locked
         grid = self.main_window.grid
@@ -113,9 +118,24 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self._col = [col, ]  # List of columns we are occupying
         self._grid = grid
 
-        self.startValue = grid.GetTable().GetValue(row, col)
+        start_value = grid.GetTable().GetValue(*key)
+
+        try:
+            start_value_list = [start_value[i:i+self.max_char_width]
+                                for i in xrange(0, len(start_value),
+                                                self.max_char_width)]
+            startValue = "\n".join(start_value_list)
+            self.startValue = startValue
+
+        except TypeError:
+            self.startValue = u""
+
         # Set up the textcontrol to look like this cell (TODO: Does not work)
-        self._tc.SetValue(str(self.startValue))  # was self.startValue
+        try:
+            self._tc.SetValue(unicode(startValue))
+        except (TypeError, AttributeError, UnboundLocalError):
+            self._tc.SetValue(u"")
+
         self._tc.SetFont(grid.GetCellFont(row, col))
         self._tc.SetBackgroundColour(grid.GetCellBackgroundColour(row, col))
         self._update_control_length()

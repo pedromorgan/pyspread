@@ -870,7 +870,6 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 # <Tab> pressed --> show docstring tooltip if jedi present
                 code = "".join(self.GetValue().split("\n"))
                 position = self.GetInsertionPoint()
-                print position
 
                 # Get the docstring
                 code_array = self.parent.parent.parent.grid.code_array
