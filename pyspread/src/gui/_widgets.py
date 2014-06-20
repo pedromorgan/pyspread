@@ -55,6 +55,7 @@ import wx.stc as stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
 
 import src.lib.i18n as i18n
+from src.lib.parsers import common_start
 from src.config import config
 from src.sysvars import get_default_font, is_gtk
 
@@ -856,18 +857,30 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
             # Handle special keys
             keycode = event.GetKeyCode()
 
-            if keycode == 13:
-                # <Enter> pressed --> Focus on grid
+            if keycode == 13 and not self.GetStringSelection():
+                # <Enter> pressed and no selection --> Focus on grid
                 self.main_window.grid.SetFocus()
 
                 # Ignore <Ctrl> + <Enter> and Quote content
                 if event.ControlDown():
                     self.SetValue('"' + self.GetValue() + '"')
 
+                # Do not process <Enter>
+                return
+
+            elif keycode == 13 and self.GetStringSelection():
+                # <Enter> pressed and selection
+                # --> Place cursor at end of selection and clear selection
+                selection_start, selection_stop = self.Selection
+                self.SetSelection(selection_stop, selection_stop)
+
+                # Do not process <Enter>
                 return
 
             elif keycode == 9 and jedi is not None:
-                # <Tab> pressed --> show docstring tooltip if jedi present
+                #  If auto completion library jedi is present
+                # <Tab> pressed --> show docstring tooltip
+
                 code = "".join(self.GetValue().split("\n"))
                 position = self.GetInsertionPoint()
 
@@ -876,6 +889,16 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 env = code_array._get_updated_environment()
                 script = jedi.Interpreter(code, [env], line=1, column=position)
                 completions = script.complete()
+                completes = [completion.complete for completion in completions]
+                complete = common_start(completes)
+                if complete:
+                    # There is a non-empty completion
+                    insertion_point = self.GetInsertionPoint()
+                    self.write(complete)
+                    if len(completes) > 1:
+                        self.SetSelection(insertion_point,
+                                          insertion_point + len(complete))
+
                 try:
                     words = [completion.word for completion in completions]
                     docs = [completion.doc for completion in completions]

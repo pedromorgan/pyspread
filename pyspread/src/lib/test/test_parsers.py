@@ -41,7 +41,7 @@ sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
 from src.lib.testlib import params, pytest_generate_tests
 
-from src.lib.parsers import get_font_from_data, get_pen_from_data
+from src.lib.parsers import get_font_from_data, get_pen_from_data, common_start
 
 param_font = [
     {"fontdata": "Courier New 13", "face": "Courier New", "size": 13},
@@ -84,3 +84,24 @@ def test_get_pen_from_data(pendata, width, color):
 
     assert pen.GetColour() == color
     assert pen.GetWidth() == width
+
+
+param_common_start = [
+    {"strings": [], "res": ""},
+    {"strings": ["", ""], "res": ""},
+    {"strings": [""] * 100, "res": ""},
+    {"strings": ["test", "test"], "res": "test"},
+    {"strings": [u"test", u"test"], "res": "test"},
+    {"strings": ["te", "tl"], "res": "t"},
+    {"strings": ["1", "tl"], "res": ""},
+    {"strings": ["split", "splitlines"], "res": "split"},
+]
+
+
+@params(param_common_start)
+def test_common_start(strings, res):
+    """Unit test for common_start"""
+
+    __res = common_start(strings)
+
+    assert res == __res

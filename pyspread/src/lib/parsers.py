@@ -133,3 +133,33 @@ def parse_dict_strings(code):
             chunk_start = i + 1
 
     yield code[chunk_start:i + 1].strip()
+
+
+def common_start(strings):
+    """Returns start sub-string that is common for all given strings
+
+    Parameters
+    ----------
+    strings: List of strings
+    \tThese strings are evaluated for their largest common start string
+
+    """
+
+    def gen_start_strings(string):
+        """Generator that yield start sub-strings of length 1, 2, ..."""
+
+        for i in xrange(1, len(string) + 1):
+            yield string[:i]
+
+    # Empty strings list
+    if not strings:
+        return ""
+
+    start_string = ""
+
+    # Get sucessively start string of 1st string
+    for start_string in gen_start_strings(max(strings)):
+        if not all(string.startswith(start_string) for string in strings):
+            return start_string[:-1]
+
+    return start_string
