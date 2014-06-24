@@ -1264,6 +1264,11 @@ class CodeArray(DataArray):
             if key not in base_keys:
                 globals().pop(key)
 
+    def get_globals(self):
+        """Returns globals dict"""
+
+        return globals()
+
     def execute_macros(self):
         """Executes all macros and returns result string
 

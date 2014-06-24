@@ -40,6 +40,7 @@ Provides:
 
 """
 
+import __builtin__
 import keyword
 from copy import copy
 
@@ -67,6 +68,9 @@ from icons import icons
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
+
+# Maximum tooltip string length
+MAX_TOOLTIP_LENGTH = 1000
 
 
 class PythonSTC(stc.StyledTextCtrl):
@@ -881,12 +885,14 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 #  If auto completion library jedi is present
                 # <Tab> pressed --> show docstring tooltip
 
+                tiptext = ""
+
                 code = "".join(self.GetValue().split("\n"))
                 position = self.GetInsertionPoint()
 
                 # Get the docstring
                 code_array = self.parent.parent.parent.grid.code_array
-                env = code_array._get_updated_environment()
+                env = code_array.get_globals()
                 script = jedi.Interpreter(code, [env], line=1, column=position)
                 completions = script.complete()
                 completes = [completion.complete for completion in completions]
@@ -899,18 +905,38 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                         self.SetSelection(insertion_point,
                                           insertion_point + len(complete))
 
-                try:
-                    words = [completion.word for completion in completions]
-                    docs = [completion.doc for completion in completions]
+                words = [completion.word for completion in completions]
 
-                    dws = [": ".join([w, d]) for w, d in zip(words, docs)]
+                docs = []
+                for completion in completions:
+                    doc = completion.docstring(fast=False)
+                    if not doc:
+                        # Is the completion part of a module?
+                        code_segment = \
+                            code[:position+1].split()[-1]
+                        module_name = code_segment.rsplit(".", 1)[0]
+                        try:
+                            module = env[module_name]
+                            doc = getattr(module, completion.name).__doc__
+                        except (KeyError, AttributeError):
+                            pass
 
-                    tiptext = "\n \n".join(dws)
+                    if not doc:
+                        name = completion.name
+                        try:
+                            # Is the completion a builtin?
+                            doc = getattr(__builtin__, name).__doc__
+                        except AttributeError:
+                            pass
+                    docs.append(doc)
 
-                    self.SetToolTipString(tiptext)
+                dws = [": ".join([w, d]) for w, d in zip(words, docs)]
 
-                except IndexError:
-                    pass
+                tiptext = "\n \n".join(dws)
+
+                # Cut tiptext length because Tooltip fails for long strings
+
+                self.SetToolTip(wx.ToolTip(tiptext[:MAX_TOOLTIP_LENGTH]))
 
                 # Do not process <Tab>
                 return
