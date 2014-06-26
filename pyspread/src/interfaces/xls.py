@@ -551,6 +551,62 @@ class Xls(object):
 
         return xfstyle
 
+    def _cell_attribute_append(self, selection, tab, attributes):
+        """Appends to cell_attributes with checks"""
+
+        cell_attributes = self.code_array.cell_attributes
+
+        thick_bottom_cells = []
+        thick_right_cells = []
+
+        # Does any cell in selection.cells have a larger bottom border?
+
+        if "borderwidth_bottom" in attributes:
+            bwidth = attributes["borderwidth_bottom"]
+            for row, col in selection.cells:
+                __bwidth = cell_attributes[row, col, tab]["borderwidth_bottom"]
+                if __bwidth > bwidth:
+                    thick_bottom_cells.append((row, col))
+
+        # Does any cell in selection.cells have a larger right border?
+        if "borderwidth_right" in attributes:
+            rwidth = attributes["borderwidth_right"]
+            for row, col in selection.cells:
+                __rwidth = cell_attributes[row, col, tab]["borderwidth_right"]
+                if __rwidth > rwidth:
+                    thick_right_cells.append((row, col))
+
+        for thick_cell in thick_bottom_cells + thick_right_cells:
+            try:
+                selection.cells.remove(thick_cell)
+            except ValueError:
+                pass
+
+        cell_attributes.append((selection, tab, attributes))
+
+        if thick_bottom_cells:
+            bsel = copy(selection)
+            bsel.cells = thick_bottom_cells
+            battrs = copy(attributes)
+            battrs.pop("borderwidth_bottom")
+            cell_attributes.append((bsel, tab, battrs))
+
+        if thick_right_cells:
+            rsel = copy(selection)
+            rsel.cells = thick_right_cells
+            rattrs = copy(attributes)
+            rattrs.pop("borderwidth_right")
+            cell_attributes.append((rsel, tab, rattrs))
+
+    def _attributes2xls(self, worksheet, tab):
+        """Writes cell attributes to xls file"""
+
+        for selection, tab, attr_dict in self.code_array.cell_attributes:
+            sel_list = [selection.block_tl, selection.block_br,
+                        selection.rows, selection.cols, selection.cells]
+
+            raise NotImplementedError
+
     def _xls2attributes(self, worksheet, tab):
         """Updates attributes in code_array"""
 
@@ -710,53 +766,6 @@ class Xls(object):
                                             attributes_left)
             if attributes:
                 self._cell_attribute_append(selection, tab, attributes)
-
-    def _cell_attribute_append(self, selection, tab, attributes):
-        """Appends to cell_attributes with checks"""
-
-        cell_attributes = self.code_array.cell_attributes
-
-        thick_bottom_cells = []
-        thick_right_cells = []
-
-        # Does any cell in selection.cells have a larger bottom border?
-
-        if "borderwidth_bottom" in attributes:
-            bwidth = attributes["borderwidth_bottom"]
-            for row, col in selection.cells:
-                __bwidth = cell_attributes[row, col, tab]["borderwidth_bottom"]
-                if __bwidth > bwidth:
-                    thick_bottom_cells.append((row, col))
-
-        # Does any cell in selection.cells have a larger right border?
-        if "borderwidth_right" in attributes:
-            rwidth = attributes["borderwidth_right"]
-            for row, col in selection.cells:
-                __rwidth = cell_attributes[row, col, tab]["borderwidth_right"]
-                if __rwidth > rwidth:
-                    thick_right_cells.append((row, col))
-
-        for thick_cell in thick_bottom_cells + thick_right_cells:
-            try:
-                selection.cells.remove(thick_cell)
-            except ValueError:
-                pass
-
-        cell_attributes.append((selection, tab, attributes))
-
-        if thick_bottom_cells:
-            bsel = copy(selection)
-            bsel.cells = thick_bottom_cells
-            battrs = copy(attributes)
-            battrs.pop("borderwidth_bottom")
-            cell_attributes.append((bsel, tab, battrs))
-
-        if thick_right_cells:
-            rsel = copy(selection)
-            rsel.cells = thick_right_cells
-            rattrs = copy(attributes)
-            rattrs.pop("borderwidth_right")
-            cell_attributes.append((rsel, tab, rattrs))
 
     def _row_heights2xls(self, worksheets):
         """Writes row_heights to xls file
