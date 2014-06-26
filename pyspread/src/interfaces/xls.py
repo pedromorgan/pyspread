@@ -29,8 +29,9 @@ This file contains interfaces to Excel xls file format.
 """
 
 from copy import copy
+from collections import defaultdict
 from datetime import datetime
-from itertools import product
+from itertools import product, repeat
 
 try:
     import xlrd
@@ -137,8 +138,11 @@ class Xls(object):
         """Updates shape in code_array"""
 
         sheets = self.workbook.sheets()
-        nrows = sheets[0].nrows
-        ncols = sheets[0].ncols
+        nrows = 1
+        ncols = 1
+        for sheet in sheets:
+            nrows = max(nrows, sheet.nrows)
+            ncols = max(ncols, sheet.ncols)
         ntabs = len(sheets)
 
         self.code_array.shape = nrows, ncols, ntabs
@@ -624,12 +628,18 @@ class Xls(object):
                 attributes["bgcolor"] = color.GetRGB()
 
             # Border
-            border_line_style2width = {
+            __border_line_style2width = {
                 0: 1,
                 1: 1,
                 2: 4,
                 5: 7,
             }
+
+            def constant_factory(value):
+                return repeat(value).next
+
+            border_line_style2width = defaultdict(constant_factory(1))
+            border_line_style2width.update(__border_line_style2width)
 
             bottom_color_idx = xf.border.bottom_colour_index
             if self.workbook.colour_map[bottom_color_idx] is not None:
