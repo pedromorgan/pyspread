@@ -1,3 +1,10 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  </head>
+  <body>
     <p></p>
     <h1>First steps into pyspread</h1>
     <table style="text-align: left; width: 1237px; margin-left: auto;
@@ -9,7 +16,7 @@
             width: 102px;">
             <h3>About this document</h3>
           </th>
-          <td style="vertical-align: top;">This document shall provide a
+          <td style="vertical-align: top;">This document provides a
             quick overview over pyspread.<br>
             Readers should have at least some experience with Python.<br>
           </td>
@@ -25,13 +32,17 @@
           <td style="vertical-align: top;">Pyspread is a spreadsheet
             application that computes Python expressions in its cells.
             It is written in the programming language Python.<br>
+            <br>
             The core mission of pyspread is to make coding in a
-            spreadsheet as pythonic as possible.&nbsp; Cell functions
-            that are known from conventional spreadsheets such as
-            Excel, gnumeric or OpenOffice.org Calc are not
-            supported. Instead Python expressions are entered into the
-            spreadsheet cells. Each cell returns a Python object. These
-            objects can represent anything including lists or matrices.<br>
+            spreadsheet as pythonic as possible.&nbsp; <br>
+            <br>
+            Cell functions that are known from conventional spreadsheets
+            such as Excel<sup>&reg;</sup>, gnumeric or OpenOffice.org
+            Calc are not supported. Instead Python expressions are
+            entered into the spreadsheet cells. Each cell returns a
+            Python object. These objects can represent anything
+            including lists or matrices.<br>
+            <br>
             At least basic knowledge of Python is required to
             effectively use pyspread.<br>
             Pyspread provides a three dimensional grid that can comprise
@@ -49,25 +60,25 @@
           <th style="vertical-align: top;">
             <h3>Current limitations</h3>
           </th>
-          <td style="vertical-align: top;"> 
+          <td style="vertical-align: top;"> External libraries that set
+            states in several steps may be unusable or hard to use
+            because cell execution order is not guaranteed. They should
+            be used from within a macro.<br>
+            <br>
+            There is no selection rectangle for auto-filling cells. Some
+            of this functionality is provided by repeating cell content
+            when pasting into selections.<br>
+            <br>
+            Execution of C code that is called from Python expressions
+            cannot be interrupted or terminated if slow. Therefore, such
+            code may block pyspread.<br>
+            <br>
+            Cyclic dependencies of cells are unsupported.<br>
+            <br>
+            Loading and saving Excel<sup>&reg;</sup> files is not
+            feature complete. Data will be lost when saving a document
+            as an xls file and loading it again.<br>
             <ul>
-              <li>
-                External libraries that set states in several steps are hard
-                to use from within cells because cell execution order is not
-                guaranteed. They should be used from within a macro. One example
-                is matplotlib, for which a macro is defined in charts.py<br>
-              </li>
-              <li>There is no cell auto-fill functionality. However,
-                cells may be filled by pasting into selections.<br>
-              </li>
-              <li>Cell executions that consist of C code cannot be interrupted
-                or terminated if slow. Therefore, they may block pyspread.
-                However, long running Python code can be aborted with a timeout
-                value.
-              </li>
-              <li>Cycle detection can be tricked. Cell results can be
-                unstable if cyclic dependencies are introduced.
-              </li>
             </ul>
           </td>
           <td style="vertical-align: top;"><br>
@@ -81,122 +92,120 @@
           </th>
           <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Requirements</h4>
-            <p class="western" lang="en-US">Pyspread requires Linux or *nix platform
-              with GTK+ support (recommended) or Windows. <b>OS X is unsupported.</b>
-              However, pyspread has been reported to work with OS X.<br>
-              <br>
-              <span style="text-decoration: underline">Dependencies</span><br>
+            Pyspread is designed for Linux and other GTK platforms.
+            Windows<sup>&reg;</sup> is supported starting with version
+            0.2.4. <b>OS X is unsupported.</b> However, pyspread has
+            been reported to work with OS X.
+            <p><br>
+              <span style="text-decoration: underline;">Dependencies</span><br>
             </p>
-                <ul>
-                    <li>
-                        <a href="http://www.python.org/">Python</a> (&gt;=2.7,
-                        &lt;3.0)
-                    </li>
-
-                    <li>
-                        <a href="http://www.numpy.org/">numpy</a> (&gt;=1.1.0)
-                    </li>
-
-                    <li>
-                        <a href="http://www.wxpython.org/">wxPython</a>
-                        (&gt;=2.8.10.1, Unicode version required)
-                    </li>
-
-                    <li>
-                        <a href="http://matplotlib.org/">matplotlib</a>
-                        (&gt;=1.1.1)<br>
-                    </li>
-
-                    <li>
-                        <a href=
-                        "http://code.google.com/p/python-gnupg/">python-gnupg</a>
-                        (&gt;=0.3.0)<br>
-                    </li>
-                    <li>
-                        <a href=
-                        "http://www.python-excel.org/">xlrd (optional for opening Excel files)</a>
-                        (&gt;=0.9.2)<br>
-                    </li>
-                </ul>
-            <span style="text-decoration: underline">Strongly
-              recommended for improved save file security<br>
-            </span>
+            <ul>
+              <li> <a href="http://www.python.org/">Python</a>
+                (&gt;=2.7, &lt;3.0) </li>
+              <li> <a href="http://www.numpy.org/">numpy</a>
+                (&gt;=1.1.0) </li>
+              <li> <a href="http://www.wxpython.org/">wxPython</a>
+                (&gt;=2.8.10.1, &lt;2.9, Unicode version required) </li>
+              <li> <a href="http://matplotlib.org/">matplotlib</a>
+                (&gt;=1.1.1)</li>
+            </ul>
+            <span style="text-decoration: underline;">Optional
+              dependencies</span>
             <ul>
               <li> <a href="http://code.google.com/p/python-gnupg/">python-gnupg</a>
-                (&gt;=0.3.0) </li>
+                (&gt;=0.3.0, for opening own files without approval) <br>
+                (&gt;=0.3.0)</li>
+              <li><a href="http://www.python-excel.org/">xlrd</a>
+                (&gt;=0.9.2, for loading Excel<sup>&reg;</sup> files)</li>
+              <li><a href="http://www.python-excel.org/">xlwt</a>
+                (&gt;=0.9.2, for saving Excel files, pyspread
+                &gt;=v0.3.0 required)</li>
+              <li><a href="http://jedi.jedidjah.ch/">jedi</a>
+                (&gt;=0.8.0, for tab completion and context help in the
+                entry line, pyspread &gt;=v0.3.0 required)</li>
             </ul>
-            <br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Debian and Ubuntu Linux</h4>
-            <p class="western" lang="en-US"><u>Installation from the repository (recommended)</u></p>
+            <p class="western" lang="en-US"><u>Installation from the
+                repository (recommended)</u></p>
             Become root.
-                <p class="western" lang="en-US"><code>su</code></p>
+            <p class="western" lang="en-US"><code>su</code></p>
             Enter the root password. After becoming root, type
-            <p class="western" lang="en-US"><code>apt-get install pyspread</code></p>        
-            <p class="western" lang="en-US"><u>Installation from .deb package</u></p>
-            <p class="western" lang="en-US">Download the deb package and type:</p>
-            <p class="western" lang="en-US"><code>dpkg -i &lt;package name&gt;</code></p>
+            <p class="western" lang="en-US"><code>apt-get install
+                pyspread</code></p>
+            <p class="western" lang="en-US"><u>Installation from .deb
+                package</u></p>
+            <p class="western" lang="en-US">Download the deb package and
+              type:</p>
+            <p class="western" lang="en-US"><code>dpkg -i &lt;package
+                name&gt;</code></p>
             <h4 class="western" lang="en-US">Arch Linux</h4>
-            An AUR package is available <a href="https://aur.archlinux.org/packages/pyspread/">here</a>.
-            You can install it e.g. with <a href="https://wiki.archlinux.org/index.php/yaourt">yaourt</a>.
+            An AUR package is available <a
+              href="https://aur.archlinux.org/packages/pyspread/">here</a>.
+            You can install it e.g. with <a
+              href="https://wiki.archlinux.org/index.php/yaourt">yaourt</a>.<br>
             <h4 class="western" lang="en-US">Slackware Linux</h4>
-            A slackbuild is available <a href="https://aur.archlinux.org/packages/pyspread/">here</a>.
-            For installation, please refer to the <a href="http://slackbuilds.org/howto/"> slackbuild howto</a>.
+            A slackbuild is available <a
+              href="https://aur.archlinux.org/packages/pyspread/">here</a>.
+            For installation, please refer to the <a
+              href="http://slackbuilds.org/howto/"> slackbuild howto</a>.
             <h4 class="western" lang="en-US">Windows</h4>
-              These instructions include
-              steps for installing prerequisites. In order to make Windows
-              installation easier, I have added links for 32 bit and for
-              64 bit Windows. All links result from a Web search. The
-              linked content is untested.<p>
+            These instructions include steps for installing
+            prerequisites. In order to make Windows installation easier,
+            I have added links for 32 bit and for 64 bit Windows. All
+            links result from a Web search. The linked content is
+            untested.<br>
+            <ul>
               <li>Download and install Python, numpy and matplotlib. You
                 can find 32bit and 64bit packages in <a
                   href="https://code.google.com/p/winpython/">winpython</a>.
-                Make sure to use the Python2 version.<br>
-                <br>
-              </li>
+                Make sure to use the Python2 version.</li>
               <li>Download and install <a
                   href="http://www.wxpython.org/download.php#stable">wxPython
-                  2.8.x</a>.<br>
-                <br>
-              </li>
+
+                  2.8.x</a>.</li>
               <li>Download and install gnupg (<a
                   href="http://www.gpg4win.org/">Gpg4win</a> supports
-                32&amp;64bit)<br>
-                <br>
-              </li>
+                32&amp;64bit)</li>
               <li>Download and install <a
-                  href="http://pythonhosted.org/python-gnupg/#download">python-gnupg</a>.<br>
-                <br>
-                For&nbsp; <span style="font-weight: bold;">32 bit
-                  systems</span>, an exe installer
-                (python-gnupg-0.3.4.win32.exe) is provided on the linked
-                page.<br>
-                <br>
-                For <span style="font-weight: bold;">64 bit systems</span>,
-                the python-gnupg tarball (python-gnupg-0.3.4.tar.gz) has
-                to be extracted (e. g. with 7zip) and installed as
-                follows:<br> <br>
-              </li>
-                <li>Log in as Administrator<br> <br>
-                </li>
-                <li>Start cmd <br> <br></li>
-                <li>cd to the extraction directory <br> <br></li>
-                <li>Type in <p>
-                  <tt>python setup.py install
-                    <br> <br>
-                  </tt></li>
-              <li>Download and extract the pyspread tarball (e. g. with
-                7zip)<br>
-                <br> <br>
-              </li>
-              <li>Start pyspread by double-clicking on the file
-                pyspread.bat in the extraction directory<br> <br>
-              </li>
+                  href="http://pythonhosted.org/python-gnupg/#download">python-gnupg</a>.</li>
+            </ul>
+            For&nbsp; <span style="font-weight: bold;">32 bit systems</span>,
+            an exe installer (python-gnupg-0.3.4.win32.exe) is provided
+            on the linked page.<br>
+            <br>
+            For <span style="font-weight: bold;">64 bit systems</span>,
+            the python-gnupg tarball (python-gnupg-0.3.4.tar.gz) has to
+            be extracted (e. g. with 7zip) and installed as follows<br>
+            <ul>
+              <li>Log in as Administrator</li>
+              <li>
+                Start cmd </li>
+              <li>
+                cd to the extraction directory </li>
+              <li>
+                Type in</li>
+              <li>python setup.py install&nbsp;</li>
+              <li>
+                Download and extract the pyspread tarball (e. g. with
+                7zip)</li>
+            </ul>
             <h4 class="western" lang="en-US">Other systems</h4>
             <ol>
               <li>
-                <p class="western" lang="en-US">Installation from source:<p>
-                  Untar the source package
-                  into a directory of your choice:<br>
+                <p class="western" lang="en-US">Installation from
+                  source:</p>
+                <p> Untar the source package into a directory of your
+                  choice:<br>
                   tar xzvf pyspread-&lt;version number&gt;.tar.gz</p>
               </li>
               <li>Change into the new sub-directoy:<br>
@@ -206,6 +215,7 @@
                   python setup.py install</p>
               </li>
             </ol>
+            <br>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -259,19 +269,22 @@
           <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Starting and quitting
               pyspread</h4>
-            <p class="western" lang="en-US">On Linux or *nix systems, type</p>
+            <p class="western" lang="en-US">On Linux or *nix systems,
+              type</p>
             <code> $ pyspread </code>
             <blockquote style="margin-left: 0in;"> from the command
-              prompt. If you want to run pyspread without installation then
-              cd into the pyspread directory and type</blockquote>
+              prompt. If you want to run pyspread without installation
+              then cd into the pyspread directory and type</blockquote>
             <code> $ pyspread.sh </code>
-            <blockquote style="margin-left: 0in;"> On Windows, type instead</blockquote>
-            <code> > pyspread.bat </code>
-            <blockquote style="margin-left: 0in;">in the command line or launch the file
-            via the Windows Explorer (click or double click)</blockquote>
+            <blockquote style="margin-left: 0in;"> On Windows, type
+              instead</blockquote>
+            <code> &gt; pyspread.bat </code>
+            <blockquote style="margin-left: 0in;">in the command line or
+              launch the file via the Windows Explorer (click or double
+              click)</blockquote>
             <blockquote style="margin-left: 0in;"> You can quit pyspread
-              by closing the main window or by selecting File -->
-              Quit from the menu. </blockquote>
+              by closing the main window or by selecting File -&gt; Quit
+              from the menu. </blockquote>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -324,11 +337,13 @@
           </td>
           <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Basic preferences</h4>
-            <p class="western" lang="en-US">On Linux and *nix systems,
-              pyspread stores its configuration in a file ~/.pyspreadrc.
-              This file is created when first starting pyspread. Removing it resets configuration.
-            </p>            
-            <p class="western" lang="en-US">On Windows, this information is stored in the Registry.</p>
+            <p class="western" lang="en-US">On *nix, Pyspread stores its
+              configuration in a file ~/.pyspreadrc<br>
+            </p>
+            <p class="western" lang="en-US">This file is created when
+              first starting pyspread. Removing it resets configuration.</p>
+            <p class="western" lang="en-US">On Windows, them same
+              information is stored in the registry.</p>
             <p class="western" lang="en-US">Initial configuration can be
               viewed in pyspread/src/config.py</p>
           </td>
@@ -345,10 +360,13 @@
             <h4 class="western" lang="en-US">3D grid</h4>
             <p class="western" lang="en-US">Pyspread features only one
               grid at a time. However, this grid is 3D, i. e. there are
-              rows, columns and tables in the grid.</p>
-            <p class="western" lang="en-US">In recent versions, tables
-              work similar to sheets in other spreadsheets. However, tables
-              are not named but indexed as a third grid dimension.</p>
+              rows, columns and tables in the grid. The main difference
+              to common spreadsheets is that each dimension is
+              considered equal. However, to prevent data loss, deleting
+              a row deletes this row only in the current table.</p>
+            <p class="western" lang="en-US">There are no sheets at the
+              moment. Sheet functionality may become part of future
+              releases.</p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -366,9 +384,9 @@
               written in Python. Therefore all objects can be accessed
               from within each cell. This is also the case for external
               modules.</p>
-            <p class="western" lang="en-US">There are 4 convenient
-              "magic" objects, which are merely
-              syntactic sugar: S, X, Y and Z.</p>
+            <p class="western" lang="en-US">There are 5 convenient
+              "magical" objects, which are merely syntactic sugar: S, X,
+              Y and Z and nn.</p>
             <p class="western" lang="en-US">S is the grid data object.
               It is ultimately based on a dict. However, it consists of
               several layers on top. When indexing or slicing, it
@@ -380,15 +398,25 @@
               these coordinates change accordingly. This approach allows
               relative addressing by adding the relative coordinates to
               X, Y or Z. Therefore, no special relative addressing
-              methods are needed.</p>
+              methods are needed.<br>
+            </p>
+            <p class="western" lang="en-US">nn is a function that
+              flattens a numpy array and removes all objects that are
+              None. This function makes special casing None for
+              operations such as sum unnecessary. nn is provided in
+              pyspread &gt;v.0.3.0.<br>
+            </p>
             <p class="western" lang="en-US">External modules are
               accessible from each cell. Unfortunately, Python's
               convenient import syntax</p>
             <code>from xx import yy</code>
             <p class="western" lang="en-US">is no expression. Therefore,
               the expression</p>
-            <code>xx = __import__("xx")</code>
-            <p class="western" lang="en-US">has to be used.</p>
+            <p class="code-western" lang="en-US">xx = __import__("xx")</p>
+            <p class="western" lang="en-US">has to be used.
+              Alternatively, the import statement can be used from
+              within the macro editor.<br>
+            </p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -427,21 +455,24 @@
           <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Trust based security</h4>
             <p class="western" lang="en-US">Since Python expressions are
-              evaluated in pyspread, a spreadsheet is as powerful as any
-              program. Therefore, it could harm the system or even send
-              confidential data to third persons over the Internet. Even
-              though this is basically the case for all office
-              applications, the easy access to such behavior makes
-              precautions necessary. The idea in pyspread is that you
-              (the user) are trustworthy and no-one
-              else. If you save a file then a signature is saved with it
-              (suffix .pys.sig). Only you can re-open the file directly.
-              If anyone else opens the file, it is displayed in safe
-              mode, i. e. each cell displays the cell code and no cell
-              code is evaluated. The user can approve the file, after
-              which the cell code is evaluated. When the user then saves
-              the file, it is newly signed. Then it can be re-opened
-              without safe mode.</p>
+              evaluated in pyspread, a pyspread spreadsheet is as
+              powerful as any program. Therefore, it could harm the
+              system or even send confidential data to third persons
+              over the Internet.<br>
+            </p>
+            <p class="western" lang="en-US">Even though this is
+              basically the case for all office applications, the easy
+              access to such behavior makes precautions necessary. The
+              idea in pyspread is that you - the user - are trustworthy
+              and no-one else. If you save a file and if you have the
+              Python gnupg interface installed then a signature is saved
+              with it (suffix .pys.sig). Only you can re-open the file
+              directly. If anyone else opens the file, it is displayed
+              in safe mode, i. e. each cell displays the cell code and
+              no cell code is evaluated. The user can approve the file,
+              after which the cell code is evaluated. When the user then
+              saves the file, it is newly signed. Then it can be
+              re-opened without safe mode.</p>
             <p class="western" lang="en-US">An intended side-effect of
               this approach is that when two users open the file on a
               network share, the signature file of one user is not
@@ -462,7 +493,7 @@
             <h3>Common spreadsheet tasks</h3>
           </th>
           <td style="vertical-align: top;">
-            <h4 class="western" lang="en-US">Moving in a spreadsheet table</h4>
+            <h4 class="western" lang="en-US">Moving in the spreadsheet</h4>
             <p class="western" lang="en-US">Movement in the grid can be
               achieved by:</p>
             <ul>
@@ -471,8 +502,8 @@
                   scrollbars</p>
               </li>
               <li>
-                <p class="western" lang="en-US">Selecting "View
-                  --> Go to cell" from the main menu</p>
+                <p class="western" lang="en-US">Selecting View --&gt; Go
+                  to cell from the main menu</p>
               </li>
               <li>
                 <p class="western" lang="en-US">Moving the grid cursor
@@ -488,8 +519,22 @@
             </ul>
             <p class="western" lang="en-US">This covers row and column
               movement.</p>
-            <h4 class="western" style="font-weight: bold;" lang="en-US">
-              Switching tables</h3>
+            <p class="western" lang="en-US">Table movement is described
+              in the next paragraph</p>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><br>
+            </h3>
+          </td>
+          <td style="vertical-align: top;">
+            <h4 class="western" style=" font-weight: bold;" lang="en-US">
+              Switching tables</h4>
             <p class="western" lang="en-US">Tables can be switched by
               changing the number in the table switch textbox that is
               situated right of the entry line directly above the grid.</p>
@@ -497,7 +542,21 @@
               either typing in a table number or by moving the mouse
               over the table switch textbox and then scrolling with the
               mouse wheel.</p>
-            <h4 class="western" lang="en-US">Entering data</h4>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><br>
+            </h3>
+          </td>
+          <td style="vertical-align: top;">
+            <h4 style="font-weight: bold;" class="western" lang="en-US">Entering
+
+              data</h4>
             <p class="western" lang="en-US">Data is entered into the
               grid cells by selecting a cell and then typing the text.
               The text can also be entered into the text-entry line. The
@@ -509,15 +568,49 @@
             When data shall be displayed as text, it has to be quoted so
             that the code represents a Python string. In order to make
             such data entry easier, quotation is automatically added if
-            &lt;Ctrl&gt;+&lt;Enter&gt; is pressed after editing a cell.<br>
-            <h4 class="western" style="font-weight: bold;" lang="en-US">
-              Changing and deleting cell content</h3>
+            &lt;Ctrl&gt;+&lt;Enter&gt; is pressed after editing a cell.
+            If multiple cells are selected then
+            &lt;Ctrl&gt;+&lt;Enter&gt; quotes all selected cell.<br>
+            <br>
+            When entering data in the entry line, pyspread &gt;=v0.3.0
+            offers code completion and context help if the jedi package
+            is installed. When &lt;Tab&gt; is pressed while typing, an
+            unambiguous suggestion for the next characters is made.
+            Furthermore, the entry line tooltip is changed so that it
+            contains information about all found completions. The
+            tooltip is truncated to 1000 characters.<br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><br>
+            </h3>
+          </td>
+          <td style="vertical-align: top;">
+            <h4 class="western" style=" font-weight: bold;" lang="en-US">
+              Changing and deleting cell content</h4>
             <p class="western" lang="en-US">In order to change cell
               content double-click on the cell or select the cell and
               edit the text in the entry line.</p>
             <p class="western" lang="en-US">A cell can be deleted by
               selecting it and pressing &lt;Del&gt;. This also works for
               selections.</p>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><br>
+            </h3>
+          </td>
+          <td style="vertical-align: top;">
             <p class="western" lang="en-US">Cells can be selected by the
               following actions:</p>
             <ul>
@@ -545,6 +638,18 @@
               switches cell selections to the new table, i. e. the same
               cells in the new table are selected and no cells of the
               old table are selected.</p>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><br>
+            </h3>
+          </td>
+          <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Copy and Paste operations</h4>
             <p class="western" lang="en-US">Copying and pasting can be
               done from within cells, which copies the text.</p>
@@ -564,10 +669,36 @@
               second type of copy &lt;Shift&gt; + &lt;Ctrl&gt; + C,
               which copies string representation of the results. This is
               useful, if for example the result shall be copied into an
-              external application.</p>
+              external application.<br>
+            </p>
+            <p class="western" lang="en-US">Data can also be pasted with
+              Paste As. The keyboard shortcut is &lt;Shift&gt; +
+              &lt;Ctrl&gt; + V. A dialog appears, in which the target
+              dimensionality can be specified. The data can also be
+              transposed. With this feature, fine grained access to
+              which target data object dimensions are pasted into single
+              cells and which are distributed across cells.<br>
+            </p>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><a
+              href="images/screenshot_paste_as.png"><img alt="Paste As
+                dialog" src="images/screenshot_paste_as.png"
+                style="border: 0px solid; border: 0px solid; width:
+                200px;"></a><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><br>
+            </h3>
+          </td>
+          <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Undoing work steps</h4>
-            <p class="western" lang="en-US">Pyspread features undo and
-              redo functions for most user actions. Exceptions are:</p>
+            <p class="western" lang="en-US">Pyspread features undo
+              &lt;Ctrl&gt; + Z and redo &lt;Shift&gt; + &lt;Ctrl&gt; + Z
+              functions for most user actions. Exceptions are:</p>
             <ul>
               <li>
                 <p class="western" lang="en-US">Loading a file (empties
@@ -576,14 +707,15 @@
               <li>
                 <p class="western" lang="en-US">Saving a file (ignored)</p>
               </li>
-              <li>
-                <p class="western" lang="en-US">Approving a file
-                  (ignored)</p>
+              <li>Approving a file (ignored)</li>
+            </ul>
+            <ul>
+              <li>Deleting global variables<br>
               </li>
             </ul>
             <p class="western" lang="en-US">The undo list is limited.
-              The limit can be set in the File --> Preferences
-              dialog by changing the variable max_unredo.</p>
+              The limit can be set in the File -&gt; Preferences dialog
+              by changing the variable max_unredo.</p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -599,7 +731,7 @@
             <h4 class="western" lang="en-US">Creating an empty
               spreadsheet</h4>
             <p class="western" lang="en-US">An empty spreadsheet can be
-              created by File --> New.</p>
+              created by File -&gt; New.</p>
             <p class="western" lang="en-US">A Dialog pops up, in which
               the size of the new spreadsheet grid can be entered. Note
               that even though sizes of several million rows or columns
@@ -616,7 +748,8 @@
               href="images/screenshot_new_dialog.png"><img alt="Grid
                 dimension dialog"
                 src="images/screenshot_new_dialog_preview.png"
-                style="border: 0px solid ; width: 200px; height: 141px;"></a><br>
+                style="border: 0px solid; border: 0px solid; width:
+                200px; height: 141px;"></a><br>
           </td>
         </tr>
         <tr>
@@ -629,9 +762,16 @@
               spreadsheet</h4>
             <p class="western" lang="en-US">Loading and saving a
               spreadsheet from and to disk can be initiated with File
-              --> Open and<br>
-              File --> Save. Opening a file expects a file with
-              the extension .pys. The file format is pyspread specific.</p>
+              -&gt; Open and<br>
+              File -&gt; Save. Opening a file expects a file with the
+              extension .pys. The file format is pyspread specific.<br>
+            </p>
+            <p class="western" lang="en-US">Starting from v0.3.0 there
+              is a second file format with the extension .pysu. It is
+              identical to pys but for the file being uncompressed. This
+              format can be beneficial when using pyspread in
+              combination with file version control systems such as git.<br>
+            </p>
             <p class="western" lang="en-US">Since pyspread files are
               ultimately Python programs, an opened file is stored in
               safe mode if it has not been previously signed by the
@@ -639,7 +779,7 @@
               the cell content is loaded and displayed in the grid.
               However, it is not executed, so that 2+2 remains 2+2 and
               is not computed into 4. You can leave safe mode with File
-              --> Approve.</p>
+              -&gt; Approve.</p>
             <p class="western" lang="en-US">When a file is saved, a
               signature is created in an additional file with the suffix
               .pys.sig. The signature is a PGP signature. When pyspread
@@ -651,31 +791,31 @@
                 style="font-weight: bold;">not</span> encrypted in any
               way.<br>
             </p>
-            <p class="western" lang="en-US">The pys file format is a bzip2-ed
-              Text file with the following structure (since version 0.2.0):</p>
+            <p class="western" lang="en-US">The pys file format is a
+              bzip2-ed Text file with the following structure (since
+              version 0.2.0):</p>
             <code>
-                <p class="code-western" lang="en-US">[Pyspread save file
-                  version]</p>
-                <p class="code-western" lang="en-US">0.1</p>
-                <p class="code-western" lang="en-US">[shape]</p>
-                <p class="code-western" lang="en-US">1000 100 3</p>
-                <p class="code-western" lang="en-US">[grid]</p>
-                <p class="code-western" lang="en-US">7 22 0 'Testcode1'</p>
-                <p class="code-western" lang="en-US">8 9 0 'Testcode2'</p>
-                <p class="code-western" lang="en-US">[attributes]</p>
-                <p class="code-western" lang="en-US">[] [] [] [] [(0, 0)] 0
-                  'textfont' u'URW Chancery L'</p>
-                <p class="code-western" lang="en-US">[] [] [] [] [(0, 0)] 0
-                  'pointsize' 20</p>
-                <p class="code-western" lang="en-US">[row_heights]</p>
-                <p class="code-western" lang="en-US">0 0 56.0</p>
-                <p class="code-western" lang="en-US">7 0 25.0</p>
-                <p class="code-western" lang="en-US">[col_widths]</p>
-                <p class="code-western" lang="en-US">0 0 80.0</p>
-                <p class="code-western" lang="en-US">[macros]</p>
-                <p class="code-western" lang="en-US">Macro text</p>
-            </code>
-          </td>
+              <p class="code-western" lang="en-US">[Pyspread save file
+                version]</p>
+              <p class="code-western" lang="en-US">0.1</p>
+              <p class="code-western" lang="en-US">[shape]</p>
+              <p class="code-western" lang="en-US">1000 100 3</p>
+              <p class="code-western" lang="en-US">[grid]</p>
+              <p class="code-western" lang="en-US">7 22 0 'Testcode1'</p>
+              <p class="code-western" lang="en-US">8 9 0 'Testcode2'</p>
+              <p class="code-western" lang="en-US">[attributes]</p>
+              <p class="code-western" lang="en-US">[] [] [] [] [(0, 0)]
+                0 'textfont' u'URW Chancery L'</p>
+              <p class="code-western" lang="en-US">[] [] [] [] [(0, 0)]
+                0 'pointsize' 20</p>
+              <p class="code-western" lang="en-US">[row_heights]</p>
+              <p class="code-western" lang="en-US">0 0 56.0</p>
+              <p class="code-western" lang="en-US">7 0 25.0</p>
+              <p class="code-western" lang="en-US">[col_widths]</p>
+              <p class="code-western" lang="en-US">0 0 80.0</p>
+              <p class="code-western" lang="en-US">[macros]</p>
+              <p class="code-western" lang="en-US">Macro text</p>
+            </code> </td>
           <td style="vertical-align: top;"><br>
           </td>
           <td style="vertical-align: top;"><br>
@@ -691,20 +831,19 @@
             <p class="western" lang="en-US">Pyspread can import and
               export csv data for interacting with other applications.
               However, grid formatting is lost this way.</p>
-            <p class="western" lang="en-US">With File --> Import,
-              a csv file can be imported. There are two import filters.</p>
-            <p class="western" lang="en-US">"Tab-delimited text
-              file" is fast but does not handle ill-formed data
-              or special formats well. As the name suggests, only Tab
-              delimited values are allowed.</p>
-            <p class="western" lang="en-US">The filter
-              "Csv file" opens the CSV file import
-              dialog. In this dialog, CSV import options can be set.
-              Furthermore, target Python types can be specified, so that
-              import of dates becomes possible. The grid of the import
-              dialog only shows the first few rows of the csv files in
-              order to give an impression how import data will look like
-              in pyspread.<br>
+            <p class="western" lang="en-US">With File -&gt; Import, a
+              csv file can be imported. There are two import filters.</p>
+            <p class="western" lang="en-US">"Tab-delimited text file" is
+              fast but does not handle ill-formed data or special
+              formats well. As the name suggests, only Tab delimited
+              values are allowed.</p>
+            <p class="western" lang="en-US">The other filter "Csv file"
+              opens the CSV file import dialog. In this dialog, CSV
+              import options can be set. Furthermore, target Python
+              types can be specified, so that import of dates becomes
+              possible. The grid of the import dialog only shows the
+              first few rows of the csv files in order to give an
+              impression how import data will look like in pyspread.<br>
             </p>
             <p></p>
             <p class="western" lang="en-US">Importing a file always
@@ -712,11 +851,11 @@
               manually) because code in the CSV file might prove
               harmful.</p>
             <h4 class="western" lang="en-US">XLS data import and export</h4>
-              Starting with version 0.2.6, pyspread can load Excel xls files.
-              Starting with version 0.3.0, pyspread can save Excel xls files.
-              However, xls file support does not work without losses in
-              cell formatting. Excel formulas are currently not interpreted.
-          </td>
+            Starting with version 0.2.6, pyspread can load Excel xls
+            files. Starting with version 0.3.0, pyspread can save Excel
+            xls files. However, xls file support does not work without
+            losses in cell formatting. Excel formulas are currently not
+            interpreted. </td>
           <td style="vertical-align: top;"><br>
           </td>
           <td style="vertical-align: top;"> <a
@@ -733,12 +872,11 @@
           </td>
           <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Printing</h4>
-            <p class="western" lang="en-US">When selecting File
-              --> Print, the grid is printed. When there is no
-              selection, the visible part of the grid is printed.
-              Otherwise, the selected part of the grid is printed.
-              Beware of selecting huge parts of the grid because this
-              may lock up pyspread.</p>
+            <p class="western" lang="en-US">When selecting File -&gt;
+              Print, the grid is printed. When there is no selection,
+              the visible part of the grid is printed. Otherwise, the
+              selected part of the grid is printed. Beware of selecting
+              huge parts of the grid because this may lock up pyspread.</p>
             <p class="western" lang="en-US">Printing is always done on
               one page. The grid is shrunk to fit.</p>
           </td>
@@ -756,7 +894,7 @@
             <h4 class="western" lang="en-US">Finding and replacing</h4>
             <p class="western" lang="en-US">Cell code and cell results
               can be searched with &lt;Ctrl&gt; + F or using the menu
-              with Edit --> Find. The focus changes to the search
+              with Edit -&gt; Find. The focus changes to the search
               toolbar, in which search queries can be entered. Pyspread
               allows searching contained text, word-wise contained text
               and regular expressions, which can be toggled in the
@@ -764,7 +902,7 @@
               can be toggled via the search toolbar.</p>
             <p class="western" lang="en-US">Replacing is done via the
               Find &amp; Replace dialog that is accessible via
-              &lt;Shift&gt; + &lt;Ctrl&gt; + F or via Edit -->
+              &lt;Shift&gt; + &lt;Ctrl&gt; + F or via Edit -&gt;
               Replace... Strings that are found are replaced with the
               replace string. Note that replace only allows searching in
               cell code and not in results.<br>
@@ -787,8 +925,9 @@
           </td>
           <td style="vertical-align: top;">
             <h4 class="western" lang="en-US">Sorting</h4>
-            <p class="western" lang="en-US">Pyspread sorts cells via "Edit --> Sort ascending" or 
-            "Edit --> Sort descending". Sorting takes into account the column of the currently selected cell.</p>
+            <p class="western" lang="en-US">Pyspread provides sorting
+              buttons for ascending and descending sorts.<br>
+            </p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -811,8 +950,7 @@
               expressions in its grid cells. Therefore</p>
             <code>1 + 1</code>
             <p class="western" lang="en-US">is valid as is</p>
-            <code>[i ** 2 for i in
-              xrange(100) if i % 3]</code>
+            <code>[i ** 2 for i in xrange(100) if i % 3]</code>
             <p class="western" lang="en-US">However, statements such as</p>
             <code>print 2</code>
             <p class="western" lang="en-US">or</p>
@@ -838,9 +976,9 @@
             <p class="western" lang="en-US">Besides Python expressions,
               one variable assignment is accepted within a cell. The
               assignment consists of one variable name at the start
-              followed by "=" and an Python expression.
-              The variable is considered as global. Therefore, it is
-              accessible from other cells.</p>
+              followed by "=" and a Python expression. The variable is
+              considered as global. Therefore, it is accessible from
+              other cells.</p>
             <p class="western" lang="en-US">For example</p>
             <code>a = 5 + 3</code>
             <p class="western" lang="en-US">assigns 8 to the global
@@ -870,10 +1008,17 @@
             <h4 class="western" lang="en-US">Result strings in the grid</h4>
             <p class="western" lang="en-US">Cells that contain a Python
               expression display the string representation of the result
-              object that is returned from this expression. The
-              exception to this rule is the None object that displays an
-              empty string i. e. an empty cell instead. All empty cells
-              also return None so that an empty grid appears empty.</p>
+              object that is returned from this expression.<br>
+            </p>
+            <p class="western" lang="en-US">Exceptions to this rule are:<br>
+            </p>
+            <ul>
+              <li>The None object that displays an empty string i. e. an
+                empty cell instead. All empty cells also return None so
+                that an empty grid appears empty.</li>
+              <li>wx.Bitmap objects that are displayed as images</li>
+              <li>matplotlib figure objects that are displayed as images</li>
+            </ul>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -995,9 +1140,9 @@
               ignored for this purpose. Only the cell at the cursor is
               frozen.</p>
             <p class="western" lang="en-US">Frozen cells can be
-              refreshed using the menu with View --> Refresh
-              Selected Cells or with &lt;F5&gt;. All selected cells are
-              refreshed by this command.</p>
+              refreshed using the menu with View -&gt; Refresh Selected
+              Cells or with &lt;F5&gt;. All selected cells are refreshed
+              by this command.</p>
             <p class="western" lang="en-US">Frozen cells can speed up
               spreadsheets with long running calculations. Furthermore,
               the number of callings of stateful functions can be
@@ -1005,6 +1150,19 @@
             <p class="western" lang="en-US">Note that while the frozen
               attribute is stored in the pys save-file, the frozen cell
               result cache is <strong>not</strong>.</p>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><br>
+          </td>
+          <td style="vertical-align: top;">
+            <h4>Locked cells</h4>
+            Locked cells cannot be edited. You can lock and unlock cells
+            by clicking on the lock symbol on the attributes toolbar.<br>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -1025,7 +1183,7 @@
               Furthermore, algorithms that are too complex for a single
               cell can be written as a macro.</p>
             <p class="western" lang="en-US">Macros can be edited from
-              within the macro editor via Macro --> Macro list
+              within the macro editor via Macro -&gt; Macro list
               (Figure). The editor allows editing a text file that is
               executed when the spreadsheet is opened or when its
               content is updated.<br>
@@ -1035,8 +1193,7 @@
               is global. Therefore, all functions are directly
               accessible from each cell. For example, the function f
               that is displayed in the Figure can be called from a cell
-              via f(). The result is the returned string "Hello
-              World".</p>
+              via f(). The result is the returned string "Hello World".</p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -1138,9 +1295,9 @@
             <h4 class="western" lang="en-US">Access to this document</h4>
             <p class="western" lang="en-US">This document can be
               displayed from within pyspread via the menu with Help
-              --> First Steps.</p>
+              -&gt; First Steps.</p>
             <h4 class="western" lang="en-US">Python tutorial</h4>
-            <p class="western" lang="en-US">With Help --> Python
+            <p class="western" lang="en-US">With Help -&gt; Python
               tutorial, the Python tutorial is shown via the Internet.
               Note that a working Internet connection is required to
               access the Python tutorial.</p>
@@ -1245,14 +1402,14 @@
               straight forward.</p>
             <p class="western" lang="en-US">In order to make working
               with pyspread as safe as possible, all save-files (pys
-              files) are signed by the current user with a gpg signature
-              file. Only a user with a private key can open the file
-              without approving it. That should ensure that when loading
-              a pys file, only the code that a user has written him- or
-              herself is executed. Pys files without a valid signatures
-              are opened in safe mode, i. e. the code is displayed and
-              not executed. However, it can be approved after
-              inspection.<br>
+              files and pysu files) are signed by the current user with
+              a gpg signature file. Only a user with a private key can
+              open the file without approving it. That should ensure
+              that when loading a pys file, only the code that a user
+              has written him- or herself is executed. Pys files without
+              a valid signatures are opened in safe mode, i. e. the code
+              is displayed and not executed. However, it can be approved
+              after inspection.<br>
             </p>
             <p class="western" lang="en-US">Please note that in version
               0.2.3 or higher, keys with passwords are no longer
@@ -1271,9 +1428,9 @@
             <p class="western" lang="en-US">It may also be a good idea
               to run pyspread with a special user that has restricted
               privileges.</p>
-            <p class="western" lang="en-US">If you like it even safer,
-              sandbox. Chroot may be a good idea. Qemu / kvm are also
-              worth a thought.</p>
+            <p class="western" lang="en-US">If you like it even safer
+              then use a sandbox. Chroot may be a good idea. Qemu / kvm
+              are also worth a thought.</p>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -1337,7 +1494,9 @@
               by posting at <a href="mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.</p>
             <p class="western" lang="en-US">Matplotlib figures can also
               be used to display LaTeX equations. However, pyspread has
-              not yet an interface dialog for equations.<br>
+              not yet an interface dialog for equations. A macro that
+              depicts LaTeX equations in a cell is provided in the
+              examples directory.<br>
             </p>
           </td>
           <td style="vertical-align: top;"><br>
@@ -1463,5 +1622,7 @@
     <p><span style="font-style: italic;"><small>Copyright Martin Manns</small><br>
         Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br
           style="font-style: italic;">
-      </span> <span style="font-style: italic;">Last changed:
-        20. April 2014</span></p>
+      </span> <span style="font-style: italic;">Last changed: 26. June
+        2014</span></p>
+  </body>
+</html>
