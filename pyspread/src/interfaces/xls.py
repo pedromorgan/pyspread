@@ -598,15 +598,6 @@ class Xls(object):
             rattrs.pop("borderwidth_right")
             cell_attributes.append((rsel, tab, rattrs))
 
-    def _attributes2xls(self, worksheet, tab):
-        """Writes cell attributes to xls file"""
-
-        for selection, tab, attr_dict in self.code_array.cell_attributes:
-            sel_list = [selection.block_tl, selection.block_br,
-                        selection.rows, selection.cols, selection.cells]
-
-            raise NotImplementedError
-
     def _xls2attributes(self, worksheet, tab):
         """Updates attributes in code_array"""
 
