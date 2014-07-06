@@ -365,7 +365,7 @@ class CellActions(Actions):
 
         top, left, bottom, right = unmerge_area
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
-        attr = {"merge_area": None}
+        attr = {"merge_area": None, "locked": False}
 
         self._set_cell_attr(selection, tab, attr)
 
@@ -374,9 +374,14 @@ class CellActions(Actions):
 
         top, left, bottom, right = merge_area
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
-        attr = {"merge_area": merge_area}
+        attr = {"merge_area": merge_area, "locked": True}
 
         self._set_cell_attr(selection, tab, attr)
+
+        tl_selection = Selection([], [], [], [], [(top, left)])
+        attr = {"locked": False}
+
+        self._set_cell_attr(tl_selection, tab, attr)
 
     def merge_selected_cells(self, selection):
         """Merges or unmerges cells that are in the selection bounding box

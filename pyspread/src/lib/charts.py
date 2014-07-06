@@ -330,7 +330,6 @@ class ChartFigure(Figure):
                 except KeyError:
                     pass
 
-
         # The legend has to be set up after all series are drawn
         self._setup_legend(self.attributes[0])
 

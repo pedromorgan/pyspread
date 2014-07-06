@@ -893,7 +893,14 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 # Get the docstring
                 code_array = self.parent.parent.parent.grid.code_array
                 env = code_array.get_globals()
-                script = jedi.Interpreter(code, [env], line=1, column=position)
+                try:
+                    script = jedi.Interpreter(code, [env], line=1,
+                                              column=position)
+                except ValueError:
+                    # Jedi has thrown an error
+                    event.Skip()
+                    return
+
                 completions = script.complete()
                 completes = [completion.complete for completion in completions]
                 complete = common_start(completes)
@@ -930,9 +937,12 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                             pass
                     docs.append(doc)
 
-                dws = [": ".join([w, d]) for w, d in zip(words, docs)]
+                try:
+                    dws = [": ".join([w, d]) for w, d in zip(words, docs)]
 
-                tiptext = "\n \n".join(dws)
+                    tiptext = "\n \n".join(dws)
+                except TypeError:
+                    pass
 
                 # Cut tiptext length because Tooltip fails for long strings
 
