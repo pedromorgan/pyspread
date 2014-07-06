@@ -6,7 +6,44 @@ Note: This changelog starts at version 0.2.0
 0.3.0
 -----
 
-
+EntryLine Tooltip now displays docstrings for methods and builtins (use <Tab>)
+Grid cell editor does not crash any more when editing image content
+Entryline text completion added (use <Tab>)
+Uncompressed pysu file format added
+xls import bug fixed
+nn function added to remove None from result array
+wx preferred version is now 3.0
+Translations updated for uk, de
+Unecessary macros removed from example files
+Macros are now deleted when a new file is loaded
+Doublettes in cell attributes are now removed when saving a pys file
+First steps document in help updated
+Grid now scrolls with mouse wheel in wxPython3
+CSV import dialog now does not segfault with wxPython3.x
+Fixed bug in cell editor when editor reaches beyond right grid margin
+On gtk3, F5 no longer enters cell
+wx.Yield errors are now caught on gtk
+Python tutorial removed since it does not work any more in the html window
+Goto to a cell outside the grid shape now produces a statusbar error message
+Replace all now refreshes grid
+Regular Expression exceptions are now caught
+Recursive Yield assertion on fileio caught
+Writing xls files added (still experimental)
+Cell locking functionality added
+Tooltips for toolbar icons added
+Pivot example updated to new cell clipping method
+Sorting functionality added
+Rendering of cell corner boxes fixed for upper left corners
+Weather example added
+Frozen cells can now be updated periodically (>=100 ms/update)
+Fingerprint added to gpg key choice dialog
+gpg now uses key ids instead of uids to cope with Debian bug #739907
+test_parsers changed so that no error is shown when msttcorefonts is missing
+Reference to a selection can now be copied the the clipboard with <Ctrl> + R
+<Shift> + <Space> now selects the current row
+<Ctrl> + <Space> now selects the current column
+Error messages on aborting inputs for empty cells removed.
+<home> now moves the active cell to the first column of the actual row
 
 0.2.7
 -----
