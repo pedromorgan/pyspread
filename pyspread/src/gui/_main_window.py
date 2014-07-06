@@ -762,7 +762,7 @@ class MainWindowEventHandlers(EventMixin):
             wildcard = \
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
                 _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
-                _("Excel file") + " (*.xls)|*.xls|" + \
+                _("Excel file") + _(" (experimental)") + " (*.xls)|*.xls|" + \
                 _("All files") + " (*.*)|*.*"
             filetypes = ["pys", "pysu", "xls", "pys"]
 

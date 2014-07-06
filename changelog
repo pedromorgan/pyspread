@@ -3,6 +3,16 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+0.3.0
+-----
+
+
+
+0.2.7
+-----
+
+Qutotation of code cells now does an rstrip to avoid problems with Windows
+
 0.2.6
 -----
 
