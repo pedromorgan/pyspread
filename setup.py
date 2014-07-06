@@ -70,6 +70,7 @@ setup(
             'src/*/test/*.pys*',
             'src/*/test/*.sig',
             'src/*/test/*.csv',
+            'src/*/test/*.xls',
             'src/*/test/*.txt',
             'src/*/test/*.pys*',
             'share/icons/*.png',
