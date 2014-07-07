@@ -881,6 +881,10 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 # Do not process <Enter>
                 return
 
+            elif keycode == 9 and jedi is None:
+                # Ignore the <Tab>
+                return
+
             elif keycode == 9 and jedi is not None:
                 #  If auto completion library jedi is present
                 # <Tab> pressed --> show docstring tooltip
