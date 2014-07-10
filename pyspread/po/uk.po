@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2013, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: pyspread 0.3.0-pre1\n"
+"Project-Id-Version: pyspread 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-27 14:11+0200\n"
-"PO-Revision-Date: 2014-04-29 07:33+0300\n"
+"POT-Creation-Date: 2014-07-09 23:19+0200\n"
+"PO-Revision-Date: 2014-07-10 12:19+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -18,13 +18,102 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: src/interfaces/pys.py:109
-msgid "File version {version} unsupported (not 0.1)."
-msgstr "Підтримки версій файлів {version} не передбачено (номер версії відмінний від 0.1)."
+#: src/lib/fileio.py:67
+msgid "{nele} of {totalele} elements processed."
+msgstr "Оброблено {nele} з {totalele} елементів."
 
-#: src/interfaces/pys.py:322 src/actions/_grid_actions.py:243
-msgid "File format unsupported."
-msgstr "Підтримки цього файлів у цьому форматі не передбачено."
+#: src/lib/fileio.py:71
+msgid "{nele} elements processed."
+msgstr "Оброблено {nele} елементів."
+
+#: src/lib/fileio.py:96
+msgid "File loading aborted."
+msgstr "Завантаження файла перервано."
+
+#: src/lib/fileio.py:110
+msgid "File saving aborted."
+msgstr "Зберігання файла перервано."
+
+#: src/lib/clipboard.py:90 src/lib/clipboard.py:125
+msgid "Can't open the clipboard"
+msgstr "Не вдалося відкрити буфер обміну даними"
+
+#: src/lib/clipboard.py:90 src/lib/clipboard.py:125
+msgid "Error"
+msgstr "Помилка"
+
+#: src/lib/clipboard.py:118
+msgid "Datatype {type} unknown"
+msgstr "Невідомий тип даних, {type}"
+
+#: src/lib/__csv.py:321
+msgid "Fallback type {type} unknown."
+msgstr "Невідомий резервний тип {type}."
+
+#: src/lib/__csv.py:398
+msgid "File {filename} imported successfully."
+msgstr "Файл {filename} успішно імпортовано."
+
+#: src/lib/__csv.py:437 src/actions/_grid_actions.py:451
+#: src/actions/_main_window_actions.py:662
+msgid "Error writing to file {filepath}."
+msgstr "Помилка під час спроби запису до файла {filepath}."
+
+#: src/lib/__csv.py:451 src/actions/_grid_actions.py:381
+#: src/actions/_main_window_actions.py:92
+#: src/actions/_main_window_actions.py:633
+msgid "Error opening file {filepath}."
+msgstr "Помилка під час відкриття файла {filepath}."
+
+#: src/lib/gpg.py:64
+msgid ""
+"Choose a GPG key for signing pyspread save files.\n"
+"The GPG key must not have a passphrase set."
+msgstr ""
+"Виберіть ваш ключ GPG для підписування збережених pyspread файлів.\n"
+"Для цього ключа GPG не повинно бути встановлено паролів."
+
+#: src/lib/gpg.py:67
+msgid "Choose key"
+msgstr "Виберіть ключ"
+
+#: src/lib/gpg.py:73
+msgid "Use chosen key"
+msgstr "Використати вибраний ключ"
+
+#: src/lib/gpg.py:74
+msgid "Create new key"
+msgstr "Створити ключ"
+
+#: src/lib/gpg.py:131
+msgid "New GPG key"
+msgstr "Новий ключ GPG"
+
+#: src/lib/gpg.py:132
+msgid "After confirming this dialog, a new GPG key "
+msgstr "Після натискання кнопки підтвердження у цьому вікні, "
+
+#: src/lib/gpg.py:133
+msgid "'{key}' will be generated."
+msgstr "Буде створено ключ «{key}»."
+
+#: src/lib/gpg.py:134
+msgid ""
+" \n"
+" \n"
+"This may take some time.\n"
+"Please wait.\n"
+" \n"
+msgstr ""
+" \n"
+" \n"
+"Це доволі тривала дія.\n"
+"Будь ласка, зачекайте.\n"
+" \n"
+
+#: src/lib/gpg.py:135
+msgid "Canceling this operation exits pyspread."
+msgstr "Скасування цієї дії призведе до завершення роботи pyspread."
 
 #: src/pyspread.py:91
 msgid "usage: %prog [options] [filename]"
@@ -51,9 +140,748 @@ msgstr "Одночасно можна відкривати лише один ф�
 msgid "You need a unicode build of wxPython to run pyspread."
 msgstr "Для роботи у pyspread вам слід встановити Unicode-збірку wxPython."
 
-#: src/gui/_printout.py:198
-msgid "Page: {page}"
-msgstr "Сторінка: {page}"
+#: src/gui/_menubars.py:123 src/gui/_menubars.py:197
+msgid "&Approve file"
+msgstr "З&атвердити файл"
+
+#: src/gui/_menubars.py:134
+msgid "Menu item unknown"
+msgstr "Невідомий пункт меню"
+
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:223
+msgid "Cu&t"
+msgstr "Виріза&ти"
+
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:224
+msgid "Cut cell to clipboard"
+msgstr "Вирізати комірку до буфера обміну"
+
+#: src/gui/_menubars.py:155 src/gui/_menubars.py:225
+msgid "&Copy"
+msgstr "&Копіювати"
+
+#: src/gui/_menubars.py:156
+msgid "Copy input strings to clipboard"
+msgstr "Копіювати рядки вхідних даних до буфера"
+
+#: src/gui/_menubars.py:157 src/gui/_menubars.py:232
+msgid "&Paste"
+msgstr "&Вставити"
+
+#: src/gui/_menubars.py:158 src/gui/_menubars.py:233
+msgid "Paste cells from clipboard"
+msgstr "Вставити комірки з буфера"
+
+#: src/gui/_menubars.py:159 src/gui/_menubars.py:256
+msgid "Insert &rows"
+msgstr "Вставити &рядки"
+
+#: src/gui/_menubars.py:160 src/gui/_menubars.py:257
+msgid "Insert rows at cursor"
+msgstr "Вставити рядки за курсором"
+
+#: src/gui/_menubars.py:161 src/gui/_menubars.py:258
+msgid "&Insert columns"
+msgstr "Вставити с&товпчики"
+
+#: src/gui/_menubars.py:162 src/gui/_menubars.py:259
+msgid "Insert columns at cursor"
+msgstr "Вставити стовпчики під курсором"
+
+#: src/gui/_menubars.py:163 src/gui/_menubars.py:263 src/gui/_menubars.py:264
+msgid "Delete rows"
+msgstr "Вилучити рядки"
+
+#: src/gui/_menubars.py:164 src/gui/_menubars.py:165 src/gui/_menubars.py:265
+#: src/gui/_menubars.py:266
+msgid "Delete columns"
+msgstr "Вилучити стовпчики"
+
+#: src/gui/_menubars.py:181
+msgid "&File"
+msgstr "&Файл"
+
+#: src/gui/_menubars.py:182
+msgid "&New"
+msgstr "&Створити"
+
+#: src/gui/_menubars.py:183
+msgid "Create a new, empty spreadsheet"
+msgstr "Створити нову порожню електронну таблицю"
+
+#: src/gui/_menubars.py:184
+msgid "&Open"
+msgstr "&Відкрити"
+
+#: src/gui/_menubars.py:185
+msgid "Open spreadsheet from file"
+msgstr "Відкрити електронну таблицю з файла"
+
+#: src/gui/_menubars.py:187
+msgid "&Save"
+msgstr "&Зберегти"
+
+#: src/gui/_menubars.py:188
+msgid "Save spreadsheet"
+msgstr "Зберегти електронну таблицю"
+
+#: src/gui/_menubars.py:189
+msgid "Save &As"
+msgstr "Зберегти &як"
+
+#: src/gui/_menubars.py:190
+msgid "Save spreadsheet to a new file"
+msgstr "Зберегти електронну таблицю до файла з вказаною назвою"
+
+#: src/gui/_menubars.py:192
+msgid "&Import"
+msgstr "&Імпорт"
+
+#: src/gui/_menubars.py:193
+msgid "Import a file and paste it into current grid"
+msgstr "Імпортувати файл і вставити його вміст до поточної сітки"
+
+#: src/gui/_menubars.py:194
+msgid "&Export"
+msgstr "&Експорт"
+
+#: src/gui/_menubars.py:194
+msgid "Export selection to file (Supported formats: CSV)"
+msgstr "Експортувати позначені дані до файла (підтримувані формати: CSV)"
+
+#: src/gui/_menubars.py:198
+msgid "Approve, unfreeze and sign the current file"
+msgstr "Затвердити, розморозити і підписати поточний файл"
+
+#: src/gui/_menubars.py:200
+msgid "&Clear globals"
+msgstr "С&порожнити загальні змінні"
+
+#: src/gui/_menubars.py:201
+msgid "Deletes global variables from memory and reloads base modules"
+msgstr "Вилучити вміст загальних змінних з пам’яті і перезавантажити базові модулі"
+
+#: src/gui/_menubars.py:204
+msgid "Page setup"
+msgstr "Параметри сторінки"
+
+#: src/gui/_menubars.py:205
+msgid "Setup printer page"
+msgstr "Сторінка налаштовування параметрів друку"
+
+#: src/gui/_menubars.py:206 src/gui/_menubars.py:207
+#: src/actions/_main_window_actions.py:252
+msgid "Print preview"
+msgstr "Попередній перегляд друку"
+
+#: src/gui/_menubars.py:208
+msgid "&Print"
+msgstr "&Надрукувати"
+
+#: src/gui/_menubars.py:209
+msgid "Print current spreadsheet"
+msgstr "Надрукувати поточну електронну таблицю"
+
+#: src/gui/_menubars.py:211
+msgid "Preferences..."
+msgstr "Параметри…"
+
+#: src/gui/_menubars.py:212
+msgid "Change preferences of pyspread"
+msgstr "Змінити параметри роботи pyspread"
+
+#: src/gui/_menubars.py:215
+msgid "&Quit"
+msgstr "Ви&йти"
+
+#: src/gui/_menubars.py:216
+msgid "Quit pyspread"
+msgstr "Вийти з pyspread"
+
+#: src/gui/_menubars.py:217
+msgid "&Edit"
+msgstr "З&міни"
+
+#: src/gui/_menubars.py:218
+msgid "&Undo"
+msgstr "&Вернути"
+
+#: src/gui/_menubars.py:219
+msgid "Undo last step"
+msgstr "Скасувати останній крок"
+
+#: src/gui/_menubars.py:220
+msgid "&Redo"
+msgstr "&Повторити"
+
+#: src/gui/_menubars.py:221
+msgid "Redo last undone step"
+msgstr "Повторити останній скасований крок"
+
+#: src/gui/_menubars.py:226
+msgid "Copy the input strings of the cells to clipboard"
+msgstr "Копіювати рядки вхідних даних у комірках до буфера обміну даними"
+
+#: src/gui/_menubars.py:229
+msgid "Copy &Results"
+msgstr "Копіювати &результати"
+
+#: src/gui/_menubars.py:230
+msgid "Copy the result strings of the cells to the clipboard"
+msgstr "Копіювати рядки результатів у комірках до буфера обміну даними"
+
+#: src/gui/_menubars.py:234
+msgid "Paste &As..."
+msgstr "Вставити &як…"
+
+#: src/gui/_menubars.py:235
+msgid "Transform clipboard and paste cells into grid"
+msgstr "Перетворити дані у буфері і вставити комірки до сітки"
+
+#: src/gui/_menubars.py:236
+msgid "Select A&ll"
+msgstr "Позначити &усе"
+
+#: src/gui/_menubars.py:237
+msgid "Select All Cells"
+msgstr "Позначити усі комірки"
+
+#: src/gui/_menubars.py:239
+msgid "&Find"
+msgstr "&Знайти"
+
+#: src/gui/_menubars.py:240
+msgid "Find cell by content"
+msgstr "Знайти комірку за вмістом"
+
+#: src/gui/_menubars.py:241
+msgid "Replace..."
+msgstr "Замінити…"
+
+#: src/gui/_menubars.py:242
+msgid "Replace strings in cells"
+msgstr "Замінити рядки у комірках"
+
+#: src/gui/_menubars.py:244
+msgid "Quote cell(s)"
+msgstr "Додавання лапок до комірок"
+
+#: src/gui/_menubars.py:245
+msgid "Converts cell content to strings by adding quotes (\"). If a selection is present then its cells are quoted."
+msgstr "Перетворює вміст комірок на рядки додаванням лапок (\"). Якщо позначено декілька комірок, лапки буде додано до усіх позначених комірок."
+
+#: src/gui/_menubars.py:249
+msgid "Sort &ascending"
+msgstr "Впорядкувати за з&більшенням"
+
+#: src/gui/_menubars.py:250
+msgid "Sort rows in selection or current table ascending corresponding to row at cursor."
+msgstr "Упорядкувати рядки у позначеному фрагменті або поточній таблиці за зростанням, відповідно до рядка під курсором."
+
+#: src/gui/_menubars.py:252
+msgid "Sort &descending"
+msgstr "Впорядкувати за з&меншенням"
+
+#: src/gui/_menubars.py:253
+msgid "Sort rows in selection or current table descending corresponding to row at cursor."
+msgstr "Упорядкувати рядки у позначеному фрагменті або поточній таблиці за спаданням, відповідно до рядка під курсором."
+
+#: src/gui/_menubars.py:260
+msgid "Insert &table"
+msgstr "Вставити &таблицю"
+
+#: src/gui/_menubars.py:261
+msgid "Insert table before current table"
+msgstr "Вставити таблицю перед поточною таблицею"
+
+#: src/gui/_menubars.py:267
+msgid "Delete table"
+msgstr "Вилучити таблицю"
+
+#: src/gui/_menubars.py:268
+msgid "Delete current table"
+msgstr "Вилучити поточну таблицю"
+
+#: src/gui/_menubars.py:270 src/gui/_menubars.py:271
+msgid "Resize grid"
+msgstr "Змінити розміри сітки"
+
+#: src/gui/_menubars.py:272
+msgid "&View"
+msgstr "П&ерегляд"
+
+#: src/gui/_menubars.py:273
+msgid "Toolbars"
+msgstr "Панелі інструментів"
+
+#: src/gui/_menubars.py:274 src/gui/_main_window.py:178
+#: src/gui/_main_window.py:205
+msgid "Main toolbar"
+msgstr "Головна панель"
+
+#: src/gui/_menubars.py:275
+msgid "Shows and hides the main toolbar."
+msgstr "Показати або приховати головну панель інструментів."
+
+#: src/gui/_menubars.py:277 src/gui/_main_window.py:179
+#: src/gui/_main_window.py:218
+msgid "Macro toolbar"
+msgstr "Панель макросів"
+
+#: src/gui/_menubars.py:278
+msgid "Shows and hides the macro toolbar."
+msgstr "Показати або приховати головну панель макросів."
+
+#: src/gui/_menubars.py:281 src/gui/_main_window.py:181
+#: src/gui/_main_window.py:214
+msgid "Format toolbar"
+msgstr "Панель форматування"
+
+#: src/gui/_menubars.py:282
+msgid "Shows and hides the format toolbar."
+msgstr "Показати або приховати головну панель форматування."
+
+#: src/gui/_menubars.py:284 src/gui/_main_window.py:182
+#: src/gui/_main_window.py:209
+msgid "Find toolbar"
+msgstr "Панель пошуку"
+
+#: src/gui/_menubars.py:285
+msgid "Shows and hides the find toolbar."
+msgstr "Показати або приховати головну панель пошуку."
+
+#: src/gui/_menubars.py:287 src/gui/_main_window.py:183
+#: src/gui/_main_window.py:222
+msgid "Entry line"
+msgstr "Рядок введення"
+
+#: src/gui/_menubars.py:288
+msgid "Shows and hides the entry line."
+msgstr "Показати або сховати рядок введення."
+
+#: src/gui/_menubars.py:291
+msgid "Go to cell"
+msgstr "Перейти до комірки"
+
+#: src/gui/_menubars.py:292
+msgid "Moves the grid to a cell."
+msgstr "Пересуває сітку до комірки."
+
+#: src/gui/_menubars.py:294
+msgid "Zoom in"
+msgstr "Збільшити"
+
+#: src/gui/_menubars.py:295
+msgid "Zoom in grid."
+msgstr "Збільшити сітку."
+
+#: src/gui/_menubars.py:296
+msgid "Zoom out"
+msgstr "Зменшити"
+
+#: src/gui/_menubars.py:297
+msgid "Zoom out grid."
+msgstr "Зменшити сітку."
+
+#: src/gui/_menubars.py:298
+msgid "Normal size"
+msgstr "Звичайний розмір"
+
+#: src/gui/_menubars.py:299
+msgid "Show grid in standard zoom."
+msgstr "Показати сітку за стандартного масштабування."
+
+#: src/gui/_menubars.py:302
+msgid "Refresh selected cells"
+msgstr "Оновити вміст позначених комірок"
+
+#: src/gui/_menubars.py:303
+msgid "Refresh selected cells even when frozen"
+msgstr "Оновити вміст позначених комірок, навіть якщо їх заморожено"
+
+#: src/gui/_menubars.py:306
+msgid "Toggle periodic updates"
+msgstr "Увімкнути або вимкнути періодичні оновлення"
+
+#: src/gui/_menubars.py:307
+msgid "Toggles periodic cell updates for frozen cells"
+msgstr "Увімкнути або вимкнути періодичне оновлення вмісту для заморожених комірок."
+
+#: src/gui/_menubars.py:310
+msgid "Show Frozen"
+msgstr "Показувати заморожені"
+
+#: src/gui/_menubars.py:311
+msgid "Shows which cells are currently frozen in a crosshatch."
+msgstr "Позначити поточні заморожені комірки штрихуванням."
+
+#: src/gui/_menubars.py:314
+msgid "F&ormat"
+msgstr "Ф&ормат"
+
+#: src/gui/_menubars.py:315
+msgid "Font..."
+msgstr "Шрифт…"
+
+#: src/gui/_menubars.py:316
+msgid "Launch font dialog."
+msgstr "Відкрити діалогове вікно вибору шрифту."
+
+#: src/gui/_menubars.py:317 src/gui/_toolbars.py:420
+msgid "Bold"
+msgstr "Жирний"
+
+#: src/gui/_menubars.py:318
+msgid "Toggles bold."
+msgstr "Увімкнути або вимкнути напівжирний стиль."
+
+#: src/gui/_menubars.py:319 src/gui/_toolbars.py:422
+msgid "Italics"
+msgstr "Курсив"
+
+#: src/gui/_menubars.py:320
+msgid "Toggles italics."
+msgstr "Увімкнути або вимкнути курсив."
+
+#: src/gui/_menubars.py:321 src/gui/_toolbars.py:424
+msgid "Underline"
+msgstr "Підкреслення"
+
+#: src/gui/_menubars.py:322
+msgid "Toggles underline."
+msgstr "Увімкнути або вимкнути підкреслення."
+
+#: src/gui/_menubars.py:323 src/gui/_toolbars.py:426
+msgid "Strikethrough"
+msgstr "Перекреслення"
+
+#: src/gui/_menubars.py:324
+msgid "Toggles strikethrough."
+msgstr "Увімкнути або вимкнути перекреслення."
+
+#: src/gui/_menubars.py:326
+msgid "Frozen"
+msgstr "Заморожено"
+
+#: src/gui/_menubars.py:327
+msgid "Toggles frozen state of cell. "
+msgstr "Увімкнути або вимкнути заморожений стан комірки. "
+
+#: src/gui/_menubars.py:328
+msgid "Frozen cells are updated only when F5 is pressed."
+msgstr "Вміст заморожених комірок оновлюється, лише якщо натиснути F5."
+
+#: src/gui/_menubars.py:330
+msgid "Lock"
+msgstr "Заблокувати"
+
+#: src/gui/_menubars.py:331
+msgid "Lock cell. Locked cells cannot be changed."
+msgstr "Заблокувати комірки. Вміст заблокованих комірок не можна змінювати."
+
+#: src/gui/_menubars.py:332 src/gui/_toolbars.py:531
+msgid "Merge cells"
+msgstr "Об’єднати комірки"
+
+#: src/gui/_menubars.py:333
+msgid "Merges / unmerges selected cells. "
+msgstr "Об’єднати або роз’єднати позначені комірки."
+
+#: src/gui/_menubars.py:336 src/gui/_toolbars.py:443
+msgid "Justification"
+msgstr "Розподіл"
+
+#: src/gui/_menubars.py:337
+msgid "Left"
+msgstr "Ліворуч"
+
+#: src/gui/_menubars.py:339 src/gui/_menubars.py:346
+msgid "Center"
+msgstr "Центр"
+
+#: src/gui/_menubars.py:341
+msgid "Right"
+msgstr "Праворуч"
+
+#: src/gui/_menubars.py:344 src/gui/_toolbars.py:454
+msgid "Alignment"
+msgstr "Вирівнювання"
+
+#: src/gui/_menubars.py:346
+msgid "Top"
+msgstr "Вгору"
+
+#: src/gui/_menubars.py:346
+msgid "Bottom"
+msgstr "Вниз"
+
+#: src/gui/_menubars.py:348
+msgid "Text color..."
+msgstr "Колір тексту…"
+
+#: src/gui/_menubars.py:349
+msgid "Launch color dialog to specify text color."
+msgstr "Відкрити діалогове вікно кольорів для визначення кольору тексту."
+
+#: src/gui/_menubars.py:350
+msgid "Background color..."
+msgstr "Колір тла…"
+
+#: src/gui/_menubars.py:351
+msgid "Launch color dialog to specify background color."
+msgstr "Відкрити діалогове вікно кольорів для визначення кольору тла."
+
+#: src/gui/_menubars.py:354
+msgid "Rotation..."
+msgstr "Обертання…"
+
+#: src/gui/_menubars.py:355
+msgid "Set text rotation."
+msgstr "Встановити параметри обертання тексту."
+
+#: src/gui/_menubars.py:356
+msgid "&Macro"
+msgstr "&Макро"
+
+#: src/gui/_menubars.py:357
+msgid "&Macro list"
+msgstr "С&писок макросів"
+
+#: src/gui/_menubars.py:358
+msgid "Choose, fill in, manage, and create macros"
+msgstr "Вибір, додавання, керування та створення макросів"
+
+#: src/gui/_menubars.py:359
+msgid "&Load macro list"
+msgstr "&Завантажити список макросів"
+
+#: src/gui/_menubars.py:360
+msgid "Load macro list"
+msgstr "Завантажити список макросів"
+
+#: src/gui/_menubars.py:361
+msgid "&Save macro list"
+msgstr "З&берегти список макросів"
+
+#: src/gui/_menubars.py:362
+msgid "Save macro list"
+msgstr "Зберегти список макросів"
+
+#: src/gui/_menubars.py:364
+msgid "Insert bitmap..."
+msgstr "Вставити зображення…"
+
+#: src/gui/_menubars.py:365
+msgid "Insert bitmap from file into cell"
+msgstr "Вставити до комірки растрове зображення з файла"
+
+#: src/gui/_menubars.py:366
+msgid "Link bitmap..."
+msgstr "Пов’язати зображення…"
+
+#: src/gui/_menubars.py:367
+msgid "Link bitmap from file into cell"
+msgstr "Пов’язати з коміркою растрове зображення з файла"
+
+#: src/gui/_menubars.py:368
+msgid "Insert chart..."
+msgstr "Вставити діаграму…"
+
+#: src/gui/_menubars.py:369
+msgid "Insert chart into cell"
+msgstr "Вставити до комірки діаграму"
+
+#: src/gui/_menubars.py:370
+msgid "&Help"
+msgstr "&Довідка"
+
+#: src/gui/_menubars.py:371
+msgid "First &Steps"
+msgstr "Перші &кроки"
+
+#: src/gui/_menubars.py:372
+msgid "Launch First Steps in pyspread"
+msgstr "Відкрити підручник початкового рівня у pyspread"
+
+#: src/gui/_menubars.py:373
+msgid "&Tutorial"
+msgstr "&Підручник"
+
+#: src/gui/_menubars.py:374
+msgid "Launch tutorial"
+msgstr "Відкрити підручник"
+
+#: src/gui/_menubars.py:375
+msgid "&FAQ"
+msgstr "П&оширені питання"
+
+#: src/gui/_menubars.py:376
+msgid "Frequently asked questions"
+msgstr "Поширені запитання"
+
+#: src/gui/_menubars.py:378
+msgid "&About"
+msgstr "Пр&о програму"
+
+#: src/gui/_menubars.py:378 src/gui/_dialogs.py:1189
+msgid "About pyspread"
+msgstr "Про pyspread"
+
+#: src/gui/_main_window.py:111
+msgid "Welcome to pyspread."
+msgstr "Ласкаво просимо до pyspread."
+
+#: src/gui/_main_window.py:191 src/gui/_main_window.py:562
+msgid "View"
+msgstr "Перегляд"
+
+#: src/gui/_main_window.py:235
+msgid "Main grid"
+msgstr "Основна сітка"
+
+#: src/gui/_main_window.py:628
+msgid "New grid with dimensions {dim} created."
+msgstr "Створено нову сітку з розмірами {dim}."
+
+#: src/gui/_main_window.py:670 src/gui/_main_window.py:678
+#: src/gui/_main_window.py:763 src/gui/_main_window.py:771
+msgid "Pyspread file"
+msgstr "файл pyspread"
+
+#: src/gui/_main_window.py:671 src/gui/_main_window.py:679
+#: src/gui/_main_window.py:764 src/gui/_main_window.py:772
+msgid "Uncompressed pyspread file"
+msgstr "розпакований файл pyspread"
+
+#: src/gui/_main_window.py:672 src/gui/_main_window.py:765
+msgid "Excel file"
+msgstr "файл Excel"
+
+#: src/gui/_main_window.py:673 src/gui/_main_window.py:680
+#: src/gui/_main_window.py:766 src/gui/_main_window.py:773
+#: src/gui/_main_window.py:1233 src/gui/_main_window.py:1261
+msgid "All files"
+msgstr "всі файли"
+
+#: src/gui/_main_window.py:683
+msgid "Choose file to open."
+msgstr "Виберіть файл для відкриття."
+
+#: src/gui/_main_window.py:765
+msgid " (experimental)"
+msgstr " (експериментальна)"
+
+#: src/gui/_main_window.py:776
+msgid "Choose filename for saving."
+msgstr "Виберіть назву файла, який слід зберегти."
+
+#: src/gui/_main_window.py:791
+msgid "Directory present. Save aborted."
+msgstr "Існує каталог з такою назвою. Збереження перервано."
+
+#: src/gui/_main_window.py:799
+msgid ""
+"The file {filepath} is already present.\n"
+"Overwrite?"
+msgstr ""
+"Вже існує файл з назвою {filepath}.\n"
+"Перезаписати його?"
+
+#: src/gui/_main_window.py:801
+msgid "File collision"
+msgstr "Назви файлів збігаються"
+
+#: src/gui/_main_window.py:806
+msgid "File present. Save aborted by user."
+msgstr "Файл вже існує. Збереження перервано користувачем."
+
+#: src/gui/_main_window.py:834 src/gui/_main_window.py:876
+msgid "CSV file"
+msgstr "файл CSV"
+
+#: src/gui/_main_window.py:835
+msgid "Tab delimited text file"
+msgstr "текстовий файл, розмічений табуляціями"
+
+#: src/gui/_main_window.py:836
+msgid "Choose file to import."
+msgstr "Вибір файла для імпортування."
+
+#: src/gui/_main_window.py:911
+msgid "SVG file"
+msgstr "файл SVG"
+
+#: src/gui/_main_window.py:912
+msgid "EPS file"
+msgstr "файл EPS"
+
+#: src/gui/_main_window.py:913
+msgid "PS file"
+msgstr "файл PS"
+
+#: src/gui/_main_window.py:914
+msgid "PDF file"
+msgstr "файл PDF"
+
+#: src/gui/_main_window.py:915
+msgid "PNG file"
+msgstr "файл PNG"
+
+#: src/gui/_main_window.py:917
+msgid "Choose filename for export."
+msgstr "Виберіть назву файла для експортування."
+
+#: src/gui/_main_window.py:940
+msgid ""
+"You are going to approve and trust a file that\n"
+"you have not created yourself.\n"
+"After proceeding, the file is executed.\n"
+" \n"
+"It may harm your system as any program can.\n"
+"Please check all cells thoroughly before\n"
+"proceeding.\n"
+" \n"
+"Proceed and sign this file as trusted?"
+msgstr ""
+"Ви маєте намір наказати програмі довіритися\n"
+"даним з файла, який було отримано з ненадійного\n"
+"джерела. Після обробки програма виконає вміст\n"
+"цього файла.\n"
+"\n"
+"Виконання цього файла, як і будь-\n"
+"якої програми, може завдати шкоди даним у вашій\n"
+"системі. Перш ніж продовжувати, перевірте\n"
+"кожну комірку.\n"
+" \n"
+"Продовжити і підписати цей файл як надійний?"
+
+#: src/gui/_main_window.py:947
+msgid "Security warning"
+msgstr "Попередження щодо небезпеки"
+
+#: src/gui/_main_window.py:955
+msgid "Safe mode deactivated."
+msgstr "Безпечний режим вимкнено."
+
+#: src/gui/_main_window.py:962
+msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
+msgstr "Вилучення значень загальних змінних і перезавантаження модулів призведе до незворотної втрати поточних даних. Виконати цю дію?"
+
+#: src/gui/_main_window.py:964
+msgid "Really delete globals and modules?"
+msgstr "Вилучити загальні змінні і перезавантажити модулі?"
+
+#: src/gui/_main_window.py:971
+msgid "Globals cleared and base modules reloaded."
+msgstr "Значення загальних змінних вилучено, базові модулі перезавантажено."
+
+#: src/gui/_main_window.py:1232 src/gui/_main_window.py:1260
+msgid "Macro file"
+msgstr "файл макросів"
+
+#: src/gui/_main_window.py:1234 src/gui/_main_window.py:1262
+msgid "Choose macro file."
+msgstr "Вибір файла макросів."
 
 #: src/gui/_chart_dialog.py:287 src/gui/_toolbars.py:393
 msgid "Text font"
@@ -816,767 +1644,101 @@ msgstr "Вставити діаграму"
 msgid "Axes"
 msgstr "Вісі"
 
-#: src/gui/_menubars.py:123 src/gui/_menubars.py:197
-msgid "&Approve file"
-msgstr "З&атвердити файл"
-
-#: src/gui/_menubars.py:134
-msgid "Menu item unknown"
-msgstr "Невідомий пункт меню"
-
-#: src/gui/_menubars.py:153 src/gui/_menubars.py:223
-msgid "Cu&t"
-msgstr "Виріза&ти"
-
-#: src/gui/_menubars.py:153 src/gui/_menubars.py:224
-msgid "Cut cell to clipboard"
-msgstr "Вирізати комірку до буфера обміну"
-
-#: src/gui/_menubars.py:155 src/gui/_menubars.py:225
-msgid "&Copy"
-msgstr "&Копіювати"
-
-#: src/gui/_menubars.py:156
-msgid "Copy input strings to clipboard"
-msgstr "Копіювати рядки вхідних даних до буфера"
-
-#: src/gui/_menubars.py:157 src/gui/_menubars.py:232
-msgid "&Paste"
-msgstr "&Вставити"
-
-#: src/gui/_menubars.py:158 src/gui/_menubars.py:233
-msgid "Paste cells from clipboard"
-msgstr "Вставити комірки з буфера"
-
-#: src/gui/_menubars.py:159 src/gui/_menubars.py:256
-msgid "Insert &rows"
-msgstr "Вставити &рядки"
-
-#: src/gui/_menubars.py:160 src/gui/_menubars.py:257
-msgid "Insert rows at cursor"
-msgstr "Вставити рядки за курсором"
-
-#: src/gui/_menubars.py:161 src/gui/_menubars.py:258
-msgid "&Insert columns"
-msgstr "Вставити с&товпчики"
-
-#: src/gui/_menubars.py:162 src/gui/_menubars.py:259
-msgid "Insert columns at cursor"
-msgstr "Вставити стовпчики під курсором"
-
-#: src/gui/_menubars.py:163 src/gui/_menubars.py:263 src/gui/_menubars.py:264
-msgid "Delete rows"
-msgstr "Вилучити рядки"
-
-#: src/gui/_menubars.py:164 src/gui/_menubars.py:165 src/gui/_menubars.py:265
-#: src/gui/_menubars.py:266
-msgid "Delete columns"
-msgstr "Вилучити стовпчики"
-
-#: src/gui/_menubars.py:181
-msgid "&File"
-msgstr "&Файл"
-
-#: src/gui/_menubars.py:182
-msgid "&New"
-msgstr "&Створити"
-
-#: src/gui/_menubars.py:183
-msgid "Create a new, empty spreadsheet"
-msgstr "Створити нову порожню електронну таблицю"
-
-#: src/gui/_menubars.py:184
-msgid "&Open"
-msgstr "&Відкрити"
-
-#: src/gui/_menubars.py:185
-msgid "Open spreadsheet from file"
-msgstr "Відкрити електронну таблицю з файла"
-
-#: src/gui/_menubars.py:187
-msgid "&Save"
-msgstr "&Зберегти"
-
-#: src/gui/_menubars.py:188
-msgid "Save spreadsheet"
-msgstr "Зберегти електронну таблицю"
-
-#: src/gui/_menubars.py:189
-msgid "Save &As"
-msgstr "Зберегти &як"
-
-#: src/gui/_menubars.py:190
-msgid "Save spreadsheet to a new file"
-msgstr "Зберегти електронну таблицю до файла з вказаною назвою"
-
-#: src/gui/_menubars.py:192
-msgid "&Import"
-msgstr "&Імпорт"
-
-#: src/gui/_menubars.py:193
-msgid "Import a file and paste it into current grid"
-msgstr "Імпортувати файл і вставити його вміст до поточної сітки"
-
-#: src/gui/_menubars.py:194
-msgid "&Export"
-msgstr "&Експорт"
-
-#: src/gui/_menubars.py:194
-msgid "Export selection to file (Supported formats: CSV)"
-msgstr "Експортувати позначені дані до файла (підтримувані формати: CSV)"
-
-#: src/gui/_menubars.py:198
-msgid "Approve, unfreeze and sign the current file"
-msgstr "Затвердити, розморозити і підписати поточний файл"
-
-#: src/gui/_menubars.py:200
-msgid "&Clear globals"
-msgstr "С&порожнити загальні змінні"
-
-#: src/gui/_menubars.py:201
-msgid "Deletes global variables from memory and reloads base modules"
-msgstr "Вилучити вміст загальних змінних з пам’яті і перезавантажити базові модулі"
-
-#: src/gui/_menubars.py:204
-msgid "Page setup"
-msgstr "Параметри сторінки"
-
-#: src/gui/_menubars.py:205
-msgid "Setup printer page"
-msgstr "Сторінка налаштовування параметрів друку"
-
-#: src/gui/_menubars.py:206 src/gui/_menubars.py:207
-#: src/actions/_main_window_actions.py:252
-msgid "Print preview"
-msgstr "Попередній перегляд друку"
-
-#: src/gui/_menubars.py:208
-msgid "&Print"
-msgstr "&Надрукувати"
-
-#: src/gui/_menubars.py:209
-msgid "Print current spreadsheet"
-msgstr "Надрукувати поточну електронну таблицю"
-
-#: src/gui/_menubars.py:211
-msgid "Preferences..."
-msgstr "Параметри…"
-
-#: src/gui/_menubars.py:212
-msgid "Change preferences of pyspread"
-msgstr "Змінити параметри роботи pyspread"
-
-#: src/gui/_menubars.py:215
-msgid "&Quit"
-msgstr "Ви&йти"
-
-#: src/gui/_menubars.py:216
-msgid "Quit pyspread"
-msgstr "Вийти з pyspread"
-
-#: src/gui/_menubars.py:217
-msgid "&Edit"
-msgstr "З&міни"
-
-#: src/gui/_menubars.py:218
-msgid "&Undo"
-msgstr "&Вернути"
-
-#: src/gui/_menubars.py:219
-msgid "Undo last step"
-msgstr "Скасувати останній крок"
-
-#: src/gui/_menubars.py:220
-msgid "&Redo"
-msgstr "&Повторити"
-
-#: src/gui/_menubars.py:221
-msgid "Redo last undone step"
-msgstr "Повторити останній скасований крок"
-
-#: src/gui/_menubars.py:226
-msgid "Copy the input strings of the cells to clipboard"
-msgstr "Копіювати рядки вхідних даних у комірках до буфера обміну даними"
-
-#: src/gui/_menubars.py:229
-msgid "Copy &Results"
-msgstr "Копіювати &результати"
-
-#: src/gui/_menubars.py:230
-msgid "Copy the result strings of the cells to the clipboard"
-msgstr "Копіювати рядки результатів у комірках до буфера обміну даними"
-
-#: src/gui/_menubars.py:234
-msgid "Paste &As..."
-msgstr "Вставити &як…"
-
-#: src/gui/_menubars.py:235
-msgid "Transform clipboard and paste cells into grid"
-msgstr "Перетворити дані у буфері і вставити комірки до сітки"
-
-#: src/gui/_menubars.py:236
-msgid "Select A&ll"
-msgstr "Позначити &усе"
-
-#: src/gui/_menubars.py:237
-msgid "Select All Cells"
-msgstr "Позначити усі комірки"
-
-#: src/gui/_menubars.py:239
-msgid "&Find"
-msgstr "&Знайти"
-
-#: src/gui/_menubars.py:240
-msgid "Find cell by content"
-msgstr "Знайти комірку за вмістом"
-
-#: src/gui/_menubars.py:241
-msgid "Replace..."
-msgstr "Замінити…"
-
-#: src/gui/_menubars.py:242
-msgid "Replace strings in cells"
-msgstr "Замінити рядки у комірках"
-
-#: src/gui/_menubars.py:244
-msgid "Quote cell(s)"
-msgstr "Додавання лапок до комірок"
-
-#: src/gui/_menubars.py:245
-msgid "Converts cell content to strings by adding quotes (\"). If a selection is present then its cells are quoted."
-msgstr "Перетворює вміст комірок на рядки додаванням лапок (\"). Якщо позначено декілька комірок, лапки буде додано до усіх позначених комірок."
-
-#: src/gui/_menubars.py:249
-msgid "Sort &ascending"
-msgstr "Впорядкувати за з&більшенням"
-
-#: src/gui/_menubars.py:250
-msgid "Sort rows in selection or current table ascending corresponding to row at cursor."
-msgstr "Упорядкувати рядки у позначеному фрагменті або поточній таблиці за зростанням, відповідно до рядка під курсором."
-
-#: src/gui/_menubars.py:252
-msgid "Sort &descending"
-msgstr "Впорядкувати за з&меншенням"
-
-#: src/gui/_menubars.py:253
-msgid "Sort rows in selection or current table descending corresponding to row at cursor."
-msgstr "Упорядкувати рядки у позначеному фрагменті або поточній таблиці за спаданням, відповідно до рядка під курсором."
-
-#: src/gui/_menubars.py:260
-msgid "Insert &table"
-msgstr "Вставити &таблицю"
-
-#: src/gui/_menubars.py:261
-msgid "Insert table before current table"
-msgstr "Вставити таблицю перед поточною таблицею"
-
-#: src/gui/_menubars.py:267
-msgid "Delete table"
-msgstr "Вилучити таблицю"
-
-#: src/gui/_menubars.py:268
-msgid "Delete current table"
-msgstr "Вилучити поточну таблицю"
-
-#: src/gui/_menubars.py:270 src/gui/_menubars.py:271
-msgid "Resize grid"
-msgstr "Змінити розміри сітки"
-
-#: src/gui/_menubars.py:272
-msgid "&View"
-msgstr "П&ерегляд"
-
-#: src/gui/_menubars.py:273
-msgid "Toolbars"
-msgstr "Панелі інструментів"
-
-#: src/gui/_menubars.py:274 src/gui/_main_window.py:178
-#: src/gui/_main_window.py:205
-msgid "Main toolbar"
-msgstr "Головна панель"
-
-#: src/gui/_menubars.py:275
-msgid "Shows and hides the main toolbar."
-msgstr "Показати або приховати головну панель інструментів."
-
-#: src/gui/_menubars.py:277 src/gui/_main_window.py:179
-#: src/gui/_main_window.py:218
-msgid "Macro toolbar"
-msgstr "Панель макросів"
-
-#: src/gui/_menubars.py:278
-msgid "Shows and hides the macro toolbar."
-msgstr "Показати або приховати головну панель макросів."
-
-#: src/gui/_menubars.py:281 src/gui/_main_window.py:181
-#: src/gui/_main_window.py:214
-msgid "Format toolbar"
-msgstr "Панель форматування"
-
-#: src/gui/_menubars.py:282
-msgid "Shows and hides the format toolbar."
-msgstr "Показати або приховати головну панель форматування."
-
-#: src/gui/_menubars.py:284 src/gui/_main_window.py:182
-#: src/gui/_main_window.py:209
-msgid "Find toolbar"
-msgstr "Панель пошуку"
-
-#: src/gui/_menubars.py:285
-msgid "Shows and hides the find toolbar."
-msgstr "Показати або приховати головну панель пошуку."
-
-#: src/gui/_menubars.py:287 src/gui/_main_window.py:183
-#: src/gui/_main_window.py:222
-msgid "Entry line"
-msgstr "Рядок введення"
-
-#: src/gui/_menubars.py:288
-msgid "Shows and hides the entry line."
-msgstr "Показати або сховати рядок введення."
-
-#: src/gui/_menubars.py:291
-msgid "Go to cell"
-msgstr "Перейти до комірки"
-
-#: src/gui/_menubars.py:292
-msgid "Moves the grid to a cell."
-msgstr "Пересуває сітку до комірки."
-
-#: src/gui/_menubars.py:294
-msgid "Zoom in"
-msgstr "Збільшити"
-
-#: src/gui/_menubars.py:295
-msgid "Zoom in grid."
-msgstr "Збільшити сітку."
-
-#: src/gui/_menubars.py:296
-msgid "Zoom out"
-msgstr "Зменшити"
-
-#: src/gui/_menubars.py:297
-msgid "Zoom out grid."
-msgstr "Зменшити сітку."
-
-#: src/gui/_menubars.py:298
-msgid "Normal size"
-msgstr "Звичайний розмір"
-
-#: src/gui/_menubars.py:299
-msgid "Show grid in standard zoom."
-msgstr "Показати сітку за стандартного масштабування."
-
-#: src/gui/_menubars.py:302
-msgid "Refresh selected cells"
-msgstr "Оновити вміст позначених комірок"
-
-#: src/gui/_menubars.py:303
-msgid "Refresh selected cells even when frozen"
-msgstr "Оновити вміст позначених комірок, навіть якщо їх заморожено"
-
-#: src/gui/_menubars.py:306
-msgid "Toggle periodic updates"
-msgstr "Увімкнути або вимкнути періодичні оновлення"
-
-#: src/gui/_menubars.py:307
-msgid "Toggles periodic cell updates for frozen cells"
-msgstr "Увімкнути або вимкнути періодичне оновлення вмісту для заморожених комірок."
-
-#: src/gui/_menubars.py:310
-msgid "Show Frozen"
-msgstr "Показувати заморожені"
-
-#: src/gui/_menubars.py:311
-msgid "Shows which cells are currently frozen in a crosshatch."
-msgstr "Позначити поточні заморожені комірки штрихуванням."
-
-#: src/gui/_menubars.py:314
-msgid "F&ormat"
-msgstr "Ф&ормат"
-
-#: src/gui/_menubars.py:315
-msgid "Font..."
-msgstr "Шрифт…"
-
-#: src/gui/_menubars.py:316
-msgid "Launch font dialog."
-msgstr "Відкрити діалогове вікно вибору шрифту."
-
-#: src/gui/_menubars.py:317 src/gui/_toolbars.py:420
-msgid "Bold"
-msgstr "Жирний"
-
-#: src/gui/_menubars.py:318
-msgid "Toggles bold."
-msgstr "Увімкнути або вимкнути напівжирний стиль."
-
-#: src/gui/_menubars.py:319 src/gui/_toolbars.py:422
-msgid "Italics"
-msgstr "Курсив"
-
-#: src/gui/_menubars.py:320
-msgid "Toggles italics."
-msgstr "Увімкнути або вимкнути курсив."
-
-#: src/gui/_menubars.py:321 src/gui/_toolbars.py:424
-msgid "Underline"
-msgstr "Підкреслення"
-
-#: src/gui/_menubars.py:322
-msgid "Toggles underline."
-msgstr "Увімкнути або вимкнути підкреслення."
-
-#: src/gui/_menubars.py:323 src/gui/_toolbars.py:426
-msgid "Strikethrough"
-msgstr "Перекреслення"
-
-#: src/gui/_menubars.py:324
-msgid "Toggles strikethrough."
-msgstr "Увімкнути або вимкнути перекреслення."
-
-#: src/gui/_menubars.py:326
-msgid "Frozen"
-msgstr "Заморожено"
-
-#: src/gui/_menubars.py:327
-msgid "Toggles frozen state of cell. "
-msgstr "Увімкнути або вимкнути заморожений стан комірки. "
-
-#: src/gui/_menubars.py:328
-msgid "Frozen cells are updated only when F5 is pressed."
-msgstr "Вміст заморожених комірок оновлюється, лише якщо натиснути F5."
-
-#: src/gui/_menubars.py:330
-msgid "Lock"
-msgstr "Заблокувати"
-
-#: src/gui/_menubars.py:331
-msgid "Lock cell. Locked cells cannot be changed."
-msgstr "Заблокувати комірки. Вміст заблокованих комірок не можна змінювати."
-
-#: src/gui/_menubars.py:332 src/gui/_toolbars.py:531
-msgid "Merge cells"
-msgstr "Об’єднати комірки"
-
-#: src/gui/_menubars.py:333
-msgid "Merges / unmerges selected cells. "
-msgstr "Об’єднати або роз’єднати позначені комірки."
-
-#: src/gui/_menubars.py:336 src/gui/_toolbars.py:443
-msgid "Justification"
-msgstr "Розподіл"
-
-#: src/gui/_menubars.py:337
-msgid "Left"
-msgstr "Ліворуч"
-
-#: src/gui/_menubars.py:339 src/gui/_menubars.py:346
-msgid "Center"
-msgstr "Центр"
-
-#: src/gui/_menubars.py:341
-msgid "Right"
-msgstr "Праворуч"
-
-#: src/gui/_menubars.py:344 src/gui/_toolbars.py:454
-msgid "Alignment"
-msgstr "Вирівнювання"
-
-#: src/gui/_menubars.py:346
-msgid "Top"
-msgstr "Вгору"
-
-#: src/gui/_menubars.py:346
-msgid "Bottom"
-msgstr "Вниз"
-
-#: src/gui/_menubars.py:348
-msgid "Text color..."
-msgstr "Колір тексту…"
-
-#: src/gui/_menubars.py:349
-msgid "Launch color dialog to specify text color."
-msgstr "Відкрити діалогове вікно кольорів для визначення кольору тексту."
-
-#: src/gui/_menubars.py:350
-msgid "Background color..."
-msgstr "Колір тла…"
-
-#: src/gui/_menubars.py:351
-msgid "Launch color dialog to specify background color."
-msgstr "Відкрити діалогове вікно кольорів для визначення кольору тла."
-
-#: src/gui/_menubars.py:354
-msgid "Rotation..."
-msgstr "Обертання…"
-
-#: src/gui/_menubars.py:355
-msgid "Set text rotation."
-msgstr "Встановити параметри обертання тексту."
-
-#: src/gui/_menubars.py:356
-msgid "&Macro"
-msgstr "&Макро"
-
-#: src/gui/_menubars.py:357
-msgid "&Macro list"
-msgstr "С&писок макросів"
-
-#: src/gui/_menubars.py:358
-msgid "Choose, fill in, manage, and create macros"
-msgstr "Вибір, додавання, керування та створення макросів"
-
-#: src/gui/_menubars.py:359
-msgid "&Load macro list"
-msgstr "&Завантажити список макросів"
-
-#: src/gui/_menubars.py:360
-msgid "Load macro list"
-msgstr "Завантажити список макросів"
-
-#: src/gui/_menubars.py:361
-msgid "&Save macro list"
-msgstr "З&берегти список макросів"
-
-#: src/gui/_menubars.py:362
-msgid "Save macro list"
-msgstr "Зберегти список макросів"
-
-#: src/gui/_menubars.py:364
-msgid "Insert bitmap..."
-msgstr "Вставити зображення…"
-
-#: src/gui/_menubars.py:365
-msgid "Insert bitmap from file into cell"
-msgstr "Вставити до комірки растрове зображення з файла"
-
-#: src/gui/_menubars.py:366
-msgid "Link bitmap..."
-msgstr "Пов’язати зображення…"
-
-#: src/gui/_menubars.py:367
-msgid "Link bitmap from file into cell"
-msgstr "Пов’язати з коміркою растрове зображення з файла"
-
-#: src/gui/_menubars.py:368
-msgid "Insert chart..."
-msgstr "Вставити діаграму…"
-
-#: src/gui/_menubars.py:369
-msgid "Insert chart into cell"
-msgstr "Вставити до комірки діаграму"
-
-#: src/gui/_menubars.py:370
-msgid "&Help"
-msgstr "&Довідка"
-
-#: src/gui/_menubars.py:371
-msgid "First &Steps"
-msgstr "Перші &кроки"
-
-#: src/gui/_menubars.py:372
-msgid "Launch First Steps in pyspread"
-msgstr "Відкрити підручник початкового рівня у pyspread"
-
-#: src/gui/_menubars.py:373
-msgid "&Tutorial"
-msgstr "&Підручник"
-
-#: src/gui/_menubars.py:374
-msgid "Launch tutorial"
-msgstr "Відкрити підручник"
-
-#: src/gui/_menubars.py:375
-msgid "&FAQ"
-msgstr "П&оширені питання"
-
-#: src/gui/_menubars.py:376
-msgid "Frequently asked questions"
-msgstr "Поширені запитання"
-
-#: src/gui/_menubars.py:378
-msgid "&About"
-msgstr "Пр&о програму"
-
-#: src/gui/_menubars.py:378 src/gui/_dialogs.py:1189
-msgid "About pyspread"
-msgstr "Про pyspread"
-
-#: src/gui/_main_window.py:111
-msgid "Welcome to pyspread."
-msgstr "Ласкаво просимо до pyspread."
-
-#: src/gui/_main_window.py:191 src/gui/_main_window.py:562
-msgid "View"
-msgstr "Перегляд"
-
-#: src/gui/_main_window.py:235
-msgid "Main grid"
-msgstr "Основна сітка"
-
-#: src/gui/_main_window.py:628
-msgid "New grid with dimensions {dim} created."
-msgstr "Створено нову сітку з розмірами {dim}."
-
-#: src/gui/_main_window.py:669 src/gui/_main_window.py:675
-#: src/gui/_main_window.py:759 src/gui/_main_window.py:765
-msgid "Pyspread file"
-msgstr "файл pyspread"
-
-#: src/gui/_main_window.py:670 src/gui/_main_window.py:760
-msgid "Excel file"
-msgstr "файл Excel"
-
-#: src/gui/_main_window.py:671 src/gui/_main_window.py:676
-#: src/gui/_main_window.py:761 src/gui/_main_window.py:766
-#: src/gui/_main_window.py:1225 src/gui/_main_window.py:1253
-msgid "All files"
-msgstr "всі файли"
-
-#: src/gui/_main_window.py:679
-msgid "Choose file to open."
-msgstr "Виберіть файл для відкриття."
-
-#: src/gui/_main_window.py:768
-msgid "Choose filename for saving."
-msgstr "Виберіть назву файла, який слід зберегти."
-
-#: src/gui/_main_window.py:783
-msgid "Directory present. Save aborted."
-msgstr "Існує каталог з такою назвою. Збереження перервано."
-
-#: src/gui/_main_window.py:791
+#: src/gui/_gui_interfaces.py:68
+msgid "Currently, only 3D grids are supported."
+msgstr "У поточній версії передбачено лише просторові сітки."
+
+#: src/gui/_gui_interfaces.py:101
 msgid ""
-"The file {filepath} is already present.\n"
-"Overwrite?"
+"There are unsaved changes.\n"
+"Do you want to save?"
 msgstr ""
-"Вже існує файл з назвою {filepath}.\n"
-"Перезаписати його?"
+"Виявлено незбережені зміни.\n"
+"Хочете їх зберегти?"
 
-#: src/gui/_main_window.py:793
-msgid "File collision"
-msgstr "Назви файлів збігаються"
+#: src/gui/_gui_interfaces.py:105
+msgid "Unsaved changes"
+msgstr "Незбережені зміни"
 
-#: src/gui/_main_window.py:798
-msgid "File present. Save aborted by user."
-msgstr "Файл вже існує. Збереження перервано користувачем."
-
-#: src/gui/_main_window.py:826 src/gui/_main_window.py:868
-msgid "CSV file"
-msgstr "файл CSV"
-
-#: src/gui/_main_window.py:827
-msgid "Tab delimited text file"
-msgstr "текстовий файл, розмічений табуляціями"
-
-#: src/gui/_main_window.py:828
-msgid "Choose file to import."
-msgstr "Вибір файла для імпортування."
-
-#: src/gui/_main_window.py:903
-msgid "SVG file"
-msgstr "файл SVG"
-
-#: src/gui/_main_window.py:904
-msgid "EPS file"
-msgstr "файл EPS"
-
-#: src/gui/_main_window.py:905
-msgid "PS file"
-msgstr "файл PS"
-
-#: src/gui/_main_window.py:906
-msgid "PDF file"
-msgstr "файл PDF"
-
-#: src/gui/_main_window.py:907
-msgid "PNG file"
-msgstr "файл PNG"
-
-#: src/gui/_main_window.py:909
-msgid "Choose filename for export."
-msgstr "Виберіть назву файла для експортування."
-
-#: src/gui/_main_window.py:932
+#: src/gui/_gui_interfaces.py:204
 msgid ""
-"You are going to approve and trust a file that\n"
-"you have not created yourself.\n"
-"After proceeding, the file is executed.\n"
+"'{filepath}' does not seem to be a valid CSV file.\n"
 " \n"
-"It may harm your system as any program can.\n"
-"Please check all cells thoroughly before\n"
-"proceeding.\n"
-" \n"
-"Proceed and sign this file as trusted?"
+"Opening it yielded the error:\n"
+"{error}"
 msgstr ""
-"Ви маєте намір наказати програмі довіритися\n"
-"даним з файла, який було отримано з ненадійного\n"
-"джерела. Після обробки програма виконає вміст\n"
-"цього файла.\n"
-"\n"
-"Виконання цього файла, як і будь-\n"
-"якої програми, може завдати шкоди даним у вашій\n"
-"системі. Перш ніж продовжувати, перевірте\n"
-"кожну комірку.\n"
+"Здається, файл «{filepath}» не є коректним файлом CSV.\n"
 " \n"
-"Продовжити і підписати цей файл як надійний?"
+"Під час спроби його відкрити сталася помилка:\n"
+"{error}"
 
-#: src/gui/_main_window.py:939
-msgid "Security warning"
-msgstr "Попередження щодо небезпеки"
+#: src/gui/_gui_interfaces.py:207 src/actions/_main_window_actions.py:133
+msgid "Error reading CSV file"
+msgstr "Помилка під час спроби читання файла CSV"
 
-#: src/gui/_main_window.py:947
-msgid "Safe mode deactivated."
-msgstr "Безпечний режим вимкнено."
+#: src/gui/_gui_interfaces.py:357
+msgid "Real name"
+msgstr "Справжнє ім’я"
 
-#: src/gui/_main_window.py:954
-msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
-msgstr "Вилучення значень загальних змінних і перезавантаження модулів призведе до незворотної втрати поточних даних. Виконати цю дію?"
+#: src/gui/_gui_interfaces.py:377
+msgid "Please enter a value in each field."
+msgstr "Будь ласка, заповніть всі поля."
 
-#: src/gui/_main_window.py:956
-msgid "Really delete globals and modules?"
-msgstr "Вилучити загальні змінні і перезавантажити модулі?"
+#: src/gui/_gui_interfaces.py:379
+msgid "Missing value"
+msgstr "Не вистачає значення"
 
-#: src/gui/_main_window.py:963
-msgid "Globals cleared and base modules reloaded."
-msgstr "Значення загальних змінних вилучено, базові модулі перезавантажено."
+#: src/gui/_grid.py:398 src/gui/_grid.py:424
+msgid "Select bitmap for current cell"
+msgstr "Вибір растрового зображення для поточної комірки"
 
-#: src/gui/_main_window.py:1224 src/gui/_main_window.py:1252
-msgid "Macro file"
-msgstr "файл макросів"
+#: src/gui/_grid.py:492
+msgid "Weight {weight} unknown"
+msgstr "Невідома вага {weight}"
 
-#: src/gui/_main_window.py:1226 src/gui/_main_window.py:1254
-msgid "Choose macro file."
-msgstr "Вибір файла макросів."
+#: src/gui/_grid.py:514
+msgid "Style {style} unknown"
+msgstr "Невідомий стиль {style}"
 
-#: src/gui/_widgets.py:468
-msgid "Label {label} is invalid."
-msgstr "Мітка {label} є некоректною."
+#: src/gui/_grid.py:654
+msgid "Enter text angle in degrees."
+msgstr "Вкажіть кут нахилу тексту у градусах."
 
-#: src/gui/_widgets.py:487
-msgid "Code {code} is invalid."
-msgstr "Код {code} є некоректним."
+#: src/gui/_grid.py:840
+msgid "Cell {key} outside grid shape {shape}"
+msgstr "Комірка {key} перебуває поза формою сітки {shape}"
 
-#: src/gui/_widgets.py:718
-msgid "Toggles link insertion mode."
-msgstr "Увімкнути або вимкнути режим вставлення посилання."
+#: src/gui/_grid.py:958
+msgid "'{text}' not found."
+msgstr "«{text}» не знайдено."
 
-#: src/gui/_widgets.py:785
-msgid "Enter Python expression here."
-msgstr "Тут вкажіть код мовою Python."
+#: src/gui/_grid.py:965
+msgid "Found '{text}' in cell {key}."
+msgstr "Виявлено «{text}» у комірці {key}."
 
-#: src/gui/_widgets.py:905
-msgid ""
-"Pyspread is in safe mode.\n"
-"Expressions are not evaluated."
-msgstr ""
-"Pyspread працює у безпечному режимі.\n"
-"Обробка виразів не виконується."
+#: src/gui/_grid.py:1019
+msgid "'{find_string}' not found."
+msgstr "«{find_string}» не знайдено."
 
-#: src/gui/_widgets.py:972
-msgid "For switching tables enter the table number or use the mouse wheel."
-msgstr "Для перемикання між таблицями вкажіть номер таблиці або скористайтеся коліщатком миші."
+#: src/gui/_grid.py:1027
+msgid "Replaced '{find_string}' in cell {key} with {replace_string}."
+msgstr "«{find_string}» у комірці {key} замінено на {replace_string}."
+
+#: src/gui/_grid.py:1203
+msgid "Grid dimensions changed to {shape}."
+msgstr "Розміри сітки змінено на {shape}."
+
+#: src/gui/_grid.py:1300 src/gui/_grid.py:1313
+msgid "Sorting complete."
+msgstr "Упорядковування завершено."
+
+#: src/gui/_grid.py:1303 src/gui/_grid.py:1316
+msgid "Sorting failed: {}"
+msgstr "Помилка під час упорядковування: {}"
+
+#: src/gui/_printout.py:198
+msgid "Page: {page}"
+msgstr "Сторінка: {page}"
 
 #: src/gui/_toolbars.py:152
 msgid "New"
@@ -1701,6 +1863,42 @@ msgstr "Тло комірки"
 #: src/gui/_toolbars.py:543
 msgid "Cell text rotation"
 msgstr "Обертання тексту у комірці"
+
+#: src/gui/_grid_renderer.py:311
+msgid "Vertical alignment {align} not in (top, middle, bottom)"
+msgstr "Значенням вертикального вирівнювання у {align} не є одне зі значень (top, middle, bottom)"
+
+#: src/gui/_grid_renderer.py:338
+msgid "Cell justification {just} not in (left, center, right)"
+msgstr "Вирівнювання у комірці, {just}, не є одним зі значень (left, center, right)"
+
+#: src/gui/_widgets.py:478
+msgid "Label {label} is invalid."
+msgstr "Мітка {label} є некоректною."
+
+#: src/gui/_widgets.py:497
+msgid "Code {code} is invalid."
+msgstr "Код {code} є некоректним."
+
+#: src/gui/_widgets.py:729
+msgid "Toggles link insertion mode."
+msgstr "Увімкнути або вимкнути режим вставлення посилання."
+
+#: src/gui/_widgets.py:797
+msgid "Enter Python expression here."
+msgstr "Тут вкажіть код мовою Python."
+
+#: src/gui/_widgets.py:1001
+msgid ""
+"Pyspread is in safe mode.\n"
+"Expressions are not evaluated."
+msgstr ""
+"Pyspread працює у безпечному режимі.\n"
+"Обробка виразів не виконується."
+
+#: src/gui/_widgets.py:1068
+msgid "For switching tables enter the table number or use the mouse wheel."
+msgstr "Для перемикання між таблицями вкажіть номер таблиці або скористайтеся коліщатком миші."
 
 #: src/gui/_dialogs.py:178
 msgid "Encoding"
@@ -1978,201 +2176,101 @@ msgstr "Розмірність об’єкта"
 msgid "Transpose"
 msgstr "Транспонувати"
 
-#: src/gui/_grid.py:398 src/gui/_grid.py:424
-msgid "Select bitmap for current cell"
-msgstr "Вибір растрового зображення для поточної комірки"
+#: src/interfaces/pys.py:109
+msgid "File version {version} unsupported (not 0.1)."
+msgstr "Підтримки версій файлів {version} не передбачено (номер версії відмінний від 0.1)."
 
-#: src/gui/_grid.py:492
-msgid "Weight {weight} unknown"
-msgstr "Невідома вага {weight}"
+#: src/interfaces/pys.py:322 src/actions/_grid_actions.py:244
+msgid "File format unsupported."
+msgstr "Підтримки цього файлів у цьому форматі не передбачено."
 
-#: src/gui/_grid.py:514
-msgid "Style {style} unknown"
-msgstr "Невідомий стиль {style}"
+#: src/actions/_grid_actions.py:128
+msgid "{nele} elements processed. Press <Esc> to abort."
+msgstr "Оброблено {nele} елементів. Натисніть <Esc>, щоб перервати обробку."
 
-#: src/gui/_grid.py:654
-msgid "Enter text angle in degrees."
-msgstr "Вкажіть кут нахилу тексту у градусах."
+#: src/actions/_grid_actions.py:130
+msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
+msgstr "Оброблено {nele} з {totalele} елементів. Натисніть <Esc>, щоб перервати обробку."
 
-#: src/gui/_grid.py:840
-msgid "Cell {key} outside grid shape {shape}"
-msgstr "Комірка {key} перебуває поза формою сітки {shape}"
+#: src/actions/_grid_actions.py:215
+msgid "Valid signature found. File is trusted."
+msgstr "Виявлено коректний підпис. Вмісту файла можна довіряти."
 
-#: src/gui/_grid.py:958
-msgid "'{text}' not found."
-msgstr "«{text}» не знайдено."
+#: src/actions/_grid_actions.py:224
+msgid "File is not properly signed. Safe mode activated. Select File -> Approve to leave safe mode."
+msgstr "Файл підписано неналежним чином. Задіяно безпечний режим. Скористайтеся пунктом меню Файл -> Затвердити, щоб вийти з безпечного режиму."
 
-#: src/gui/_grid.py:965
-msgid "Found '{text}' in cell {key}."
-msgstr "Виявлено «{text}» у комірці {key}."
+#: src/actions/_grid_actions.py:404
+msgid "Error signing file. "
+msgstr "Помилка під час підписування файла. "
 
-#: src/gui/_grid.py:1019
-msgid "'{find_string}' not found."
-msgstr "«{find_string}» не знайдено."
+#: src/actions/_grid_actions.py:420
+msgid "File saved and signed"
+msgstr "Файл збережено і підписано"
 
-#: src/gui/_grid.py:1027
-msgid "Replaced '{find_string}' in cell {key} with {replace_string}."
-msgstr "«{find_string}» у комірці {key} замінено на {replace_string}."
+#: src/actions/_grid_actions.py:422
+msgid "File signed"
+msgstr "Файл підписано"
 
-#: src/gui/_grid.py:1203
-msgid "Grid dimensions changed to {shape}."
-msgstr "Розміри сітки змінено на {shape}."
+#: src/actions/_grid_actions.py:523
+msgid "File saved but not signed because it is unapproved."
+msgstr "Файл збережено, але не підписано, оскільки дані файла не затверджено."
 
-#: src/gui/_grid.py:1300 src/gui/_grid.py:1313
-msgid "Sorting complete."
-msgstr "Упорядковування завершено."
+#: src/actions/_grid_actions.py:711
+msgid "Key length {length}  not in (2, 3)"
+msgstr "Довжина ключа {length} не є числом з набору (2, 3)"
 
-#: src/gui/_grid.py:1303 src/gui/_grid.py:1316
-msgid "Sorting failed: {}"
-msgstr "Помилка під час упорядковування: {}"
+#: src/actions/_grid_actions.py:717
+msgid "Paste aborted."
+msgstr "Вставлення перервано."
 
-#: src/gui/_gui_interfaces.py:68
-msgid "Currently, only 3D grids are supported."
-msgstr "У поточній версії передбачено лише просторові сітки."
+#: src/actions/_grid_actions.py:728
+msgid "rows and columns"
+msgstr "рядки і стовпчики"
 
-#: src/gui/_gui_interfaces.py:101
-msgid ""
-"There are unsaved changes.\n"
-"Do you want to save?"
-msgstr ""
-"Виявлено незбережені зміни.\n"
-"Хочете їх зберегти?"
+#: src/actions/_grid_actions.py:730
+msgid "rows"
+msgstr "рядки"
 
-#: src/gui/_gui_interfaces.py:105
-msgid "Unsaved changes"
-msgstr "Незбережені зміни"
+#: src/actions/_grid_actions.py:732
+msgid "columns"
+msgstr "стовпчики"
 
-#: src/gui/_gui_interfaces.py:204
-msgid ""
-"'{filepath}' does not seem to be a valid CSV file.\n"
-" \n"
-"Opening it yielded the error:\n"
-"{error}"
-msgstr ""
-"Здається, файл «{filepath}» не є коректним файлом CSV.\n"
-" \n"
-"Під час спроби його відкрити сталася помилка:\n"
-"{error}"
+#: src/actions/_grid_actions.py:734
+msgid "Import cell overflow missing"
+msgstr "Переповнення комірок під час імпортування"
 
-#: src/gui/_gui_interfaces.py:207 src/actions/_main_window_actions.py:133
-msgid "Error reading CSV file"
-msgstr "Помилка під час спроби читання файла CSV"
+#: src/actions/_grid_actions.py:737
+msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
+msgstr "Імпортовані дані за об’ємом перевищують можливості сітки {cause}. Імпортовано не всі дані. Скористайтеся більшою сіткою, щоб імпортувати всі дані."
 
-#: src/gui/_gui_interfaces.py:357
-msgid "Real name"
-msgstr "Справжнє ім’я"
+#: src/actions/_grid_actions.py:746
+msgid "s"
+msgstr "с"
 
-#: src/gui/_gui_interfaces.py:377
-msgid "Please enter a value in each field."
-msgstr "Будь ласка, заповніть всі поля."
+#: src/actions/_grid_actions.py:748
+msgid "{ncells} cell{plural} pasted at cell {topleft}"
+msgstr "{ncells} комірок вставлено до комірки {topleft}"
 
-#: src/gui/_gui_interfaces.py:379
-msgid "Missing value"
-msgstr "Не вистачає значення"
+#: src/actions/_grid_actions.py:785
+msgid "Pasting cells... "
+msgstr "Вставляємо комірки… "
 
-#: src/gui/_grid_renderer.py:311
-msgid "Vertical alignment {align} not in (top, middle, bottom)"
-msgstr "Значенням вертикального вирівнювання у {align} не є одне зі значень (top, middle, bottom)"
+#: src/actions/_grid_actions.py:1080
+msgid "Zoomed to {0:.2f}."
+msgstr "Збільшено до масштабу {0:.2f}."
 
-#: src/gui/_grid_renderer.py:338
-msgid "Cell justification {just} not in (left, center, right)"
-msgstr "Вирівнювання у комірці, {just}, не є одним зі значень (left, center, right)"
+#: src/actions/_grid_actions.py:1387
+msgid "Cell reference copied to clipboard: {access_string}"
+msgstr "Посилання на комірку скопійовано до буфера обміну: {access_string}"
 
-#: src/lib/__csv.py:321
-msgid "Fallback type {type} unknown."
-msgstr "Невідомий резервний тип {type}."
+#: src/actions/_grid_actions.py:1491
+msgid "Replaced {no_cells} cells."
+msgstr "Виконано заміну у {no_cells} комірках."
 
-#: src/lib/__csv.py:398
-msgid "File {filename} imported successfully."
-msgstr "Файл {filename} успішно імпортовано."
-
-#: src/lib/__csv.py:437 src/actions/_main_window_actions.py:662
-#: src/actions/_grid_actions.py:436
-msgid "Error writing to file {filepath}."
-msgstr "Помилка під час спроби запису до файла {filepath}."
-
-#: src/lib/__csv.py:451 src/actions/_main_window_actions.py:92
-#: src/actions/_main_window_actions.py:633 src/actions/_grid_actions.py:366
-msgid "Error opening file {filepath}."
-msgstr "Помилка під час відкриття файла {filepath}."
-
-#: src/lib/clipboard.py:90 src/lib/clipboard.py:125
-msgid "Can't open the clipboard"
-msgstr "Не вдалося відкрити буфер обміну даними"
-
-#: src/lib/clipboard.py:90 src/lib/clipboard.py:125
-msgid "Error"
-msgstr "Помилка"
-
-#: src/lib/clipboard.py:118
-msgid "Datatype {type} unknown"
-msgstr "Невідомий тип даних, {type}"
-
-#: src/lib/gpg.py:64
-msgid ""
-"Choose a GPG key for signing pyspread save files.\n"
-"The GPG key must not have a passphrase set."
-msgstr ""
-"Виберіть ваш ключ GPG для підписування збережених pyspread файлів.\n"
-"Для цього ключа GPG не повинно бути встановлено паролів."
-
-#: src/lib/gpg.py:67
-msgid "Choose key"
-msgstr "Виберіть ключ"
-
-#: src/lib/gpg.py:73
-msgid "Use chosen key"
-msgstr "Використати вибраний ключ"
-
-#: src/lib/gpg.py:74
-msgid "Create new key"
-msgstr "Створити ключ"
-
-#: src/lib/gpg.py:131
-msgid "New GPG key"
-msgstr "Новий ключ GPG"
-
-#: src/lib/gpg.py:132
-msgid "After confirming this dialog, a new GPG key "
-msgstr "Після натискання кнопки підтвердження у цьому вікні, "
-
-#: src/lib/gpg.py:133
-msgid "'{key}' will be generated."
-msgstr "Буде створено ключ «{key}»."
-
-#: src/lib/gpg.py:134
-msgid ""
-" \n"
-" \n"
-"This may take some time.\n"
-"Please wait.\n"
-" \n"
-msgstr ""
-" \n"
-" \n"
-"Це доволі тривала дія.\n"
-"Будь ласка, зачекайте.\n"
-" \n"
-
-#: src/lib/gpg.py:135
-msgid "Canceling this operation exits pyspread."
-msgstr "Скасування цієї дії призведе до завершення роботи pyspread."
-
-#: src/lib/fileio.py:67
-msgid "{nele} of {totalele} elements processed."
-msgstr "Оброблено {nele} з {totalele} елементів."
-
-#: src/lib/fileio.py:71
-msgid "{nele} elements processed."
-msgstr "Оброблено {nele} елементів."
-
-#: src/lib/fileio.py:96
-msgid "File loading aborted."
-msgstr "Завантаження файла перервано."
-
-#: src/lib/fileio.py:110
-msgid "File saving aborted."
-msgstr "Зберігання файла перервано."
+#: src/actions/_grid_actions.py:1526
+msgid "Replaced {old} with {new} in cell {key}."
+msgstr "Замінено {old} на {new} у комірці {key}."
 
 #: src/actions/_grid_cell_actions.py:134
 msgid "{key} seems to be no Integer"
@@ -2214,91 +2312,3 @@ msgstr "Помилка під час спроби записати файл SVG"
 #: src/actions/_main_window_actions.py:546
 msgid "Error evaluating data: "
 msgstr "Помилка під час обробки даних:"
-
-#: src/actions/_grid_actions.py:127
-msgid "{nele} elements processed. Press <Esc> to abort."
-msgstr "Оброблено {nele} елементів. Натисніть <Esc>, щоб перервати обробку."
-
-#: src/actions/_grid_actions.py:129
-msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
-msgstr "Оброблено {nele} з {totalele} елементів. Натисніть <Esc>, щоб перервати обробку."
-
-#: src/actions/_grid_actions.py:214
-msgid "Valid signature found. File is trusted."
-msgstr "Виявлено коректний підпис. Вмісту файла можна довіряти."
-
-#: src/actions/_grid_actions.py:223
-msgid "File is not properly signed. Safe mode activated. Select File -> Approve to leave safe mode."
-msgstr "Файл підписано неналежним чином. Задіяно безпечний режим. Скористайтеся пунктом меню Файл -> Затвердити, щоб вийти з безпечного режиму."
-
-#: src/actions/_grid_actions.py:389
-msgid "Error signing file. "
-msgstr "Помилка під час підписування файла. "
-
-#: src/actions/_grid_actions.py:405
-msgid "File saved and signed"
-msgstr "Файл збережено і підписано"
-
-#: src/actions/_grid_actions.py:407
-msgid "File signed"
-msgstr "Файл підписано"
-
-#: src/actions/_grid_actions.py:500
-msgid "File saved but not signed because it is unapproved."
-msgstr "Файл збережено, але не підписано, оскільки дані файла не затверджено."
-
-#: src/actions/_grid_actions.py:688
-msgid "Key length {length}  not in (2, 3)"
-msgstr "Довжина ключа {length} не є числом з набору (2, 3)"
-
-#: src/actions/_grid_actions.py:694
-msgid "Paste aborted."
-msgstr "Вставлення перервано."
-
-#: src/actions/_grid_actions.py:705
-msgid "rows and columns"
-msgstr "рядки і стовпчики"
-
-#: src/actions/_grid_actions.py:707
-msgid "rows"
-msgstr "рядки"
-
-#: src/actions/_grid_actions.py:709
-msgid "columns"
-msgstr "стовпчики"
-
-#: src/actions/_grid_actions.py:711
-msgid "Import cell overflow missing"
-msgstr "Переповнення комірок під час імпортування"
-
-#: src/actions/_grid_actions.py:714
-msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
-msgstr "Імпортовані дані за об’ємом перевищують можливості сітки {cause}. Імпортовано не всі дані. Скористайтеся більшою сіткою, щоб імпортувати всі дані."
-
-#: src/actions/_grid_actions.py:723
-msgid "s"
-msgstr "с"
-
-#: src/actions/_grid_actions.py:725
-msgid "{ncells} cell{plural} pasted at cell {topleft}"
-msgstr "{ncells} комірок вставлено до комірки {topleft}"
-
-#: src/actions/_grid_actions.py:762
-msgid "Pasting cells... "
-msgstr "Вставляємо комірки… "
-
-#: src/actions/_grid_actions.py:1057
-msgid "Zoomed to {0:.2f}."
-msgstr "Збільшено до масштабу {0:.2f}."
-
-#: src/actions/_grid_actions.py:1364
-msgid "Cell reference copied to clipboard: {access_string}"
-msgstr "Посилання на комірку скопійовано до буфера обміну: {access_string}"
-
-#: src/actions/_grid_actions.py:1468
-msgid "Replaced {no_cells} cells."
-msgstr "Виконано заміну у {no_cells} комірках."
-
-#: src/actions/_grid_actions.py:1503
-msgid "Replaced {old} with {new} in cell {key}."
-msgstr "Замінено {old} на {new} у комірці {key}."
