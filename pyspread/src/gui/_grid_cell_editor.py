@@ -88,7 +88,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         """
         super(GridCellEditor, self).Show(show, attr)
 
-    def PaintBackground(self, rect, attr):
+    def PaintBackground(self, rect, attr, *args):
         """
         Draws the part of the cell not occupied by the edit control.  The
         base  class version just fills it with background colour from the
