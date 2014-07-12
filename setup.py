@@ -43,7 +43,7 @@ class PyTest(Command):
 
 setup(
     name='pyspread',
-    version='0.3.0',
+    version='0.3.1',
     description='Python spreadsheet',
     long_description='Pyspread is a non-traditional spreadsheet application'
     ' that is based on and written in the programming language Python.',
