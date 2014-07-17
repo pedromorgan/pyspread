@@ -35,6 +35,7 @@ from math import pi, sin, cos
 import types
 
 import wx.grid
+from wx.lib.wordwrap import wordwrap
 
 import matplotlib
 matplotlib.use('Agg')
@@ -194,6 +195,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         font = self.get_font(textfont, pointsize, fontweight, fontstyle,
                              underline)
         dc.SetFont(font)
+
+        res_text = wordwrap(res_text, rect.width, dc)
 
         text_x, text_y = self.get_text_position(dc, rect, res_text, angle,
                                                 vertical_align, justification)
