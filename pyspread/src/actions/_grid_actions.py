@@ -48,6 +48,7 @@ Provides:
 import itertools
 import src.lib.i18n as i18n
 import os
+import shutil
 
 try:
     import xlrd
@@ -489,7 +490,7 @@ class FileActions(Actions):
 
             # Move save file from temp file to filepath
             try:
-                os.rename(tmpfile, filepath)
+                shutil.move(tmpfile, filepath)
 
             except OSError:
                 # No tmp file present
