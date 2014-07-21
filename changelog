@@ -3,6 +3,19 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+0.3.2
+-----
+
+Saving files that exist now succeeds in Windows
+Result text is now wrapped to cell extent
+Brasilian Portugese translations updated
+
+0.3.1
+-----
+
+Warning message that appears at each cell edit removed
+German and Ukrainian translations updated
+
 0.3.0
 -----
 
