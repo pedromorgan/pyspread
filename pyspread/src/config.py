@@ -78,7 +78,7 @@ class DefaultConfig(object):
         self.timer_interval = "1000"
 
         # Maximum result length in a cell in characters
-        self.max_result_length = "1000"
+        self.max_result_length = "100000"
 
         # Colors
         self.grid_color = repr(wx.SYS_COLOUR_GRAYTEXT)
