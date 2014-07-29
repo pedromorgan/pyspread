@@ -149,6 +149,71 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         dc.DrawLine(pt_lr[0], pt_lr[1], pt_ur[0], pt_ur[1])
         dc.DrawLine(pt_ur[0], pt_ur[1], pt_ul[0], pt_ul[1])
 
+    def _draw_string(self, dc, text, rect, angle, vertical_align,
+                     justification, strikethrough, maxlines=1000):
+        """Draws a string in rect
+
+        Parameters
+        ----------
+        dc: wx.DC
+        \tDraw context
+        rect: wx.Rect
+        \tRectangle of (cell) area to draw the text to
+        angle: Float
+        \tText rotation angle
+        vertical_align: String in ["top", "middle", "bottom"]
+        \tVertical alignment
+        justification: String in ["left", "center", "right"]
+        \tJustification
+        strikethrough: Bool
+        \tIf true then text is stroken through
+        maxlines: Integer, defaults to 1000
+        \tMaximum amount of lines that is displayed
+
+        """
+
+        wrapped_text = wordwrap(text.rstrip(' '), rect.width, dc)
+        text_lines = wrapped_text.split("\n")
+        line_height = dc.GetFullTextExtent("Wy")[1]
+
+        # Cutoff slices are used to avoid long calculations on huge texts
+        cutoff_slices = {
+            "top": slice(maxlines),
+            "middle": slice((len(text_lines)-maxlines)/2,
+                            (len(text_lines)+maxlines)/2),
+            "bottom": slice(-maxlines, None),
+        }
+
+        cutoff_text_lines = text_lines[cutoff_slices[vertical_align]]
+
+        for i, text_line in enumerate(cutoff_text_lines):
+            if vertical_align == "top":
+                line_offset = i * line_height
+            elif vertical_align == "bottom":
+                line_offset = (i - len(cutoff_text_lines) + 1) * line_height
+            elif vertical_align == "middle":
+                text_height = len(cutoff_text_lines) * line_height
+                line_offset = i * line_height - text_height / 2
+            else:
+                msg = 'Vertical alignment not in ["top", "middle", "bottom"]'
+                raise ValueError(msg)
+
+            text_x, text_y = self.get_text_position(dc, rect, text_line, angle,
+                                                    vertical_align,
+                                                    justification)
+
+            # If cell rect stays inside cell, we simply draw
+
+            text_pos = text_x, text_y + line_offset, angle
+
+            dc.DrawRotatedText(text_line, *text_pos)
+
+            if strikethrough:
+                text_extent = dc.GetTextExtent(text_line)
+                self._draw_strikethrough_line(dc, rect,
+                                              text_x, text_y + line_offset,
+                                              angle, text_extent)
+
     def draw_text_label(self, dc, res, rect, grid, key):
         """Draws text label of cell
 
@@ -195,32 +260,16 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         font = self.get_font(textfont, pointsize, fontweight, fontstyle,
                              underline)
         dc.SetFont(font)
-
-        res_text = wordwrap(res_text, rect.width, dc)
-
-        text_x, text_y = self.get_text_position(dc, rect, res_text, angle,
-                                                vertical_align, justification)
-
-        #__rect = xrect.Rect(rect.x, rect.y, rect.width, rect.height)
-
-        text_extent = dc.GetTextExtent(res_text)
-
         dc.SetBackgroundMode(wx.TRANSPARENT)
         dc.SetTextForeground(textcolor)
-
-        # If cell rect stays inside cell, we simply draw
-
-        text_pos = text_x, text_y, angle
-
         dc.SetClippingRect(rect)
-        dc.DrawRotatedText(res_text, *text_pos)
-        text_extent = dc.GetTextExtent(res_text)
-        if strikethrough:
-            self._draw_strikethrough_line(grid, dc, rect, text_x,
-                                          text_y, angle, text_extent)
+
+        self._draw_string(dc, res_text, rect, angle, vertical_align,
+                          justification, strikethrough)
+
         dc.DestroyClippingRegion()
 
-    def _draw_strikethrough_line(self, grid, dc, rect,
+    def _draw_strikethrough_line(self, dc, rect,
                                  string_x, string_y, angle, text_extent):
         """Draws a strikethrough line"""
 
