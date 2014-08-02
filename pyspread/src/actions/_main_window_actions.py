@@ -58,8 +58,9 @@ from src.lib.__csv import CsvInterface, TxtGenerator
 from src.lib.charts import fig2bmp, fig2x
 from src.gui._printout import PrintCanvas, Printout
 from src.gui._events import post_command_event, EventMixin
+from src.lib.pdfdc import PdfDC
 
-#use ugettext instead of getttext to avoid unicode errors
+# use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -230,10 +231,39 @@ class ExchangeActions(Actions):
         elif filterindex >= 1:
             self._export_figure(filepath, data, formats[filterindex])
 
+    def get_print_rect(self, grid_rect):
+        """Returns wx.Rect that is correctly positioned on the print canvas"""
+
+        grid = self.grid
+
+        rect_x = grid_rect.x - \
+            grid.GetScrollPos(wx.HORIZONTAL) * grid.GetScrollLineX()
+        rect_y = grid_rect.y - \
+            grid.GetScrollPos(wx.VERTICAL) * grid.GetScrollLineY()
+
+        return wx.Rect(rect_x, rect_y, grid_rect.width, grid_rect.height)
+
     def export_pdf(self, filepath):
         """Exports grid to the PDF file filepath"""
 
-        print 333
+        dc = PdfDC(filepath)
+
+        draw = self.grid.grid_renderer.Draw
+
+        top, bottom = 0, 20
+        left, right = 0, 10
+
+        for row in xrange(bottom, top - 1, -1):
+            for col in xrange(right, left - 1, -1):
+                grid_rect = self.grid.CellToRect(row, col)
+                rect = self.get_print_rect(grid_rect)
+                try:
+                    draw(self.grid, wx.grid.GridCellAttr(), dc, rect, row, col,
+                         False, printing=True)
+                except IndexError:
+                    pass
+
+        dc.show_page()
 
 class PrintActions(Actions):
     """Actions for printing"""

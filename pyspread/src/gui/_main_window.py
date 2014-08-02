@@ -936,7 +936,7 @@ class MainWindowEventHandlers(EventMixin):
         """Export PDF event handler"""
 
         # TODO: File dialog
-        path = "~/tmp/test.pdf"
+        path = "/home/mn/tmp/test.pdf"
         self.main_window.actions.export_pdf(path)
 
     def OnApprove(self, event):

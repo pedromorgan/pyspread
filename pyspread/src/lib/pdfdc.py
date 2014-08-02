@@ -50,7 +50,7 @@ class PdfDC(object):
         "Letter": (8.5, 11.0),
     }
 
-    def __init__(self, filename="test/test.pdf", papertype="A4"):
+    def __init__(self, filepath, papertype="A4"):
 
         if papertype is not None:
             width_inch, height_inch = self.paper_inch_sizes[papertype]
@@ -59,7 +59,7 @@ class PdfDC(object):
         else:
             raise NotImplementedError("Custom paper size not implemented")
 
-        surface = cairo.PDFSurface("test/test.pdf", self.width, self.height)
+        surface = cairo.PDFSurface(filepath, self.width, self.height)
         self.ctx = cairo.Context(surface)
         self.ptx = pangocairo.CairoContext(self.ctx)
         self.pango_layout = self.ptx.create_layout()  # Reset by DrawText
@@ -186,25 +186,25 @@ class PdfDC(object):
 
         rad_angle = -angle / 180.0 * math.pi
 
-        dc.ctx.translate(x, y)
-        dc.ctx.rotate(rad_angle)
+        self.ctx.translate(x, y)
+        self.ctx.rotate(rad_angle)
 
         self.pango_layout.set_text(text)
-        self.ptx.update_layout(dc.pango_layout)
-        self.ptx.show_layout(dc.pango_layout)
+        self.ptx.update_layout(self.pango_layout)
+        self.ptx.show_layout(self.pango_layout)
 
         self.pango_layout = self.ptx.create_layout()
 
-        dc.ctx.rotate(-rad_angle)
-        dc.ctx.translate(-x, -y)
+        self.ctx.rotate(-rad_angle)
+        self.ctx.translate(-x, -y)
 
-    def DrawPolygonList(self, text):
+    def DrawPolygonList(self, point_list, pens=None, brushes=None):
         pass
 
     def DrawBitmap(self, text):
         pass
 
-    def Blit(self, text):
+    def Blit(self, *args):
         pass
 
     def DrawRectangle(self, x, y, width, height):
@@ -221,13 +221,21 @@ class PdfDC(object):
         self.pango_layout.set_text(text)
         return self.pango_layout.get_extents()[1]
 
+    GetTextExtent = GetFullTextExtent
+
+    def GetPartialTextExtents(self, text):
+        """Returns physical text extent"""
+
+        self.pango_layout.set_text(text)
+        return self.pango_layout.get_extents()[0]
+
     def show_page(self):
         """Writes a page to tyhe pdf file"""
 
         self.ctx.show_page()
 
 if __name__ == "__main__":
-    dc = PdfDC()
+    dc = PdfDC("test/test.pdf")
     app = wx.App()
 
     dc.SetBrush(wx.Brush(wx.Colour(0, 0, 255)))
