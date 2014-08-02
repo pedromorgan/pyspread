@@ -785,7 +785,6 @@ class GridEventHandlers(object):
         }
 
         keycode = event.GetKeyCode()
-        #print keycode
 
         modifier = shift * event.ShiftDown() | \
             alt * event.AltDown() | ctrl * event.ControlDown()
