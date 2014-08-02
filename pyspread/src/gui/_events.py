@@ -147,6 +147,7 @@ class GridEventMixin(object):
     OpenMsg, EVT_CMD_OPEN = new_command_event()
     SaveMsg, EVT_CMD_SAVE = new_command_event()
     SaveAsMsg, EVT_CMD_SAVEAS = new_command_event()
+    ExportPDFMsg, EVT_CMD_EXPORT_PDF = new_command_event()
     ImportMsg, EVT_CMD_IMPORT = new_command_event()
     ExportMsg, EVT_CMD_EXPORT = new_command_event()
     ApproveMsg, EVT_CMD_APPROVE = new_command_event()

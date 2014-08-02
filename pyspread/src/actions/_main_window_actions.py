@@ -230,6 +230,10 @@ class ExchangeActions(Actions):
         elif filterindex >= 1:
             self._export_figure(filepath, data, formats[filterindex])
 
+    def export_pdf(self, filepath):
+        """Exports grid to the PDF file filepath"""
+
+        print 333
 
 class PrintActions(Actions):
     """Actions for printing"""

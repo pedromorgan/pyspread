@@ -287,6 +287,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_SAVEAS, handlers.OnSaveAs)
         self.Bind(self.EVT_CMD_IMPORT, handlers.OnImport)
         self.Bind(self.EVT_CMD_EXPORT, handlers.OnExport)
+        self.Bind(self.EVT_CMD_EXPORT_PDF, handlers.OnExportPDF)
         self.Bind(self.EVT_CMD_APPROVE, handlers.OnApprove)
         self.Bind(self.EVT_CMD_CLEAR_GLOBALS, handlers.OnClearGlobals)
 
@@ -930,6 +931,13 @@ class MainWindowEventHandlers(EventMixin):
 
         self.main_window.actions.export_file(path, filterindex, data,
                                              preview_data)
+
+    def OnExportPDF(self, event):
+        """Export PDF event handler"""
+
+        # TODO: File dialog
+        path = "~/tmp/test.pdf"
+        self.main_window.actions.export_pdf(path)
 
     def OnApprove(self, event):
         """File approve event handler"""

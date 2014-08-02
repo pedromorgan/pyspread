@@ -236,20 +236,20 @@ if __name__ == "__main__":
     dc.SetPen(wx.Pen(wx.Colour(200, 34, 235), 2))
     dc.DrawLine(10, 10, 70, 90)
 
-    lines = [(90, 90, 200, i*3) for i in xrange(100)]
-    pens = [wx.Pen(wx.Colour(0, i*2, i*2), 1) for i in xrange(100)]
-    dc.DrawLineList(lines, pens)
+    linelist = [(90, 90, 200, i*3) for i in xrange(100)]
+    penlist = [wx.Pen(wx.Colour(0, i*2, i*2), 1) for i in xrange(100)]
+    dc.DrawLineList(linelist, penlist)
 
     dc.SetTextForeground(wx.Colour(255, 255, 0))
-    font = wx.Font(50, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_ITALIC,
-                   wx.FONTWEIGHT_BOLD, 0, 'Deja Vu Serif')
-    dc.SetFont(font)
+    textfont = wx.Font(50, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_ITALIC,
+                       wx.FONTWEIGHT_BOLD, 0, 'Deja Vu Serif')
+    dc.SetFont(textfont)
 
     dc.DrawRotatedText("Test", 100, 250, 10)
 
-    font = wx.Font(50, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
-                   wx.FONTWEIGHT_NORMAL, 0, 'Deja Vu Serif')
-    dc.SetFont(font)
+    textfont = wx.Font(50, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
+                       wx.FONTWEIGHT_NORMAL, 0, 'Deja Vu Serif')
+    dc.SetFont(textfont)
     dc.DrawRotatedText("Test2", 300, 250, 0)
 
     dc.show_page()

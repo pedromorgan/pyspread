@@ -152,6 +152,7 @@ class MainToolbar(ToolbarBase):
             ["T", self.NewMsg, "FileNew", _("New")],
             ["T", self.OpenMsg, "FileOpen", _("Open")],
             ["T", self.SaveMsg, "FileSave", _("Save")],
+            ["T", self.ExportPDFMsg, "ExportPDF", _("Export PDF")],
             ["S"],
             ["T", self.UndoMsg, "Undo", _("Undo")],
             ["T", self.RedoMsg, "Redo", _("Redo")],

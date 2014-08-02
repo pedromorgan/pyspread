@@ -92,6 +92,7 @@ class GtkArtProvider(wx.ArtProvider):
             "safe_mode": icon_path + "status/dialog-warning.png",
             "SortAscending": action_path + "edit-sort-ascending.png",
             "SortDescending": action_path + "edit-sort-descending.png",
+            "ExportPDF": action_path + "export_pdf.png",
         }
 
     def get_paths(self, theme, icon_size):
