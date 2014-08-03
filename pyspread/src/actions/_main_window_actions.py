@@ -268,8 +268,8 @@ class ExchangeActions(Actions):
         surface = cairo.PDFSurface(filepath, ctx_width, ctx_height)
         context = cairo.Context(surface)
 
-        row_tb = 5, 10
-        col_rl = 0, 5
+        row_tb = 0, 50
+        col_rl = 0, 10
         tab_fl = 0, 1
 
         grid_cairo_renderer = GridCairoRenderer(

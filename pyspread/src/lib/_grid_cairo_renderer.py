@@ -208,14 +208,22 @@ class GridCellBackgroundCairoRenderer(object):
 
     def __init__(self, context, code_array, key, rect):
         self.context = context
-        self.code_array = code_array
+        self.cell_attributes = code_array.cell_attributes
         self.key = key
         self.rect = rect
+
+    def _get_background_color(self):
+        """Returns background color rgb tuple of right line"""
+
+        color = self.cell_attributes[self.key]["bgcolor"]
+        return tuple(c / 255.0 for c in color_pack2rgb(color))
 
     def draw(self):
         """Draws cell background to context"""
 
-        pass
+        self.context.set_source_rgb(*self._get_background_color())
+        self.context.rectangle(*self.rect)
+        self.context.fill()
 
 
 class GridCellBorderCairoRenderer(object):
@@ -246,7 +254,7 @@ class GridCellBorderCairoRenderer(object):
     def _get_top_line_coordinates(self):
         """Returns start and stop coordinates of bottom line"""
 
-        rect_x, rect_y, rect_width, rect_height = self.rect
+        rect_x, rect_y, rect_width, _ = self.rect
 
         start_point = rect_x, rect_y
         end_point = rect_x + rect_width, rect_y
@@ -266,7 +274,7 @@ class GridCellBorderCairoRenderer(object):
     def _get_left_line_coordinates(self):
         """Returns start and stop coordinates of right line"""
 
-        rect_x, rect_y, rect_width, rect_height = self.rect
+        rect_x, rect_y, _, rect_height = self.rect
 
         start_point = rect_x, rect_y
         end_point = rect_x, rect_y + rect_height
@@ -286,7 +294,7 @@ class GridCellBorderCairoRenderer(object):
     def _get_topleft_right_line_coordinates(self):
         """Returns start and stop coordinates of top left cell's right line"""
 
-        rect_x, rect_y, rect_width, rect_height = self.rect
+        rect_x, rect_y, _, _ = self.rect
 
         start_point = rect_x, rect_y - 0.01
         end_point = rect_x, rect_y
@@ -296,7 +304,7 @@ class GridCellBorderCairoRenderer(object):
     def _get_topleft_bottom_line_coordinates(self):
         """Returns start and stop coordinates of top left cell's bottom line"""
 
-        rect_x, rect_y, rect_width, rect_height = self.rect
+        rect_x, rect_y, _, _ = self.rect
 
         start_point = rect_x - 0.01, rect_y
         end_point = rect_x, rect_y
@@ -307,7 +315,7 @@ class GridCellBorderCairoRenderer(object):
     # ------
 
     def _get_top_line_color(self):
-        """Returns color rgba tuple of top line"""
+        """Returns color rgb tuple of top line"""
 
         row, col, tab = self.key
         key = row - 1, col, tab
@@ -315,13 +323,13 @@ class GridCellBorderCairoRenderer(object):
         return tuple(c / 255.0 for c in color_pack2rgb(color))
 
     def _get_bottom_line_color(self):
-        """Returns color rgba tuple of bottom line"""
+        """Returns color rgb tuple of bottom line"""
 
         color = self.cell_attributes[self.key]["bordercolor_bottom"]
         return tuple(c / 255.0 for c in color_pack2rgb(color))
 
     def _get_left_line_color(self):
-        """Returns color rgba tuple of left line"""
+        """Returns color rgb tuple of left line"""
 
         row, col, tab = self.key
         key = row, col - 1, tab
@@ -329,13 +337,13 @@ class GridCellBorderCairoRenderer(object):
         return tuple(c / 255.0 for c in color_pack2rgb(color))
 
     def _get_right_line_color(self):
-        """Returns color rgba tuple of right line"""
+        """Returns color rgb tuple of right line"""
 
         color = self.cell_attributes[self.key]["bordercolor_right"]
         return tuple(c / 255.0 for c in color_pack2rgb(color))
 
     def _get_topleft_right_line_color(self):
-        """Returns color rgba tuple of right line of top left cell"""
+        """Returns color rgb tuple of right line of top left cell"""
 
         row, col, tab = self.key
         key = row - 1, col - 1, tab
@@ -343,7 +351,7 @@ class GridCellBorderCairoRenderer(object):
         return tuple(c / 255.0 for c in color_pack2rgb(color))
 
     def _get_topleft_bottom_line_color(self):
-        """Returns color rgba tuple of bottom line of top left cell"""
+        """Returns color rgb tuple of bottom line of top left cell"""
 
         row, col, tab = self.key
         key = row - 1, col - 1, tab
@@ -358,38 +366,38 @@ class GridCellBorderCairoRenderer(object):
 
         row, col, tab = self.key
         key = row - 1, col, tab
-        return float(self.cell_attributes[key]["borderwidth_bottom"])
+        return float(self.cell_attributes[key]["borderwidth_bottom"]) / 2.0
 
     def _get_bottom_line_width(self):
         """Returns width of bottom line"""
 
-        return float(self.cell_attributes[self.key]["borderwidth_bottom"])
+        return float(self.cell_attributes[self.key]["borderwidth_bottom"]) / 2.
 
     def _get_left_line_width(self):
         """Returns width of left line"""
 
         row, col, tab = self.key
         key = row, col - 1, tab
-        return float(self.cell_attributes[key]["borderwidth_right"])
+        return float(self.cell_attributes[key]["borderwidth_right"]) / 2.0
 
     def _get_right_line_width(self):
         """Returns width of right line"""
 
-        return float(self.cell_attributes[self.key]["borderwidth_right"])
+        return float(self.cell_attributes[self.key]["borderwidth_right"]) / 2.0
 
     def _get_topleft_right_line_width(self):
         """Returns width of right line of top left cell"""
 
         row, col, tab = self.key
         key = row - 1, col - 1, tab
-        return float(self.cell_attributes[key]["borderwidth_right"])
+        return float(self.cell_attributes[key]["borderwidth_right"]) / 2.0
 
     def _get_topleft_bottom_line_width(self):
         """Returns width of bottom line of top left cell"""
 
         row, col, tab = self.key
         key = row - 1, col - 1, tab
-        return float(self.cell_attributes[key]["borderwidth_bottom"])
+        return float(self.cell_attributes[key]["borderwidth_bottom"]) / 2.0
 
     # Drawing
     # -------
@@ -460,15 +468,21 @@ class GridCellBorderCairoRenderer(object):
 
         # Sort lines from thinnest to thickest
         width_func = [
-            (self._get_left_line_width(), self._draw_left_line),
-            (self._get_right_line_width(), self._draw_right_line),
-            (self._get_top_line_width(), self._draw_top_line),
-            (self._get_bottom_line_width(), self._draw_bottom_line),
-            (self._get_topleft_right_line_width(), self._draw_tlr_line),
-            (self._get_topleft_bottom_line_width(), self._draw_tlb_line),
+            (self._get_left_line_width(),
+             -sum(self._get_left_line_color()), self._draw_left_line),
+            (self._get_right_line_width(),
+             -sum(self._get_right_line_color()), self._draw_right_line),
+            (self._get_top_line_width(),
+             -sum(self._get_top_line_color()), self._draw_top_line),
+            (self._get_bottom_line_width(),
+             -sum(self._get_bottom_line_color()), self._draw_bottom_line),
+            (self._get_topleft_right_line_width(),
+             -sum(self._get_topleft_right_line_color()), self._draw_tlr_line),
+            (self._get_topleft_bottom_line_width(),
+             -sum(self._get_topleft_bottom_line_color()), self._draw_tlb_line),
         ]
 
         width_func.sort()
 
-        for _, draw_func in width_func:
+        for _, _, draw_func in width_func:
             draw_func()
