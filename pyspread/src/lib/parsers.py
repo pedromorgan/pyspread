@@ -88,6 +88,22 @@ def color2code(color):
     return unicode(tuple(i / 255.0 for i in color.Get()))
 
 
+def color_pack2rgb(packed):
+    """Returns r, g, b tuple from packed wx.ColourGetRGB value"""
+
+    r = packed & 255
+    g = (packed & (255 << 8)) >> 8
+    b = (packed & (255 << 16)) >> 16
+
+    return r, g, b
+
+
+def color_rgb2pack(r, g, b):
+    """Returns packed wx.ColourGetRGB value from r, g, b tuple"""
+
+    return r + (g << 8) + (b << 16)
+
+
 def unquote_string(code):
     """Returns a string from code that contains aa repr of the string"""
 

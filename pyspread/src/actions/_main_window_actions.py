@@ -268,28 +268,20 @@ class ExchangeActions(Actions):
         surface = cairo.PDFSurface(filepath, ctx_width, ctx_height)
         context = cairo.Context(surface)
 
-        slcs = [slice(0, 5, 1), slice(0, 5, 1), slice(0, 1, 1)]
-        grid_cairo_renderer = GridCairoRenderer(context, self.code_array, slcs)
+        row_tb = 5, 10
+        col_rl = 0, 5
+        tab_fl = 0, 1
+
+        grid_cairo_renderer = GridCairoRenderer(
+            context,
+            self.code_array,
+            row_tb,
+            col_rl,
+            tab_fl)
+
         grid_cairo_renderer.draw()
 
         context.show_page()
-
-#        dc = PdfDC(filepath)
-#
-#        draw = self.grid.grid_renderer.Draw
-#
-#        top, bottom = 0, 20
-#        left, right = 0, 10
-#
-#        for row in xrange(bottom, top - 1, -1):
-#            for col in xrange(right, left - 1, -1):
-#                grid_rect = self.grid.CellToRect(row, col)
-#                rect = self.get_print_rect(grid_rect)
-#
-#                draw(self.grid, wx.grid.GridCellAttr(), dc, rect, row, col,
-#                     False, background_dc=dc)
-#
-#        dc.show_page()
 
 
 class PrintActions(Actions):

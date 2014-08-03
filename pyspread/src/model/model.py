@@ -355,6 +355,24 @@ class DataArray(object):
 
     data = property(_get_data, _set_data)
 
+    def get_row_height(self, row, tab):
+        """Returns row height"""
+
+        try:
+            return self.row_heights[(row, tab)]
+
+        except KeyError:
+            return config["default_row_height"]
+
+    def get_col_width(self, col, tab):
+        """Returns column width"""
+
+        try:
+            return self.col_widths[(col, tab)]
+
+        except KeyError:
+            return config["default_col_width"]
+
     # Row and column attributes mask
     # Keys have the format (row, table)
 

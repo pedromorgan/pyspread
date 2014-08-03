@@ -42,6 +42,7 @@ sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.parsers import get_font_from_data, get_pen_from_data, common_start
+from src.lib.parsers import color_pack2rgb, color_rgb2pack
 
 param_font = [
     {"fontdata": "Courier New 13", "face": "Courier New", "size": 13},
@@ -86,6 +87,36 @@ def test_get_pen_from_data(pendata, width, color):
     assert pen.GetWidth() == width
 
 
+param_color_pack2rgb = [
+    {"pack": wx.RED.GetRGB(), "res": (255, 0, 0)},
+    {"pack": wx.BLACK.GetRGB(), "res": (0, 0, 0)},
+    {"pack": wx.WHITE.GetRGB(), "res": (255, 255, 255)},
+    {"pack": wx.Colour(34, 12, 42).GetRGB(), "res": (34, 12, 42)},
+]
+
+
+@params(param_color_pack2rgb)
+def test_color_pack2rgb(pack, res):
+    """Unit test for color_pack2rgb"""
+
+    assert color_pack2rgb(pack) == res
+
+
+param_color_rgb2pack = [
+    {"rgb": (255, 0, 0), "res": wx.RED.GetRGB()},
+    {"rgb": (0, 0, 0), "res": wx.BLACK.GetRGB()},
+    {"rgb": (255, 255, 255), "res": wx.WHITE.GetRGB()},
+    {"rgb": (34, 12, 42), "res": wx.Colour(34, 12, 42).GetRGB()},
+]
+
+
+@params(param_color_rgb2pack)
+def test_color_rgb2pack(rgb, res):
+    """Unit test for rgb2pack"""
+
+    assert color_rgb2pack(*rgb) == res
+
+
 param_common_start = [
     {"strings": [], "res": ""},
     {"strings": ["", ""], "res": ""},
@@ -96,7 +127,6 @@ param_common_start = [
     {"strings": ["1", "tl"], "res": ""},
     {"strings": ["split", "splitlines"], "res": "split"},
 ]
-
 
 @params(param_common_start)
 def test_common_start(strings, res):
