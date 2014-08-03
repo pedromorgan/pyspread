@@ -35,6 +35,10 @@ Provides
 """
 
 import cairo
+import wx
+import wx.lib.wxcairo
+import matplotlib.pyplot
+import pangocairo
 
 from src.lib.parsers import color_pack2rgb
 
@@ -185,10 +189,64 @@ class GridCellContentCairoRenderer(object):
         self.key = key
         self.rect = rect
 
+    def get_cell_content(self):
+        """Returns cell content"""
+
+        try:
+            return self.code_array[self.key]
+
+        except IndexError:
+            pass
+
+    def draw_bitmap(self, content):
+        """Draws bitmap cell content to context"""
+
+        # TODO: Does not work
+        img = wx.lib.wxcairo.ImageSurfaceFromBitmap(content)
+        self.context.set_source_surface(img)
+        self.context.paint()
+
+    def draw_matplotlib(self, content):
+        """Draws matplotlib cell content to context"""
+
+        pass
+
+    def set_font(self):
+        """Sets the font for draw_text"""
+
+        pass
+
+    def draw_text(self, content):
+        """Draws matplotlib cell content to context"""
+
+        self.context.set_source_rgb(0, 0, 0)
+
+        ptx = pangocairo.CairoContext(self.context)
+        pango_layout = ptx.create_layout()
+        pango_layout.set_text(unicode(content))
+        ptx.update_layout(pango_layout)
+        ptx.show_layout(pango_layout)
+
     def draw(self):
         """Draws cell content to context"""
 
-        pass
+        content = self.get_cell_content()
+
+        pos_x, pos_y = self.rect[:2]
+        self.context.translate(pos_x, pos_y)
+
+        if isinstance(content, wx._gdi.Bitmap):
+            # A bitmap is returned --> Draw it!
+            self.draw_bitmap(content)
+
+        elif isinstance(content, matplotlib.pyplot.Figure):
+            # A matplotlib figure is returned --> Draw it!
+            self.draw_matplotlib_figure(content)
+
+        elif content is not None:
+            self.draw_text(content)
+
+        self.context.translate(-pos_x, -pos_y)
 
 
 class GridCellBackgroundCairoRenderer(object):
