@@ -58,7 +58,14 @@ from src.lib.__csv import CsvInterface, TxtGenerator
 from src.lib.charts import fig2bmp, fig2x
 from src.gui._printout import PrintCanvas, Printout
 from src.gui._events import post_command_event, EventMixin
-from src.lib.pdfdc import PdfDC
+from src.lib._grid_cairo_renderer import GridCairoRenderer
+
+try:
+    import cairo
+    HAS_CAIRO = True
+
+except ImportError:
+    HAS_CAIRO = False
 
 # use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -246,24 +253,44 @@ class ExchangeActions(Actions):
     def export_pdf(self, filepath):
         """Exports grid to the PDF file filepath"""
 
-        dc = PdfDC(filepath)
+        if not HAS_CAIRO:
+            return
 
-        draw = self.grid.grid_renderer.Draw
+        paper_inch_sizes = {
+            "A4": (8.267, 11.692),
+            "Letter": (8.5, 11.0),
+        }
 
-        top, bottom = 0, 20
-        left, right = 0, 10
+        ctx_width_inch, ctx_height_inch = paper_inch_sizes["A4"]
+        ctx_width = ctx_width_inch * 72.0
+        ctx_height = ctx_height_inch * 72.0
 
-        for row in xrange(bottom, top - 1, -1):
-            for col in xrange(right, left - 1, -1):
-                grid_rect = self.grid.CellToRect(row, col)
-                rect = self.get_print_rect(grid_rect)
-                try:
-                    draw(self.grid, wx.grid.GridCellAttr(), dc, rect, row, col,
-                         False, printing=True)
-                except IndexError:
-                    pass
+        surface = cairo.PDFSurface(filepath, ctx_width, ctx_height)
+        context = cairo.Context(surface)
 
-        dc.show_page()
+        slcs = [slice(0, 5, 1), slice(0, 5, 1), slice(0, 1, 1)]
+        grid_cairo_renderer = GridCairoRenderer(context, self.code_array, slcs)
+        grid_cairo_renderer.draw()
+
+        context.show_page()
+
+#        dc = PdfDC(filepath)
+#
+#        draw = self.grid.grid_renderer.Draw
+#
+#        top, bottom = 0, 20
+#        left, right = 0, 10
+#
+#        for row in xrange(bottom, top - 1, -1):
+#            for col in xrange(right, left - 1, -1):
+#                grid_rect = self.grid.CellToRect(row, col)
+#                rect = self.get_print_rect(grid_rect)
+#
+#                draw(self.grid, wx.grid.GridCellAttr(), dc, rect, row, col,
+#                     False, background_dc=dc)
+#
+#        dc.show_page()
+
 
 class PrintActions(Actions):
     """Actions for printing"""

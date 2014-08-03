@@ -507,7 +507,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             img = img.Scale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
             return wx.BitmapFromImage(img)
 
-
         if scale:
             img = bmp.ConvertToImage()
             bmp_key = img, rect.width, rect.height
@@ -537,7 +536,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         self.draw_bitmap(dc, bmp, crop_rect, grid, key, scale=False)
 
-    def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False):
+    def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False,
+             background_dc=None):
         """Draws the cell border and content"""
 
         key = row, col, grid.current_table
@@ -553,7 +553,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 return
 
         lower_right_rect_extents = self.get_lower_right_rect_extents(key, rect)
-
 
         if isSelected:
             grid.selection_present = True
@@ -574,7 +573,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
             bg_key = tuple([width, height] +
                            [self.data_array.cell_attributes[key][bgc]
-                               for bgc in bg_components[:-1]] + \
+                               for bgc in bg_components[:-1]] +
                            [bg_components[-1]])
 
             try:
@@ -588,7 +587,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
                 bg = self.backgrounds[bg_key] = \
                     Background(grid, rect, lower_right_rect_extents,
-                               self.data_array, *key)
+                               self.data_array, *key, dc=background_dc)
 
         dc.Blit(rect.x, rect.y, rect.width, rect.height,
                 bg.dc, 0, 0, wx.COPY)
@@ -633,7 +632,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         bottom_key = row + 1, col, tab
         right_key = row, col + 1, tab
 
-
         right_width = cell_attributes[key]["borderwidth_right"]
         bottom_width = cell_attributes[key]["borderwidth_bottom"]
 
@@ -653,13 +651,17 @@ class Background(object):
     """Memory DC with background content for given cell"""
 
     def __init__(self, grid, rect, lower_right_rect_extents, data_array,
-                 row, col, tab, selection=False):
+                 row, col, tab, selection=False, dc=None):
         self.grid = grid
         self.data_array = data_array
 
         self.key = row, col, tab
 
-        self.dc = wx.MemoryDC()
+        if dc is None:
+            self.dc = wx.MemoryDC()
+        else:
+            self.dc = dc
+
         self.rect = rect
         self.bmp = wx.EmptyBitmap(rect.width, rect.height)
 

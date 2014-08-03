@@ -25,6 +25,9 @@ pdfdc.py
 
 Draw context for generating PDF files with Cairo
 
+TODO: After some tests I come to the conclusion that it is easier to
+      rewrite the renderer than to create an artificial Cairo dc
+
 """
 
 import math
@@ -152,11 +155,17 @@ class PdfDC(object):
 
         self.pango_layout.set_attributes(attrs)
 
-    def SetClippingRect(self, text):
-        pass
+    def SetClippingRect(self, rect):
+        """Clips the context to rect and saves the old clipping state"""
 
-    def DestroyClippingRegion(self, text):
-        pass
+        self.ctx.save()
+        self.ctx.rectangle(rect.x, rect.y, rect.width, rect.height)
+        self.ctx.clip()
+
+    def DestroyClippingRegion(self):
+        """Reverts saved clipping state"""
+
+        self.ctx.restore()
 
     # Drawing
 
@@ -199,12 +208,15 @@ class PdfDC(object):
         self.ctx.translate(-x, -y)
 
     def DrawPolygonList(self, point_list, pens=None, brushes=None):
+        """Not implemented - only used for cursor that shall not be drawn"""
+
         pass
 
-    def DrawBitmap(self, text):
+    def DrawBitmap(self, bmp, x, y, useMask):
         pass
 
-    def Blit(self, *args):
+    def Blit(self, xdest, ydest, width, height, source, xsrc, ysrc, rop):
+
         pass
 
     def DrawRectangle(self, x, y, width, height):
@@ -226,8 +238,13 @@ class PdfDC(object):
     def GetPartialTextExtents(self, text):
         """Returns physical text extent"""
 
-        self.pango_layout.set_text(text)
-        return self.pango_layout.get_extents()[0]
+        extents = []
+
+        for i in xrange(len(text)):
+            self.pango_layout.set_text(text[:i+1])
+            extents.append(self.pango_layout.get_extents()[0][0])
+
+        return extents
 
     def show_page(self):
         """Writes a page to tyhe pdf file"""
