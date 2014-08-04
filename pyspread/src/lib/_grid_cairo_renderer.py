@@ -47,8 +47,8 @@ from src.lib.parsers import color_pack2rgb
 STANDARD_ROW_HEIGHT = 20
 STANDARD_COL_WIDTH = 50
 
-X_OFFSET = 20
-Y_OFFSET = 20
+X_OFFSET = 20.5
+Y_OFFSET = 20.5
 
 
 try:
@@ -209,10 +209,27 @@ class GridCellContentCairoRenderer(object):
     def draw_bitmap(self, content):
         """Draws bitmap cell content to context"""
 
-        # TODO: Does not work
-        img = wx.lib.wxcairo.ImageSurfaceFromBitmap(content)
-        self.context.set_source_surface(img)
+        # Get
+
+        if content.HasAlpha():
+            image = wx.ImageFromBitmap(content)
+            image.ConvertAlphaToMask()
+            image.SetMask(False)
+            content = wx.BitmapFromImage(image)
+
+        ims = wx.lib.wxcairo.ImageSurfaceFromBitmap(content)
+        ims_width = ims.get_width()
+        ims_height = ims.get_height()
+
+        scale_x = self.rect[2] / float(ims_width)
+        scale_y = self.rect[3] / float(ims_height)
+
+        self.context.save()
+        self.context.translate(-2, -2)  # Otherwise there is a white border
+        self.context.scale(scale_x, scale_y)
+        self.context.set_source_surface(ims, 0, 0)
         self.context.paint()
+        self.context.restore()
 
     def draw_matplotlib(self, content):
         """Draws matplotlib cell content to context"""
