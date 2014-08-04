@@ -78,8 +78,8 @@ class DefaultConfig(object):
         self.timer_interval = "1000"
 
         # Default row height and col width e.g. for Cairo rendering
-        self.default_row_height = "20"
-        self.default_col_width = "50"
+        self.default_row_height = "23"
+        self.default_col_width = "80"
 
         # Maximum result length in a cell in characters
         self.max_result_length = "100000"

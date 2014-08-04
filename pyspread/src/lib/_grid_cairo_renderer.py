@@ -38,6 +38,7 @@ import cairo
 import wx
 import wx.lib.wxcairo
 import matplotlib.pyplot
+import pango
 import pangocairo
 
 from src.lib.parsers import color_pack2rgb
@@ -48,6 +49,13 @@ STANDARD_COL_WIDTH = 50
 
 X_OFFSET = 20
 Y_OFFSET = 20
+
+
+try:
+    from src.config import config
+    MAX_RESULT_LENGTH = config["max_result_length"]
+except ImportError:
+    MAX_RESULT_LENGTH = 100000
 
 
 class GridCairoRenderer(object):
@@ -211,18 +219,75 @@ class GridCellContentCairoRenderer(object):
 
         pass
 
-    def set_font(self):
+    def _get_text_color(self):
+        """Returns text color rgb tuple of right line"""
+
+        color = self.code_array.cell_attributes[self.key]["textcolor"]
+        return tuple(c / 255.0 for c in color_pack2rgb(color))
+
+    def set_font(self, pango_layout):
         """Sets the font for draw_text"""
 
-        pass
+        wx2pango_weights = {
+            wx.FONTWEIGHT_BOLD: pango.WEIGHT_BOLD,
+            wx.FONTWEIGHT_LIGHT: pango.WEIGHT_LIGHT,
+            wx.FONTWEIGHT_NORMAL: pango.WEIGHT_NORMAL,
+        }
+
+        wx2pango_styles = {
+            wx.FONTSTYLE_NORMAL: pango.STYLE_NORMAL,
+            wx.FONTSTYLE_SLANT: pango.STYLE_OBLIQUE,
+            wx.FONTSTYLE_ITALIC: pango.STYLE_ITALIC,
+        }
+
+        cell_attributes = self.code_array.cell_attributes[self.key]
+
+        # Text font attributes
+        textfont = cell_attributes["textfont"]
+        pointsize = cell_attributes["pointsize"]
+        fontweight = cell_attributes["fontweight"]
+        fontstyle = cell_attributes["fontstyle"]
+        underline = cell_attributes["underline"]
+        strikethrough = cell_attributes["strikethrough"]
+
+        # Text placement attributes
+#        vertical_align = cell_attributes["vertical_align"]
+#        justification = cell_attributes["justification"]
+#        angle = cell_attributes["angle"]
+
+        # Now construct the pango font
+        font_description = pango.FontDescription(
+            " ".join([textfont, str(pointsize)]))
+        pango_layout.set_font_description(font_description)
+
+        attrs = pango.AttrList()
+
+        # Underline
+        attrs.insert(pango.AttrUnderline(underline, 0, MAX_RESULT_LENGTH))
+
+        # Weight
+        weight = wx2pango_weights[fontweight]
+        attrs.insert(pango.AttrWeight(weight, 0, MAX_RESULT_LENGTH))
+
+        # Style
+        style = wx2pango_styles[fontstyle]
+        attrs.insert(pango.AttrStyle(style, 0, MAX_RESULT_LENGTH))
+
+        # Strikethrough
+        attrs.insert(pango.AttrStrikethrough(strikethrough, 0,
+                                             MAX_RESULT_LENGTH))
+
+        pango_layout.set_attributes(attrs)
 
     def draw_text(self, content):
         """Draws matplotlib cell content to context"""
 
-        self.context.set_source_rgb(0, 0, 0)
+        # Text color attributes
+        self.context.set_source_rgb(*self._get_text_color())
 
         ptx = pangocairo.CairoContext(self.context)
         pango_layout = ptx.create_layout()
+        self.set_font(pango_layout)
         pango_layout.set_text(unicode(content))
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
@@ -233,7 +298,7 @@ class GridCellContentCairoRenderer(object):
         content = self.get_cell_content()
 
         pos_x, pos_y = self.rect[:2]
-        self.context.translate(pos_x, pos_y)
+        self.context.translate(pos_x + 2, pos_y + 2)
 
         if isinstance(content, wx._gdi.Bitmap):
             # A bitmap is returned --> Draw it!
@@ -246,7 +311,7 @@ class GridCellContentCairoRenderer(object):
         elif content is not None:
             self.draw_text(content)
 
-        self.context.translate(-pos_x, -pos_y)
+        self.context.translate(-pos_x - 2, -pos_y - 2)
 
 
 class GridCellBackgroundCairoRenderer(object):
