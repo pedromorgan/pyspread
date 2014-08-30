@@ -23,10 +23,11 @@ import wx
 
 import src.lib.i18n as i18n
 from src.lib.selection import Selection
+from src.lib._string_helpers import quote
 from src.actions._main_window_actions import Actions
 from src.gui._events import post_command_event
 
-#use ugettext instead of getttext to avoid unicode errors
+# use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -68,17 +69,11 @@ class CellActions(Actions):
     def quote_code(self, key, mark_unredo=True):
         """Returns string quoted code """
 
-        old_code = self.grid.code_array(key)
-        try:
-            old_code = old_code.rstrip()
+        code = self.grid.code_array(key)
+        quoted_code = quote(code)
 
-        except AttributeError:
-            # Old code is None --> There is no code to quote
-            return
-
-        if old_code and old_code[0] + old_code[-1] not in ('""', "''") and \
-            '"' not in old_code:
-            self.set_code(key, '"' + old_code + '"', mark_unredo=mark_unredo)
+        if quoted_code is not None:
+            self.set_code(key, quoted_code, mark_unredo=mark_unredo)
 
     def delete_cell(self,  key, mark_unredo=True):
         """Deletes key cell"""

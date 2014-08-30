@@ -231,10 +231,14 @@ class GridCellContentCairoRenderer(object):
         self.context.paint()
         self.context.restore()
 
-    def draw_matplotlib(self, content):
+    def draw_matplotlib_figure(self, content):
         """Draws matplotlib cell content to context"""
 
-        pass
+#        import matplotlib
+#        matplotlib.use('Cairo')
+#
+#        self.context.set_source(content.canvas)
+#        self.context.paint()
 
     def _get_text_color(self):
         """Returns text color rgb tuple of right line"""

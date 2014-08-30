@@ -57,6 +57,8 @@ from wx.lib.intctrl import IntCtrl, EVT_INT
 
 import src.lib.i18n as i18n
 from src.lib.parsers import common_start
+from src.lib._string_helpers import quote
+
 from src.config import config
 from src.sysvars import get_default_font, is_gtk
 
@@ -867,7 +869,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
 
                 # Ignore <Ctrl> + <Enter> and Quote content
                 if event.ControlDown():
-                    self.SetValue('"' + self.GetValue() + '"')
+                    self.SetValue(quote(self.GetValue()))
 
                 # Do not process <Enter>
                 return

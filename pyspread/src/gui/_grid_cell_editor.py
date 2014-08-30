@@ -34,6 +34,7 @@ import string
 
 from _events import post_command_event
 from src.gui._widgets import GridEventMixin
+from src.lib._string_helpers import quote
 
 
 class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
@@ -112,6 +113,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         # Mirror our changes onto the main_window's code bar
         self._tc.Bind(wx.EVT_CHAR, self.OnChar)
+        self._tc.Bind(wx.EVT_KEY_UP, self.OnKeyUp)
 
         # Save cell and grid info
         self._row = row
@@ -262,6 +264,13 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         val = self._tc.GetValue()
         post_command_event(self.main_window, self.TableChangedMsg,
                            updated_cell=val)
+        event.Skip()
+
+    def OnKeyUp(self, event):
+        # Handle <Ctrl> + <Enter>
+        keycode = event.GetKeyCode()
+        if keycode == 13 and event.ControlDown():
+            self._tc.SetValue(quote(self._tc.GetValue()))
         event.Skip()
 
     def _update_control_length(self):
