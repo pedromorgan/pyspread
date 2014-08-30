@@ -796,11 +796,24 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
         main_window.Bind(self.EVT_CMD_SELECTION, self.OnGridSelection)
         main_window.Bind(self.EVT_ENTRYLINE_LOCK, self.OnLock)
 
+        self.Bind(wx.EVT_SET_FOCUS, self.OnFocus)
+        self.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
+
         self.SetToolTip(wx.ToolTip(_("Enter Python expression here.")))
 
         self.Bind(wx.EVT_TEXT, self.OnText)
         self.Bind(wx.EVT_CHAR, self.OnChar)
         self.main_window.Bind(self.EVT_CMD_TABLE_CHANGED, self.OnTableChanged)
+
+    def OnFocus(self, event):
+        """SetFocus event handler"""
+
+        event.Skip()
+
+    def OnKillFocus(self, event):
+        """KillFocus event handler"""
+
+        event.Skip()
 
     def OnContentChange(self, event):
         """Event handler for updating the content"""
@@ -923,7 +936,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                 docs = []
                 for completion in completions:
                     doc = completion.docstring(fast=False)
-                    if not doc:
+                    if not doc and code:
                         # Is the completion part of a module?
                         code_segment = \
                             code[:position+1].split()[-1]
