@@ -303,15 +303,30 @@ class GridCellContentCairoRenderer(object):
     def draw_text(self, content):
         """Draws text cell content to context"""
 
+        wx2pango_alignment = {
+            "left": pango.ALIGN_LEFT,
+            "center": pango.ALIGN_CENTER,
+            "right": pango.ALIGN_RIGHT,
+        }
+
+        cell_attributes = self.code_array.cell_attributes[self.key]
+
         # Text color attributes
         self.context.set_source_rgb(*self._get_text_color())
 
         ptx = pangocairo.CairoContext(self.context)
         pango_layout = ptx.create_layout()
         self.set_font(pango_layout)
+
         pango_layout.set_wrap(pango.WRAP_WORD_CHAR)
-        pango_layout.set_width(int(self.rect[2]) * pango.SCALE)
+        # TODO: Check  reasons for right border deviation
+        pango_layout.set_width((int(self.rect[2]) - 4) * pango.SCALE)
+
+        alignment = cell_attributes["justification"]
+        pango_layout.set_alignment(wx2pango_alignment[alignment])
+
         pango_layout.set_text(unicode(content))
+
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
 
