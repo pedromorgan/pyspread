@@ -325,10 +325,23 @@ class GridCellContentCairoRenderer(object):
         alignment = cell_attributes["justification"]
         pango_layout.set_alignment(wx2pango_alignment[alignment])
 
+        # Shift text for vertical alignment
+        extents = pango_layout.get_pixel_extents()
+
+        downshift = 0
+
+        if cell_attributes["vertical_align"] == "bottom":
+            downshift = self.rect[3] - extents[1][3]
+
+        elif cell_attributes["vertical_align"] == "middle":
+            downshift = int((self.rect[3] - extents[1][3]) / 2)
+
+        self.context.translate(0, downshift)
         pango_layout.set_text(unicode(content))
 
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
+        self.context.translate(0, -downshift)
 
     def draw(self):
         """Draws cell content to context"""
