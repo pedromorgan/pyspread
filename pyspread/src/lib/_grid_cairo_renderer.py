@@ -301,7 +301,7 @@ class GridCellContentCairoRenderer(object):
         pango_layout.set_attributes(attrs)
 
     def draw_text(self, content):
-        """Draws matplotlib cell content to context"""
+        """Draws text cell content to context"""
 
         # Text color attributes
         self.context.set_source_rgb(*self._get_text_color())
@@ -309,6 +309,8 @@ class GridCellContentCairoRenderer(object):
         ptx = pangocairo.CairoContext(self.context)
         pango_layout = ptx.create_layout()
         self.set_font(pango_layout)
+        pango_layout.set_wrap(pango.WRAP_WORD_CHAR)
+        pango_layout.set_width(int(self.rect[2]) * pango.SCALE)
         pango_layout.set_text(unicode(content))
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
