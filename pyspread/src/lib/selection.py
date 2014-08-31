@@ -106,6 +106,18 @@ class Selection(object):
             top, left = top_left
             bottom, right = bottom_right
 
+            if top is None:
+                top = 0
+
+            if left is None:
+                left = 0
+
+            if bottom is None:
+                bottom = cell_row
+
+            if right is None:
+                right = cell_col
+
             if top <= cell_row <= bottom and left <= cell_col <= right:
                 return True
 
@@ -131,10 +143,29 @@ class Selection(object):
 
         """
 
+        def shifted_block(block0, block1, delta_row, delta_col):
+            """Returns shifted block"""
+
+            try:
+                row = block0 + delta_row
+            except TypeError:
+                row = block0
+
+            try:
+                col = block1 + delta_col
+            except TypeError:
+                col = block1
+
+            return row, col
+
         delta_row, delta_col = value
 
-        block_tl = [(t + delta_row, l + delta_col) for t, l in self.block_tl]
-        block_br = [(t + delta_row, l + delta_col) for t, l in self.block_br]
+        block_tl = [shifted_block(t, l, delta_row, delta_col)
+                    for t, l in self.block_tl]
+
+        block_br = [shifted_block(b, r, delta_row, delta_col)
+                    for b, r in self.block_br]
+
         rows = [row + delta_row for row in self.rows]
         cols = [col + delta_col for col in self.cols]
         cells = [(r + delta_row, c + delta_col) for r, c in self.cells]
