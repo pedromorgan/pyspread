@@ -34,6 +34,8 @@ Provides
 
 """
 
+import math
+
 import cairo
 import wx
 import wx.lib.wxcairo
@@ -271,11 +273,6 @@ class GridCellContentCairoRenderer(object):
         underline = cell_attributes["underline"]
         strikethrough = cell_attributes["strikethrough"]
 
-        # Text placement attributes
-#        vertical_align = cell_attributes["vertical_align"]
-#        justification = cell_attributes["justification"]
-#        angle = cell_attributes["angle"]
-
         # Now construct the pango font
         font_description = pango.FontDescription(
             " ".join([textfont, str(pointsize)]))
@@ -300,6 +297,33 @@ class GridCellContentCairoRenderer(object):
 
         pango_layout.set_attributes(attrs)
 
+    def _rotate_cell(self, angle, rect, back=False):
+        """Rotates and translates cell if angle in [90, -90, 180]"""
+
+        if angle == 90 and not back:
+            self.context.rotate(-math.pi / 2.0)
+            self.context.translate(-rect[2], 0)
+
+        elif angle == 90 and back:
+            self.context.translate(rect[2], 0)
+            self.context.rotate(math.pi / 2.0)
+
+        elif angle == -90 and not back:
+            self.context.rotate(math.pi / 2.0)
+            self.context.translate(0, -rect[3])
+
+        elif angle == -90 and back:
+            self.context.translate(0, rect[3])
+            self.context.rotate(-math.pi / 2.0)
+
+        elif angle == 180 and not back:
+            self.context.rotate(math.pi)
+            self.context.translate(-rect[2] + 2, -rect[3] + 2)
+
+        elif angle == 180 and back:
+            self.context.translate(rect[2] - 2, rect[3] - 2)
+            self.context.rotate(-math.pi)
+
     def draw_text(self, content):
         """Draws text cell content to context"""
 
@@ -311,6 +335,13 @@ class GridCellContentCairoRenderer(object):
 
         cell_attributes = self.code_array.cell_attributes[self.key]
 
+        angle = cell_attributes["angle"]
+
+        if angle in [-90, 90]:
+            rect = self.rect[1], self.rect[0], self.rect[3], self.rect[2]
+        else:
+            rect = self.rect
+
         # Text color attributes
         self.context.set_source_rgb(*self._get_text_color())
 
@@ -319,8 +350,8 @@ class GridCellContentCairoRenderer(object):
         self.set_font(pango_layout)
 
         pango_layout.set_wrap(pango.WRAP_WORD_CHAR)
-        # TODO: Check  reasons for right border deviation
-        pango_layout.set_width((int(self.rect[2]) - 4) * pango.SCALE)
+
+        pango_layout.set_width((int(rect[2]) - 4) * pango.SCALE)
 
         alignment = cell_attributes["justification"]
         pango_layout.set_alignment(wx2pango_alignment[alignment])
@@ -331,17 +362,21 @@ class GridCellContentCairoRenderer(object):
         downshift = 0
 
         if cell_attributes["vertical_align"] == "bottom":
-            downshift = self.rect[3] - extents[1][3]
+            downshift = rect[3] - extents[1][3]
 
         elif cell_attributes["vertical_align"] == "middle":
-            downshift = int((self.rect[3] - extents[1][3]) / 2)
+            downshift = int((rect[3] - extents[1][3]) / 2)
 
+        self._rotate_cell(angle, rect)
         self.context.translate(0, downshift)
+
         pango_layout.set_text(unicode(content))
 
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
+
         self.context.translate(0, -downshift)
+        self._rotate_cell(angle, rect, back=True)
 
     def draw(self):
         """Draws cell content to context"""
