@@ -35,10 +35,14 @@ Provides
 """
 
 import math
+import StringIO
 
 import cairo
 import wx
 import wx.lib.wxcairo
+import matplotlib
+import rsvg
+
 import matplotlib.pyplot
 import pango
 import pangocairo
@@ -233,14 +237,35 @@ class GridCellContentCairoRenderer(object):
         self.context.paint()
         self.context.restore()
 
+    def getsvg_from_matplotlib_figure(self, figure):
+        """Returns svg from matplotlib figure"""
+
+        svg_io = StringIO.StringIO()
+        figure.savefig(svg_io, format='svg', transparent=True,
+                       bbox_inches='tight', pad_inches=0)
+        svg_str = svg_io.getvalue()
+        svg_io.close()
+
+        return svg_str
+
+    def draw_svg(self, svg_str):
+        """Draws svg string to cell"""
+        ## TODO: Does nt work
+        svg = rsvg.Handle()
+        svg.write(buffer=svg_str)
+        dim = svg.get_dimension_data()
+        scale_x = self.rect[2] / float(dim[0])
+        scale_y = self.rect[3] / float(dim[1])
+        self.context.save()
+        self.context.scale(scale_x, scale_y)
+        svg.render_cairo(self.context)
+        self.context.restore()
+
     def draw_matplotlib_figure(self, content):
         """Draws matplotlib cell content to context"""
 
-#        import matplotlib
-#        matplotlib.use('Cairo')
-#
-#        self.context.set_source(content.canvas)
-#        self.context.paint()
+        svg_str = self.getsvg_from_matplotlib_figure(content)
+        self.draw_svg(svg_str)
 
     def _get_text_color(self):
         """Returns text color rgb tuple of right line"""
