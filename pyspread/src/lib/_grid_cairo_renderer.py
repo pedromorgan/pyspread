@@ -100,6 +100,9 @@ class GridCairoRenderer(object):
         pos_x = X_OFFSET
         pos_y = Y_OFFSET
 
+        cell_attributes = self.code_array.cell_attributes[(row, col, tab)]
+        merge_area = cell_attributes["merge_area"]
+
         for __row in xrange(top_row, row):
             __row_height = self.code_array.get_row_height(__row, tab)
             pos_y += __row_height
@@ -108,8 +111,24 @@ class GridCairoRenderer(object):
             __col_width = self.code_array.get_col_width(__col, tab)
             pos_x += __col_width
 
-        height = self.code_array.get_row_height(row, tab)
-        width = self.code_array.get_col_width(col, tab)
+        if merge_area is None:
+            height = self.code_array.get_row_height(row, tab)
+            width = self.code_array.get_col_width(col, tab)
+        else:
+            # We have a merged cell
+            top, left, bottom, right = merge_area
+            # Are we drawing the top left cell?
+            if top == row and left == col:
+                # Set rect to merge area
+                heights = (self.code_array.get_row_height(__row, tab)
+                           for __row in xrange(top, bottom+1))
+                widths = (self.code_array.get_col_width(__col, tab)
+                          for __col in xrange(left, right+1))
+                height = sum(heights)
+                width = sum(widths)
+            else:
+                # Do not draw the cell because it is hidden
+                return
 
         return pos_x, pos_y, width, height
 
@@ -123,12 +142,14 @@ class GridCairoRenderer(object):
         for row in xrange(row_start, row_stop):
             for col in xrange(col_start, col_stop):
                 for tab in xrange(tab_start, tab_stop):
-                    cell_renderer = GridCellCairoRenderer(
-                        self.context,
-                        self.code_array,
-                        (row, col, tab),  # Key
-                        self.get_cell_rect(row, col, tab)  # Rect
-                    )
+                    rect = self.get_cell_rect(row, col, tab)  # Rect
+                    if rect is not None:
+                        cell_renderer = GridCellCairoRenderer(
+                            self.context,
+                            self.code_array,
+                            (row, col, tab),  # Key
+                            rect
+                        )
 
                     cell_renderer.draw()
 
