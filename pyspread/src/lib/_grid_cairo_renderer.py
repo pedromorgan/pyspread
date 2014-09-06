@@ -242,7 +242,7 @@ class GridCellContentCairoRenderer(object):
 
         svg_io = StringIO.StringIO()
         figure.savefig(svg_io, format='svg', transparent=True,
-                       bbox_inches='tight', pad_inches=0)
+                       bbox_inches='tight', pad_inches=0.1)
         svg_str = svg_io.getvalue()
         svg_io.close()
 
@@ -250,12 +250,12 @@ class GridCellContentCairoRenderer(object):
 
     def draw_svg(self, svg_str):
         """Draws svg string to cell"""
-        ## TODO: Does nt work
-        svg = rsvg.Handle()
-        svg.write(buffer=svg_str)
+
+        svg = rsvg.Handle(data=svg_str)
+
         dim = svg.get_dimension_data()
-        scale_x = self.rect[2] / float(dim[0])
-        scale_y = self.rect[3] / float(dim[1])
+        scale_x = self.rect[2] / float(dim[0] + 4)  # Avoid cut offs
+        scale_y = self.rect[3] / float(dim[1] + 2)
         self.context.save()
         self.context.scale(scale_x, scale_y)
         svg.render_cairo(self.context)
