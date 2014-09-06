@@ -29,9 +29,7 @@ from ast import literal_eval
 
 import wx
 
-##from sysvars import get_color, get_font_string
-
-VERSION = "0.3.2"
+VERSION = "0.3.3"
 
 
 class DefaultConfig(object):
