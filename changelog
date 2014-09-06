@@ -3,6 +3,10 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+0.3.3
+-----
+Two issues for choosing GPG keys with wxPython 3.x fixed
+
 0.3.2
 -----
 

@@ -889,7 +889,7 @@ class TestSelectionActions(object):
         """Tests for quote_selection"""
 
         self.grid.code_array[(1, 0, 0)] = "Q1"
-        self.grid.code_array[(2, 0, 0)] = '"NQ1"'
+        self.grid.code_array[(2, 0, 0)] = 'u"NQ1"'
 
         self.grid.actions.select_cell(1, 0)
         self.grid.actions.select_cell(2, 0, add_to_selected=True)
@@ -897,7 +897,7 @@ class TestSelectionActions(object):
         self.grid.actions.quote_selection()
 
         assert self.grid.code_array((1, 0, 0)) == '"Q1"'
-        assert self.grid.code_array((2, 0, 0)) == '"NQ1"'
+        assert self.grid.code_array((2, 0, 0)) == 'u"NQ1"'
 
 class TestFindActions(object):
     """FindActions test class"""
