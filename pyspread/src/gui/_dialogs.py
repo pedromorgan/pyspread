@@ -1363,7 +1363,7 @@ class GPGParamsDialog(wx.Dialog):
     def __init__(self, parent, ID, title, params):
         wx.Dialog.__init__(self, parent, ID, title)
 
-        sizer = wx.FlexGridSizer(len(params), 2, 5, 5)
+        sizer = wx.FlexGridSizer(cols=2, vgap=5, hgap=5)
 
         label = wx.StaticText(self, -1, _("GPG key data"))
         sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)

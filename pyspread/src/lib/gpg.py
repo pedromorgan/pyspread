@@ -67,8 +67,6 @@ def choose_key(gpg_private_keys, gpg_private_fingerprints):
     dlg = wx.SingleChoiceDialog(None, msg, _('Choose key'), uid_strings_fp,
                                 wx.CHOICEDLG_STYLE)
 
-    dlg.SetBestFittingSize()
-
     childlist = list(dlg.GetChildren())
     childlist[-3].SetLabel(_("Use chosen key"))
     childlist[-2].SetLabel(_("Create new key"))
