@@ -78,7 +78,7 @@ class TestCellActions(object):
         self.grid.actions.quote_code(key)
 
         if code and code[0] not in ['"', "'"] and code[-1] not in ['"', "'"]:
-            assert self.grid.code_array(key) == '"' + code + '"'
+            assert self.grid.code_array(key) == 'u"' + code + '"'
         elif code and code is not None:
             assert self.grid.code_array(key) == code
 

@@ -724,7 +724,6 @@ class TestTableActions(object):
         for __key in data:
             self.grid.code_array[__key] = data[__key]
 
-
         selection.grid_select(self.grid)
 
         try:
@@ -896,8 +895,9 @@ class TestSelectionActions(object):
 
         self.grid.actions.quote_selection()
 
-        assert self.grid.code_array((1, 0, 0)) == '"Q1"'
+        assert self.grid.code_array((1, 0, 0)) == 'u"Q1"'
         assert self.grid.code_array((2, 0, 0)) == 'u"NQ1"'
+
 
 class TestFindActions(object):
     """FindActions test class"""
