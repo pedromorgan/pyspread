@@ -35,7 +35,7 @@ Provides
 """
 
 import math
-import StringIO
+import cStringIO
 
 import cairo
 import wx
@@ -261,7 +261,7 @@ class GridCellContentCairoRenderer(object):
     def getsvg_from_matplotlib_figure(self, figure):
         """Returns svg from matplotlib figure"""
 
-        svg_io = StringIO.StringIO()
+        svg_io = cStringIO.StringIO()
         figure.savefig(svg_io, format='svg', transparent=True,
                        bbox_inches='tight', pad_inches=0.1)
         svg_str = svg_io.getvalue()
