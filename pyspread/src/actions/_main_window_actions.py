@@ -270,7 +270,7 @@ class ExchangeActions(Actions):
 
         row_tb = 0, 50
         col_rl = 0, 10
-        tab_fl = 0, 1
+        tab_fl = 0, 2
 
         grid_cairo_renderer = GridCairoRenderer(
             context,
@@ -280,8 +280,6 @@ class ExchangeActions(Actions):
             tab_fl)
 
         grid_cairo_renderer.draw()
-
-        context.show_page()
 
 
 class PrintActions(Actions):

@@ -139,9 +139,9 @@ class GridCairoRenderer(object):
         col_start, col_stop = self.col_rl
         tab_start, tab_stop = self.tab_fl
 
-        for row in xrange(row_start, row_stop):
-            for col in xrange(col_start, col_stop):
-                for tab in xrange(tab_start, tab_stop):
+        for tab in xrange(tab_start, tab_stop):
+            for row in xrange(row_start, row_stop):
+                for col in xrange(col_start, col_stop):
                     rect = self.get_cell_rect(row, col, tab)  # Rect
                     if rect is not None:
                         cell_renderer = GridCellCairoRenderer(
@@ -152,6 +152,7 @@ class GridCairoRenderer(object):
                         )
 
                     cell_renderer.draw()
+            self.context.show_page()
 
 
 class GridCellCairoRenderer(object):
