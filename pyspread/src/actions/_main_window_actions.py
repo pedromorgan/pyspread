@@ -256,28 +256,25 @@ class ExchangeActions(Actions):
         if not HAS_CAIRO:
             return
 
-        paper_inch_sizes = {
-            "A4": (8.267, 11.692),
-            "Letter": (8.5, 11.0),
-        }
+        pdf_export_info = self.main_window.interfaces.get_pdf_export_info()
 
-        ctx_width_inch, ctx_height_inch = paper_inch_sizes["A4"]
-        ctx_width = ctx_width_inch * 72.0
-        ctx_height = ctx_height_inch * 72.0
+        if pdf_export_info is None:
+            # Dialog has been canceled
+            return
+
+        ctx_width = pdf_export_info["paper_width"]
+        ctx_height = pdf_export_info["paper_height"]
 
         surface = cairo.PDFSurface(filepath, ctx_width, ctx_height)
         context = cairo.Context(surface)
 
-        row_tb = 0, 50
-        col_rl = 0, 10
-        tab_fl = 0, 2
-
         grid_cairo_renderer = GridCairoRenderer(
             context,
             self.code_array,
-            row_tb,
-            col_rl,
-            tab_fl)
+            (pdf_export_info["top_row"], pdf_export_info["bottom_row"]),
+            (pdf_export_info["left_col"], pdf_export_info["right_col"]),
+            (pdf_export_info["first_tab"], pdf_export_info["last_tab"]),
+        )
 
         grid_cairo_renderer.draw()
 
