@@ -43,9 +43,9 @@ import src.lib.i18n as i18n
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from _dialogs import PreferencesDialog, GPGParamsDialog, PasteAsDialog
-from _dialogs import PdfExportDialog
+from src.gui._pdf_export_dialog import PdfExportDialog
 
-#use ugettext instead of getttext to avoid unicode errors
+# use ugettext instead of gettext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -264,13 +264,12 @@ class ModalDialogInterfaceMixin(object):
 
         if pdf_export_dlg.ShowModal() == wx.ID_OK:
             pdf_info = pdf_export_dlg.get_pdf_info()
+            pdf_export_dlg.Destroy()
+            return pdf_info
+
         else:
             pdf_export_dlg.Destroy()
             return
-
-        pdf_export_dlg.Destroy()
-
-        return pdf_info
 
     def get_int_from_user(self, title="Enter integer value",
                           cond_func=lambda i: i is not None):

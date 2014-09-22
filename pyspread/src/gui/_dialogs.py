@@ -38,11 +38,9 @@ Provides:
   - PreferencesDialog
   - GPGParamsDialog
   - PasteAsDialog
-  - PdfExportDialog
 
 """
 
-from collections import OrderedDict
 import cStringIO
 import csv
 import os
@@ -69,7 +67,8 @@ import ast
 from traceback import print_exception
 from StringIO import StringIO
 from sys import exc_info
-#use ugettext instead of getttext to avoid unicode errors
+
+# use ugettext instead of gettext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -306,7 +305,7 @@ class CsvParameterWidgets(object):
             handler = getattr(self, self.widget_handlers[pname])
             self.parent.Bind(event_type, handler, widget)
 
-            #Tool tips
+            # Tool tips
             label.SetToolTipString(phelp)
             widget.SetToolTipString(phelp)
 
@@ -394,7 +393,6 @@ class CsvParameterWidgets(object):
         else:
             dialect = csv.get_dialect(dialect_name)
 
-        #print dialect, self.has_header
         self._update_settings(dialect)
 
         self.choice_dialects.SetValue(value)
@@ -489,7 +487,6 @@ class CSVPreviewGrid(wx.grid.Grid):
     def _set_properties(self):
         self.SetRowLabelSize(0)
         self.SetColLabelSize(0)
-        #self.EnableEditing(0)
         self.EnableDragGridSize(0)
 
     def OnGridEditorCreated(self, event):
@@ -1464,90 +1461,3 @@ class PasteAsDialog(wx.Dialog):
         }
 
     parameters = property(get_parameters)
-
-
-class PdfExportDialog(wx.Dialog):
-    """Gets PDF export parameters from user"""
-
-    paper_sizes_points = OrderedDict([
-        ("A4", (595, 842)),
-        ("Letter", (612, 792)),
-        ("LetterSmall", (612, 792)),
-        ("Tabloid", (792, 1224)),
-        ("Ledger", (1224, 792)),
-        ("Legal", (612, 1008)),
-        ("Statement", (396, 612)),
-        ("Executive", (540, 720)),
-        ("A0", (2384, 3371)),
-        ("A1", (1685, 2384)),
-        ("A2", (1190, 1684)),
-        ("A3", (842, 1190)),
-        ("A4Small", (595, 842)),
-        ("A5", (420, 595)),
-        ("B4", (729, 1032)),
-        ("B5", (516, 729)),
-        ("Folio", (612, 936)),
-        ("Quarto", (610, 780)),
-        ("10x14", (720, 1008)),
-        ])
-
-    def __init__(self, parent, *args, **kwargs):
-        wx.Dialog.__init__(self, parent, *args, **kwargs)
-
-        # Widgets: Paper width, height or standard size
-        # Orientation Protrait, Landscape
-        # row, col, tab window or screen visible
-
-        sizer = wx.FlexGridSizer(cols=2, vgap=5, hgap=5)
-#
-#        label = wx.StaticText(self, -1, _("GPG key data"))
-#        sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
-#        sizer.Add(wx.Panel(self, -1), 0, wx.ALIGN_CENTRE | wx.ALL, 5)
-#
-#        self.textctrls = []
-#
-#        for labeltext, __ in params:
-#            label = wx.StaticText(self, -1, labeltext)
-#            sizer.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
-#
-#            textctrl = wx.TextCtrl(self, -1, "", size=(80, -1))
-#
-#            self.textctrls.append(textctrl)
-#
-#            sizer.Add(textctrl, 1, wx.ALIGN_CENTRE | wx.ALL, 5)
-#
-        ok_button = wx.Button(self, wx.ID_OK)
-        ok_button.SetDefault()
-        sizer.Add(ok_button)
-
-        cancel_button = wx.Button(self, wx.ID_CANCEL)
-        sizer.Add(cancel_button)
-
-        self.SetSizer(sizer)
-        sizer.Fit(self)
-
-    def get_pdf_info(self):
-        """Returns a dict with the dialog PDF info
-
-        Dict keys are:
-        top_row, bottom_row, left_col, right_col, first_tab, last_tab,
-        paper_width, paper_height
-
-        """
-
-        pdf_info = {}
-
-        pdf_info["top_row"] = 0
-        pdf_info["bottom_row"] = 10
-        pdf_info["left_col"] = 0
-        pdf_info["right_col"] = 10
-        pdf_info["first_tab"] = 0
-        pdf_info["last_tab"] = 2
-
-        pdf_info["paper_width"] = self.paper_sizes_points["A4"][0]
-        pdf_info["paper_height"] = self.paper_sizes_points["A4"][1]
-
-        return pdf_info
-
-
-# end of class PdfExportDialog

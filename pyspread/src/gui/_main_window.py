@@ -939,6 +939,8 @@ class MainWindowEventHandlers(EventMixin):
         path = "/home/mn/tmp/test.pdf"
         self.main_window.actions.export_pdf(path)
 
+        event.Skip()
+
     def OnApprove(self, event):
         """File approve event handler"""
 
