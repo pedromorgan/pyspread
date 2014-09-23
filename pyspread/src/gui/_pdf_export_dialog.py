@@ -83,6 +83,8 @@ class PdfExportDialog(wx.Dialog):
         self.__do_layout()
         # end wxGlade
 
+        self.page_layout_choice.Bind(wx.EVT_CHOICE, self.on_page_layout_choice)
+
     def __set_properties(self):
         # begin wxGlade: PdfExportDialog.__set_properties
         self.SetTitle(_("PDF export options"))
@@ -91,8 +93,12 @@ class PdfExportDialog(wx.Dialog):
         self.portrait_landscape_radio_box.SetSelection(0)
         self.page_width_label.SetToolTipString(_("Page width in inches"))
         self.page_width_text_ctrl.SetToolTipString(_("Page width in inches"))
+        self.page_width_text_ctrl.SetValue(
+            str(self.paper_sizes_points["A4"][0] / 72.0))
         self.page_height_label.SetToolTipString(_("Page height in inches"))
         self.page_height_text_ctrl.SetToolTipString(_("Page height in inches"))
+        self.page_height_text_ctrl.SetValue(
+            str(self.paper_sizes_points["A4"][1] / 72.0))
         self.page_layout_choice.SetToolTipString(
             _("Choose from predefined page layouts"))
         self.page_layout_choice.SetSelection(0)
@@ -174,6 +180,15 @@ class PdfExportDialog(wx.Dialog):
         self.Layout()
         # end wxGlade
 
+    def on_page_layout_choice(self, event):
+        """Page layout choice event handler"""
+
+        width, height = self.paper_sizes_points[event.GetString()]
+        self.page_width_text_ctrl.SetValue(str(width / 72.0))
+        self.page_height_text_ctrl.SetValue(str(height / 72.0))
+
+        event.Skip()
+
     def get_pdf_info(self):
         """Returns a dict with the dialog PDF info
 
@@ -192,8 +207,10 @@ class PdfExportDialog(wx.Dialog):
         pdf_info["first_tab"] = self.first_tab_text_ctrl.GetValue()
         pdf_info["last_tab"] = self.last_tab_text_ctrl.GetValue()
 
-        pdf_info["paper_width"] = float(self.page_width_text_ctrl.GetValue())
-        pdf_info["paper_height"] = float(self.page_height_text_ctrl.GetValue())
+        pdf_info["paper_width"] = float(
+            self.page_width_text_ctrl.GetValue()) * 72.0
+        pdf_info["paper_height"] = float(
+            self.page_height_text_ctrl.GetValue()) * 72.0
 
         if self.portrait_landscape_radio_box.GetSelection() == 0:
             orientation = "portrait"
