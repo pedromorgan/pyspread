@@ -5,6 +5,7 @@
 #
 
 import wx
+from wx.lib.intctrl import IntCtrl
 from collections import OrderedDict
 import src.lib.i18n as i18n
 _ = i18n.language.ugettext
@@ -48,25 +49,31 @@ class PdfExportDialog(wx.Dialog):
         # begin wxGlade: PdfExportDialog.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
-        self.portrait_landscape_radio_box = wx.RadioBox(self, wx.ID_ANY, _("Layout"), choices=[_("Portrait"), _("Landscape")], majorDimension=2, style=wx.RA_SPECIFY_COLS)
+        self.portrait_landscape_radio_box = \
+            wx.RadioBox(self, wx.ID_ANY, _("Layout"),
+                        choices=[_("Portrait"), _("Landscape")],
+                        majorDimension=2,
+                        style=wx.RA_SPECIFY_COLS)
         self.page_width_label = wx.StaticText(self, wx.ID_ANY, _("Width"))
-        self.page_width_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.page_width_text_ctrl = wx.TextCtrl(self, wx.ID_ANY)
         self.page_height_label = wx.StaticText(self, wx.ID_ANY, _("Height"))
-        self.page_height_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.page_layout_choice = wx.Choice(self, wx.ID_ANY, choices=[_("Letter"), _("A4")])
+        self.page_height_text_ctrl = wx.TextCtrl(self, wx.ID_ANY)
+        self.page_layout_choice = \
+            wx.Choice(self, wx.ID_ANY, choices=self.paper_sizes_points.keys())
         self.sizer_2_staticbox = wx.StaticBox(self, wx.ID_ANY, _("Page"))
         self.top_row_label = wx.StaticText(self, wx.ID_ANY, _("Top row"))
-        self.top_row_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.top_row_text_ctrl = IntCtrl(self, wx.ID_ANY)
         self.bottom_row_label = wx.StaticText(self, wx.ID_ANY, _("Bottom row"))
-        self.bottom_row_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.bottom_row_text_ctrl = IntCtrl(self, wx.ID_ANY)
         self.left_col_label = wx.StaticText(self, wx.ID_ANY, _("Left column"))
-        self.left_col_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.right_col_label = wx.StaticText(self, wx.ID_ANY, _("Right column"))
-        self.right_col_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.left_col_text_ctrl = IntCtrl(self, wx.ID_ANY)
+        self.right_col_label = wx.StaticText(self, wx.ID_ANY,
+                                             _("Right column"))
+        self.right_col_text_ctrl = IntCtrl(self, wx.ID_ANY)
         self.first_tab_label = wx.StaticText(self, wx.ID_ANY, _("First table"))
-        self.first_tab_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.first_tab_text_ctrl = IntCtrl(self, wx.ID_ANY)
         self.last_tab_label = wx.StaticText(self, wx.ID_ANY, _("Last table"))
-        self.last_tab_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.last_tab_text_ctrl = IntCtrl(self, wx.ID_ANY)
         self.sizer_3_staticbox = wx.StaticBox(self, wx.ID_ANY, _("Grid"))
         self.empty_panel = wx.Panel(self, wx.ID_ANY)
         self.cancel_button = wx.Button(self, wx.ID_CANCEL, "")
@@ -79,26 +86,33 @@ class PdfExportDialog(wx.Dialog):
     def __set_properties(self):
         # begin wxGlade: PdfExportDialog.__set_properties
         self.SetTitle(_("PDF export options"))
-        self.portrait_landscape_radio_box.SetToolTipString(_("Choose portrait or landscape page layout"))
+        self.portrait_landscape_radio_box.SetToolTipString(
+            _("Choose portrait or landscape page layout"))
         self.portrait_landscape_radio_box.SetSelection(0)
         self.page_width_label.SetToolTipString(_("Page width in inches"))
         self.page_width_text_ctrl.SetToolTipString(_("Page width in inches"))
         self.page_height_label.SetToolTipString(_("Page height in inches"))
         self.page_height_text_ctrl.SetToolTipString(_("Page height in inches"))
-        self.page_layout_choice.SetToolTipString(_("Choose from predefined page layouts"))
+        self.page_layout_choice.SetToolTipString(
+            _("Choose from predefined page layouts"))
         self.page_layout_choice.SetSelection(0)
         self.top_row_label.SetToolTipString(_("Top row to be exported"))
         self.top_row_text_ctrl.SetToolTipString(_("Top row to be exported"))
         self.bottom_row_label.SetToolTipString(_("Bottom row to be exported"))
-        self.bottom_row_text_ctrl.SetToolTipString(_("Bottom row to be exported"))
+        self.bottom_row_text_ctrl.SetToolTipString(
+            _("Bottom row to be exported"))
         self.left_col_label.SetToolTipString(_("Left column to be exported"))
-        self.left_col_text_ctrl.SetToolTipString(_("Left column to be exported"))
+        self.left_col_text_ctrl.SetToolTipString(
+            _("Left column to be exported"))
         self.right_col_label.SetToolTipString(_("Right column to be exported"))
-        self.right_col_text_ctrl.SetToolTipString(_("Right column to be exported"))
+        self.right_col_text_ctrl.SetToolTipString(
+            _("Right column to be exported"))
         self.first_tab_label.SetToolTipString(_("First table to be exported"))
-        self.first_tab_text_ctrl.SetToolTipString(_("First table to be exported"))
+        self.first_tab_text_ctrl.SetToolTipString(
+            _("First table to be exported"))
         self.last_tab_label.SetToolTipString(_("Last table to be exported"))
-        self.last_tab_text_ctrl.SetToolTipString(_("Last table to be exported"))
+        self.last_tab_text_ctrl.SetToolTipString(
+            _("Last table to be exported"))
         # end wxGlade
 
     def __do_layout(self):
@@ -112,10 +126,13 @@ class PdfExportDialog(wx.Dialog):
         self.sizer_2_staticbox.Lower()
         sizer_2 = wx.StaticBoxSizer(self.sizer_2_staticbox, wx.VERTICAL)
         grid_sizer_3 = wx.FlexGridSizer(1, 5, 0, 0)
-        sizer_2.Add(self.portrait_landscape_radio_box, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL, 3)
-        grid_sizer_3.Add(self.page_width_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+        sizer_2.Add(self.portrait_landscape_radio_box, 0,
+                    wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL, 3)
+        grid_sizer_3.Add(self.page_width_label, 0,
+                         wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_3.Add(self.page_width_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_3.Add(self.page_height_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+        grid_sizer_3.Add(self.page_height_label, 0,
+                         wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_3.Add(self.page_height_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
         grid_sizer_3.Add(self.page_layout_choice, 0, wx.ALL | wx.EXPAND, 3)
         grid_sizer_3.AddGrowableCol(1)
@@ -123,9 +140,11 @@ class PdfExportDialog(wx.Dialog):
         grid_sizer_3.AddGrowableCol(4)
         sizer_2.Add(grid_sizer_3, 3, wx.ALL | wx.EXPAND, 3)
         grid_sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_4.Add(self.top_row_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+        grid_sizer_4.Add(self.top_row_label, 0,
+                         wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_4.Add(self.top_row_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_4.Add(self.bottom_row_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+        grid_sizer_4.Add(self.bottom_row_label, 0,
+                         wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_4.Add(self.bottom_row_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
         grid_sizer_4.Add(self.left_col_label, 0, wx.ALL, 3)
         grid_sizer_4.Add(self.left_col_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
@@ -133,7 +152,8 @@ class PdfExportDialog(wx.Dialog):
         grid_sizer_4.Add(self.right_col_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
         grid_sizer_4.Add(self.first_tab_label, 0, wx.ALL, 3)
         grid_sizer_4.Add(self.first_tab_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_4.Add(self.last_tab_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+        grid_sizer_4.Add(self.last_tab_label, 0,
+                         wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_4.Add(self.last_tab_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
         grid_sizer_4.AddGrowableCol(1)
         grid_sizer_4.AddGrowableCol(3)
@@ -165,12 +185,12 @@ class PdfExportDialog(wx.Dialog):
 
         pdf_info = {}
 
-        pdf_info["top_row"] = 0
-        pdf_info["bottom_row"] = 10
-        pdf_info["left_col"] = 0
-        pdf_info["right_col"] = 10
-        pdf_info["first_tab"] = 0
-        pdf_info["last_tab"] = 2
+        pdf_info["top_row"] = self.top_row_text_ctrl.GetValue()
+        pdf_info["bottom_row"] = self.bottom_row_text_ctrl.GetValue()
+        pdf_info["left_col"] = self.left_col_text_ctrl.GetValue()
+        pdf_info["right_col"] = self.right_col_text_ctrl.GetValue()
+        pdf_info["first_tab"] = self.first_tab_text_ctrl.GetValue()
+        pdf_info["last_tab"] = self.last_tab_text_ctrl.GetValue()
 
         pdf_info["paper_width"] = self.paper_sizes_points["A4"][0]
         pdf_info["paper_height"] = self.paper_sizes_points["A4"][1]
