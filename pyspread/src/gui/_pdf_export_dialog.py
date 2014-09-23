@@ -192,9 +192,18 @@ class PdfExportDialog(wx.Dialog):
         pdf_info["first_tab"] = self.first_tab_text_ctrl.GetValue()
         pdf_info["last_tab"] = self.last_tab_text_ctrl.GetValue()
 
-        pdf_info["paper_width"] = self.paper_sizes_points["A4"][0]
-        pdf_info["paper_height"] = self.paper_sizes_points["A4"][1]
+        pdf_info["paper_width"] = float(self.page_width_text_ctrl.GetValue())
+        pdf_info["paper_height"] = float(self.page_height_text_ctrl.GetValue())
 
+        if self.portrait_landscape_radio_box.GetSelection() == 0:
+            orientation = "portrait"
+        elif self.portrait_landscape_radio_box.GetSelection() == 0:
+            orientation = "landscape"
+        else:
+            raise ValueError("Orientation not in portrait or landscape")
+
+        pdf_info["orientation"] = orientation
+        print pdf_info
         return pdf_info
 
 # end of class PdfExportDialog\
