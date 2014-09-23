@@ -83,13 +83,17 @@ class GridCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, row_tb, col_rl, tab_fl):
+    def __init__(self, context, code_array, row_tb, col_rl, tab_fl,
+                 width, height):
         self.context = context
         self.code_array = code_array
 
         self.row_tb = row_tb
         self.col_rl = col_rl
         self.tab_fl = tab_fl
+
+        self.width = width
+        self.height = height
 
     def get_cell_rect(self, row, col, tab):
         """Returns rectangle of cell on canvas"""
@@ -140,6 +144,18 @@ class GridCairoRenderer(object):
         tab_start, tab_stop = self.tab_fl
 
         for tab in xrange(tab_start, tab_stop):
+            # Scale context to page extent
+            # In order to keep the aspect ration intact use the maximum
+            first_rect = self.get_cell_rect(row_start, col_start, tab)
+            last_rect = self.get_cell_rect(row_stop, col_stop, tab)
+            x_extent = last_rect[0] + last_rect[2] - first_rect[0]
+            y_extent = last_rect[1] + last_rect[3] - first_rect[1]
+
+            scale = min((self.width + X_OFFSET) / float(x_extent),
+                        (self.height + Y_OFFSET) / float(y_extent))
+
+            self.context.scale(scale, scale)
+
             for row in xrange(row_start, row_stop):
                 for col in xrange(col_start, col_stop):
                     rect = self.get_cell_rect(row, col, tab)  # Rect
@@ -152,6 +168,10 @@ class GridCairoRenderer(object):
                         )
 
                     cell_renderer.draw()
+
+            # Undo scaling
+            self.context.scale(1.0 / scale, 1.0 / scale)
+
             self.context.show_page()
 
 

@@ -39,6 +39,8 @@ _ = i18n.language.ugettext
 class PdfExportDialog(wx.Dialog):
     """Gets PDF export parameters from user"""
 
+    # 72 points = 1 inch
+
     paper_sizes_points = OrderedDict([
         ("A4", (595, 842)),
         ("Letter", (612, 792)),
@@ -126,11 +128,13 @@ class PdfExportDialog(wx.Dialog):
         self.bottom_row_text_ctrl.SetToolTipString(
             _("Bottom row to be exported"))
         self.bottom_row_text_ctrl.SetValue(bottom)
-        self.left_col_label.SetToolTipString(_("Left column to be exported"))
+        self.left_col_label.SetToolTipString(
+            _("Leftmost column to be exported"))
         self.left_col_text_ctrl.SetToolTipString(
             _("Left column to be exported"))
         self.left_col_text_ctrl.SetValue(left)
-        self.right_col_label.SetToolTipString(_("Right column to be exported"))
+        self.right_col_label.SetToolTipString(
+            _("Rightmost column to be exported"))
         self.right_col_text_ctrl.SetToolTipString(
             _("Right column to be exported"))
         self.right_col_text_ctrl.SetValue(right)

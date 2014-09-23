@@ -274,6 +274,8 @@ class ExchangeActions(Actions):
             (pdf_export_info["top_row"], pdf_export_info["bottom_row"] + 1),
             (pdf_export_info["left_col"], pdf_export_info["right_col"] + 1),
             (pdf_export_info["first_tab"], pdf_export_info["last_tab"] + 1),
+            ctx_width,
+            ctx_height,
         )
 
         grid_cairo_renderer.draw()
