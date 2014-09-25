@@ -811,3 +811,31 @@ class Background(object):
 
 
 # end of class Background
+
+#    def draw_with_cairo(self)
+#        key = row, col, grid.current_table
+#
+#        rect = self.get_merged_rect(grid, key, rect)
+#
+#        try:
+#            context = wx.lib.wxcairo.ContextFromDC(dc)
+#        except TypeError:
+#            return
+#
+#        if rect is None:
+#            # Merged cell
+#            if grid.is_merged_cell_drawn(key):
+#                row, col, __ = key = self.get_merging_cell(grid, key)
+#                rect = grid.CellToRect(row, col)
+#                rect = self.get_merged_rect(grid, key, rect)
+#            else:
+#                return
+#
+#        rect_tuple = (rect.x - 0.5), (rect.y - 0.5), rect.width, rect.height
+#        cell_renderer = GridCellCairoRenderer(context, self.data_array, key,
+#                                              rect_tuple)
+#
+#        # Scale
+#        cell_renderer.draw()
+#
+#        context.show_page()
