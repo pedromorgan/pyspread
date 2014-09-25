@@ -53,10 +53,6 @@ from src.lib.parsers import color_pack2rgb
 STANDARD_ROW_HEIGHT = 20
 STANDARD_COL_WIDTH = 50
 
-X_OFFSET = 20.5
-Y_OFFSET = 20.5
-
-
 try:
     from src.config import config
     MAX_RESULT_LENGTH = config["max_result_length"]
@@ -86,11 +82,15 @@ class GridCairoRenderer(object):
     \tPage height in points
     * orientation: String in ["portrait", "landscape"]
     \tPage orientation
+    * x_offset: Float, defaults to 20.5
+    \t X offset from bage border in points
+    * y_offset: Float, defaults to 20.5
+    \t Y offset from bage border in points
 
     """
 
     def __init__(self, context, code_array, row_tb, col_rl, tab_fl,
-                 width, height, orientation):
+                 width, height, orientation, x_offset=20.5, y_offset=20.5):
         self.context = context
         self.code_array = code_array
 
@@ -101,6 +101,9 @@ class GridCairoRenderer(object):
         self.width = width
         self.height = height
 
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+
         self.orientation = orientation
 
     def get_cell_rect(self, row, col, tab):
@@ -109,8 +112,8 @@ class GridCairoRenderer(object):
         top_row = self.row_tb[0]
         left_col = self.col_rl[0]
 
-        pos_x = X_OFFSET
-        pos_y = Y_OFFSET
+        pos_x = self.x_offset
+        pos_y = self.y_offset
 
         cell_attributes = self.code_array.cell_attributes[(row, col, tab)]
         merge_area = cell_attributes["merge_area"]
@@ -155,14 +158,26 @@ class GridCairoRenderer(object):
             # Scale context to page extent
             # In order to keep the aspect ration intact use the maximum
             first_rect = self.get_cell_rect(row_start, col_start, tab)
-            last_rect = self.get_cell_rect(row_stop, col_stop, tab)
+            last_rect = self.get_cell_rect(row_stop - 1, col_stop - 1, tab)
             x_extent = last_rect[0] + last_rect[2] - first_rect[0]
             y_extent = last_rect[1] + last_rect[3] - first_rect[1]
 
-            scale = min((self.width + X_OFFSET) / float(x_extent),
-                        (self.height + Y_OFFSET) / float(y_extent))
+            scale_x = (self.width - 2 * self.x_offset) / float(x_extent)
+            scale_y = (self.height - 2 * self.y_offset) / float(y_extent)
 
+            # Translate offset to o
+            self.context.translate(first_rect[0], first_rect[1])
+
+            # Do not upscale
+            scale = min(scale_x, scale_y, 1)
             self.context.scale(scale, scale)
+
+            # Translate offset
+            self.context.translate(-self.x_offset, -self.y_offset)
+
+            # TODO: Center the grid on the page
+
+            # Render cells
 
             for row in xrange(row_start, row_stop):
                 for col in xrange(col_start, col_stop):
