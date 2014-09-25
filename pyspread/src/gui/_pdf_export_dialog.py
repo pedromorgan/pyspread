@@ -238,13 +238,13 @@ class PdfExportDialog(wx.Dialog):
 
         if self.portrait_landscape_radio_box.GetSelection() == 0:
             orientation = "portrait"
-        elif self.portrait_landscape_radio_box.GetSelection() == 0:
+        elif self.portrait_landscape_radio_box.GetSelection() == 1:
             orientation = "landscape"
         else:
             raise ValueError("Orientation not in portrait or landscape")
 
         pdf_info["orientation"] = orientation
-        print pdf_info
+
         return pdf_info
 
 # end of class PdfExportDialog\

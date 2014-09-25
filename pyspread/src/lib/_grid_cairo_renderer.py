@@ -80,11 +80,17 @@ class GridCairoRenderer(object):
     \tStart and stop of col range with step 1
     * tab_fl: 2 tuple of Integer
     \tStart and stop of tab range with step 1
+    * width: Float
+    \tPage width in points
+    * height: Float
+    \tPage height in points
+    * orientation: String in ["portrait", "landscape"]
+    \tPage orientation
 
     """
 
     def __init__(self, context, code_array, row_tb, col_rl, tab_fl,
-                 width, height):
+                 width, height, orientation):
         self.context = context
         self.code_array = code_array
 
@@ -94,6 +100,8 @@ class GridCairoRenderer(object):
 
         self.width = width
         self.height = height
+
+        self.orientation = orientation
 
     def get_cell_rect(self, row, col, tab):
         """Returns rectangle of cell on canvas"""

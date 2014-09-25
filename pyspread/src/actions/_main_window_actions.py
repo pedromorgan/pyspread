@@ -262,20 +262,31 @@ class ExchangeActions(Actions):
             # Dialog has been canceled
             return
 
-        ctx_width = pdf_export_info["paper_width"]
-        ctx_height = pdf_export_info["paper_height"]
+        top_row = pdf_export_info["top_row"]
+        bottom_row = pdf_export_info["bottom_row"]
+        left_col = pdf_export_info["left_col"]
+        right_col = pdf_export_info["right_col"]
+        first_tab = pdf_export_info["first_tab"]
+        last_tab = pdf_export_info["last_tab"]
+        width = pdf_export_info["paper_width"]
+        height = pdf_export_info["paper_height"]
+        orientation = pdf_export_info["orientation"]
 
-        surface = cairo.PDFSurface(filepath, ctx_width, ctx_height)
+        if orientation == "landscape":
+            width, height = height, width
+
+        surface = cairo.PDFSurface(filepath, width, height)
         context = cairo.Context(surface)
 
         grid_cairo_renderer = GridCairoRenderer(
             context,
             self.code_array,
-            (pdf_export_info["top_row"], pdf_export_info["bottom_row"] + 1),
-            (pdf_export_info["left_col"], pdf_export_info["right_col"] + 1),
-            (pdf_export_info["first_tab"], pdf_export_info["last_tab"] + 1),
-            ctx_width,
-            ctx_height,
+            (top_row, bottom_row + 1),
+            (left_col, right_col + 1),
+            (first_tab, last_tab + 1),
+            width,
+            height,
+            orientation,
         )
 
         grid_cairo_renderer.draw()
