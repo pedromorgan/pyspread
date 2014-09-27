@@ -194,49 +194,52 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         rect_tuple = 0, 0, rect.width / self.zoom, rect.height / self.zoom
 
-#        cell_cache_key = rect_tuple[2], rect_tuple[3],
-#            repr(grid.code_array[key]),\
-#            tuple(sorted(grid.code_array.cell_attributes[key].iteritems()))
-
-#        if cell_cache_key in self.cell_cache:
-#            pass
-#        else:
-#            self.cell_cache[cell_cache_key] = 1
-#            print len(self.cell_cache)
-
+        cell_cache_key = (rect_tuple[2], rect_tuple[3],
+            repr(grid.code_array[key])[:100],
+            tuple(sorted(grid.code_array.cell_attributes[key].iteritems())))
 
         mdc = wx.MemoryDC()
         pxoffs = int(self.zoom)
-        mdc.SelectObject(wx.EmptyBitmap(rect.width + pxoffs,
-                                        rect.height + pxoffs))
-        mdc.SetBackgroundMode(wx.TRANSPARENT)
-        mdc.SetDeviceOrigin(0, 0)
-        context = wx.lib.wxcairo.ContextFromDC(mdc)
+        if cell_cache_key in self.cell_cache:
+            mdc.SelectObject(self.cell_cache[cell_cache_key])
 
-        # Shift by -0.5 in order to avoid blurry lines
-        x_shift = 0.5 * self.zoom
-        y_shift = 0.5 * self.zoom
-        context.translate(x_shift, y_shift)
+        else:
+            bmp = wx.EmptyBitmap(rect.width + pxoffs, rect.height + pxoffs)
+            mdc.SelectObject(bmp)
+            mdc.SetBackgroundMode(wx.TRANSPARENT)
+            mdc.SetDeviceOrigin(0, 0)
+            context = wx.lib.wxcairo.ContextFromDC(mdc)
 
-        context.set_source_rgb(1, 1, 1)
-        context.rectangle(0,0,rect.width + pxoffs, rect.height + pxoffs)
-        context.fill()
-        context.stroke()
+            # Shift by -0.5 in order to avoid blurry lines
+            x_shift = 0.5 * self.zoom
+            y_shift = 0.5 * self.zoom
+            context.translate(x_shift, y_shift)
 
-        # Zoom context
-        context.scale(self.zoom, self.zoom)
-
-        # Draw cell
-        cell_renderer = GridCellCairoRenderer(context, self.data_array, key,
-                                              rect_tuple)
-
-        cell_renderer.draw()
-
-        # Draw selection if present
-        if isSelected:
-            context.set_source_rgba(*self.selection_color_tuple)
-            context.rectangle(*rect_tuple)
+            context.set_source_rgb(1, 1, 1)
+            context.rectangle(0,0,rect.width + pxoffs, rect.height + pxoffs)
             context.fill()
+            context.stroke()
+
+            # Zoom context
+            context.scale(self.zoom, self.zoom)
+
+            # Draw cell
+            cell_renderer = GridCellCairoRenderer(context, self.data_array, key,
+                                                  rect_tuple)
+
+            cell_renderer.draw()
+
+            # Draw selection if present
+            if isSelected:
+                context.set_source_rgba(*self.selection_color_tuple)
+                context.rectangle(*rect_tuple)
+                context.fill()
+
+            context.scale(1.0/self.zoom, 1.0/self.zoom)
+            context.translate(-x_shift, -y_shift)
+
+            # Put resulting bmp into cache
+            self.cell_cache[cell_cache_key] = bmp
 
         dc.Blit(rect.x-1, rect.y-1,
                 rect.width + pxoffs,
@@ -246,8 +249,5 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         # Draw cursor
         if grid.actions.cursor[:2] == (row, col):
             self.update_cursor(dc, grid, row, col)
-
-        context.scale(1.0/self.zoom, 1.0/self.zoom)
-        context.translate(-x_shift, -y_shift)
 
 # end of class Draw
