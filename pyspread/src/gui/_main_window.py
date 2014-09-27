@@ -908,11 +908,11 @@ class MainWindowEventHandlers(EventMixin):
             figure = code_array[cursor]
             if isinstance(figure, Figure):
                 wildcard += \
-                    "|" + _("SVG file") + " (*.svg)|*.svg" + \
-                    "|" + _("EPS file") + " (*.eps)|*.eps" + \
-                    "|" + _("PS file") + " (*.ps)|*.ps" + \
-                    "|" + _("PDF file") + " (*.pdf)|*.pdf" + \
-                    "|" + _("PNG file") + " (*.png)|*.png"
+                    "|" + _("SVG of current cell") + " (*.svg)|*.svg" + \
+                    "|" + _("EPS of current cell") + " (*.eps)|*.eps" + \
+                    "|" + _("PS of current cell") + " (*.ps)|*.ps" + \
+                    "|" + _("PDF of current cell") + " (*.pdf)|*.pdf" + \
+                    "|" + _("PNG of current cell") + " (*.png)|*.png"
 
         message = _("Choose filename for export.")
         style = wx.SAVE
@@ -922,7 +922,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # If an svg is exported then the selection bbox
         # has to be changed to the current cell
-        if filterindex >= 1:
+        if filterindex in [1, 2, 3, 4, 5]:
             data = figure
 
         # Export file
@@ -934,9 +934,21 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
-        # TODO: File dialog
-        path = "/home/mn/tmp/test.pdf"
-        self.main_window.actions.export_pdf(path)
+
+        # Get filepath from user
+
+        wildcard = _("PDF") + " (*.pdf)|*.pdf"
+        message = _("Choose file path for PDF export.")
+
+        style = wx.SAVE
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
+
+        if filepath is None:
+            return
+
+        self.main_window.actions.export_pdf(filepath)
 
         event.Skip()
 
