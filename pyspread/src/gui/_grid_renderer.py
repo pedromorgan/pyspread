@@ -44,6 +44,7 @@ import matplotlib.pyplot
 from src.lib.charts import fig2bmp
 import src.lib.i18n as i18n
 from src.lib import xrect
+from src.lib._grid_cairo_renderer import GridCellCairoRenderer
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
 from src.sysvars import get_color
@@ -536,7 +537,64 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         self.draw_bitmap(dc, bmp, crop_rect, grid, key, scale=False)
 
-    def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False,
+    selection_color_tuple = tuple([c / 255.0
+        for c in get_color(config["selection_color"]).Get()] + [0.5])
+
+    def Draw(self, grid, attr, dc, rect, row, col, isSelected):
+        """Draws the cell border and content using the Cairo library"""
+
+        key = row, col, grid.current_table
+
+        rect = self.get_merged_rect(grid, key, rect)
+        if rect is None:
+            # Merged cell
+            if grid.is_merged_cell_drawn(key):
+                row, col, __ = key = self.get_merging_cell(grid, key)
+                rect = grid.CellToRect(row, col)
+                rect = self.get_merged_rect(grid, key, rect)
+            else:
+                return
+
+        try:
+            context = wx.lib.wxcairo.ContextFromDC(dc)
+        except TypeError:
+            return
+
+        # Get scroll offset
+        y_unit, x_unit = grid.GetScrollPixelsPerUnit()
+        x_offset =  grid.GetScrollPos(wx.HORIZONTAL) * x_unit
+        y_offset = grid.GetScrollPos(wx.VERTICAL) * y_unit
+
+        # Shift context to rect origin
+        # Shift by -0.5 in order to avoid blurry lines
+        x_shift = rect.x - x_offset - 0.5
+        y_shift = rect.y - y_offset - 0.5
+        context.translate(x_shift, y_shift)
+        rect_tuple = 0, 0, rect.width / self.zoom, rect.height / self.zoom
+
+        # Zoom context
+        context.scale(self.zoom, self.zoom)
+
+        # Draw cell
+        cell_renderer = GridCellCairoRenderer(context, self.data_array, key,
+                                              rect_tuple)
+
+        cell_renderer.draw()
+
+        # Draw selection if present
+        if isSelected:
+            context.set_source_rgba(*self.selection_color_tuple)
+            context.rectangle(*rect_tuple)
+            context.fill()
+
+        # Draw cursor
+        if grid.actions.cursor[:2] == (row, col):
+            self.update_cursor(dc, grid, row, col)
+
+        context.scale(1.0/self.zoom, 1.0/self.zoom)
+        context.translate(-x_shift, -y_shift)
+
+    def __Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False,
              background_dc=None):
         """Draws the cell border and content"""
 
@@ -812,30 +870,3 @@ class Background(object):
 
 # end of class Background
 
-#    def draw_with_cairo(self)
-#        key = row, col, grid.current_table
-#
-#        rect = self.get_merged_rect(grid, key, rect)
-#
-#        try:
-#            context = wx.lib.wxcairo.ContextFromDC(dc)
-#        except TypeError:
-#            return
-#
-#        if rect is None:
-#            # Merged cell
-#            if grid.is_merged_cell_drawn(key):
-#                row, col, __ = key = self.get_merging_cell(grid, key)
-#                rect = grid.CellToRect(row, col)
-#                rect = self.get_merged_rect(grid, key, rect)
-#            else:
-#                return
-#
-#        rect_tuple = (rect.x - 0.5), (rect.y - 0.5), rect.width, rect.height
-#        cell_renderer = GridCellCairoRenderer(context, self.data_array, key,
-#                                              rect_tuple)
-#
-#        # Scale
-#        cell_renderer.draw()
-#
-#        context.show_page()

@@ -471,6 +471,11 @@ class GridCellContentCairoRenderer(object):
     def draw(self):
         """Draws cell content to context"""
 
+        # Content is only rendered within rect
+        self.context.save()
+        self.context.rectangle(*self.rect)
+        self.context.clip()
+
         content = self.get_cell_content()
 
         pos_x, pos_y = self.rect[:2]
@@ -489,6 +494,9 @@ class GridCellContentCairoRenderer(object):
 
         self.context.translate(-pos_x - 2, -pos_y - 2)
 
+
+        # Remove clipping to rect
+        self.context.restore()
 
 class GridCellBackgroundCairoRenderer(object):
     """Renders cell background to Cairo context
