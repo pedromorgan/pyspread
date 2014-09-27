@@ -66,10 +66,16 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
 
     """
 
+    # Toolbars should be able to overflow
+    style = aui.AUI_TB_OVERFLOW | aui.AUI_TB_GRIPPER | \
+            aui.AUI_TB_PLAIN_BACKGROUND
+
     def __init__(self, parent, *args, **kwargs):
 
-        # Toolbars should be able to overflow
-        kwargs["agwStyle"] = aui.AUI_TB_OVERFLOW | aui.AUI_TB_GRIPPER
+        try:
+            kwargs["agwStyle"] |= self.style
+        except KeyError:
+            kwargs["agwStyle"] = self.style
 
         aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
@@ -324,7 +330,7 @@ class FindToolbar(ToolbarBase):
 # end of class FindToolbar
 
 
-class AttributesToolbar(aui.AuiToolBar, EventMixin):
+class AttributesToolbar(ToolbarBase, EventMixin):
     """Toolbar for editing cell attributes
 
     Class attributes
@@ -357,8 +363,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
     }
 
     def __init__(self, parent, *args, **kwargs):
-        kwargs["style"] = aui.AUI_TB_OVERFLOW
-        aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
+        self.style |= aui.AUI_TB_OVERFLOW
+        kwargs["style"] = self.style
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
 
         self.parent = parent
 

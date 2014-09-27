@@ -60,7 +60,7 @@ from src.lib.parsers import common_start
 from src.lib._string_helpers import quote
 
 from src.config import config
-from src.sysvars import get_default_font, is_gtk
+from src.sysvars import get_default_font, is_gtk, get_color
 
 from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
 from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
@@ -684,9 +684,12 @@ class EntryLineToolbarPanel(wx.Panel):
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
+        self.SetBackgroundColour(get_color(wx.SYS_COLOUR_FRAMEBK))
+
         self.parent = parent
         # Panel with EntryLine and button
-        self.entry_line_panel = EntryLinePanel(self, parent, -1)
+        self.entry_line_panel = EntryLinePanel(self, parent,
+                                               style=wx.NO_BORDER)
 
         # IntCtrl for table choice
         self.table_choice = TableChoiceIntCtrl(self, parent,
@@ -720,6 +723,8 @@ class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
 
     def __init__(self, parent, main_window, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        self.SetBackgroundColour(get_color(wx.SYS_COLOUR_FRAMEBK))
         self.parent = parent
         self.main_window = main_window
 
@@ -741,8 +746,8 @@ class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
     def __do_layout(self):
         main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
 
-        main_sizer.Add(self.entry_line, 1, wx.ALL | wx.EXPAND, 1)
-        main_sizer.Add(self.selection_toggle_button, 1, wx.ALL | wx.EXPAND, 1)
+        main_sizer.Add(self.entry_line, 0, wx.EXPAND, 0)
+        main_sizer.Add(self.selection_toggle_button, 0, wx.EXPAND, 0)
 
         main_sizer.AddGrowableRow(0)
         main_sizer.AddGrowableCol(0)
@@ -777,7 +782,7 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
 
     def __init__(self, parent, main_window, id=-1, *args, **kwargs):
         kwargs["style"] = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE | \
-            wx.TE_PROCESS_TAB
+            wx.TE_PROCESS_TAB | wx.NO_BORDER
         wx.TextCtrl.__init__(self, parent, id, *args, **kwargs)
 
         self.SetSize((700, 25))
@@ -1075,7 +1080,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         self.main_window = main_window
         self.no_tabs = no_tabs
 
-        IntCtrl.__init__(self, parent, limited=True, allow_long=True)
+        IntCtrl.__init__(self, parent, limited=True, allow_long=True,
+                         style=wx.NO_BORDER)
 
         self.SetMin(0)
         self.SetMax(no_tabs - 1)
