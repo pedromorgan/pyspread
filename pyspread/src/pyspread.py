@@ -53,6 +53,14 @@ _ = i18n.language.ugettext
 sys.setrecursionlimit(10000)
 sys.path.insert(0, get_program_path())
 
+# Separate icon in the Windows dock for Ms Windows
+try:
+    import ctypes
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pyspread')
+except AttributeError:
+    # Probably not on Windows
+    pass
+
 # Patch for using with PyScripter thanks to Colin J. Williams
 # If wx exists in sys,modules, we dont need to import wx version.
 # wx is already imported if the PyScripter wx engine is used.
