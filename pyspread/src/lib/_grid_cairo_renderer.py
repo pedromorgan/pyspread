@@ -41,6 +41,7 @@ import cairo
 import wx
 import wx.lib.wxcairo
 import matplotlib
+matplotlib.use('Agg')
 import rsvg
 
 import matplotlib.pyplot
@@ -307,7 +308,10 @@ class GridCellContentCairoRenderer(object):
         """Returns svg from matplotlib figure"""
 
         svg_io = cStringIO.StringIO()
+
+        # Matplotlib requires a canvas to be set up
         canvas = FigureCanvasAgg(figure)
+
         figure.savefig(svg_io, format='svg', transparent=True,
                        bbox_inches='tight', pad_inches=0.1)
         svg_str = svg_io.getvalue()
