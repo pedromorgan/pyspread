@@ -54,6 +54,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         self.data_array = data_array
 
+        # Cache for cell content
+        self.cell_cache = {}
+
         # Zoom of grid
         self.zoom = 1.0
 
@@ -189,22 +192,36 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             else:
                 return
 
-        try:
-            context = wx.lib.wxcairo.ContextFromDC(dc)
-        except TypeError:
-            return
-
-        # Get scroll offset
-        y_unit, x_unit = grid.GetScrollPixelsPerUnit()
-        x_offset =  grid.GetScrollPos(wx.HORIZONTAL) * x_unit
-        y_offset = grid.GetScrollPos(wx.VERTICAL) * y_unit
-
-        # Shift context to rect origin
-        # Shift by -0.5 in order to avoid blurry lines
-        x_shift = rect.x - x_offset - 0.5
-        y_shift = rect.y - y_offset - 0.5
-        context.translate(x_shift, y_shift)
         rect_tuple = 0, 0, rect.width / self.zoom, rect.height / self.zoom
+
+#        cell_cache_key = rect_tuple[2], rect_tuple[3],
+#            repr(grid.code_array[key]),\
+#            tuple(sorted(grid.code_array.cell_attributes[key].iteritems()))
+
+#        if cell_cache_key in self.cell_cache:
+#            pass
+#        else:
+#            self.cell_cache[cell_cache_key] = 1
+#            print len(self.cell_cache)
+
+
+        mdc = wx.MemoryDC()
+        pxoffs = int(self.zoom)
+        mdc.SelectObject(wx.EmptyBitmap(rect.width + pxoffs,
+                                        rect.height + pxoffs))
+        mdc.SetBackgroundMode(wx.TRANSPARENT)
+        mdc.SetDeviceOrigin(0, 0)
+        context = wx.lib.wxcairo.ContextFromDC(mdc)
+
+        # Shift by -0.5 in order to avoid blurry lines
+        x_shift = 0.5 * self.zoom
+        y_shift = 0.5 * self.zoom
+        context.translate(x_shift, y_shift)
+
+        context.set_source_rgb(1, 1, 1)
+        context.rectangle(0,0,rect.width + pxoffs, rect.height + pxoffs)
+        context.fill()
+        context.stroke()
 
         # Zoom context
         context.scale(self.zoom, self.zoom)
@@ -220,6 +237,11 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             context.set_source_rgba(*self.selection_color_tuple)
             context.rectangle(*rect_tuple)
             context.fill()
+
+        dc.Blit(rect.x-1, rect.y-1,
+                rect.width + pxoffs,
+                rect.height + pxoffs,
+                mdc, 0, 0, wx.COPY)
 
         # Draw cursor
         if grid.actions.cursor[:2] == (row, col):
