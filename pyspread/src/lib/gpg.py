@@ -167,10 +167,7 @@ def verify(sigfilename, filefilename=None):
 
     gpg = gnupg.GPG()
 
-    sigfile = open(sigfilename, "rb")
-
-    verified = gpg.verify_file(sigfile, filefilename)
-
-    sigfile.close()
+    with open(sigfilename, "rb") as sigfile:
+        verified = gpg.verify_file(sigfile, filefilename)
 
     return verified

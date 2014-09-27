@@ -401,8 +401,8 @@ class TestXls(object):
         assert worksheet.rowinfo_map[row].height == int(xlsheight)
 
     param_xls2row_heights = [
-        {'row': 1, 'tab': 0, 'height': 44.500},
-        {'row': 10, 'tab': 0, 'height': 45.511},
+        {'row': 1, 'tab': 0, 'height': 44.390},
+        {'row': 10, 'tab': 0, 'height': 45.399},
     ]
 
     @params(param_xls2row_heights)
