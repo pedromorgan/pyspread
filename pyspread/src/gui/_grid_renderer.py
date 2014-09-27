@@ -31,11 +31,10 @@ Provides
 
 """
 
-from math import pi, sin, cos
-import types
-
 import wx.grid
 
+from src.sysvars import get_color
+from src.config import config
 import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
 
@@ -45,6 +44,9 @@ _ = i18n.language.ugettext
 
 class GridRenderer(wx.grid.PyGridCellRenderer):
     """This renderer draws borders and text at specified font, size, color"""
+
+    selection_color_tuple = tuple([c / 255.0
+        for c in get_color(config["selection_color"]).Get()] + [0.5])
 
     def __init__(self, data_array):
 
