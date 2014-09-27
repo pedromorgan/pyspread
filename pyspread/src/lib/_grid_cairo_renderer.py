@@ -44,6 +44,7 @@ import matplotlib
 import rsvg
 
 import matplotlib.pyplot
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 import pango
 import pangocairo
 
@@ -306,6 +307,7 @@ class GridCellContentCairoRenderer(object):
         """Returns svg from matplotlib figure"""
 
         svg_io = cStringIO.StringIO()
+        canvas = FigureCanvasAgg(figure)
         figure.savefig(svg_io, format='svg', transparent=True,
                        bbox_inches='tight', pad_inches=0.1)
         svg_str = svg_io.getvalue()
