@@ -56,7 +56,7 @@ from _events import post_command_event, EventMixin
 
 from src.actions._main_window_actions import AllMainWindowActions
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -161,10 +161,6 @@ class MainWindow(wx.Frame, EventMixin):
 
         self.set_icon(icons["PyspreadLogo"])
 
-        # Set initial size to 90% of screen
-        self.SetInitialSize(config["window_size"])
-        self.SetPosition(config["window_position"])
-
         # Without minimum size, initial size is minimum size in wxGTK
         self.SetMinSize((2, 2))
 
@@ -239,6 +235,10 @@ class MainWindow(wx.Frame, EventMixin):
         self._mgr.Update()
 
         self._set_menu_toggles()
+
+        # Set initial size to config value
+        self.SetInitialSize(config["window_size"])
+        self.SetPosition(config["window_position"])
 
     def _bind(self):
         """Bind events to handlers"""
@@ -359,12 +359,9 @@ class MainWindowEventHandlers(EventMixin):
         """Main window move event"""
 
         # Store window position in config
-        if is_gtk():
-            position = event.GetPosition()
-        else:
-            position = self.main_window.GetPosition()
+        position = self.main_window.GetScreenPositionTuple()
 
-        config["window_position"] = repr((position.x, position.y))
+        config["window_position"] = repr(position)
 
     def OnSize(self, event):
         """Main window move event"""
@@ -416,7 +413,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # Run macros
 
-        ##self.MainGrid.model.pysgrid.sgrid.execute_macros(safe_mode=False)
+        # self.MainGrid.model.pysgrid.sgrid.execute_macros(safe_mode=False)
 
         # Disable menu item for leaving safe mode
 
@@ -936,9 +933,7 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
-
         # Get filepath from user
-
         wildcard = _("PDF") + " (*.pdf)|*.pdf"
         message = _("Choose file path for PDF export.")
 
