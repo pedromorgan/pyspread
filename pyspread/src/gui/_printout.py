@@ -82,7 +82,7 @@ class PrintCanvas(wx.ScrolledWindow):
         """Redirected Draw function from main grid"""
 
         return self.grid.grid_renderer.Draw(self.grid, self.grid_attr,
-                                dc, rect, row, col, False, printing=True)
+                                dc, rect, row, col, False)
 
     def get_print_rect(self, grid_rect):
         """Returns wx.Rect that is correctly positioned on the print canvas"""
