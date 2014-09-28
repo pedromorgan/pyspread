@@ -194,7 +194,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         rect_tuple = 0, 0, rect.width / self.zoom, rect.height / self.zoom
 
-        cell_cache_key = (rect_tuple[2], rect_tuple[3],
+        cell_cache_key = (rect_tuple[2], rect_tuple[3], isSelected,
             repr(grid.code_array[key])[:100],
             tuple(sorted(grid.code_array.cell_attributes[key].iteritems())))
 
