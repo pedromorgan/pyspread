@@ -220,8 +220,8 @@ class MainWindow(wx.Frame, EventMixin):
 
         self._mgr.AddPane(self.entry_line_panel, aui.AuiPaneInfo().
                           Name("entry_line_panel").Caption(_("Entry line")).
-                          Gripper(False).ToolbarPane().Top().Row(2).
-                          BestSize(400, -1).PaneBorder(False))
+                          Gripper(False).CenterPane().Top().Row(2).
+                          BestSize(400, 30).PaneBorder(False))
 
         # Load perspective from config
         window_layout = config["window_layout"]
