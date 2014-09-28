@@ -359,8 +359,10 @@ class MainWindowEventHandlers(EventMixin):
         """Main window move event"""
 
         # Store window position in config
-
-        position = event.GetPosition()
+        if is_gtk():
+            position = event.GetPosition()
+        else:
+            position = self.main_window.GetPosition()
 
         config["window_position"] = repr((position.x, position.y))
 
