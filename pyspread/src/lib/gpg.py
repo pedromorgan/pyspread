@@ -122,7 +122,7 @@ def genkey():
         # Generate key
         # ------------
 
-        # Show infor dialog
+        # Show information dialog
 
         style = wx.ICON_INFORMATION | wx.DIALOG_NO_PARENT | wx.OK | wx.CANCEL
         pyspread_key_uid = gpg_key_parameters["name_real"]
@@ -139,10 +139,12 @@ def genkey():
             fingerprint = gpg.gen_key(input_data)
 
             for private_key in gpg.list_keys(True):
-                if str(fingerprint) == private_key['fingerprint']:
-                    config["gpg_key_fingerprint"] = repr(
-                        private_key.fingerprint)
-
+                try:
+                    if str(fingerprint) == private_key['fingerprint']:
+                        config["gpg_key_fingerprint"] = \
+                            repr(private_key['fingerprint'])
+                except KeyError:
+                    pass
         else:
             dlg.Destroy()
             sys.exit()
