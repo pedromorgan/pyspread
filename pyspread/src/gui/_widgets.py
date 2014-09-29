@@ -683,8 +683,11 @@ class EntryLineToolbarPanel(wx.Panel):
 
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
-
-        self.SetBackgroundColour(get_color(wx.SYS_COLOUR_FRAMEBK))
+        try:
+            self.SetBackgroundColour(get_color(wx.SYS_COLOUR_FRAMEBK))
+        except AttributeError:
+            # Does not work on wx 2.x
+            pass
 
         self.parent = parent
         # Panel with EntryLine and button
