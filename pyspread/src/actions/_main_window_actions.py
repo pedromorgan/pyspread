@@ -785,6 +785,10 @@ class HelpActions(Actions):
         self.help_window.Bind(wx.EVT_MOVE, self.OnHelpMove)
         self.help_window.Bind(wx.EVT_SIZE, self.OnHelpSize)
         self.help_htmlwindow.Bind(wx.EVT_RIGHT_DOWN, self.OnHelpBack)
+        self.help_htmlwindow.Bind(wx.html.EVT_HTML_LINK_CLICKED,
+                                  lambda e: self.open_external_links(e))
+        self.help_htmlwindow.Bind(wx.EVT_MOUSEWHEEL,
+                                  lambda e: self.zoom_html(e))
 
         # Get help data
         current_path = os.getcwd()
@@ -827,6 +831,23 @@ class HelpActions(Actions):
         config["help_window_size"] = repr((size.width, size.height))
 
         event.Skip()
+
+    def open_external_links(self, event):
+        link = event.GetLinkInfo().GetHref()
+        if ':' in link:
+            wx.LaunchDefaultBrowser(link)
+        else:
+            self.help_htmlwindow.LoadPage(link)
+
+    def zoom_html(self, event):
+        if event.ControlDown():
+            if not hasattr(self, 'html_font_size'):
+                self.html_font_size = self.help_htmlwindow.GetFont().GetPointSize()
+            if event.GetWheelRotation() < 0: # scroll down
+                self.html_font_size -= 1
+            if event.GetWheelRotation() > 0: # scroll up
+                self.html_font_size += 1
+            self.help_htmlwindow.SetStandardFonts(size=self.html_font_size)
 
 
 class AllMainWindowActions(ExchangeActions, PrintActions,
