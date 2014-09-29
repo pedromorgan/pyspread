@@ -592,6 +592,10 @@ class FontChoiceCombobox(ImageComboBox):
 class BorderEditChoice(ImageComboBox):
     """Combo box for selecting the cell borders that shall be changed"""
 
+    def __init__(self, *args, **kwargs):
+        ImageComboBox.__init__(self, *args, **kwargs)
+        self.SetSelection(0)
+
     def OnDrawItem(self, dc, rect, item, flags):
 
         if item == wx.NOT_FOUND:
