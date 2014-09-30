@@ -398,26 +398,26 @@ class GridCellContentCairoRenderer(object):
 
         if angle == 90 and not back:
             self.context.rotate(-math.pi / 2.0)
-            self.context.translate(-rect[2], 0)
+            self.context.translate(-rect[2] + 4, 0)
 
         elif angle == 90 and back:
-            self.context.translate(rect[2], 0)
+            self.context.translate(rect[2] - 4, 0)
             self.context.rotate(math.pi / 2.0)
 
         elif angle == -90 and not back:
             self.context.rotate(math.pi / 2.0)
-            self.context.translate(0, -rect[3])
+            self.context.translate(0, -rect[3] + 2)
 
         elif angle == -90 and back:
-            self.context.translate(0, rect[3])
+            self.context.translate(0, rect[3] - 2)
             self.context.rotate(-math.pi / 2.0)
 
         elif angle == 180 and not back:
             self.context.rotate(math.pi)
-            self.context.translate(-rect[2] + 2, -rect[3] + 2)
+            self.context.translate(-rect[2] + 4, -rect[3] + 2)
 
         elif angle == 180 and back:
-            self.context.translate(rect[2] - 2, rect[3] - 2)
+            self.context.translate(rect[2] - 4, rect[3] - 2)
             self.context.rotate(-math.pi)
 
     def draw_text(self, content):
