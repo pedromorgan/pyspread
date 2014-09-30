@@ -194,9 +194,11 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         rect_tuple = 0, 0, rect.width / self.zoom, rect.height / self.zoom
 
+        sorted_keys = sorted(grid.code_array.cell_attributes[key].iteritems())
+
         cell_cache_key = (rect_tuple[2], rect_tuple[3], isSelected,
-            repr(grid.code_array[key])[:100],
-            tuple(sorted(grid.code_array.cell_attributes[key].iteritems())))
+                          repr(grid.code_array[key])[:100],
+                          tuple(sorted_keys))
 
         mdc = wx.MemoryDC()
         pxoffs = int(self.zoom)
@@ -210,13 +212,13 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             mdc.SetDeviceOrigin(0, 0)
             context = wx.lib.wxcairo.ContextFromDC(mdc)
 
-            # Shift by -0.5 in order to avoid blurry lines
+            # Shift by 0.5 * zoom in order to avoid blurry lines
             x_shift = 0.5 * self.zoom
             y_shift = 0.5 * self.zoom
             context.translate(x_shift, y_shift)
 
             context.set_source_rgb(1, 1, 1)
-            context.rectangle(0,0,rect.width + pxoffs, rect.height + pxoffs)
+            context.rectangle(0, 0, rect.width + pxoffs, rect.height + pxoffs)
             context.fill()
             context.stroke()
 
@@ -224,8 +226,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             context.scale(self.zoom, self.zoom)
 
             # Draw cell
-            cell_renderer = GridCellCairoRenderer(context, self.data_array, key,
-                                                  rect_tuple)
+            cell_renderer = GridCellCairoRenderer(context, self.data_array,
+                                                  key, rect_tuple)
 
             cell_renderer.draw()
 

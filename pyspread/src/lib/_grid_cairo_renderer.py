@@ -447,7 +447,7 @@ class GridCellContentCairoRenderer(object):
 
         pango_layout.set_wrap(pango.WRAP_WORD_CHAR)
 
-        pango_layout.set_width((int(rect[2]) - 4) * pango.SCALE)
+        pango_layout.set_width(int(round((rect[2] - 4.0) * pango.SCALE)))
 
         alignment = cell_attributes["justification"]
         pango_layout.set_alignment(wx2pango_alignment[alignment])
@@ -500,9 +500,9 @@ class GridCellContentCairoRenderer(object):
 
         self.context.translate(-pos_x - 2, -pos_y - 2)
 
-
         # Remove clipping to rect
         self.context.restore()
+
 
 class GridCellBackgroundCairoRenderer(object):
     """Renders cell background to Cairo context
