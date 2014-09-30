@@ -162,7 +162,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.set_icon(icons["PyspreadLogo"])
 
         # Without minimum size, initial size is minimum size in wxGTK
-        self.SetMinSize((2, 2))
+        self.minSizeSet = False
 
         # Leave save mode
         post_command_event(self, self.SafeModeExitMsg)
@@ -239,6 +239,7 @@ class MainWindow(wx.Frame, EventMixin):
         # Set initial size to config value
         self.SetInitialSize(config["window_size"])
         self.SetPosition(config["window_position"])
+        self.SetMinSize((10, 10))
 
     def _bind(self):
         """Bind events to handlers"""
@@ -359,6 +360,7 @@ class MainWindowEventHandlers(EventMixin):
         """Main window move event"""
 
         # Store window position in config
+        # position = self.main_window.ClientToScreen((0, 0)).Get()
         position = self.main_window.GetScreenPositionTuple()
 
         config["window_position"] = repr(position)

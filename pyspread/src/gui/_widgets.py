@@ -792,8 +792,6 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
             wx.TE_PROCESS_TAB | wx.NO_BORDER
         wx.TextCtrl.__init__(self, parent, id, *args, **kwargs)
 
-        self.SetSize((700, 25))
-
         self.parent = parent
         self.main_window = main_window
         self.ignore_changes = False
