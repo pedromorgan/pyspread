@@ -1139,8 +1139,12 @@ class CodeArray(DataArray):
         # Flatten helper function
         def nn(val):
             """Returns flat numpy arraz without None values"""
+            try:
+                return numpy.array(filter(None, val.flat))
 
-            return numpy.array(filter(None, val.flat))
+            except AttributeError:
+                # Probably no numpy array
+                return numpy.array(filter(None, val))
 
         # Set up environment for evaluation
 
