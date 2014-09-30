@@ -37,6 +37,7 @@ from src.sysvars import get_color
 from src.config import config
 import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
+import cairo
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -211,6 +212,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             mdc.SetBackgroundMode(wx.TRANSPARENT)
             mdc.SetDeviceOrigin(0, 0)
             context = wx.lib.wxcairo.ContextFromDC(mdc)
+
+            # Set hint style off to get consistent zooming
+            font_options = cairo.FontOptions()
+            font_options.set_hint_metrics(cairo.HINT_METRICS_OFF)
+            font_options.set_hint_style(cairo.HINT_STYLE_NONE)
+            context.set_font_options(font_options)
 
             # Shift by 0.5 * zoom in order to avoid blurry lines
             x_shift = 0.5 * self.zoom
