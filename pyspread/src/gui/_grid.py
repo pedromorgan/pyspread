@@ -664,7 +664,7 @@ class GridCellEventHandlers(object):
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
 
-        self.grid.actions.set_attr("angle", event.angle, mark_unredo=True)
+        self.grid.actions.toggle_attr("angle")
 
         self.grid.ForceRefresh()
 

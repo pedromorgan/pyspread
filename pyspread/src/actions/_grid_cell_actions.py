@@ -417,6 +417,7 @@ class CellActions(Actions):
         "vertical_align": ["top", "middle", "bottom"],
         "justification": ["left", "center", "right"],
         "frozen": [True, False],
+        "angle": [90, 0, -90, 180],
     }
 
     def get_new_cell_attr_state(self, key, attr_key):

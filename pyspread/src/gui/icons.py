@@ -93,6 +93,10 @@ class GtkArtProvider(wx.ArtProvider):
             "SortAscending": action_path + "edit-sort-ascending.png",
             "SortDescending": action_path + "edit-sort-descending.png",
             "ExportPDF": action_path + "export_pdf.png",
+            "TextRotate0": action_path + "format-text-rotate0.png",
+            "TextRotate90": action_path + "format-text-rotate90.png",
+            "TextRotate180": action_path + "format-text-rotate180.png",
+            "TextRotate270": action_path + "format-text-rotate270.png",
         }
 
     def get_paths(self, theme, icon_size):

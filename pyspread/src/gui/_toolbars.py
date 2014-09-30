@@ -380,7 +380,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         self._create_penwidth_combo()
         self._create_color_buttons()
         self._create_merge_button()
-        self._create_textrotation_spinctrl()
+        self._create_textrotation_button()
 
         self.Realize()
 
@@ -539,20 +539,17 @@ class AttributesToolbar(ToolbarBase, EventMixin):
                           short_help_string=_("Merge cells"))
         self.Bind(wx.EVT_TOOL, self.OnMerge, id=self.mergetool_id)
 
-    def _create_textrotation_spinctrl(self):
-        """Create text rotation spin control"""
+    def _create_textrotation_button(self):
+        """Create text rotation toggle button"""
 
-        self.rotation_spinctrl = wx.SpinCtrl(self, -1, "", size=(50, -1))
-        self.rotation_spinctrl.SetRange(-179, 180)
-        self.rotation_spinctrl.SetValue(0)
+        iconnames = ["TextRotate270", "TextRotate0", "TextRotate90",
+                     "TextRotate180"]
+        bmplist = [icons[iconname] for iconname in iconnames]
 
-        # For compatibility with toggle buttons
-        self.rotation_spinctrl.GetToolState = lambda x: None
-        self.rotation_spinctrl.SetToolTipString(_(u"Cell text rotation"))
-
-        self.AddControl(self.rotation_spinctrl)
-
-        self.Bind(wx.EVT_SPINCTRL, self.OnRotate, self.rotation_spinctrl)
+        self.rotation_tb = _widgets.BitmapToggleButton(self, bmplist)
+        self.rotation_tb.SetToolTipString(_(u"Cell text rotation"))
+        self.Bind(wx.EVT_BUTTON, self.OnRotate, self.rotation_tb)
+        self.AddControl(self.rotation_tb)
 
     # Update widget state methods
     # ---------------------------
@@ -730,9 +727,17 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         self.ToggleTool(self.mergetool_id, merged)
 
     def _update_textrotation(self, angle):
-        """Updates text rotation spin control"""
+        """Updates text rotation toggle button"""
 
-        self.rotation_spinctrl.SetValue(angle)
+        states = {0: 0, -90: 1, 180: 2, 90: 3}
+
+        try:
+            self.rotation_tb.state = states[round(angle)]
+        except KeyError:
+            self.rotation_tb.state = 0
+
+        self.rotation_tb.toggle(None)
+        self.rotation_tb.Refresh()
 
     def _update_bgbrush(self, bgcolor):
         """Updates background color"""
@@ -894,8 +899,6 @@ class AttributesToolbar(ToolbarBase, EventMixin):
     def OnRotate(self, event):
         """Rotation spin control event handler"""
 
-        angle = self.rotation_spinctrl.GetValue()
-
-        post_command_event(self, self.TextRotationMsg, angle=angle)
+        post_command_event(self, self.TextRotationMsg)
 
 # end of class AttributesToolbar
