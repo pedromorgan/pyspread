@@ -36,8 +36,11 @@ Provides
 
 """
 
-import cStringIO
-import xml.etree.cElementTree as ElementTree
+try:
+    import rsvg
+    import glib
+except ImportError:
+    rsvg = None
 
 import ast
 
@@ -195,16 +198,13 @@ def is_svg(code):
 
     """
 
-    code_file = cStringIO.StringIO(code)
-
-    tag = None
+    if rsvg is None:
+        return
 
     try:
-        for event, element in ElementTree.iterparse(code_file, ('start',)):
-            tag = element.tag
-            break
+        rsvg.Handle(data=code)
 
-    except ElementTree.ParseError:
-        pass
+    except glib.GError:
+        return False
 
-    return tag == '{http://www.w3.org/2000/svg}svg'
+    return True
