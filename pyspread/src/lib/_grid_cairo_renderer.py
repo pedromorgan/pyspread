@@ -42,6 +42,7 @@ import wx
 import wx.lib.wxcairo
 import matplotlib
 matplotlib.use('Agg')
+
 import rsvg
 
 import matplotlib.pyplot
@@ -49,7 +50,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 import pango
 import pangocairo
 
-from src.lib.parsers import color_pack2rgb
+from src.lib.parsers import color_pack2rgb, is_svg
 
 
 STANDARD_ROW_HEIGHT = 20
@@ -494,6 +495,10 @@ class GridCellContentCairoRenderer(object):
         elif isinstance(content, matplotlib.pyplot.Figure):
             # A matplotlib figure is returned --> Draw it!
             self.draw_matplotlib_figure(content)
+
+        elif isinstance(content, basestring) and is_svg(content):
+            # The content
+            self.draw_svg(content)
 
         elif content is not None:
             self.draw_text(content)

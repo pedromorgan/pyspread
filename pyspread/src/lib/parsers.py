@@ -32,8 +32,12 @@ Provides
  * color2code
  * code2color
  * parse_dict_strings
+ * is_svg
 
 """
+
+import cStringIO
+import xml.etree.cElementTree as ElementTree
 
 import ast
 
@@ -179,3 +183,28 @@ def common_start(strings):
             return start_string[:-1]
 
     return start_string
+
+
+def is_svg(code):
+    """Checks if code is an svg image
+
+    Parameters
+    ----------
+    code: String
+    \tCode to be parsed in order to check svg complaince
+
+    """
+
+    code_file = cStringIO.StringIO(code)
+
+    tag = None
+
+    try:
+        for event, element in ElementTree.iterparse(code_file, ('start',)):
+            tag = element.tag
+            break
+
+    except ElementTree.ParseError:
+        pass
+
+    return tag == '{http://www.w3.org/2000/svg}svg'

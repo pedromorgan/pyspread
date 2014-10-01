@@ -42,7 +42,7 @@ sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.parsers import get_font_from_data, get_pen_from_data, common_start
-from src.lib.parsers import color_pack2rgb, color_rgb2pack
+from src.lib.parsers import color_pack2rgb, color_rgb2pack, is_svg
 
 param_font = [
     {"fontdata": "Courier New 13", "face": "Courier New", "size": 13},
@@ -128,6 +128,7 @@ param_common_start = [
     {"strings": ["split", "splitlines"], "res": "split"},
 ]
 
+
 @params(param_common_start)
 def test_common_start(strings, res):
     """Unit test for common_start"""
@@ -135,3 +136,17 @@ def test_common_start(strings, res):
     __res = common_start(strings)
 
     assert res == __res
+
+
+param_is_svg = [
+    {"code": "", "res": False},
+    {"code": "sdjkl;fhsd", "res": False},
+    {"code": open(TESTPATH + "test1.svg").read(), "res": True},
+]
+
+
+@params(param_is_svg)
+def test_is_svg(code, res):
+    """Unit test for is_svg"""
+
+    assert is_svg(code) == res
