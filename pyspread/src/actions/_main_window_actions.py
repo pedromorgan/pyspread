@@ -48,7 +48,10 @@ import os
 import wx
 import wx.html
 
-from matplotlib.figure import Figure
+try:
+    from matplotlib.figure import Figure
+except ImportError:
+    Figure = None
 
 import src.lib.i18n as i18n
 from src.sysvars import get_help_path
@@ -497,7 +500,7 @@ class ClipboardActions(Actions):
                 # The result is a wx.Bitmap. Return it.
                 return result
 
-            elif isinstance(result, Figure):
+            elif Figure is not None and isinstance(result, Figure):
                 # The result is a matplotlib figure
                 # Therefore, a wx.Bitmap is returned
                 key = bb_top, bb_left, tab

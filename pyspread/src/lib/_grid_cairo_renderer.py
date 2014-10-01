@@ -48,8 +48,13 @@ try:
 except ImportError:
     rsvg = None
 
-import matplotlib.pyplot
-from matplotlib.backends.backend_agg import FigureCanvasAgg
+try:
+    import matplotlib.pyplot as pyplot
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+except ImportError:
+    pyplot = None
+    FigureCanvasAgg = None
+
 import pango
 import pangocairo
 
@@ -311,6 +316,9 @@ class GridCellContentCairoRenderer(object):
     def getsvg_from_matplotlib_figure(self, figure):
         """Returns svg from matplotlib figure"""
 
+        if FigureCanvasAgg is None:
+            return
+
         svg_io = cStringIO.StringIO()
 
         # Matplotlib requires a canvas to be set up
@@ -344,7 +352,8 @@ class GridCellContentCairoRenderer(object):
         """Draws matplotlib cell content to context"""
 
         svg_str = self.getsvg_from_matplotlib_figure(content)
-        self.draw_svg(svg_str)
+        if svg_str:
+            self.draw_svg(svg_str)
 
     def _get_text_color(self):
         """Returns text color rgb tuple of right line"""
@@ -499,7 +508,7 @@ class GridCellContentCairoRenderer(object):
             # A bitmap is returned --> Draw it!
             self.draw_bitmap(content)
 
-        elif isinstance(content, matplotlib.pyplot.Figure):
+        elif pyplot is not None and isinstance(content, pyplot.Figure):
             # A matplotlib figure is returned --> Draw it!
             self.draw_matplotlib_figure(content)
 

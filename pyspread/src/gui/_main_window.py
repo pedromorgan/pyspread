@@ -35,7 +35,10 @@ import os
 import wx
 import wx.lib.agw.aui as aui
 
-from matplotlib.figure import Figure
+try:
+    from matplotlib.figure import Figure
+except ImportError:
+    Figure = None
 
 try:
     import cairo
@@ -919,7 +922,7 @@ class MainWindowEventHandlers(EventMixin):
         if selection_bbox is None:
             cursor = self.main_window.grid.actions.cursor
             figure = code_array[cursor]
-            if isinstance(figure, Figure):
+            if Figure is not None and isinstance(figure, Figure):
                 wildcard += \
                     "|" + _("SVG of current cell") + " (*.svg)|*.svg" + \
                     "|" + _("EPS of current cell") + " (*.eps)|*.eps" + \

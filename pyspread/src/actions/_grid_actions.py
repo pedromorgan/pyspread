@@ -47,7 +47,6 @@ Provides:
 
 import itertools
 import src.lib.i18n as i18n
-import os
 import shutil
 
 try:
@@ -83,7 +82,7 @@ from src.actions._grid_cell_actions import CellActions
 
 from src.gui._events import post_command_event
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
