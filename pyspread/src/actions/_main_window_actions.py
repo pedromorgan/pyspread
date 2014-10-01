@@ -215,28 +215,29 @@ class ExchangeActions(Actions):
         finally:
             outfile.close()
 
-    def export_file(self, filepath, filterindex, data, preview_data=None):
+    def export_file(self, filepath, __filter, data, preview_data=None):
         """Export data for other applications
 
         Parameters
         ----------
         filepath: String
         \tPath of export file
-        filterindex: Integer
-        \tIndex of the import filter
+        __filter: String
+        \tImport filter
         data: Object
         \tCode array result object slice, i. e. one object or iterable of
         \tsuch objects
 
         """
 
-        formats = ["csv", "svg", "eps", "ps", "pdf", "png"]
+        if __filter.startswith("cell_"):
+            self._export_figure(filepath, data, __filter[5:])
 
-        if filterindex == 0:
+        elif __filter == "csv":
             self._export_csv(filepath, data, preview_data=preview_data)
 
-        elif filterindex >= 1:
-            self._export_figure(filepath, data, formats[filterindex])
+        elif __filter == "pdf":
+            self.export_pdf(filepath)
 
     def get_print_rect(self, grid_rect):
         """Returns wx.Rect that is correctly positioned on the print canvas"""

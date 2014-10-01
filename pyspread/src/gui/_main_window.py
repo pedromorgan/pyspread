@@ -37,6 +37,11 @@ import wx.lib.agw.aui as aui
 
 from matplotlib.figure import Figure
 
+try:
+    import cairo
+except ImportError:
+    cairo = None
+
 import src.lib.i18n as i18n
 from src.config import config
 from src.sysvars import get_python_tutorial_path, is_gtk
@@ -865,6 +870,8 @@ class MainWindowEventHandlers(EventMixin):
 
         """
 
+        filters = []
+
         code_array = self.main_window.grid.code_array
         tab = self.main_window.grid.current_table
 
@@ -875,6 +882,11 @@ class MainWindowEventHandlers(EventMixin):
         selection_bbox = selection.get_bbox()
 
         wildcard = _("CSV file") + " (*.*)|*.*"
+        filters.append("csv")
+
+        if cairo is not None:
+            wildcard += "|" + _("PDF file") + " (*.pdf)|*.pdf"
+            filters.append("pdf")
 
         if selection_bbox is None:
             # No selection --> Use smallest filled area for bottom right edge
@@ -914,6 +926,11 @@ class MainWindowEventHandlers(EventMixin):
                     "|" + _("PS of current cell") + " (*.ps)|*.ps" + \
                     "|" + _("PDF of current cell") + " (*.pdf)|*.pdf" + \
                     "|" + _("PNG of current cell") + " (*.png)|*.png"
+                filters.append("cell_svg")
+                filters.append("cell_eps")
+                filters.append("cell_ps")
+                filters.append("cell_pdf")
+                filters.append("cell_png")
 
         message = _("Choose filename for export.")
         style = wx.SAVE
@@ -921,15 +938,15 @@ class MainWindowEventHandlers(EventMixin):
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
 
-        # If an svg is exported then the selection bbox
+        # If an single cell is exported then the selection bbox
         # has to be changed to the current cell
-        if filterindex in [1, 2, 3, 4, 5]:
+        if filters[filterindex].startswith("cell_"):
             data = figure
 
         # Export file
         # -----------
 
-        self.main_window.actions.export_file(path, filterindex, data,
+        self.main_window.actions.export_file(path, filters[filterindex], data,
                                              preview_data)
 
     def OnExportPDF(self, event):
