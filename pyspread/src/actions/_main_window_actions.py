@@ -785,6 +785,10 @@ class HelpActions(Actions):
         self.help_window.Bind(wx.EVT_MOVE, self.OnHelpMove)
         self.help_window.Bind(wx.EVT_SIZE, self.OnHelpSize)
         self.help_htmlwindow.Bind(wx.EVT_RIGHT_DOWN, self.OnHelpBack)
+        self.help_htmlwindow.Bind(wx.html.EVT_HTML_LINK_CLICKED,
+                                  lambda e: self.open_external_links(e))
+        self.help_htmlwindow.Bind(wx.EVT_MOUSEWHEEL,
+                                  lambda e: self.zoom_html(e))
 
         # Get help data
         current_path = os.getcwd()
@@ -827,6 +831,48 @@ class HelpActions(Actions):
         config["help_window_size"] = repr((size.width, size.height))
 
         event.Skip()
+
+    def open_external_links(self, event):
+        link = event.GetLinkInfo().GetHref()
+        if ':' in link:
+            wx.LaunchDefaultBrowser(link)
+        else:
+            self.help_htmlwindow.LoadPage(link)
+
+    def zoom_html(self, event):
+        if event.ControlDown():
+
+            if not hasattr(self, 'html_font_size'):
+                self.html_font_size = self.help_htmlwindow.GetFont().GetPointSize()
+
+            # scroll down, zoom out
+            if event.GetWheelRotation() < 0:
+
+                # no difference between i and -i, so 1 is the smallest value
+                if self.html_font_size == 1:
+                    return
+
+                if    0 < self.html_font_size <= 12:    step = 1
+                elif 12 < self.html_font_size <= 24:    step = 2
+                elif 24 < self.html_font_size <= 36:    step = 4
+                elif 36 < self.html_font_size:          step = 6
+
+                self.html_font_size -= step
+
+            # scroll up, zoom in
+            if event.GetWheelRotation() > 0:
+
+                if    1 <= self.html_font_size < 12:    step = 1
+                elif 12 <= self.html_font_size < 24:    step = 2
+                elif 24 <= self.html_font_size < 36:    step = 4
+                elif 36 <= self.html_font_size:         step = 6
+
+                self.html_font_size += step
+
+            self.help_htmlwindow.SetStandardFonts(size=self.html_font_size)
+
+        else:
+            event.Skip()
 
 
 class AllMainWindowActions(ExchangeActions, PrintActions,
