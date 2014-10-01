@@ -43,7 +43,10 @@ import wx.lib.wxcairo
 import matplotlib
 matplotlib.use('Agg')
 
-import rsvg
+try:
+    import rsvg
+except ImportError:
+    rsvg = None
 
 import matplotlib.pyplot
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -322,6 +325,10 @@ class GridCellContentCairoRenderer(object):
 
     def draw_svg(self, svg_str):
         """Draws svg string to cell"""
+
+        if rsvg is None:
+            self.draw_text(svg_str)
+            return
 
         svg = rsvg.Handle(data=svg_str)
 
