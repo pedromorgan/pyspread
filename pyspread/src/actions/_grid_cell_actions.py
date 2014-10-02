@@ -414,6 +414,7 @@ class CellActions(Actions):
         "underline": [False, True],
         "strikethrough": [False, True],
         "locked": [False, True],
+        "markup": [False, True],
         "vertical_align": ["top", "middle", "bottom"],
         "justification": ["left", "center", "right"],
         "frozen": [True, False],

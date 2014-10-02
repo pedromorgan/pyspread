@@ -195,6 +195,7 @@ class Grid(wx.grid.Grid, EventMixin):
                          c_handlers.OnCellFontStrikethrough)
         main_window.Bind(self.EVT_CMD_FROZEN, c_handlers.OnCellFrozen)
         main_window.Bind(self.EVT_CMD_LOCK, c_handlers.OnCellLocked)
+        main_window.Bind(self.EVT_CMD_MARKUP, c_handlers.OnCellMarkup)
         main_window.Bind(self.EVT_CMD_MERGE, c_handlers.OnMerge)
         main_window.Bind(self.EVT_CMD_JUSTIFICATION,
                          c_handlers.OnCellJustification)
@@ -562,6 +563,17 @@ class GridCellEventHandlers(object):
         """Cell locked event handler"""
 
         self.grid.actions.toggle_attr("locked")
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
+        event.Skip()
+
+    def OnCellMarkup(self, event):
+        """Cell markup event handler"""
+
+        self.grid.actions.toggle_attr("markup")
 
         self.grid.ForceRefresh()
 

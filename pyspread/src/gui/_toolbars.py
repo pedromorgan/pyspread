@@ -47,7 +47,7 @@ from icons import icons
 
 import _widgets
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -68,7 +68,7 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
 
     # Toolbars should be able to overflow
     style = aui.AUI_TB_OVERFLOW | aui.AUI_TB_GRIPPER | \
-            aui.AUI_TB_PLAIN_BACKGROUND
+        aui.AUI_TB_PLAIN_BACKGROUND
 
     def __init__(self, parent, *args, **kwargs):
 
@@ -374,13 +374,13 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         self._create_font_choice_combo()
         self._create_font_size_combo()
         self._create_font_face_buttons()
+        self._create_textrotation_button()
         self._create_justification_button()
         self._create_alignment_button()
         self._create_borderchoice_combo()
         self._create_penwidth_combo()
         self._create_color_buttons()
         self._create_merge_button()
-        self._create_textrotation_button()
 
         self.Realize()
 
@@ -434,6 +434,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
                 "FormatTextStrikethrough", _("Strikethrough")),
             (wx.FONTFLAG_MASK, "OnFreeze", "Freeze", _("Freeze")),
             (wx.FONTFLAG_NOT_ANTIALIASED, "OnLock", "Lock", _("Lock cell")),
+            (wx.FONTFAMILY_DECORATIVE, "OnMarkup", "Markup", _("Markup")),
         ]
 
         for __id, method, iconname, helpstring in font_face_buttons:
@@ -441,6 +442,18 @@ class AttributesToolbar(ToolbarBase, EventMixin):
             self.AddCheckTool(__id, iconname, bmp, bmp,
                               short_help_string=helpstring)
             self.Bind(wx.EVT_TOOL, getattr(self, method), id=__id)
+
+    def _create_textrotation_button(self):
+        """Create text rotation toggle button"""
+
+        iconnames = ["TextRotate270", "TextRotate0", "TextRotate90",
+                     "TextRotate180"]
+        bmplist = [icons[iconname] for iconname in iconnames]
+
+        self.rotation_tb = _widgets.BitmapToggleButton(self, bmplist)
+        self.rotation_tb.SetToolTipString(_(u"Cell text rotation"))
+        self.Bind(wx.EVT_BUTTON, self.OnRotate, self.rotation_tb)
+        self.AddControl(self.rotation_tb)
 
     def _create_justification_button(self):
         """Creates horizontal justification button"""
@@ -539,18 +552,6 @@ class AttributesToolbar(ToolbarBase, EventMixin):
                           short_help_string=_("Merge cells"))
         self.Bind(wx.EVT_TOOL, self.OnMerge, id=self.mergetool_id)
 
-    def _create_textrotation_button(self):
-        """Create text rotation toggle button"""
-
-        iconnames = ["TextRotate270", "TextRotate0", "TextRotate90",
-                     "TextRotate180"]
-        bmplist = [icons[iconname] for iconname in iconnames]
-
-        self.rotation_tb = _widgets.BitmapToggleButton(self, bmplist)
-        self.rotation_tb.SetToolTipString(_(u"Cell text rotation"))
-        self.Bind(wx.EVT_BUTTON, self.OnRotate, self.rotation_tb)
-        self.AddControl(self.rotation_tb)
-
     # Update widget state methods
     # ---------------------------
 
@@ -643,6 +644,19 @@ class AttributesToolbar(ToolbarBase, EventMixin):
 
         self.ToggleTool(wx.FONTFLAG_NOT_ANTIALIASED, locked)
 
+    def _update_markupcell(self, markup):
+        """Updates markup cell widget
+
+        Parameters
+        ----------
+
+        markup: Bool
+        \tUntoggled iif False
+
+        """
+
+        self.ToggleTool(wx.FONTFAMILY_DECORATIVE, markup)
+
     def _update_underline(self, underlined):
         """Updates underline widget
 
@@ -668,6 +682,19 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         """
 
         self.ToggleTool(wx.FONTFLAG_STRIKETHROUGH, strikethrough)
+
+    def _update_textrotation(self, angle):
+        """Updates text rotation toggle button"""
+
+        states = {0: 0, -90: 1, 180: 2, 90: 3}
+
+        try:
+            self.rotation_tb.state = states[round(angle)]
+        except KeyError:
+            self.rotation_tb.state = 0
+
+        self.rotation_tb.toggle(None)
+        self.rotation_tb.Refresh()
 
     def _update_justification(self, justification):
         """Updates horizontal text justification button
@@ -726,19 +753,6 @@ class AttributesToolbar(ToolbarBase, EventMixin):
 
         self.ToggleTool(self.mergetool_id, merged)
 
-    def _update_textrotation(self, angle):
-        """Updates text rotation toggle button"""
-
-        states = {0: 0, -90: 1, 180: 2, 90: 3}
-
-        try:
-            self.rotation_tb.state = states[round(angle)]
-        except KeyError:
-            self.rotation_tb.state = 0
-
-        self.rotation_tb.toggle(None)
-        self.rotation_tb.Refresh()
-
     def _update_bgbrush(self, bgcolor):
         """Updates background color"""
 
@@ -774,6 +788,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         self._update_font_style(attributes["fontstyle"])
         self._update_frozencell(attributes["frozen"])
         self._update_lockedcell(attributes["locked"])
+        self._update_markupcell(attributes["markup"])
         self._update_underline(attributes["underline"])
         self._update_strikethrough(attributes["strikethrough"])
         self._update_justification(attributes["justification"])
@@ -880,6 +895,11 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         """Lock toggle button event handler"""
 
         post_command_event(self, self.LockMsg)
+
+    def OnMarkup(self, event):
+        """Markup toggle button event handler"""
+
+        post_command_event(self, self.MarkupMsg)
 
     def OnJustification(self, event):
         """Justification toggle button event handler"""

@@ -483,7 +483,16 @@ class GridCellContentCairoRenderer(object):
         self._rotate_cell(angle, rect)
         self.context.translate(0, downshift)
 
-        pango_layout.set_text(unicode(content))
+        try:
+            markup = cell_attributes["markup"]
+        except KeyError:
+            # Old file
+            markup = False
+
+        if markup:
+            pango_layout.set_markup(unicode(content))
+        else:
+            pango_layout.set_text(unicode(content))
 
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
