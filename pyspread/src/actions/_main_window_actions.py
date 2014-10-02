@@ -239,8 +239,8 @@ class ExchangeActions(Actions):
         elif __filter == "csv":
             self._export_csv(filepath, data, preview_data=preview_data)
 
-        elif __filter == "pdf":
-            self.export_pdf(filepath)
+        elif __filter in ["pdf", "svg"]:
+            self.export_cairo(filepath, __filter)
 
     def get_print_rect(self, grid_rect):
         """Returns wx.Rect that is correctly positioned on the print canvas"""
@@ -254,32 +254,50 @@ class ExchangeActions(Actions):
 
         return wx.Rect(rect_x, rect_y, grid_rect.width, grid_rect.height)
 
-    def export_pdf(self, filepath):
-        """Exports grid to the PDF file filepath"""
+    def export_cairo(self, filepath, filetype):
+        """Exports grid to the PDF file filepath
+
+        Parameters
+        ----------
+        filepath: String
+        \tPath of file to export
+        filetype in ["pdf", "svg"]
+        \tType of file to export
+
+        """
 
         if not HAS_CAIRO:
             return
 
-        pdf_export_info = self.main_window.interfaces.get_pdf_export_info()
+        export_info = \
+            self.main_window.interfaces.get_cairo_export_info(filetype)
 
-        if pdf_export_info is None:
+        if export_info is None:
             # Dialog has been canceled
             return
 
-        top_row = pdf_export_info["top_row"]
-        bottom_row = pdf_export_info["bottom_row"]
-        left_col = pdf_export_info["left_col"]
-        right_col = pdf_export_info["right_col"]
-        first_tab = pdf_export_info["first_tab"]
-        last_tab = pdf_export_info["last_tab"]
-        width = pdf_export_info["paper_width"]
-        height = pdf_export_info["paper_height"]
-        orientation = pdf_export_info["orientation"]
+        top_row = export_info["top_row"]
+        bottom_row = export_info["bottom_row"]
+        left_col = export_info["left_col"]
+        right_col = export_info["right_col"]
+        first_tab = export_info["first_tab"]
+        last_tab = export_info["last_tab"]
+        width = export_info["paper_width"]
+        height = export_info["paper_height"]
+        orientation = export_info["orientation"]
 
         if orientation == "landscape":
             width, height = height, width
 
-        surface = cairo.PDFSurface(filepath, width, height)
+        if filetype == "pdf":
+            surface = cairo.PDFSurface(filepath, width, height)
+        elif filetype == "svg":
+            surface = cairo.SVGSurface(filepath, width, height)
+        else:
+            msg = "Export filetype {filtype} not supported.".format(
+                filetype=filetype)
+            raise ValueError(msg)
+
         context = cairo.Context(surface)
 
         grid_cairo_renderer = GridCairoRenderer(
@@ -847,7 +865,8 @@ class HelpActions(Actions):
         if event.ControlDown():
 
             if not hasattr(self, 'html_font_size'):
-                self.html_font_size = self.help_htmlwindow.GetFont().GetPointSize()
+                self.html_font_size = \
+                    self.help_htmlwindow.GetFont().GetPointSize()
 
             # scroll down, zoom out
             if event.GetWheelRotation() < 0:
@@ -856,20 +875,28 @@ class HelpActions(Actions):
                 if self.html_font_size == 1:
                     return
 
-                if    0 < self.html_font_size <= 12:    step = 1
-                elif 12 < self.html_font_size <= 24:    step = 2
-                elif 24 < self.html_font_size <= 36:    step = 4
-                elif 36 < self.html_font_size:          step = 6
+                if 0 < self.html_font_size <= 12:
+                    step = 1
+                elif 12 < self.html_font_size <= 24:
+                    step = 2
+                elif 24 < self.html_font_size <= 36:
+                    step = 4
+                elif 36 < self.html_font_size:
+                    step = 6
 
                 self.html_font_size -= step
 
             # scroll up, zoom in
             if event.GetWheelRotation() > 0:
 
-                if    1 <= self.html_font_size < 12:    step = 1
-                elif 12 <= self.html_font_size < 24:    step = 2
-                elif 24 <= self.html_font_size < 36:    step = 4
-                elif 36 <= self.html_font_size:         step = 6
+                if 1 <= self.html_font_size < 12:
+                    step = 1
+                elif 12 <= self.html_font_size < 24:
+                    step = 2
+                elif 24 <= self.html_font_size < 36:
+                    step = 4
+                elif 36 <= self.html_font_size:
+                    step = 6
 
                 self.html_font_size += step
 

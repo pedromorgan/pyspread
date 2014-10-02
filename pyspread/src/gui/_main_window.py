@@ -890,6 +890,8 @@ class MainWindowEventHandlers(EventMixin):
         if cairo is not None:
             wildcard += "|" + _("PDF file") + " (*.pdf)|*.pdf"
             filters.append("pdf")
+            wildcard += "|" + _("SVG file") + " (*.svg)|*.svg"
+            filters.append("svg")
 
         if selection_bbox is None:
             # No selection --> Use smallest filled area for bottom right edge
@@ -967,7 +969,7 @@ class MainWindowEventHandlers(EventMixin):
         if filepath is None:
             return
 
-        self.main_window.actions.export_pdf(filepath)
+        self.main_window.actions.export_cairo(filepath, "pdf")
 
         event.Skip()
 

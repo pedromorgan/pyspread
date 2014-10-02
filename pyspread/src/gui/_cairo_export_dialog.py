@@ -25,7 +25,7 @@ _pdf_export_dialog
 
 Provides:
 ---------
-  1) PdfExportDialog
+  1) CairoExportDialog
 
 """
 
@@ -36,8 +36,8 @@ import src.lib.i18n as i18n
 _ = i18n.language.ugettext
 
 
-class PdfExportDialog(wx.Dialog):
-    """Gets PDF export parameters from user"""
+class CairoExportDialog(wx.Dialog):
+    """Gets Cairo export parameters from user"""
 
     # 72 points = 1 inch
 
@@ -64,6 +64,11 @@ class PdfExportDialog(wx.Dialog):
 
     def __init__(self, parent, *args, **kwds):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        try:
+            self.filetype = kwds.pop("filetype")
+        except KeyError:
+            self.filetype = "pdf"
+
         self.parent = parent
         wx.Dialog.__init__(self, parent, *args, **kwds)
         self.portrait_landscape_radio_box = \
@@ -106,7 +111,8 @@ class PdfExportDialog(wx.Dialog):
         (top, left), (bottom, right) = \
             self.parent.grid.actions.get_visible_area()
 
-        self.SetTitle(_("PDF export options"))
+        self.SetTitle(_("{filetype} export options").format(
+            filetype=self.filetype.upper()))
         self.portrait_landscape_radio_box.SetToolTipString(
             _("Choose portrait or landscape page layout"))
         self.portrait_landscape_radio_box.SetSelection(0)
@@ -213,7 +219,7 @@ class PdfExportDialog(wx.Dialog):
 
         event.Skip()
 
-    def get_pdf_info(self):
+    def get_info(self):
         """Returns a dict with the dialog PDF info
 
         Dict keys are:
@@ -222,18 +228,18 @@ class PdfExportDialog(wx.Dialog):
 
         """
 
-        pdf_info = {}
+        info = {}
 
-        pdf_info["top_row"] = self.top_row_text_ctrl.GetValue()
-        pdf_info["bottom_row"] = self.bottom_row_text_ctrl.GetValue()
-        pdf_info["left_col"] = self.left_col_text_ctrl.GetValue()
-        pdf_info["right_col"] = self.right_col_text_ctrl.GetValue()
-        pdf_info["first_tab"] = self.first_tab_text_ctrl.GetValue()
-        pdf_info["last_tab"] = self.last_tab_text_ctrl.GetValue()
+        info["top_row"] = self.top_row_text_ctrl.GetValue()
+        info["bottom_row"] = self.bottom_row_text_ctrl.GetValue()
+        info["left_col"] = self.left_col_text_ctrl.GetValue()
+        info["right_col"] = self.right_col_text_ctrl.GetValue()
+        info["first_tab"] = self.first_tab_text_ctrl.GetValue()
+        info["last_tab"] = self.last_tab_text_ctrl.GetValue()
 
-        pdf_info["paper_width"] = float(
+        info["paper_width"] = float(
             self.page_width_text_ctrl.GetValue()) * 72.0
-        pdf_info["paper_height"] = float(
+        info["paper_height"] = float(
             self.page_height_text_ctrl.GetValue()) * 72.0
 
         if self.portrait_landscape_radio_box.GetSelection() == 0:
@@ -243,8 +249,8 @@ class PdfExportDialog(wx.Dialog):
         else:
             raise ValueError("Orientation not in portrait or landscape")
 
-        pdf_info["orientation"] = orientation
+        info["orientation"] = orientation
 
-        return pdf_info
+        return info
 
 # end of class PdfExportDialog\

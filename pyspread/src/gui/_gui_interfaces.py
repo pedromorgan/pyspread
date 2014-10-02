@@ -43,7 +43,7 @@ import src.lib.i18n as i18n
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from _dialogs import PreferencesDialog, GPGParamsDialog, PasteAsDialog
-from src.gui._pdf_export_dialog import PdfExportDialog
+from src.gui._cairo_export_dialog import CairoExportDialog
 
 # use ugettext instead of gettext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -257,19 +257,25 @@ class ModalDialogInterfaceMixin(object):
 
         return dialect, has_header, digest_types
 
-    def get_pdf_export_info(self):
-        """Shows pdf export dialog and returns pdf_info"""
+    def get_cairo_export_info(self, filetype):
+        """Shows Cairo export dialog and returns info
 
-        pdf_export_dlg = PdfExportDialog(self.main_window)
+        Parameters
+        ----------
+        filetype: String in ["pdf", "svg"]
+        \tFile type for which export info is gathered
 
-        if pdf_export_dlg.ShowModal() == wx.ID_OK:
-            pdf_info = pdf_export_dlg.get_pdf_info()
-            pdf_export_dlg.Destroy()
-            return pdf_info
+        """
+
+        export_dlg = CairoExportDialog(self.main_window, filetype=filetype)
+
+        if export_dlg.ShowModal() == wx.ID_OK:
+            info = export_dlg.get_info()
+            export_dlg.Destroy()
+            return info
 
         else:
-            pdf_export_dlg.Destroy()
-            return
+            export_dlg.Destroy()
 
     def get_int_from_user(self, title="Enter integer value",
                           cond_func=lambda i: i is not None):
