@@ -486,10 +486,10 @@ class GridCellContentCairoRenderer(object):
         downshift = 0
 
         if cell_attributes["vertical_align"] == "bottom":
-            downshift = rect[3] - extents[1][3]
+            downshift = rect[3] - extents[1][3] - 4
 
         elif cell_attributes["vertical_align"] == "middle":
-            downshift = int((rect[3] - extents[1][3]) / 2)
+            downshift = int((rect[3] - extents[1][3]) / 2) - 2
 
         self._rotate_cell(angle, rect)
         self.context.translate(0, downshift)
