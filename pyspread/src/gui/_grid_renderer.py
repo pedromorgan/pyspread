@@ -39,15 +39,16 @@ import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
 import cairo
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
 class GridRenderer(wx.grid.PyGridCellRenderer):
     """This renderer draws borders and text at specified font, size, color"""
 
-    selection_color_tuple = tuple([c / 255.0
-        for c in get_color(config["selection_color"]).Get()] + [0.5])
+    selection_color_tuple = \
+        tuple([c / 255.0 for c in get_color(config["selection_color"]).Get()]
+              + [0.5])
 
     def __init__(self, data_array):
 

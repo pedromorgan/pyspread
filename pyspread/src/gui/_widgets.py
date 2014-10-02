@@ -871,6 +871,8 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
         if not self.ignore_changes:
             post_command_event(self, self.CodeEntryMsg, code=event.GetString())
 
+        self.main_window.grid.grid_renderer.cell_cache.clear()
+
         event.Skip()
 
     def OnChar(self, event):
