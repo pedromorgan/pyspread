@@ -466,6 +466,17 @@ class GridCellContentCairoRenderer(object):
 
         pango_layout.set_width(int(round((rect[2] - 4.0) * pango.SCALE)))
 
+        try:
+            markup = cell_attributes["markup"]
+        except KeyError:
+            # Old file
+            markup = False
+
+        if markup:
+            pango_layout.set_markup(unicode(content))
+        else:
+            pango_layout.set_text(unicode(content))
+
         alignment = cell_attributes["justification"]
         pango_layout.set_alignment(wx2pango_alignment[alignment])
 
@@ -482,17 +493,6 @@ class GridCellContentCairoRenderer(object):
 
         self._rotate_cell(angle, rect)
         self.context.translate(0, downshift)
-
-        try:
-            markup = cell_attributes["markup"]
-        except KeyError:
-            # Old file
-            markup = False
-
-        if markup:
-            pango_layout.set_markup(unicode(content))
-        else:
-            pango_layout.set_text(unicode(content))
 
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
