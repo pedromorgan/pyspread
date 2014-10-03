@@ -306,6 +306,9 @@ class GridCellContentCairoRenderer(object):
         scale_x = self.rect[2] / float(ims_width)
         scale_y = self.rect[3] / float(ims_height)
 
+        scale_x = min(scale_x, scale_y)
+        scale_y = scale_x
+
         self.context.save()
         self.context.translate(-2, -2)  # Otherwise there is a white border
         self.context.scale(scale_x, scale_y)
@@ -343,6 +346,8 @@ class GridCellContentCairoRenderer(object):
         dim = svg.get_dimension_data()
         scale_x = self.rect[2] / float(dim[0] + 4)  # Avoid cut offs
         scale_y = self.rect[3] / float(dim[1] + 2)
+        scale_x = min(scale_x, scale_y)
+        scale_y = scale_x
         self.context.save()
         self.context.scale(scale_x, scale_y)
         svg.render_cairo(self.context)
