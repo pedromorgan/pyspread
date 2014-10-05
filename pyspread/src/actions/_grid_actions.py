@@ -178,6 +178,7 @@ class FileActions(Actions):
             return False
 
         # Check if the sig is valid for the sigfile
+        # TODO: Check for whitespace in filenpaths
         return verify(sigfilename, filename)
 
     def enter_safe_mode(self):
