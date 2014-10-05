@@ -246,8 +246,9 @@ class MainWindow(wx.Frame, EventMixin):
 
         # Set initial size to config value
         self.SetInitialSize(config["window_size"])
-        self.SetPosition(config["window_position"])
         self.SetMinSize((10, 10))
+
+        self.SetPosition(config["window_position"])
 
     def _bind(self):
         """Bind events to handlers"""
@@ -368,8 +369,7 @@ class MainWindowEventHandlers(EventMixin):
         """Main window move event"""
 
         # Store window position in config
-        # position = self.main_window.ClientToScreen((0, 0)).Get()
-        position = self.main_window.GetScreenPositionTuple()
+        position = self.main_window.ClientToScreen((0, 0)).Get()
 
         config["window_position"] = repr(position)
 
