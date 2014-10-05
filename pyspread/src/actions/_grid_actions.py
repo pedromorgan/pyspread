@@ -397,6 +397,8 @@ class FileActions(Actions):
         if not GPG_PRESENT:
             return
 
+        print filepath
+
         signed_data = sign(filepath)
         signature = signed_data.data
 
@@ -428,6 +430,147 @@ class FileActions(Actions):
             # The main window does not exist any more
             pass
 
+    def _set_save_states(self):
+        """Sets application save states"""
+
+        wx.BeginBusyCursor()
+        self.saving = True
+        self.grid.Disable()
+
+    def _release_save_states(self):
+        """Releases application save states"""
+
+        self.saving = False
+        self.grid.Enable()
+        wx.EndBusyCursor()
+
+        # Mark content as unchanged
+        try:
+            post_command_event(self.main_window, self.ContentChangedMsg,
+                               changed=False)
+        except TypeError:
+            # The main window does not exist any more
+            pass
+
+    def _move_tmp_file(self, tmpfilepath, filepath):
+        """Moves tmpfile over file after saving is finished
+
+        Parameters
+        ----------
+
+        filepath: String
+        \tTarget file path for xls file
+        tmpfilepath: String
+        \tTemporary file file path for xls file
+
+        """
+
+        try:
+            shutil.move(tmpfilepath, filepath)
+
+        except OSError, err:
+            # No tmp file present
+            post_command_event(self.main_window, self.StatusBarMsg, text=err)
+
+    def _save_xls(self, filepath):
+        """Saves file as xls workbook
+
+        Parameters
+        ----------
+
+        filepath: String
+        \tTarget file path for xls file
+
+        """
+
+        Interface = self.type2interface["xls"]
+
+        workbook = xlwt.Workbook()
+        interface = Interface(self.grid.code_array, workbook)
+        interface.from_code_array()
+
+        try:
+            workbook.save(filepath)
+
+        except IOError, err:
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=err)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+    def _save_pys(self, filepath):
+        """Saves file as pys file and returns True if save success
+
+        Parameters
+        ----------
+
+        filepath: String
+        \tTarget file path for xls file
+
+        """
+
+        try:
+            with Bz2AOpen(filepath, "wb",
+                          main_window=self.main_window) as outfile:
+                interface = Pys(self.grid.code_array, outfile)
+                interface.from_code_array()
+
+        except (IOError, ValueError), err:
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=err)
+                return
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+        return not outfile.aborted
+
+    def _save_pysu(self, filepath):
+        """Saves file as pys file and returns True if save success
+
+        Parameters
+        ----------
+
+        filepath: String
+        \tTarget file path for xls file
+
+        """
+
+        try:
+            with AOpen(filepath, "wb",
+                       main_window=self.main_window) as outfile:
+                interface = Pys(self.grid.code_array, outfile)
+                interface.from_code_array()
+
+        except (IOError, ValueError), err:
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=err)
+                return
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+        return not outfile.aborted
+
+    def _save_sign(self, filepath):
+        """Sign so that the new file may be retrieved without safe mode"""
+
+        if self.code_array.safe_mode:
+            msg = _("File saved but not signed because it is unapproved.")
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=msg)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+        else:
+            self.sign_file(filepath)
+
     def save(self, event):
         """Saves a file that is specified in event.attr
 
@@ -442,94 +585,38 @@ class FileActions(Actions):
 
         try:
             filetype = event.attr["filetype"]
-
         except KeyError:
             filetype = "pys"
 
-        Interface = self.type2interface[filetype]
+        # Use ntmpfile to make sure that old save file does not get lost
+        # on abort save
+        tmpfilepath = filepath + "~"
 
-        io_error_text = _("Error writing to file {filepath}.")
-        io_error_text = io_error_text.format(filepath=filepath)
+        if filetype == "xls":
+            self._set_save_states()
+            self._save_xls(tmpfilepath)
+            self._move_tmp_file(tmpfilepath, filepath)
+            self._release_save_states()
 
-        # Set state to file saving
-        self.saving = True
+        elif filetype == "pys":
+            self._set_save_states()
+            if self._save_pys(tmpfilepath):
+                # Writing was successful
+                self._move_tmp_file(tmpfilepath, filepath)
+                self._save_sign(filepath)
+            self._release_save_states()
 
-        # Make sure that old save file does not get lost on abort save
-        tmpfile = filepath + "~"
+        elif filetype == "pysu":
+            self._set_save_states()
+            if self._save_pysu(tmpfilepath):
+                # Writing was successful
+                self._move_tmp_file(tmpfilepath, filepath)
+                self._save_sign(filepath)
+            self._release_save_states()
 
-        type2opener = {
-            "pys":
-            (Bz2AOpen, [tmpfile, "wb"], {"main_window": self.main_window}),
-            "pysu":
-            (AOpen, [tmpfile, "wb"], {"main_window": self.main_window}),
-        }
-
-        try:
-            wx.BeginBusyCursor()
-            self.grid.Disable()
-
-            if filetype == "xls":
-                workbook = xlwt.Workbook()
-                interface = Interface(self.grid.code_array, workbook)
-                interface.from_code_array()
-                workbook.save(tmpfile)
-
-            else:
-                # Specify the interface that shall be used
-                opener, op_args, op_kwargs = type2opener[filetype]
-
-                with opener(*op_args, **op_kwargs) as outfile:
-                    try:
-                        interface = Interface(self.grid.code_array, outfile)
-                        interface.from_code_array()
-
-                    except ValueError, err:
-                        post_command_event(self.main_window, self.StatusBarMsg,
-                                           text=err)
-
-            # Move save file from temp file to filepath
-            try:
-                shutil.move(tmpfile, filepath)
-
-            except OSError:
-                # No tmp file present
-                pass
-
-        except IOError:
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=io_error_text)
-            except TypeError:
-                # The main window does not exist any more
-                pass
-
-            return False
-
-        finally:
-            self.saving = False
-            self.grid.Enable()
-            wx.EndBusyCursor()
-
-        # Mark content as unchanged
-        try:
-            post_command_event(self.main_window, self.ContentChangedMsg,
-                               changed=False)
-        except TypeError:
-            # The main window does not exist any more
-            pass
-
-        # Sign so that the new file may be retrieved without safe mode
-        if self.code_array.safe_mode:
-            msg = _("File saved but not signed because it is unapproved.")
-            try:
-                post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=msg)
-            except TypeError:
-                # The main window does not exist any more
-                pass
-
-        elif filetype in ["pys", "pysu"] and not outfile.aborted:
-            self.sign_file(filepath)
+        else:
+            msg = "Filetype {filetype} unknown.".format(filetype=filetype)
+            raise ValueError(msg)
 
 
 class TableRowActionsMixin(Actions):
