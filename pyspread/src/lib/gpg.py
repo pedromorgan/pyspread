@@ -38,14 +38,13 @@ Provides
 import sys
 
 import wx
-import wx.lib.agw.genericmessagedialog as GMD
 import gnupg
 
 import src.lib.i18n as i18n
 from src.config import config
 from src.gui._gui_interfaces import get_key_params_from_user
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -131,7 +130,7 @@ def genkey():
             _("'{key}' will be generated.").format(key=pyspread_key_uid) + \
             _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
             _("Canceling this operation exits pyspread.")
-        dlg = GMD.GenericMessageDialog(None, message, short_message, style)
+        dlg = wx.MessageDialog(None, message, short_message, style)
         dlg.Centre()
 
         if dlg.ShowModal() == wx.ID_OK:
