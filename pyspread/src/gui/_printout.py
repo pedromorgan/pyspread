@@ -28,8 +28,11 @@ Printout handling module
 """
 
 import wx
+import wx.lib.wxcairo
 
 import src.lib.i18n as i18n
+
+from src.lib._grid_cairo_renderer import GridCairoRenderer
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -103,28 +106,43 @@ class PrintCanvas(wx.ScrolledWindow):
 
         dc.BeginDrawing()
 
-        for row in xrange(bottom, top - 1, -1):
-            for col in xrange(right, left - 1, -1):
+        context = wx.lib.wxcairo.ContextFromDC(dc)
+        code_array = self.grid.code_array
 
-                # Draw cell content
+        width, height = self._get_dc_size()
 
-                grid_rect = self.grid.CellToRect(row, col)
-                rect = self.get_print_rect(grid_rect)
+        # Draw cells
+        cell_renderer = GridCairoRenderer(context, code_array,
+                                          (top, bottom), (left, right), (0, 1),
+                                          width, height, "portrait")
 
-                self.draw_func(dc, rect, row, col)
+        cell_renderer.draw()
 
-                # Draw grid
+        context.show_page()
 
-                if col == left:
-                    dc.DrawLine(rect.x, rect.y, rect.x, rect.y + rect.height)
-                elif col == right:
-                    dc.DrawLine(rect.x + rect.width, rect.y,
-                                rect.x + rect.width, rect.y + rect.height)
-                if row == top:
-                    dc.DrawLine(rect.x, rect.y, rect.x + rect.width, rect.y)
-                elif row == bottom:
-                    dc.DrawLine(rect.x, rect.y + rect.height,
-                                rect.x + rect.width, rect.y + rect.height)
+#
+#        for row in xrange(bottom, top - 1, -1):
+#            for col in xrange(right, left - 1, -1):
+#
+#                # Draw cell content
+#
+#                grid_rect = self.grid.CellToRect(row, col)
+#                rect = self.get_print_rect(grid_rect)
+#
+#                self.draw_func(dc, rect, row, col)
+#
+#                # Draw grid
+#
+#                if col == left:
+#                    dc.DrawLine(rect.x, rect.y, rect.x, rect.y + rect.height)
+#                elif col == right:
+#                    dc.DrawLine(rect.x + rect.width, rect.y,
+#                                rect.x + rect.width, rect.y + rect.height)
+#                if row == top:
+#                    dc.DrawLine(rect.x, rect.y, rect.x + rect.width, rect.y)
+#                elif row == bottom:
+#                    dc.DrawLine(rect.x, rect.y + rect.height,
+#                                rect.x + rect.width, rect.y + rect.height)
         dc.EndDrawing()
 
 
@@ -155,7 +173,8 @@ class Printout(wx.Printout):
             return False
 
     def GetPageInfo(self):
-        return (1, 1, 1, 1)
+        super(Printout, self).GetPageInfo()
+        # return (1, 1, 1, 1)
 
     def OnPrintPage(self, page):
         dc = self.GetDC()
