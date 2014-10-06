@@ -398,8 +398,6 @@ class FileActions(Actions):
         if not GPG_PRESENT:
             return
 
-        print filepath
-
         signed_data = sign(filepath)
         signature = signed_data.data
 

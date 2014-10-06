@@ -31,7 +31,7 @@ import wx
 
 import src.lib.i18n as i18n
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -82,7 +82,7 @@ class PrintCanvas(wx.ScrolledWindow):
         """Redirected Draw function from main grid"""
 
         return self.grid.grid_renderer.Draw(self.grid, self.grid_attr,
-                                dc, rect, row, col, False)
+                                            dc, rect, row, col, False)
 
     def get_print_rect(self, grid_rect):
         """Returns wx.Rect that is correctly positioned on the print canvas"""
@@ -90,9 +90,9 @@ class PrintCanvas(wx.ScrolledWindow):
         grid = self.grid
 
         rect_x = grid_rect.x - \
-                 grid.GetScrollPos(wx.HORIZONTAL) * grid.GetScrollLineX()
+            grid.GetScrollPos(wx.HORIZONTAL) * grid.GetScrollLineX()
         rect_y = grid_rect.y - \
-                 grid.GetScrollPos(wx.VERTICAL) * grid.GetScrollLineY()
+            grid.GetScrollPos(wx.VERTICAL) * grid.GetScrollLineY()
 
         return wx.Rect(rect_x, rect_y, grid_rect.width, grid_rect.height)
 
@@ -106,7 +106,7 @@ class PrintCanvas(wx.ScrolledWindow):
         for row in xrange(bottom, top - 1, -1):
             for col in xrange(right, left - 1, -1):
 
-                #Draw cell content
+                # Draw cell content
 
                 grid_rect = self.grid.CellToRect(row, col)
                 rect = self.get_print_rect(grid_rect)
@@ -115,7 +115,6 @@ class PrintCanvas(wx.ScrolledWindow):
 
                 # Draw grid
 
-                ##self.grid._main_grid.text_renderer.redraw_imminent = False
                 if col == left:
                     dc.DrawLine(rect.x, rect.y, rect.x, rect.y + rect.height)
                 elif col == right:
@@ -192,7 +191,7 @@ class Printout(wx.Printout):
         dc.SetUserScale(actualScale, actualScale)
         dc.SetDeviceOrigin(int(posX), int(posY))
 
-        #-------------------------------------------
+        # ------------------------------------------
 
         self.canvas.DoDrawing(dc)
         page_text = _("Page: {page}").format(page=page)
