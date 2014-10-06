@@ -43,7 +43,7 @@ class PyTest(Command):
 
 setup(
     name='pyspread',
-    version='0.3.3',
+    version='0.4',
     description='Python spreadsheet',
     long_description='Pyspread is a non-traditional spreadsheet application'
     ' that is based on and written in the programming language Python.',
@@ -53,12 +53,12 @@ setup(
     author_email='mmanns@gmx.net',
     url='http://manns.github.io/pyspread/',
     requires=['numpy (>=1.1)', 'wx (>=2.8.10)', 'matplotlib (>=1.1.1)',
-              'python_gnupg (>=0.3.0)'],
+              'python_gnupg (>=0.3.0)', 'pycairo (>=1.8.8)', 'rsvg (>=2.32.0)',
+              ],
     packages=['pyspread'],
     scripts=['pyspread/pyspread'],
     cmdclass={'test': PyTest},
-    package_data={'pyspread':
-        [
+    package_data={'pyspread': [
             '*.py',
             '../pyspread.sh',
             '../pyspread.bat',
