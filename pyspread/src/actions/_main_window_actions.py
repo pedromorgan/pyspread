@@ -59,7 +59,7 @@ from src.sysvars import get_help_path
 from src.config import config
 from src.lib.__csv import CsvInterface, TxtGenerator
 from src.lib.charts import fig2bmp, fig2x
-from src.gui._printout import PrintCanvas, Printout
+from src.gui._printout import Printout
 from src.gui._events import post_command_event, EventMixin
 from src.lib._grid_cairo_renderer import GridCairoRenderer
 
@@ -320,13 +320,21 @@ class PrintActions(Actions):
     def print_preview(self, print_area, print_data):
         """Launch print preview"""
 
-        # Create the print canvas
-        canvas = PrintCanvas(self.main_window, self.grid, print_area)
+        if not HAS_CAIRO:
+            return
 
-        printout = Printout(canvas)
-        printout2 = Printout(canvas)
+        print_info = \
+            self.main_window.interfaces.get_cairo_export_info("PS")
 
-        preview = wx.PrintPreview(printout, printout2, print_data)
+        if print_info is None:
+            # Dialog has been canceled
+            return
+
+        printout_preview = Printout(self.grid, print_info)
+        printout_printing = Printout(self.grid, print_info)
+
+        preview = wx.PrintPreview(printout_preview, printout_printing,
+                                  print_data)
 
         if not preview.Ok():
             print "Printout preview failed.\n"
@@ -350,17 +358,13 @@ class PrintActions(Actions):
         pdd = wx.PrintDialogData(print_data)
         printer = wx.Printer(pdd)
 
-        # Create the print canvas
-        canvas = PrintCanvas(self.main_window, self.grid, print_area)
-
-        printout = Printout(canvas)
+        printout = Printout(self.grid)
 
         if printer.Print(self.main_window, printout, True):
             self.print_data = \
                 wx.PrintData(printer.GetPrintDialogData().GetPrintData())
 
         printout.Destroy()
-        canvas.Destroy()
 
 
 class ClipboardActions(Actions):
