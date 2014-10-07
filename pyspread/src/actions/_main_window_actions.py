@@ -276,15 +276,19 @@ class ExchangeActions(Actions):
             # Dialog has been canceled
             return
 
-        top_row = export_info["top_row"]
-        bottom_row = export_info["bottom_row"]
-        left_col = export_info["left_col"]
-        right_col = export_info["right_col"]
-        first_tab = export_info["first_tab"]
-        last_tab = export_info["last_tab"]
+        top_row = max(0, export_info["top_row"])
+        bottom_row = min(self.grid.code_array.shape[0] - 1,
+                         export_info["bottom_row"])
+        left_col = max(0, export_info["left_col"])
+        right_col = min(self.grid.code_array.shape[1] - 1,
+                        export_info["right_col"])
+        first_tab = max(0, export_info["first_tab"])
+        last_tab = min(self.grid.code_array.shape[2] - 1,
+                       export_info["last_tab"])
         width = export_info["paper_width"]
         height = export_info["paper_height"]
         orientation = export_info["orientation"]
+        print top_row, bottom_row, last_tab
 
         if orientation == "landscape":
             width, height = height, width
