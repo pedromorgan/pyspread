@@ -176,6 +176,7 @@ class GridCairoRenderer(object):
             scale_x = (self.width - 2 * self.x_offset) / float(x_extent)
             scale_y = (self.height - 2 * self.y_offset) / float(y_extent)
 
+            self.context.save()
             # Translate offset to o
             self.context.translate(first_rect[0], first_rect[1])
 
@@ -203,8 +204,8 @@ class GridCairoRenderer(object):
 
                     cell_renderer.draw()
 
-            # Undo scaling
-            self.context.scale(1.0 / scale, 1.0 / scale)
+            # Undo scaling, translation, ...
+            self.context.restore()
 
             self.context.show_page()
 

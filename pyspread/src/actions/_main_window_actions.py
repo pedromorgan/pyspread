@@ -288,7 +288,6 @@ class ExchangeActions(Actions):
         width = export_info["paper_width"]
         height = export_info["paper_height"]
         orientation = export_info["orientation"]
-        print top_row, bottom_row, last_tab
 
         if orientation == "landscape":
             width, height = height, width
