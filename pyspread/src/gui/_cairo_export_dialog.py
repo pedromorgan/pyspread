@@ -106,13 +106,25 @@ class CairoExportDialog(wx.Dialog):
 
         self.page_layout_choice.Bind(wx.EVT_CHOICE, self.on_page_layout_choice)
 
+    def _get_dialog_title(self):
+        """Returns title string"""
+
+        title_filetype = self.filetype[0].upper() + self.filetype[1:]
+
+        if self.filetype.lower() == "print":
+            title_export = ""
+        else:
+            title_export = " export"
+
+        return _("{filetype}{export} options").format(filetype=title_filetype,
+                                                      export=title_export)
+
     def __set_properties(self):
 
         (top, left), (bottom, right) = \
             self.parent.grid.actions.get_visible_area()
 
-        self.SetTitle(_("{filetype} export options").format(
-            filetype=self.filetype.upper()))
+        self.SetTitle(self._get_dialog_title())
         self.portrait_landscape_radio_box.SetToolTipString(
             _("Choose portrait or landscape page layout"))
         self.portrait_landscape_radio_box.SetSelection(0)

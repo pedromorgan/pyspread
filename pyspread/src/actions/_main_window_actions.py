@@ -327,7 +327,7 @@ class PrintActions(Actions):
             return
 
         print_info = \
-            self.main_window.interfaces.get_cairo_export_info("PS")
+            self.main_window.interfaces.get_cairo_export_info("Print")
 
         if print_info is None:
             # Dialog has been canceled
