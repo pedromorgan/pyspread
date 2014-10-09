@@ -65,24 +65,35 @@ class CairoExportDialog(wx.Dialog):
     def __init__(self, parent, *args, **kwds):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         try:
-            self.filetype = kwds.pop("filetype")
+            self.filetype = kwds.pop("filetype").lower()
         except KeyError:
             self.filetype = "pdf"
 
         self.parent = parent
         wx.Dialog.__init__(self, parent, *args, **kwds)
-        self.portrait_landscape_radio_box = \
-            wx.RadioBox(self, wx.ID_ANY, _("Layout"),
-                        choices=[_("Portrait"), _("Landscape")],
-                        majorDimension=2,
-                        style=wx.RA_SPECIFY_COLS)
-        self.page_width_label = wx.StaticText(self, wx.ID_ANY, _("Width"))
-        self.page_width_text_ctrl = wx.TextCtrl(self, wx.ID_ANY)
-        self.page_height_label = wx.StaticText(self, wx.ID_ANY, _("Height"))
-        self.page_height_text_ctrl = wx.TextCtrl(self, wx.ID_ANY)
-        self.page_layout_choice = \
-            wx.Choice(self, wx.ID_ANY, choices=self.paper_sizes_points.keys())
-        self.sizer_2_staticbox = wx.StaticBox(self, wx.ID_ANY, _("Page"))
+
+        if self.filetype != "print":
+            # If printing and not exporting then page info is
+            # gathered from printer dialog
+
+            self.portrait_landscape_radio_box = \
+                wx.RadioBox(self, wx.ID_ANY, _("Layout"),
+                            choices=[_("Portrait"), _("Landscape")],
+                            majorDimension=2,
+                            style=wx.RA_SPECIFY_COLS)
+            self.page_width_label = wx.StaticText(self, wx.ID_ANY, _("Width"))
+            self.page_width_text_ctrl = wx.TextCtrl(self, wx.ID_ANY)
+            self.page_height_label = wx.StaticText(self, wx.ID_ANY,
+                                                   _("Height"))
+            self.page_height_text_ctrl = wx.TextCtrl(self, wx.ID_ANY)
+            self.page_layout_choice = \
+                wx.Choice(self, wx.ID_ANY,
+                          choices=self.paper_sizes_points.keys())
+            self.sizer_2_staticbox = wx.StaticBox(self, wx.ID_ANY, _("Page"))
+
+            self.page_layout_choice.Bind(wx.EVT_CHOICE,
+                                         self.on_page_layout_choice)
+
         self.top_row_label = wx.StaticText(self, wx.ID_ANY, _("Top row"))
         self.top_row_text_ctrl = IntCtrl(self, wx.ID_ANY)
         self.bottom_row_label = wx.StaticText(self, wx.ID_ANY, _("Bottom row"))
@@ -104,14 +115,12 @@ class CairoExportDialog(wx.Dialog):
         self.__set_properties()
         self.__do_layout()
 
-        self.page_layout_choice.Bind(wx.EVT_CHOICE, self.on_page_layout_choice)
-
     def _get_dialog_title(self):
         """Returns title string"""
 
         title_filetype = self.filetype[0].upper() + self.filetype[1:]
 
-        if self.filetype.lower() == "print":
+        if self.filetype == "print":
             title_export = ""
         else:
             title_export = " export"
@@ -125,20 +134,27 @@ class CairoExportDialog(wx.Dialog):
             self.parent.grid.actions.get_visible_area()
 
         self.SetTitle(self._get_dialog_title())
-        self.portrait_landscape_radio_box.SetToolTipString(
-            _("Choose portrait or landscape page layout"))
-        self.portrait_landscape_radio_box.SetSelection(0)
-        self.page_width_label.SetToolTipString(_("Page width in inches"))
-        self.page_width_text_ctrl.SetToolTipString(_("Page width in inches"))
-        self.page_width_text_ctrl.SetValue(
-            str(self.paper_sizes_points["A4"][0] / 72.0))
-        self.page_height_label.SetToolTipString(_("Page height in inches"))
-        self.page_height_text_ctrl.SetToolTipString(_("Page height in inches"))
-        self.page_height_text_ctrl.SetValue(
-            str(self.paper_sizes_points["A4"][1] / 72.0))
-        self.page_layout_choice.SetToolTipString(
-            _("Choose from predefined page layouts"))
-        self.page_layout_choice.SetSelection(0)
+
+        if self.filetype != "print":
+            # If printing and not exporting then page info is
+            # gathered from printer dialog
+            self.portrait_landscape_radio_box.SetToolTipString(
+                _("Choose portrait or landscape page layout"))
+            self.portrait_landscape_radio_box.SetSelection(0)
+            self.page_width_label.SetToolTipString(_("Page width in inches"))
+            self.page_width_text_ctrl.SetToolTipString(
+                _("Page width in inches"))
+            self.page_width_text_ctrl.SetValue(
+                str(self.paper_sizes_points["A4"][0] / 72.0))
+            self.page_height_label.SetToolTipString(_("Page height in inches"))
+            self.page_height_text_ctrl.SetToolTipString(
+                _("Page height in inches"))
+            self.page_height_text_ctrl.SetValue(
+                str(self.paper_sizes_points["A4"][1] / 72.0))
+            self.page_layout_choice.SetToolTipString(
+                _("Choose from predefined page layouts"))
+            self.page_layout_choice.SetSelection(0)
+
         self.top_row_label.SetToolTipString(_("Top row to be exported"))
         self.top_row_text_ctrl.SetToolTipString(_("Top row to be exported"))
         self.top_row_text_ctrl.SetValue(top)
@@ -172,23 +188,30 @@ class CairoExportDialog(wx.Dialog):
         self.sizer_3_staticbox.Lower()
         sizer_3 = wx.StaticBoxSizer(self.sizer_3_staticbox, wx.HORIZONTAL)
         grid_sizer_4 = wx.FlexGridSizer(3, 4, 0, 0)
-        self.sizer_2_staticbox.Lower()
-        sizer_2 = wx.StaticBoxSizer(self.sizer_2_staticbox, wx.VERTICAL)
-        grid_sizer_3 = wx.FlexGridSizer(1, 5, 0, 0)
-        sizer_2.Add(self.portrait_landscape_radio_box, 0,
-                    wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL, 3)
-        grid_sizer_3.Add(self.page_width_label, 0,
-                         wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
-        grid_sizer_3.Add(self.page_width_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_3.Add(self.page_height_label, 0,
-                         wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
-        grid_sizer_3.Add(self.page_height_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_3.Add(self.page_layout_choice, 0, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_3.AddGrowableCol(1)
-        grid_sizer_3.AddGrowableCol(3)
-        grid_sizer_3.AddGrowableCol(4)
-        sizer_2.Add(grid_sizer_3, 3, wx.ALL | wx.EXPAND, 3)
-        grid_sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 3)
+
+        if self.filetype != "print":
+            # If printing and not exporting then page info is
+            # gathered from printer dialog
+            self.sizer_2_staticbox.Lower()
+            sizer_2 = wx.StaticBoxSizer(self.sizer_2_staticbox, wx.VERTICAL)
+            grid_sizer_3 = wx.FlexGridSizer(1, 5, 0, 0)
+            sizer_2.Add(self.portrait_landscape_radio_box, 0,
+                        wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL, 3)
+            grid_sizer_3.Add(self.page_width_label, 0,
+                             wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+            grid_sizer_3.Add(self.page_width_text_ctrl, 0,
+                             wx.ALL | wx.EXPAND, 3)
+            grid_sizer_3.Add(self.page_height_label, 0,
+                             wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
+            grid_sizer_3.Add(self.page_height_text_ctrl, 0,
+                             wx.ALL | wx.EXPAND, 3)
+            grid_sizer_3.Add(self.page_layout_choice, 0, wx.ALL | wx.EXPAND, 3)
+            grid_sizer_3.AddGrowableCol(1)
+            grid_sizer_3.AddGrowableCol(3)
+            grid_sizer_3.AddGrowableCol(4)
+            sizer_2.Add(grid_sizer_3, 3, wx.ALL | wx.EXPAND, 3)
+            grid_sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 3)
+
         grid_sizer_4.Add(self.top_row_label, 0,
                          wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
         grid_sizer_4.Add(self.top_row_text_ctrl, 0, wx.ALL | wx.EXPAND, 3)
@@ -249,19 +272,23 @@ class CairoExportDialog(wx.Dialog):
         info["first_tab"] = self.first_tab_text_ctrl.GetValue()
         info["last_tab"] = self.last_tab_text_ctrl.GetValue()
 
-        info["paper_width"] = float(
-            self.page_width_text_ctrl.GetValue()) * 72.0
-        info["paper_height"] = float(
-            self.page_height_text_ctrl.GetValue()) * 72.0
+        if self.filetype != "print":
+            # If printing and not exporting then page info is
+            # gathered from printer dialog
 
-        if self.portrait_landscape_radio_box.GetSelection() == 0:
-            orientation = "portrait"
-        elif self.portrait_landscape_radio_box.GetSelection() == 1:
-            orientation = "landscape"
-        else:
-            raise ValueError("Orientation not in portrait or landscape")
+            info["paper_width"] = float(
+                self.page_width_text_ctrl.GetValue()) * 72.0
+            info["paper_height"] = float(
+                self.page_height_text_ctrl.GetValue()) * 72.0
 
-        info["orientation"] = orientation
+            if self.portrait_landscape_radio_box.GetSelection() == 0:
+                orientation = "portrait"
+            elif self.portrait_landscape_radio_box.GetSelection() == 1:
+                orientation = "landscape"
+            else:
+                raise ValueError("Orientation not in portrait or landscape")
+
+            info["orientation"] = orientation
 
         return info
 

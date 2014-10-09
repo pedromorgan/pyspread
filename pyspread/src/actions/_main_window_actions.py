@@ -333,14 +333,14 @@ class PrintActions(Actions):
             # Dialog has been canceled
             return
 
-        printout_preview = Printout(self.grid, print_info)
-        printout_printing = Printout(self.grid, print_info)
+        printout_preview = Printout(self.grid, print_data, print_info)
+        printout_printing = Printout(self.grid, print_data, print_info)
 
         preview = wx.PrintPreview(printout_preview, printout_printing,
                                   print_data)
 
         if not preview.Ok():
-            print "Printout preview failed.\n"
+            # Printout preview failed
             return
 
         pfrm = wx.PreviewFrame(preview, self.main_window, _("Print preview"))
@@ -358,10 +358,17 @@ class PrintActions(Actions):
 
         """
 
+        print_info = \
+            self.main_window.interfaces.get_cairo_export_info("Print")
+
+        if print_info is None:
+            # Dialog has been canceled
+            return
+
         pdd = wx.PrintDialogData(print_data)
         printer = wx.Printer(pdd)
 
-        printout = Printout(self.grid)
+        printout = Printout(self.grid, print_data, print_info)
 
         if printer.Print(self.main_window, printout, True):
             self.print_data = \

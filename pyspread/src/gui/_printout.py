@@ -39,30 +39,55 @@ _ = i18n.language.ugettext
 
 
 class Printout(wx.Printout):
-    def __init__(self, grid, print_info):
+    def __init__(self, grid, print_data, print_info):
+        start_keys = ["top_row", "left_col", "first_tab"]
+        end_keys = ["bottom_row", "right_col", "last_tab"]
 
-        self.top_row = print_info["top_row"]
-        self.bottom_row = print_info["bottom_row"]
-        self.left_col = print_info["left_col"]
-        self.right_col = print_info["right_col"]
-        self.first_tab = print_info["first_tab"]
-        self.last_tab = print_info["last_tab"]
-        self.width = print_info["paper_width"]
-        self.height = print_info["paper_height"]
-        self.orientation = print_info["orientation"]
+        for key in print_info:
+            if key in start_keys:
+                value = max(1, int(print_info[key]) + 1)
+
+            elif key in end_keys:
+                idx = end_keys.index(key)
+                value = min(grid.code_array.shape[idx],
+                            int(print_info[key]) + 1)
+
+            setattr(self, key, value)
 
         self.grid = grid
+
+        self.print_data = print_data
+
+        print self.print_data.GetPaperId(), self.print_data.GetPaperSize()
+
+        # TODO: Paper size is only present if a custom paper size is used!
+
+        self.width = 100
+        self.height = 100
+        self.orientation = "portrait"
 
         wx.Printout.__init__(self)
 
     def HasPage(self, page):
-        """Returns True iif page is present"""
+        """Returns True if the specified page exists.
+
+        Parameters
+        ----------
+        page: Integer
+        \tNumber of page that is checked
+
+        """
 
         return self.first_tab <= page <= self.last_tab
 
     def GetPageInfo(self):
-        super(Printout, self).GetPageInfo()
-        # return (1, 1, 1, 1)
+        """Returns page information
+
+        What is the page range available, and what is the selected page range.
+
+        """
+
+        return self.first_tab, self.last_tab, self.first_tab, self.last_tab
 
     def OnPrintPage(self, page):
         dc = self.GetDC()

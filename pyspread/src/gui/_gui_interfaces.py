@@ -175,7 +175,10 @@ class ModalDialogInterfaceMixin(object):
         # this makes a copy of the wx.PrintData instead of just saving
         # a reference to the one inside the PrintDialogData that will
         # be destroyed when the dialog is destroyed
-        new_print_data = wx.PrintData(dlg.GetPageSetupData().GetPrintData())
+        data = dlg.GetPageSetupData()
+        new_print_data = wx.PrintData(data.GetPrintData())
+        new_print_data.PaperId = data.PaperId
+        new_print_data.PaperSize = data.PaperSize
 
         dlg.Destroy()
 
