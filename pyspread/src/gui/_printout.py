@@ -91,10 +91,19 @@ class Printout(wx.Printout):
 
     def OnPrintPage(self, page):
         dc = self.GetDC()
+        width, height = dc.GetSizeTuple()
+        mdc = wx.MemoryDC()
+
+        bmp = wx.EmptyBitmap(width, height)
+        mdc.SelectObject(bmp)
+        mdc.SetBackgroundMode(wx.SOLID)
+        mdc.SetBrush(wx.Brush(colour=wx.Colour(255, 255, 255)))
+        mdc.SetPen(wx.Pen(colour=wx.Colour(255, 255, 255)))
+        mdc.DrawRectangle(0, 0, width, height)
+        mdc.SetDeviceOrigin(0, 0)
 
         # ------------------------------------------
-
-        context = wx.lib.wxcairo.ContextFromDC(dc)
+        context = wx.lib.wxcairo.ContextFromDC(mdc)
         code_array = self.grid.code_array
 
         # Draw cells
@@ -102,13 +111,17 @@ class Printout(wx.Printout):
                                           (self.top_row, self.bottom_row),
                                           (self.left_col, self.right_col),
                                           (page, page + 1),
-                                          self.width, self.height,
+                                          width, height,
                                           self.orientation)
+
+        mdc.BeginDrawing()
 
         cell_renderer.draw()
 
         context.show_page()
 
-        dc.EndDrawing()
+        mdc.EndDrawing()
+
+        dc.Blit(0, 0, width, height, mdc, 0, 0, wx.COPY)
 
         return True
