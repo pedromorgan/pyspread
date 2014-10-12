@@ -27,6 +27,8 @@ Printout handling module
 
 """
 
+import math
+
 import wx
 import wx.lib.wxcairo
 
@@ -61,9 +63,12 @@ class Printout(wx.Printout):
 
         self.print_data = print_data
 
-        print self.print_data.GetPaperId(), self.print_data.GetPaperSize()
+        if self.print_data.GetOrientation() == wx.LANDSCAPE:
+            self.orientation = "landscape"
+        else:
+            self.orientation = "portrait"
 
-        self.orientation = "portrait"
+        self.orientation_reversed = self.print_data.IsOrientationReversed()
 
         wx.Printout.__init__(self)
 
@@ -105,6 +110,12 @@ class Printout(wx.Printout):
         context = wx.lib.wxcairo.ContextFromDC(mdc)
         code_array = self.grid.code_array
 
+        # Rotate if orientation is reversed
+        if self.orientation_reversed:
+            context.save()
+            context.rotate(math.pi)
+            context.translate(-width, -height)
+
         x_offset = 20.5 * dc.GetPPI()[0] / 96.0
         y_offset = 20.5 * dc.GetPPI()[1] / 96.0
 
@@ -121,6 +132,10 @@ class Printout(wx.Printout):
         mdc.BeginDrawing()
 
         cell_renderer.draw()
+
+        # Rotate back if orientation is reversed
+        if self.orientation_reversed:
+            context.restore()
 
         context.show_page()
 
