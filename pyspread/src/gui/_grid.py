@@ -1295,11 +1295,11 @@ class GridEventHandlers(object):
         for row in rows:
             self.grid.code_array.set_row_height(row, tab, rowsize,
                                                 mark_unredo=False)
-            self.grid.SetRowSize(row, rowsize)
+            self.grid.SetRowSize(row, rowsize * self.grid.grid_renderer.zoom)
         self.grid.code_array.unredo.mark()
 
         event.Skip()
-        self.grid.Refresh()
+        self.grid.ForceRefresh()
 
     def OnColSize(self, event):
         """Column size event handler"""
@@ -1325,11 +1325,11 @@ class GridEventHandlers(object):
         for col in cols:
             self.grid.code_array.set_col_width(col, tab, colsize,
                                                mark_unredo=False)
-            self.grid.SetColSize(col, colsize)
+            self.grid.SetColSize(col, colsize * self.grid.grid_renderer.zoom)
         self.grid.code_array.unredo.mark()
 
         event.Skip()
-        self.grid.Refresh()
+        self.grid.ForceRefresh()
 
     def OnSortAscending(self, event):
         """Sort ascending event handler"""
