@@ -32,6 +32,12 @@ Provides
 
 import wx.grid
 
+try:
+    import rsvg
+    from src.lib.parsers import is_svg
+except ImportError:
+    rsvg = None
+
 from _events import post_command_event, EventMixin
 
 from _grid_table import GridTable
@@ -394,28 +400,50 @@ class GridCellEventHandlers(object):
     def OnInsertBitmap(self, event):
         """Insert bitmap event handler"""
 
+        key = self.grid.actions.cursor
         # Get file name
-        wildcard = "*"
-        message = _("Select bitmap for current cell")
+
+        wildcard = _("Bitmap file") + " (*)|*"
+        if rsvg is not None:
+            wildcard += "|"+ _("SVG file") + " (*.svg)|*.svg"
+
+        message = _("Select image for current cell")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, __ = \
+        filepath, index = \
             self.grid.interfaces.get_filepath_findex_from_user(wildcard,
                                                                message, style)
+        if index == 0:
+            # Bitmap loaded
+            try:
+                img = wx.EmptyImage(1, 1)
+                img.LoadFile(filepath)
+            except TypeError:
+                return
 
-        try:
-            img = wx.EmptyImage(1, 1)
-            img.LoadFile(filepath)
-        except TypeError:
-            return
+            if img.GetSize() == (-1, -1):
+                # Bitmap could not be read
+                return
 
-        if img.GetSize() == (-1, -1):
-            # Bitmap could not be read
-            return
+            code = self.grid.main_window.actions.img2code(key, img)
 
-        key = self.grid.actions.cursor
-        code = self.grid.main_window.actions.img2code(key, img)
+        elif index == 1 and rsvg is not None:
+            # SVG loaded
+            with open(filepath) as infile:
+                try:
+                    code = infile.read()
+                except IOError:
+                    return
+                if is_svg(code):
+                    code = 'u"""' + code + '"""'
+                else:
+                    # Does not seem to be an svg file
+                    return
 
-        self.grid.actions.set_code(key, code)
+        else:
+            code = None
+
+        if code:
+            self.grid.actions.set_code(key, code)
 
     def OnLinkBitmap(self, event):
         """Link bitmap event handler"""

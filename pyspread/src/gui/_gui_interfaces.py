@@ -130,7 +130,8 @@ class ModalDialogInterfaceMixin(object):
         """
 
         dlg = wx.FileDialog(self.main_window, wildcard=wildcard,
-                            message=message, style=style)
+                            message=message, style=style,
+                            defaultDir=os.getcwd(), defaultFile="")
 
         filepath = None
         filter_index = None
@@ -138,6 +139,8 @@ class ModalDialogInterfaceMixin(object):
         if dlg.ShowModal() == wx.ID_OK:
             filepath = dlg.GetPath()
             filter_index = dlg.GetFilterIndex()
+
+        dlg.Destroy()
 
         return filepath, filter_index
 
