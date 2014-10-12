@@ -44,8 +44,11 @@ class Printout(wx.Printout):
         end_keys = ["bottom_row", "right_col", "last_tab"]
 
         for key in print_info:
-            if key in start_keys:
+            if key == "first_tab":
                 value = max(1, int(print_info[key]) + 1)
+
+            elif key in start_keys:
+                value = max(0, int(print_info[key]))
 
             elif key in end_keys:
                 idx = end_keys.index(key)
@@ -60,10 +63,6 @@ class Printout(wx.Printout):
 
         print self.print_data.GetPaperId(), self.print_data.GetPaperSize()
 
-        # TODO: Paper size is only present if a custom paper size is used!
-
-        self.width = 100
-        self.height = 100
         self.orientation = "portrait"
 
         wx.Printout.__init__(self)
@@ -106,13 +105,18 @@ class Printout(wx.Printout):
         context = wx.lib.wxcairo.ContextFromDC(mdc)
         code_array = self.grid.code_array
 
+        x_offset = 20.5 * dc.GetPPI()[0] / 96.0
+        y_offset = 20.5 * dc.GetPPI()[1] / 96.0
+
         # Draw cells
         cell_renderer = GridCairoRenderer(context, code_array,
                                           (self.top_row, self.bottom_row),
                                           (self.left_col, self.right_col),
-                                          (page, page + 1),
+                                          (page - 1, page),
                                           width, height,
-                                          self.orientation)
+                                          self.orientation,
+                                          x_offset=x_offset,
+                                          y_offset=y_offset)
 
         mdc.BeginDrawing()
 

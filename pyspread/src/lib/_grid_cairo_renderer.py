@@ -180,8 +180,8 @@ class GridCairoRenderer(object):
             # Translate offset to o
             self.context.translate(first_rect[0], first_rect[1])
 
-            # Do not upscale
-            scale = min(scale_x, scale_y, 1)
+            # Scale to fit page, do not change aspect ratio
+            scale = min(scale_x, scale_y)
             self.context.scale(scale, scale)
 
             # Translate offset
