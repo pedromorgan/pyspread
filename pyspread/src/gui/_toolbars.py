@@ -27,9 +27,12 @@ Provides toolbars
 
 Provides:
 ---------
-  1. MainToolbar: Main toolbar of pyspread
-  2. FindToolbar: Toolbar for Find operation
-  3. AttributesToolbar: Toolbar for editing cell attributes
+  1. ToolbarBase: Toolbat base class
+  2. MainToolbar: Main toolbar of pyspread
+  3. MacroToolbar: Shortcuts to common macros
+  4. WidgetToolbar: Make cells behave like widgets
+  5. FindToolbar: Toolbar for Find operation
+  6. AttributesToolbar: Toolbar for editing cell attributes
 
 """
 
@@ -199,6 +202,22 @@ class MacroToolbar(ToolbarBase):
         self.add_tools()
 
 # end of class MainToolbar
+
+
+class WidgetToolbar(ToolbarBase):
+    """Widget toolbar, built from attribute toolbardata"""
+
+    def __init__(self, parent, *args, **kwargs):
+
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
+
+        self.toolbardata = [
+            ["T", self.ButtonCellMsg, "CellButton", _("Button like cell")],
+        ]
+
+        self.add_tools()
+
+# end of class WidgetToolbar
 
 
 class FindToolbar(ToolbarBase):

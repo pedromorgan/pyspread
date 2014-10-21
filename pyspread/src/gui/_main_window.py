@@ -51,6 +51,7 @@ from src.sysvars import get_python_tutorial_path, is_gtk
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
+from _toolbars import WidgetToolbar
 from _widgets import EntryLineToolbarPanel, StatusBar
 
 from src.lib.clipboard import Clipboard
@@ -124,6 +125,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.macro_toolbar = MacroToolbar(self, -1)
         self.find_toolbar = FindToolbar(self, -1)
         self.attributes_toolbar = AttributesToolbar(self, -1)
+        self.widget_toolbar = WidgetToolbar(self, -1)
 
         # Entry line
         self.entry_line_panel = EntryLineToolbarPanel(self, -1)
@@ -184,6 +186,7 @@ class MainWindow(wx.Frame, EventMixin):
             (self.attributes_toolbar, "attributes_toolbar",
              _("Format toolbar")),
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
+            (self.widget_toolbar, "widget_toolbar", _("Widget toolbar")),
             (self.entry_line_panel, "entry_line_panel", _("Entry line")),
         ]
 
@@ -220,6 +223,10 @@ class MainWindow(wx.Frame, EventMixin):
 
         self._mgr.AddPane(self.macro_toolbar, aui.AuiPaneInfo().
                           Name("macro_toolbar").Caption(_("Macro toolbar")).
+                          Gripper(True).ToolbarPane().Top().Row(1))
+
+        self._mgr.AddPane(self.widget_toolbar, aui.AuiPaneInfo().
+                          Name("widget_toolbar").Caption(_("Widget toolbar")).
                           Gripper(True).ToolbarPane().Top().Row(1))
 
         self._mgr.AddPane(self.entry_line_panel, aui.AuiPaneInfo().
@@ -280,6 +287,8 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnMainToolbarToggle)
         self.Bind(self.EVT_CMD_MACROTOOLBAR_TOGGLE,
                   handlers.OnMacroToolbarToggle)
+        self.Bind(self.EVT_CMD_WIDGETTOOLBAR_TOGGLE,
+                  handlers.OnWidgetToolbarToggle)
         self.Bind(self.EVT_CMD_ATTRIBUTESTOOLBAR_TOGGLE,
                   handlers.OnAttributesToolbarToggle)
         self.Bind(self.EVT_CMD_FIND_TOOLBAR_TOGGLE,
@@ -526,6 +535,16 @@ class MainWindowEventHandlers(EventMixin):
         macro_toolbar_info = self.main_window._mgr.GetPane("macro_toolbar")
 
         self._toggle_pane(macro_toolbar_info)
+
+        event.Skip()
+
+    def OnWidgetToolbarToggle(self, event):
+        """Widget toolbar toggle event handler"""
+
+        self.main_window.widget_toolbar.SetGripperVisible(True)
+        widget_toolbar_info = self.main_window._mgr.GetPane("widget_toolbar")
+
+        self._toggle_pane(widget_toolbar_info)
 
         event.Skip()
 
