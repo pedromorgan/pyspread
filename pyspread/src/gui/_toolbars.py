@@ -212,10 +212,46 @@ class WidgetToolbar(ToolbarBase):
         ToolbarBase.__init__(self, parent, *args, **kwargs)
 
         self.toolbardata = [
-            ["T", self.ButtonCellMsg, "CellButton", _("Button like cell")],
+            ["O", "BUTTON_CELL", _("Button like cell")],
         ]
 
         self.add_tools()
+
+        self.Bind(wx.EVT_MENU_RANGE, self.OnButtonCell)
+        self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
+
+    def OnButtonCell(self, event):
+        """Event handler for cell button toggle button"""
+
+        button_id = self.label2id["BUTTON_CELL"]
+        if button_id == event.GetId():
+            if event.IsChecked():
+                print "Cell button on"
+                # TODO
+            else:
+                print "Cell button off"
+
+        event.Skip()
+
+    def OnUpdate(self, event):
+        """Updates the toolbar states"""
+
+        attributes = event.attr
+
+        self._update_buttoncell(attributes["button_cell"])
+
+    def _update_buttoncell(self, button_cell):
+        """Updates button cell widget
+
+        Parameters
+        ----------
+
+        button_cell: Bool or string
+        \tUntoggled iif False
+
+        """
+
+        self.ToggleTool("BUTTON_CELL", button_cell)
 
 # end of class WidgetToolbar
 
