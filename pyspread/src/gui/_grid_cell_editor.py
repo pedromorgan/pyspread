@@ -62,9 +62,13 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         # Disable if cell is clocked, enable if cell is not locked
         grid = self.main_window.grid
         key = grid.actions.cursor
-        locked = grid.code_array.cell_attributes[key]["locked"]
+        locked = grid.code_array.cell_attributes[key]["locked"] or \
+            grid.code_array.cell_attributes[key]["button_cell"]
         self._tc.Enable(not locked)
         self._tc.Show(not locked)
+
+        if locked:
+            self._execute_cell_code(key[0], key[1], grid)
 
         self._tc.SetInsertionPoint(0)
         self.SetControl(self._tc)
@@ -97,6 +101,14 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         don't do anything at all in order to reduce flicker.
         """
 
+    def _execute_cell_code(self, row, col, grid):
+        """Executes cell code"""
+
+        key = row, col, grid.current_table
+        grid.code_array[key]
+
+        grid.ForceRefresh()
+
     def BeginEdit(self, row, col, grid):
         """
         Fetch the value from the table and prepare the edit control
@@ -104,12 +116,16 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         *Must Override*
         """
 
-        # Disable if cell is clocked, enable if cell is not locked
+        # Disable if cell is locked, enable if cell is not locked
         grid = self.main_window.grid
         key = grid.actions.cursor
-        locked = grid.code_array.cell_attributes[key]["locked"]
+        locked = grid.code_array.cell_attributes[key]["locked"]or \
+            grid.code_array.cell_attributes[key]["button_cell"]
         self._tc.Enable(not locked)
         self._tc.Show(not locked)
+
+        if locked:
+            self._execute_cell_code(row, col, grid)
 
         # Mirror our changes onto the main_window's code bar
         self._tc.Bind(wx.EVT_CHAR, self.OnChar)
@@ -160,8 +176,6 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         # Mirror our changes onto the main_window's code bar
         self._tc.Unbind(wx.EVT_KEY_UP)
 
-        oldVal = self.startValue
-        val = self._tc.GetValue()
         self.ApplyEdit(row, col, grid)
 
         del self._col
