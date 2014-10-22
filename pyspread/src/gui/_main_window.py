@@ -45,6 +45,11 @@ try:
 except ImportError:
     cairo = None
 
+try:
+    import xlrd
+except ImportError:
+    xlrd = None
+
 import src.lib.i18n as i18n
 from src.config import config
 from src.sysvars import get_python_tutorial_path, is_gtk
@@ -691,22 +696,20 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        try:
+        if xlrd is None:
             # Do not offer xls if xlrd is missing
-            import xlrd
+            wildcard = \
+                _("Pyspread file") + " (*.pys)|*.pys|" + \
+                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
+                _("All files") + " (*.*)|*.*"
+            filetypes = ["pys", "pysu", "pys"]
+        else:
             wildcard = \
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
                 _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
                 _("Excel file") + " (*.xls)|*.xls|" + \
                 _("All files") + " (*.*)|*.*"
             filetypes = ["pys", "pysu", "xls", "pys"]
-
-        except ImportError:
-            wildcard = \
-                _("Pyspread file") + " (*.pys)|*.pys|" + \
-                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
-                _("All files") + " (*.*)|*.*"
-            filetypes = ["pys", "pysu", "pys"]
 
         message = _("Choose file to open.")
         style = wx.OPEN

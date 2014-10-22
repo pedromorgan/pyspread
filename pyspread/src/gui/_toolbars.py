@@ -211,25 +211,24 @@ class WidgetToolbar(ToolbarBase):
 
         ToolbarBase.__init__(self, parent, *args, **kwargs)
 
-        self.toolbardata = [
-            ["O", "BUTTON_CELL", _("Button like cell")],
-        ]
+        self.button_cell_button_id = wx.NewId()
+        iconname = "BUTTON_CELL"
+        bmp = icons[iconname]
+        self.AddCheckTool(self.button_cell_button_id, iconname, bmp, bmp,
+                          short_help_string=_("Button like cell"))
+        self.Bind(wx.EVT_TOOL, self.OnButtonCell,
+                  id=self.button_cell_button_id)
 
-        self.add_tools()
-
-        self.Bind(wx.EVT_MENU_RANGE, self.OnButtonCell)
         self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
 
     def OnButtonCell(self, event):
         """Event handler for cell button toggle button"""
 
-        button_id = self.label2id["BUTTON_CELL"]
-        if button_id == event.GetId():
+        if self.button_cell_button_id == event.GetId():
             if event.IsChecked():
-                print "Cell button on"
-                # TODO
+                post_command_event(self, self.ButtonCellMsg, text="Test")
             else:
-                print "Cell button off"
+                post_command_event(self, self.ButtonCellMsg, text=False)
 
         event.Skip()
 
@@ -239,6 +238,10 @@ class WidgetToolbar(ToolbarBase):
         attributes = event.attr
 
         self._update_buttoncell(attributes["button_cell"])
+
+        self.Refresh()
+
+        event.Skip()
 
     def _update_buttoncell(self, button_cell):
         """Updates button cell widget
@@ -251,7 +254,8 @@ class WidgetToolbar(ToolbarBase):
 
         """
 
-        self.ToggleTool("BUTTON_CELL", button_cell)
+        self.ToggleTool(self.button_cell_button_id, button_cell)
+
 
 # end of class WidgetToolbar
 
@@ -856,6 +860,8 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         self._update_borderwidth(attributes["borderwidth_bottom"])
 
         self.Refresh()
+
+        event.Skip()
 
     def OnBorderChoice(self, event):
         """Change the borders that are affected by color and width changes"""
