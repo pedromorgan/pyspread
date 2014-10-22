@@ -506,6 +506,72 @@ class GridCellContentCairoRenderer(object):
         self.context.translate(0, -downshift)
         self._rotate_cell(angle, rect, back=True)
 
+    def draw_roundedrect(self, x, y, w, h, r=10):
+        """Draws a rounded rectangle"""
+        # A****BQ
+        # H     C
+        # *     *
+        # G     D
+        # F****E
+
+        context = self.context
+
+        context.save
+
+        context.move_to(x+r, y)  # Move to A
+        context.line_to(x+w-r, y)  # Straight line to B
+        context.curve_to(x+w, y, x+w, y, x+w, y+r)  # Curve to C
+        # Control points are both at Q
+        context.line_to(x+w, y+h-r)  # Move to D
+        context.curve_to(x+w, y+h, x+w, y+h, x+w-r, y+h)  # Curve to E
+        context.line_to(x+r, y+h)  # Line to F
+        context.curve_to(x, y+h, x, y+h, x, y+h-r)  # Curve to G
+        context.line_to(x, y+r)  # Line to H
+        context.curve_to(x, y, x, y, x+r, y)  # Curve to A
+
+        context.restore
+
+    def draw_button(self, x, y, w, h, label):
+        """Draws a button"""
+
+        context = self.context
+
+        self.draw_roundedrect(x, y, w, h)
+        context.clip()
+
+        # Set up the gradients
+        gradient = cairo.LinearGradient(0, 0, 0, 1)
+        gradient.add_color_stop_rgba(0, 0.5, 0.5, 0.5, 0.1)
+        gradient.add_color_stop_rgba(1, 0.8, 0.8, 0.8, 0.9)
+#        # Transform the coordinates so the width and height are both 1
+#        # We save the current settings and restore them afterward
+        context.save()
+        context.scale(w, h)
+        context.rectangle(0, 0, 1, 1)
+        context.set_source_rgb(0, 0, 1)
+        context.set_source(gradient)
+        context.fill()
+        context.restore()
+
+        # Draw the button text
+        # Center the text
+        x_bearing, y_bearing, width, height, x_advance, y_advance = \
+            context.text_extents(label)
+
+        text_x = (w / 2.0)-(width / 2.0 + x_bearing)
+        text_y = (h / 2.0)-(height / 2.0 + y_bearing)
+
+        # Draw the button text
+        context.move_to(text_x, text_y)
+        context.set_source_rgba(0, 0, 0, 1)
+        context.show_text(label)
+
+        # Draw the border of the button
+        context.move_to(x, y)
+        context.set_source_rgba(0, 0, 0, 1)
+        self.draw_roundedrect(x, y, w, h)
+        context.stroke()
+
     def draw(self):
         """Draws cell content to context"""
 
@@ -519,7 +585,12 @@ class GridCellContentCairoRenderer(object):
         pos_x, pos_y = self.rect[:2]
         self.context.translate(pos_x + 2, pos_y + 2)
 
-        if isinstance(content, wx._gdi.Bitmap):
+        if self.code_array.cell_attributes[self.key]["button_cell"]:
+            # Render a button instead of the cell
+            label = self.code_array.cell_attributes[self.key]["button_cell"]
+            self.draw_button(1, 1, self.rect[2]-5, self.rect[3]-5, label)
+
+        elif isinstance(content, wx._gdi.Bitmap):
             # A bitmap is returned --> Draw it!
             self.draw_bitmap(content)
 
