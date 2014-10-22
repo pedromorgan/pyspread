@@ -221,12 +221,27 @@ class WidgetToolbar(ToolbarBase):
 
         self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
 
+    def _get_button_label(self):
+        """Gets Button label from user and returns string"""
+
+        dlg = wx.TextEntryDialog(self, _('Button label:'))
+
+        if dlg.ShowModal() == wx.ID_OK:
+            label = dlg.GetValue()
+        else:
+            label = ""
+
+        dlg.Destroy()
+
+        return label
+
     def OnButtonCell(self, event):
         """Event handler for cell button toggle button"""
 
         if self.button_cell_button_id == event.GetId():
             if event.IsChecked():
-                post_command_event(self, self.ButtonCellMsg, text="Test")
+                label = self._get_button_label()
+                post_command_event(self, self.ButtonCellMsg, text=label)
             else:
                 post_command_event(self, self.ButtonCellMsg, text=False)
 
