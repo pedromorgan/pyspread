@@ -559,7 +559,7 @@ class GridCellContentCairoRenderer(object):
             context.text_extents(label)
 
         text_x = (w / 2.0)-(width / 2.0 + x_bearing)
-        text_y = (h / 2.0)-(height / 2.0 + y_bearing)
+        text_y = (h / 2.0)-(height / 2.0 + y_bearing) + 1
 
         # Draw the button text
         context.move_to(text_x, text_y)
