@@ -1099,9 +1099,11 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         # State for preventing to post GridActionTableSwitchMsg
         self.switching = False
+        self.cursor_pos = 0
 
         self.Bind(EVT_INT, self.OnInt)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
+        self.Bind(wx.EVT_SET_FOCUS, self.OnFocus)
         self.main_window.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
         self.main_window.Bind(self.EVT_CMD_TABLE_CHANGED, self.OnTableChanged)
 
@@ -1131,10 +1133,41 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         self.change_max(event.shape[2])
 
+    def _fromGUI(self, value):
+        """
+        Conversion function used in getting the value of the control.
+        """
+
+        # One or more of the underlying text control implementations
+        # issue an intermediate EVT_TEXT when replacing the control's
+        # value, where the intermediate value is an empty string.
+        # So, to ensure consistency and to prevent spurious ValueErrors,
+        # we make the following test, and react accordingly:
+        #
+        if value == '':
+            if not self.IsNoneAllowed():
+                return 0
+            else:
+                return None
+        else:
+            try:
+                return int(value)
+            except ValueError:
+                if self.IsLongAllowed():
+                    try:
+                        return long(value)
+                    except ValueError:
+                        raise
+                else:
+                    raise
+
     def OnInt(self, event):
         """IntCtrl event method that updates the current table"""
 
+        self.cursor_pos = wx.TextCtrl.GetInsertionPoint(self) + 1
+
         self.SetMax(self.no_tabs - 1)
+
         if event.GetValue() > self.GetMax():
             self.SetValue(self.GetMax())
             return
@@ -1143,13 +1176,13 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
             self.switching = True
             post_command_event(self, self.GridActionTableSwitchMsg,
                                newtable=event.GetValue())
-            if is_gtk():
-                try:
-                    wx.Yield()
-                except:
-                    pass
 
             self.switching = False
+
+    def OnFocus(self, event):
+        """Focus event handler"""
+
+        wx.TextCtrl.SetInsertionPoint(self, self.cursor_pos)
 
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
@@ -1180,6 +1213,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         if hasattr(event, 'table'):
             self.SetValue(event.table)
+
+        wx.TextCtrl.SetInsertionPoint(self, self.cursor_pos)
 
         event.Skip()
 
