@@ -89,8 +89,9 @@ class MainWindowEventMixin(object):
 
     MainToolbarToggleMsg, EVT_CMD_MAINTOOLBAR_TOGGLE = new_command_event()
     MacroToolbarToggleMsg, EVT_CMD_MACROTOOLBAR_TOGGLE = new_command_event()
+    WidgetToolbarToggleMsg, EVT_CMD_WIDGETTOOLBAR_TOGGLE = new_command_event()
     AttributesToolbarToggleMsg, EVT_CMD_ATTRIBUTESTOOLBAR_TOGGLE = \
-                                            new_command_event()
+        new_command_event()
     FindToolbarToggleMsg, EVT_CMD_FIND_TOOLBAR_TOGGLE = new_command_event()
     EntryLineToggleMsg, EVT_CMD_ENTRYLINE_TOGGLE = new_command_event()
     TableChoiceToggleMsg, EVT_CMD_TABLECHOICE_TOGGLE = new_command_event()
@@ -128,6 +129,7 @@ class GridCellEventMixin(object):
     TextColorMsg, EVT_CMD_TEXTCOLOR = new_command_event()
     RotationDialogMsg,  EVT_CMD_ROTATIONDIALOG = new_command_event()
     TextRotationMsg, EVT_CMD_TEXTROTATATION = new_command_event()
+    ButtonCellMsg, EVT_CMD_BUTTON_CELL = new_command_event()
 
     # Cell edit events
 

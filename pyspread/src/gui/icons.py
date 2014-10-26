@@ -98,6 +98,7 @@ class GtkArtProvider(wx.ArtProvider):
             "TextRotate90": action_path + "format-text-rotate90.png",
             "TextRotate180": action_path + "format-text-rotate180.png",
             "TextRotate270": action_path + "format-text-rotate270.png",
+            "BUTTON_CELL": action_path + "button_ok.png",
         }
 
     def get_paths(self, theme, icon_size):

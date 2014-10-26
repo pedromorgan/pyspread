@@ -38,7 +38,7 @@ from _events import post_command_event, EventMixin
 
 import src.lib.i18n as i18n
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -276,6 +276,9 @@ class MainMenu(_filledMenu, EventMixin):
                         wx.ITEM_CHECK],
                     [item, [self.MacroToolbarToggleMsg, _("Macro toolbar"),
                             _("Shows and hides the macro toolbar.")],
+                        wx.ITEM_CHECK],
+                    [item, [self.WidgetToolbarToggleMsg, _("Widget toolbar"),
+                            _("Shows and hides the widget toolbar.")],
                         wx.ITEM_CHECK],
                     [item, [self.AttributesToolbarToggleMsg,
                             _("Format toolbar"),

@@ -115,6 +115,7 @@ class CellAttributes(list):
         "frozen": False,
         "merge_area": None,
         "markup": False,
+        "button_cell": False,
     }
 
     # Cache for __getattr__ maps key to tuple of len and attr_dict

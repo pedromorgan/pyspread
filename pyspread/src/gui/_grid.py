@@ -201,6 +201,7 @@ class Grid(wx.grid.Grid, EventMixin):
                          c_handlers.OnCellFontStrikethrough)
         main_window.Bind(self.EVT_CMD_FROZEN, c_handlers.OnCellFrozen)
         main_window.Bind(self.EVT_CMD_LOCK, c_handlers.OnCellLocked)
+        main_window.Bind(self.EVT_CMD_BUTTON_CELL, c_handlers.OnButtonCell)
         main_window.Bind(self.EVT_CMD_MARKUP, c_handlers.OnCellMarkup)
         main_window.Bind(self.EVT_CMD_MERGE, c_handlers.OnMerge)
         main_window.Bind(self.EVT_CMD_JUSTIFICATION,
@@ -591,6 +592,20 @@ class GridCellEventHandlers(object):
         """Cell locked event handler"""
 
         self.grid.actions.toggle_attr("locked")
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
+        event.Skip()
+
+    def OnButtonCell(self, event):
+        """Button cell event handler"""
+
+        # The button text
+        text = event.text
+
+        self.grid.actions.set_attr("button_cell", text, mark_unredo=False)
 
         self.grid.ForceRefresh()
 

@@ -27,9 +27,12 @@ Provides toolbars
 
 Provides:
 ---------
-  1. MainToolbar: Main toolbar of pyspread
-  2. FindToolbar: Toolbar for Find operation
-  3. AttributesToolbar: Toolbar for editing cell attributes
+  1. ToolbarBase: Toolbat base class
+  2. MainToolbar: Main toolbar of pyspread
+  3. MacroToolbar: Shortcuts to common macros
+  4. WidgetToolbar: Make cells behave like widgets
+  5. FindToolbar: Toolbar for Find operation
+  6. AttributesToolbar: Toolbar for editing cell attributes
 
 """
 
@@ -199,6 +202,77 @@ class MacroToolbar(ToolbarBase):
         self.add_tools()
 
 # end of class MainToolbar
+
+
+class WidgetToolbar(ToolbarBase):
+    """Widget toolbar, built from attribute toolbardata"""
+
+    def __init__(self, parent, *args, **kwargs):
+
+        ToolbarBase.__init__(self, parent, *args, **kwargs)
+
+        self.button_cell_button_id = wx.NewId()
+        iconname = "BUTTON_CELL"
+        bmp = icons[iconname]
+        self.AddCheckTool(self.button_cell_button_id, iconname, bmp, bmp,
+                          short_help_string=_("Button like cell"))
+        self.Bind(wx.EVT_TOOL, self.OnButtonCell,
+                  id=self.button_cell_button_id)
+
+        self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
+
+    def _get_button_label(self):
+        """Gets Button label from user and returns string"""
+
+        dlg = wx.TextEntryDialog(self, _('Button label:'))
+
+        if dlg.ShowModal() == wx.ID_OK:
+            label = dlg.GetValue()
+        else:
+            label = ""
+
+        dlg.Destroy()
+
+        return label
+
+    def OnButtonCell(self, event):
+        """Event handler for cell button toggle button"""
+
+        if self.button_cell_button_id == event.GetId():
+            if event.IsChecked():
+                label = self._get_button_label()
+                post_command_event(self, self.ButtonCellMsg, text=label)
+            else:
+                post_command_event(self, self.ButtonCellMsg, text=False)
+
+        event.Skip()
+
+    def OnUpdate(self, event):
+        """Updates the toolbar states"""
+
+        attributes = event.attr
+
+        self._update_buttoncell(attributes["button_cell"])
+
+        self.Refresh()
+
+        event.Skip()
+
+    def _update_buttoncell(self, button_cell):
+        """Updates button cell widget
+
+        Parameters
+        ----------
+
+        button_cell: Bool or string
+        \tUntoggled iif False
+
+        """
+
+        self.ToggleTool(self.button_cell_button_id, button_cell)
+
+
+# end of class WidgetToolbar
 
 
 class FindToolbar(ToolbarBase):
@@ -801,6 +875,8 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         self._update_borderwidth(attributes["borderwidth_bottom"])
 
         self.Refresh()
+
+        event.Skip()
 
     def OnBorderChoice(self, event):
         """Change the borders that are affected by color and width changes"""
