@@ -1148,7 +1148,7 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
             if not self.IsNoneAllowed():
                 return 0
             else:
-                return None
+                return
         else:
             try:
                 return int(value)
@@ -1157,7 +1157,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
                     try:
                         return long(value)
                     except ValueError:
-                        raise
+                        wx.TextCtrl.SetValue(self, "0")
+                        return 0
                 else:
                     raise
 
