@@ -81,6 +81,7 @@ setup(
             'share/icons/Tango/24x24/status/*.png',
             'doc/help/*.html',
             'doc/help/images/*.png',
+            'po/*',
             'locale/*/*/*.mo',
             'examples/*',
             'COPYING',
