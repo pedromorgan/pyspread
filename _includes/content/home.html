@@ -62,116 +62,35 @@
             </a> </td>
         </tr>
         <tr>
-          <th style="vertical-align: top;">news<br>
+          <th style="vertical-align: top;">Target user group<br>
           </th>
           <td style="vertical-align: top; text-align: left;">
-
-            September 2014: Pyspread 0.3.3 is out. Get it <a
-href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.3.3.tar.gz#md5=f15d309de30c899ac5914b2e50d24b28">
-              here</a>.
-            <p></p>
-            <div style="margin-left: 40px;"> <br>
-              Bugfix release:<br>
-              <ul>
-                <li>Initaial GPG key selection now works when using wxPython 3.x</li>
-              </ul>
-            </div>
-
-            July 2014: Pyspread 0.3.2 is out. Get it <a
-href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.3.2.tar.gz#md5=7040fb44b560235fa3336bd14679b1c3">
-              here</a>.
-            <p></p>
-            <div style="margin-left: 40px;"> <br>
-              Bugfix release:<br>
-              <ul>
-                <li>Saving files that exist now succeeds in Windows</li>
-                <li>Result text is now wrapped to cell extent</li>
-                <li>Brasilian Portugese translations updated</li>
-              </ul>
-            </div>
-
-            July 2014: Pyspread 0.3.1 is out. Get it <a
-href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.3.1.tar.gz#md5=45158e467143fcd4328866af7c8cdcdc">
-              here</a>.
-            <p></p>
-            <div style="margin-left: 40px;"> <br>
-              Bugfix release:<br>
-              <ul>
-                <li>Removes a warning</li>
-                <li>Updated German and Ukrainian translations</li>
-              </ul>
-            </div>
-
-          July 2014: Pyspread 0.3.0 is out. Get it <a
-href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.3.0.tar.gz#md5=55962ead5c2a45c059a457318f533f07">
-              here</a>.
-            <div style="margin-left: 40px;"> <br>
-              New features:<br>
-              <ul>
-                <li>wxPython 3.x support</li>
-                <li>Entryline text completion (use &lt;Tab&gt;)</li>
-                <li>EntryLine tooltip now displays docstrings for
-                  methods and builtins (use &lt;Tab&gt;)</li>
-                <li>nn function added to remove None from result array</li>
-                <li>Uncompressed pysu save file format </li>
-                <li>Writing xls files (still experimental)</li>
-                <li>Cell locking</li>
-                <li>Cell sorting</li>
-                <li>Frozen cells can now be updated periodically
-                  (&gt;=100 ms/update)</li>
-                <li>Reference to a selection can now be copied the the
-                  clipboard with &lt;Ctrl&gt; + R</li>
-                <li>&lt;Home&gt; now moves the active cell to the first
-                  column of the actual row</li>
-                <li>&lt;Shift&gt; + &lt;Space&gt; now selects the
-                  current row</li>
-                <li>&lt;Ctrl&gt; + &lt;Space&gt; now selects the current
-                  column</li>
-                <li>Fingerprint in gpg key choice dialog</li>
-                <li>Tooltips for toolbar icons</li>
-              </ul>
-            </div>
-            March 2014: Andreas Noteng has provided a <a
-              href="https://packages.debian.org/sid/pyspread">deb
-              package</a> for installing pyspread 0.2.6 on Debian Linux.
-            The package can also be found in the Debian testing
-            repository.
-            <p><br>
-              February 2014: Dimitris Zlatanidis has provided a <a
-                href="http://slackbuilds.org/repository/14.1/office/pyspread/">
-                SlackBuild</a> for installing pyspread on <a
-                href="http://www.slackware.com/">Slackware Linux 14.1</a>.
-            </p>
-            <p><br>
-              February 2014: Pyspread 0.2.7 is out. Get it <a
-href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.2.7.tar.gz#md5=2306a96124edbb46230ea5cb1199e3c0">
-                here</a>. This is a bug fix release for the chart dialog
-              on Windows systems. </p>
-            <p><br>
-              February 2014: Pyspread 0.2.6 is out. Get it <a
-href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.2.6.tar.gz#md5=58777ac67dfe044370331f2a7f887a40">
-                here</a>. </p>
-            <div style="margin-left: 40px;"> <br>
-              New features:<br>
-              <ul>
-                <li>Reading support for Excel<sup>&reg;</sup> xls files
-                  (requires dependency xlrd)</li>
-                <li>Code execution timeout, i. e. buggy code such as
-                  infinite loops does not lock up pyspread any more.
-                  Note: The timeout does not work for long running C
-                  operations<br>
-                </li>
-                <li>Macro dialog now provides an error message field<br>
-                </li>
-                <li>Contour plots and Sankey charts added to chart
-                  dialog<br>
-                </li>
-                <li>Chart dialog further improved<br>
-                </li>
-                <li>Example macro for in cell LaTeX equations added<br>
-                </li>
-              </ul>
-            </div>
+            Directly using Python code in a grid is a core feature of pyspread.
+            The feature set is defined indirectly by the target user group of
+            pyspread:<p>
+            <ul>
+                <li>Peter needs to document layout planning projects.
+                    He has a large base of Python code for calculations.
+                    Besides, he wants to visualize 2D building layouts and calculation
+                    charts. Peter has to provide documentation in pdf files
+                    with a consistant layout.
+                <li>Clara is a research engineer and wants to quickly create
+                    publication ready figures for her publications. She is proficient
+                    with Python and wants to combine the flexibility of matplotlib 
+                    with the ease of use of a spreadsheet.
+            </ul>
+            Not part of the target user group of Dolphin are Donna and Jack: 
+            <ul>
+                <li>Donna is looking for a free replacement for Ms. Excel.
+                    She does not know any programming language.
+                <li>Jack does computation intensive data analysis that may take hours
+                    to compute. He is looking for a visually interactive data mining
+                    tool.
+            </ul>
+            This does not mean that Donna or Jack cannot work with pyspread. However,
+            Donna might find using Python code too hard. Jack on the other hand might
+            be disappointed because his long running tasks are likely to lock up
+            pyspread.
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -201,6 +120,10 @@ href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.2.6.tar.gz#m
                 (&gt;=2.8.10.1, Unicode version required) </li>
               <li> <a href="http://matplotlib.org/">matplotlib</a>
                 (&gt;=1.1.1)</li>
+              <li> <a href="http://cairographics.org/pycairo/">pycairo</a>
+                (&gt;=1.8.8)</li>
+              <li> <a href="http://cairographics.org/pyrsvg/">pyrsvg</a>
+                (&gt;=2.32)</li>
             </ul>
             <span style="text-decoration: underline;">Optional
               dependencies</span>
@@ -211,11 +134,10 @@ href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.2.6.tar.gz#m
               <li> <a href="http://www.python-excel.org/">xlrd</a>
                 (&gt;=0.9.2, for loading Excel<sup>&reg;</sup> files)</li>
               <li><a href="http://www.python-excel.org/">xlwt</a>
-                (&gt;=0.9.2, for saving Excel files, pyspread
-                &gt;=v0.3.0 required)</li>
+                (&gt;=0.9.2, for saving Excel files)</li>
               <li><a href="http://jedi.jedidjah.ch">jedi</a>
                 (&gt;=0.8.0, for tab completion and context help in the
-                entry line, pyspread &gt;=v0.3.0 required)</li>
+                entry line)</li>
               <li><a href="http://matplotlib.org/basemap/">basemap</a>
                 (&gt;=1.0.7, for the weather example pys file)<br>
               </li>
@@ -257,5 +179,5 @@ href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.2.6.tar.gz#m
     <p><span style="font-style: italic;">Copyright Martin Manns<br>
         Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br
           style="font-style: italic;">
-      </span> <span style="font-style: italic;">Last changed: 06. September
+      </span> <span style="font-style: italic;">Last changed: 31. October
         2014</span></p>
