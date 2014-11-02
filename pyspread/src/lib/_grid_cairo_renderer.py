@@ -36,6 +36,7 @@ Provides
 
 import math
 import cStringIO
+import warnings
 
 import cairo
 import wx
@@ -479,7 +480,15 @@ class GridCellContentCairoRenderer(object):
             markup = False
 
         if markup:
-            pango_layout.set_markup(unicode(content))
+            with warnings.catch_warnings(record=True) as warning_lines:
+                warnings.resetwarnings()
+                warnings.simplefilter("always")
+                pango_layout.set_markup(unicode(content))
+
+                if warning_lines:
+                    w2unicode = lambda m: unicode(m.message)
+                    msg = u"\n".join(map(w2unicode, warning_lines))
+                    pango_layout.set_text(msg)
         else:
             pango_layout.set_text(unicode(content))
 
