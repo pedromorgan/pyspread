@@ -260,7 +260,10 @@ class MainWindow(wx.Frame, EventMixin):
         self.SetInitialSize(config["window_size"])
         self.SetMinSize((10, 10))
 
-        self.SetPosition(config["window_position"])
+        # TODO: Set window position fix --> different positions for
+        # different window managers prevent this
+
+        # self.SetPosition(config["window_position"])
 
     def _bind(self):
         """Bind events to handlers"""
