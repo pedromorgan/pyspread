@@ -198,9 +198,14 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         sorted_keys = sorted(grid.code_array.cell_attributes[key].iteritems())
 
+        # Button cells shall not be executed for preview
+        if grid.code_array.cell_attributes[key]["button_cell"]:
+            cell_preview = repr(grid.code_array(key))[:100]
+        else:
+            cell_preview = repr(grid.code_array[key])[:100]
+
         cell_cache_key = (rect_tuple[2], rect_tuple[3], isSelected,
-                          repr(grid.code_array[key])[:100],
-                          tuple(sorted_keys))
+                          cell_preview, tuple(sorted_keys))
 
         mdc = wx.MemoryDC()
         pxoffs = int(self.zoom)

@@ -285,6 +285,13 @@ class GridCellContentCairoRenderer(object):
         """Returns cell content"""
 
         try:
+            if self.code_array.cell_attributes[self.key]["button_cell"]:
+                return
+
+        except IndexError:
+            return
+
+        try:
             return self.code_array[self.key]
 
         except IndexError:
