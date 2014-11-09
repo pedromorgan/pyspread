@@ -750,10 +750,16 @@ class GridCellEventHandlers(object):
             top, left, bottom, right = merge_area
             if self.grid._last_selected_cell == (top, left, tab):
                 if row == top + 1:
-                    self.grid.actions.set_cursor((bottom + 1, left, tab))
+                    if bottom + 1 < self.grid.code_array.shape[0]:
+                        self.grid.actions.set_cursor((bottom + 1, left, tab))
+                    else:
+                        self.grid.actions.set_cursor((top, left, tab))
                     return
                 elif col == left + 1:
-                    self.grid.actions.set_cursor((top, right + 1, tab))
+                    if right + 1 < self.grid.code_array.shape[1]:
+                        self.grid.actions.set_cursor((top, right + 1, tab))
+                    else:
+                        self.grid.actions.set_cursor((top, left, tab))
                     return
             elif (row, col) != (top, left):
                 self.grid.actions.set_cursor((top, left, tab))
