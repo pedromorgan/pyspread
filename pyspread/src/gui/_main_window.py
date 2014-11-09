@@ -263,7 +263,7 @@ class MainWindow(wx.Frame, EventMixin):
         # TODO: Set window position fix --> different positions for
         # different window managers prevent this
 
-        # self.SetPosition(config["window_position"])
+        self.SetPosition(config["window_position"])
 
     def _bind(self):
         """Bind events to handlers"""
@@ -386,7 +386,7 @@ class MainWindowEventHandlers(EventMixin):
         """Main window move event"""
 
         # Store window position in config
-        position = self.main_window.ClientToScreen((0, 0)).Get()
+        position = self.main_window.GetScreenPositionTuple()
 
         config["window_position"] = repr(position)
 
