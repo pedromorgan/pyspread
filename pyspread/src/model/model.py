@@ -800,7 +800,8 @@ class DataArray(object):
                         new_val = copy(value)
                         new_sel.insert(insertion_point, no_to_insert, axis)
                         # Update merge area if present
-                        if "merge_area" in value:
+                        if "merge_area" in value and \
+                           value["merge_area"] is not None:
                             top, left, bottom, right = value["merge_area"]
                             ma_sel = Selection([(top, left)],
                                                [(bottom, right)], [], [], [])
