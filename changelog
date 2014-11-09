@@ -3,6 +3,38 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+
+0.4
+---
+
+Grid renderer switched to Cairo
+PDF export of whole pys files added
+SVG export of whole pys files added
+Bug in new GPG key generation fixed
+Entry line width fixed
+Initial Window position is not restored any more due to cross-platform issues
+Rotation can now only be done 90° wise instead of 1° wise
+Help page can now be zoomed in and out
+External help pages are now opened in an external browser
+Breakage in wxPython2.8 due to missing system color fixed
+Minimum screen size reduced
+nn function that removes None from lists now also supports lists, tuples, etc.
+matplotlib and rsvg now are optional dependencies
+SVG code is now automatically detected and rendered in cells
+Pango markup support added
+Images now retain their aspect ratios in cells
+Dialog on GPG key creation now looks better when running on wxPython 3.x
+Print framework now is Cairo based
+Button cell functionality added for code execution on click
+Text that is pasted into table choice int ctrl is now ignored
+po and pot files are now included in the distribution tarball
+Pango markup warnings are now caught and displayed inside the cell
+Unit tests are now adapted to new unicode code quotation
+Button functionality included into weather example
+Matplotlib charts are now drawn via rsvg
+Known issue: Files with special characters in filename are never verified as trusted.
+
+
 0.3.3
 -----
 Two issues for choosing GPG keys with wxPython 3.x fixed
