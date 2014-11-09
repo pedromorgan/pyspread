@@ -161,22 +161,24 @@ class GridTable(wx.grid.PyGridTableBase):
         # Adjust rows
         row_heights = grid.code_array.row_heights
         for key in row_heights:
-            if key[1] == grid.current_table:
+            if key[1] == grid.current_table and \
+               key[0] < self.data_array.shape[0]:
                 row = key[0]
                 if row_heights[key] is None:
                     # Default row size
-                    grid.SetRowSize(row, self.grid.GetDefaultRowSize())
+                    grid.SetRowSize(row, grid.GetDefaultRowSize())
                 else:
                     grid.SetRowSize(row, row_heights[key])
 
         # Adjust columns
         col_widths = grid.code_array.col_widths
         for key in col_widths:
-            if key[1] == self.grid.current_table:
+            if key[1] == grid.current_table and \
+               key[0] < self.data_array.shape[1]:
                 col = key[0]
                 if col_widths[key] is None:
                     # Default row size
-                    grid.SetColSize(col, self.grid.GetDefaultColSize())
+                    grid.SetColSize(col, grid.GetDefaultColSize())
                 else:
                     grid.SetColSize(col, col_widths[key])
 

@@ -220,19 +220,25 @@ class Pys(object):
         """
 
         for row, tab in self.code_array.dict_grid.row_heights:
-            height = self.code_array.dict_grid.row_heights[(row, tab)]
-            height_strings = map(repr, [row, tab, height])
-            self.pys_file.write(u"\t".join(height_strings) + u"\n")
+            if row < self.code_array.shape[0] and \
+               tab < self.code_array.shape[2]:
+                height = self.code_array.dict_grid.row_heights[(row, tab)]
+                height_strings = map(repr, [row, tab, height])
+                self.pys_file.write(u"\t".join(height_strings) + u"\n")
 
     def _pys2row_heights(self, line):
         """Updates row_heights in code_array"""
 
         # Split with maxsplit 3
-        row, tab, height = self._split_tidy(line)
-        key = self._get_key(row, tab)
+        split_line = self._split_tidy(line)
+        key = row, tab = self._get_key(*split_line[:2])
+        height = float(split_line[2])
+
+        shape = self.code_array.shape
 
         try:
-            self.code_array.row_heights[key] = float(height)
+            if row < shape[0] and tab < shape[2]:
+                self.code_array.row_heights[key] = height
 
         except ValueError:
             pass
@@ -245,19 +251,25 @@ class Pys(object):
         """
 
         for col, tab in self.code_array.dict_grid.col_widths:
-            width = self.code_array.dict_grid.col_widths[(col, tab)]
-            width_strings = map(repr, [col, tab, width])
-            self.pys_file.write(u"\t".join(width_strings) + u"\n")
+            if col < self.code_array.shape[1] and \
+               tab < self.code_array.shape[2]:
+                width = self.code_array.dict_grid.col_widths[(col, tab)]
+                width_strings = map(repr, [col, tab, width])
+                self.pys_file.write(u"\t".join(width_strings) + u"\n")
 
     def _pys2col_widths(self, line):
         """Updates col_widths in code_array"""
 
         # Split with maxsplit 3
-        col, tab, width = self._split_tidy(line)
-        key = self._get_key(col, tab)
+        split_line = self._split_tidy(line)
+        key = col, tab = self._get_key(*split_line[:2])
+        width = float(split_line[2])
+
+        shape = self.code_array.shape
 
         try:
-            self.code_array.col_widths[key] = float(width)
+            if col < shape[1] and tab < shape[2]:
+                self.code_array.col_widths[key] = width
 
         except ValueError:
             pass
