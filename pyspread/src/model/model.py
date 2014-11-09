@@ -949,9 +949,8 @@ class DataArray(object):
             if key not in new_keys and self(key) is not None:
                 self.pop(key, mark_unredo=False)
 
-        if axis in (0, 1):
-            self._adjust_rowcol(deletion_point, -no_to_delete, axis, tab=tab,
-                                mark_unredo=False)
+        self._adjust_rowcol(deletion_point, -no_to_delete, axis, tab=tab,
+                            mark_unredo=False)
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
                                      tab=tab, mark_unredo=False)
 
