@@ -348,7 +348,6 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
         for key in kwargs:
             if key == "color":
                 color = code2color(kwargs[key])
-                self.colorselect.SetValue(color)
                 self.colorselect.SetOwnForegroundColour(color)
 
             elif key == "fontname":
