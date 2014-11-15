@@ -169,13 +169,12 @@ class MainApplication(wx.App, GridActionEventMixin):
         # Get command line options and arguments
         self.get_cmd_args()
 
-
         # Main window creation
         from src.gui._main_window import MainWindow
 
         self.main_window = MainWindow(None, title="pyspread", S=self.S)
 
-        ## Initialize file loading via event
+        # Initialize file loading via event
 
         # Create GPG key if not present
 

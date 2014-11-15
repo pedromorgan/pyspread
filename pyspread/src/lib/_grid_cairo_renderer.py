@@ -42,10 +42,6 @@ import cairo
 import wx
 import wx.lib.wxcairo
 
-try:
-    import rsvg
-except ImportError:
-    rsvg = None
 
 try:
     import matplotlib.pyplot as pyplot
@@ -327,7 +323,9 @@ class GridCellContentCairoRenderer(object):
     def draw_svg(self, svg_str):
         """Draws svg string to cell"""
 
-        if rsvg is None:
+        try:
+            import rsvg
+        except ImportError:
             self.draw_text(svg_str)
             return
 
@@ -342,6 +340,18 @@ class GridCellContentCairoRenderer(object):
         self.context.scale(scale_x, scale_y)
         svg.render_cairo(self.context)
         self.context.restore()
+
+    def draw_pdf(self, pdf):
+        """Draws pdf string to cell"""
+
+        from gi.repository import Poppler
+
+        doc = Poppler.document_new_from_data(pdf, len(pdf), password='')
+
+        # Only display first page
+        page = doc.get_page(0)
+
+        page.render(self.context)
 
     def getsvg_from_matplotlib_figure(self, figure):
         """Returns svg from matplotlib figure"""
@@ -361,8 +371,30 @@ class GridCellContentCairoRenderer(object):
 
         return svg_str
 
+    def getpdf_from_matplotlib_figure(self, figure):
+        """Returns svg from matplotlib figure"""
+
+        if FigureCanvasAgg is None:
+            return
+
+        pdf_io = cStringIO.StringIO()
+
+        # Matplotlib requires a canvas to be set up
+        canvas = FigureCanvasAgg(figure)
+
+        figure.savefig(pdf_io, format='pdf', transparent=True,
+                       bbox_inches='tight', pad_inches=0.1)
+        pdf_str = pdf_io.getvalue()
+        pdf_io.close()
+
+        return pdf_str
+
     def draw_matplotlib_figure(self, content):
         """Draws matplotlib cell content to context"""
+
+#        pdf_str = self.getpdf_from_matplotlib_figure(content)
+#        if pdf_str:
+#            self.draw_pdf(pdf_str)
 
         svg_str = self.getsvg_from_matplotlib_figure(content)
         if svg_str:

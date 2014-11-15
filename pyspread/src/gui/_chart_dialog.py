@@ -1540,6 +1540,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
         wx.Dialog.__init__(self, main_window, -1, style=style)
 
+        self.updating = False
+
         self.grid = main_window.grid
         self.key = key
 
@@ -1811,4 +1813,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     def OnUpdateFigurePanel(self, event):
         """Redraw event handler for the figure panel"""
 
+        if self.updating:
+            return
+
+        self.updating = True
         self.figure_panel.update(self.get_figure(self.code))
+        self.updating = False
