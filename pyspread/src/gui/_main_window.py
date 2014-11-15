@@ -763,7 +763,9 @@ class MainWindowEventHandlers(EventMixin):
             filetype = event.attr["filetype"]
 
         except (KeyError, AttributeError):
-            if self.main_window.filepath.endswith("pysu"):
+            if self.main_window.filepath is None:
+                filetype = "pys"
+            elif self.main_window.filepath.endswith("pysu"):
                 filetype = "pysu"
             else:
                 filetype = "pys"

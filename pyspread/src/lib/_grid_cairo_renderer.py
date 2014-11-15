@@ -53,12 +53,8 @@ try:
 except ImportError:
     rsvg = None
 
-try:
-    import matplotlib.pyplot as pyplot
-    from matplotlib.backends.backend_agg import FigureCanvasAgg
-except ImportError:
-    pyplot = None
-    FigureCanvasAgg = None
+import matplotlib.pyplot as pyplot
+from matplotlib.backends.backend_cairo import FigureCanvasCairo
 
 import pango
 import pangocairo
@@ -350,68 +346,84 @@ class GridCellContentCairoRenderer(object):
 
     def draw_matplotlib_figure(self, figure):
         """Draws matplotlib cell content to context"""
+#
+#        class CustomRendererCairo(RendererCairo):
+#            """This tricks matplotlib into using our own Cairo context"""
+#
+#            if sys.byteorder == 'little':
+#                BYTE_FORMAT = 0  # BGRA
+#            else:
+#                BYTE_FORMAT = 1  # ARGB
+#
+#            def __init__(self, dpi, ctx, width, height):
+#                self.dpi = dpi
+#                self.width = width
+#                self.height = height
+#                self.gc = GraphicsContextCairo(renderer=self)
+#                self.gc.ctx = ctx
+#                self.text_ctx = ctx
+#                self.mathtext_parser = MathTextParser('Cairo')
+#                RendererBase.__init__(self)
+#
+#            def draw_path(self, gc, path, transform, rgbFace=None):
+#                ctx = gc.ctx
+#                transform = transform + Affine2D().scale(1.0, -1.0).\
+#                    translate(0, self.height)
+#                ctx.new_path()
+#                self.convert_path(ctx, path, transform)
+#                self._fill_and_stroke(ctx, rgbFace, gc.get_alpha(),
+#                                      gc.get_forced_alpha())
+#
+#            def draw_image(self, gc, x, y, im):
+#                # bbox - not currently used
+#                rows, cols, buf = im.color_conv(self.BYTE_FORMAT)
+#                surface = cairo.ImageSurface.create_for_data(
+#                    buf, cairo.FORMAT_ARGB32, cols, rows, cols*4)
+#                ctx = gc.ctx
+#                y = self.height - y - rows
+#                ctx.save()
+#                ctx.set_source_surface(surface, x, y)
+#                if gc.get_alpha() != 1.0:
+#                    ctx.paint_with_alpha(gc.get_alpha())
+#                else:
+#                    ctx.paint()
+#                ctx.restore()
 
-        class CustomRendererCairo(RendererCairo):
-            """This tricks matplotlib into using our own Cairo context"""
+        dpi = float(figure.dpi)
 
-            if sys.byteorder == 'little':
-                BYTE_FORMAT = 0  # BGRA
-            else:
-                BYTE_FORMAT = 1  # ARGB
+        width = self.rect[2] / dpi
+        height = self.rect[3] / dpi
 
-            def __init__(self, dpi, ctx, width, height):
-                self.dpi = dpi
-                self.width = width
-                self.height = height
-                self.gc = GraphicsContextCairo(renderer=self)
-                self.gc.ctx = ctx
-                self.text_ctx = ctx
-                self.mathtext_parser = MathTextParser('Cairo')
-                RendererBase.__init__(self)
 
-            def draw_path(self, gc, path, transform, rgbFace=None):
-                ctx = gc.ctx
-                transform = transform + Affine2D().scale(1.0, -1.0).\
-                    translate(0, self.height)
-                ctx.new_path()
-                self.convert_path(ctx, path, transform)
-                self._fill_and_stroke(ctx, rgbFace, gc.get_alpha(),
-                                      gc.get_forced_alpha())
 
-            def draw_image(self, gc, x, y, im):
-                # bbox - not currently used
-                rows, cols, buf = im.color_conv(self.BYTE_FORMAT)
-                surface = cairo.ImageSurface.create_for_data(
-                    buf, cairo.FORMAT_ARGB32, cols, rows, cols*4)
-                ctx = gc.ctx
-                y = self.height - y - rows
-                ctx.save()
-                ctx.set_source_surface(surface, x, y)
-                if gc.get_alpha() != 1.0:
-                    ctx.paint_with_alpha(gc.get_alpha())
-                else:
-                    ctx.paint()
-                ctx.restore()
+        figure.set_figwidth(width)
+        figure.set_figheight(height)
 
-        dpi = figure.dpi
+        renderer = RendererCairo(dpi)
+        renderer.set_width_height(width, height)
 
-        width = float(self.rect[2])
-        height = float(self.rect[3])
+        renderer.gc.ctx = self.context
 
-        figure.set_figwidth(width / dpi)
-        figure.set_figheight(height / dpi)
+        FigureCanvasCairo(figure)
 
-        try:
-            # The padding is too small for small sizes. This fixes it.
-            figure.tight_layout(pad=1.5)
-
-        except ValueError:
-            pass
-
-        canvas = FigureCanvasAgg(figure)
-        renderer = CustomRendererCairo(dpi, self.context, width, height)
+        self.context.save()
+        self.context.translate(0, height * dpi)
 
         figure.draw(renderer)
+
+        self.context.restore()
+
+#        try:
+#            # The padding is too small for small sizes. This fixes it.
+#            figure.tight_layout(pad=1.5)
+#
+#        except ValueError:
+#            pass
+#
+#        canvas = FigureCanvasCairo(figure)
+#        renderer = CustomRendererCairo(dpi, self.context, width, height)
+#
+#        figure.draw(renderer)
 
     def _get_text_color(self):
         """Returns text color rgb tuple of right line"""
