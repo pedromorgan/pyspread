@@ -194,12 +194,14 @@ class GridCairoRenderer(object):
 
             for row in xrange(row_start, row_stop):
                 for col in xrange(col_start, col_stop):
+                    key = row, col, tab
                     rect = self.get_cell_rect(row, col, tab)  # Rect
-                    if rect is not None:
+                    if rect is not None and \
+                       self.code_array.get_merging_cell(key) is None:
                         cell_renderer = GridCellCairoRenderer(
                             self.context,
                             self.code_array,
-                            (row, col, tab),  # Key
+                            key,  # (row, col, tab)
                             rect
                         )
 
@@ -394,8 +396,6 @@ class GridCellContentCairoRenderer(object):
         width = self.rect[2] / dpi
         height = self.rect[3] / dpi
 
-
-
         figure.set_figwidth(width)
         figure.set_figheight(height)
 
@@ -409,21 +409,9 @@ class GridCellContentCairoRenderer(object):
         self.context.save()
         self.context.translate(0, height * dpi)
 
-        figure.draw(renderer)
+        #figure.draw(renderer)
 
         self.context.restore()
-
-#        try:
-#            # The padding is too small for small sizes. This fixes it.
-#            figure.tight_layout(pad=1.5)
-#
-#        except ValueError:
-#            pass
-#
-#        canvas = FigureCanvasCairo(figure)
-#        renderer = CustomRendererCairo(dpi, self.context, width, height)
-#
-#        figure.draw(renderer)
 
     def _get_text_color(self):
         """Returns text color rgb tuple of right line"""
