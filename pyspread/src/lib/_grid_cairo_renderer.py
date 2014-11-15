@@ -35,14 +35,18 @@ Provides
 """
 
 import math
-import cStringIO
+import sys
 import warnings
 
 import cairo
 import wx
 import wx.lib.wxcairo
-import matplotlib
-matplotlib.use('Agg')
+
+from matplotlib.backend_bases import RendererBase
+from matplotlib.backends.backend_cairo import RendererCairo
+from matplotlib.backends.backend_cairo import GraphicsContextCairo
+from matplotlib.mathtext import MathTextParser
+from matplotlib.transforms import Affine2D
 
 try:
     import rsvg
@@ -325,24 +329,6 @@ class GridCellContentCairoRenderer(object):
         self.context.paint()
         self.context.restore()
 
-    def getsvg_from_matplotlib_figure(self, figure):
-        """Returns svg from matplotlib figure"""
-
-        if FigureCanvasAgg is None:
-            return
-
-        svg_io = cStringIO.StringIO()
-
-        # Matplotlib requires a canvas to be set up
-        canvas = FigureCanvasAgg(figure)
-
-        figure.savefig(svg_io, format='svg', transparent=True,
-                       bbox_inches='tight', pad_inches=0.1)
-        svg_str = svg_io.getvalue()
-        svg_io.close()
-
-        return svg_str
-
     def draw_svg(self, svg_str):
         """Draws svg string to cell"""
 
@@ -362,12 +348,70 @@ class GridCellContentCairoRenderer(object):
         svg.render_cairo(self.context)
         self.context.restore()
 
-    def draw_matplotlib_figure(self, content):
+    def draw_matplotlib_figure(self, figure):
         """Draws matplotlib cell content to context"""
 
-        svg_str = self.getsvg_from_matplotlib_figure(content)
-        if svg_str:
-            self.draw_svg(svg_str)
+        class CustomRendererCairo(RendererCairo):
+            """This tricks matplotlib into using our own Cairo context"""
+
+            if sys.byteorder == 'little':
+                BYTE_FORMAT = 0  # BGRA
+            else:
+                BYTE_FORMAT = 1  # ARGB
+
+            def __init__(self, dpi, ctx, width, height):
+                self.dpi = dpi
+                self.width = width
+                self.height = height
+                self.gc = GraphicsContextCairo(renderer=self)
+                self.gc.ctx = ctx
+                self.text_ctx = ctx
+                self.mathtext_parser = MathTextParser('Cairo')
+                RendererBase.__init__(self)
+
+            def draw_path(self, gc, path, transform, rgbFace=None):
+                ctx = gc.ctx
+                transform = transform + Affine2D().scale(1.0, -1.0).\
+                    translate(0, self.height)
+                ctx.new_path()
+                self.convert_path(ctx, path, transform)
+                self._fill_and_stroke(ctx, rgbFace, gc.get_alpha(),
+                                      gc.get_forced_alpha())
+
+            def draw_image(self, gc, x, y, im):
+                # bbox - not currently used
+                rows, cols, buf = im.color_conv(self.BYTE_FORMAT)
+                surface = cairo.ImageSurface.create_for_data(
+                    buf, cairo.FORMAT_ARGB32, cols, rows, cols*4)
+                ctx = gc.ctx
+                y = self.height - y - rows
+                ctx.save()
+                ctx.set_source_surface(surface, x, y)
+                if gc.get_alpha() != 1.0:
+                    ctx.paint_with_alpha(gc.get_alpha())
+                else:
+                    ctx.paint()
+                ctx.restore()
+
+        dpi = figure.dpi
+
+        width = float(self.rect[2])
+        height = float(self.rect[3])
+
+        figure.set_figwidth(width / dpi)
+        figure.set_figheight(height / dpi)
+
+        try:
+            # The padding is too small for small sizes. This fixes it.
+            figure.tight_layout(pad=1.5)
+
+        except ValueError:
+            pass
+
+        canvas = FigureCanvasAgg(figure)
+        renderer = CustomRendererCairo(dpi, self.context, width, height)
+
+        figure.draw(renderer)
 
     def _get_text_color(self):
         """Returns text color rgb tuple of right line"""

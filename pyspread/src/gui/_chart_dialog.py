@@ -82,7 +82,7 @@ from src.lib.parsers import unquote_string
 from icons import icons
 from sysvars import get_default_font, get_color
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -1621,7 +1621,6 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         self.Layout()
         self.SetSizerAndFit(main_sizer)
-
 
     def get_figure(self, code):
         """Returns figure from executing code in grid

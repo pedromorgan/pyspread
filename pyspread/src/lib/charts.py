@@ -48,7 +48,7 @@ from matplotlib.sankey import Sankey
 from matplotlib import dates
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -91,12 +91,12 @@ def fig2bmp(figure, width, height, dpi, zoom):
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        try:
-            # The padding is too small for small sizes. This fixes it.
-            figure.tight_layout(pad=1.0/zoom)
 
-        except ValueError:
-            pass
+    try:
+        # The padding is too small for small sizes. This fixes it.
+        figure.tight_layout(pad=1.0/zoom)
+    except ValueError:
+        pass
 
     figure.set_canvas(FigureCanvas(figure))
     png_stream = StringIO()
@@ -200,7 +200,7 @@ class ChartFigure(Figure):
             self.__axes.xaxis.set_major_formatter(formatter)
 
             # The autofmt method does not work in matplotlib 1.3.0
-            #self.autofmt_xdate()
+            # self.autofmt_xdate()
 
     def _setup_axes(self, axes_data):
         """Sets up axes for drawing chart"""
@@ -230,6 +230,10 @@ class ChartFigure(Figure):
 
                 except KeyError:
                     kwargs = {}
+
+                if key == "title":
+                    # Shift title up
+                    kwargs["y"] = 1.08
 
                 key2setter[key](axes_data[key], **kwargs)
 
