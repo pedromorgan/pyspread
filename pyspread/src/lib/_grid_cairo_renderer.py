@@ -35,6 +35,7 @@ Provides
 """
 
 import math
+import sys
 import warnings
 
 import cairo
@@ -46,6 +47,7 @@ try:
     import matplotlib.pyplot as pyplot
     from matplotlib.backends.backend_cairo import RendererCairo
     from matplotlib.backends.backend_cairo import FigureCanvasCairo
+    from matplotlib.transforms import Affine2D
 except ImportError:
     pyplot = None
 
@@ -343,6 +345,38 @@ class GridCellContentCairoRenderer(object):
     def draw_matplotlib_figure(self, figure):
         """Draws matplotlib figure to context"""
 
+        class CustomRendererCairo(RendererCairo):
+            """Workaround for older versins with limited draw path length"""
+
+            if sys.byteorder == 'little':
+                BYTE_FORMAT = 0  # BGRA
+            else:
+                BYTE_FORMAT = 1  # ARGB
+
+            def draw_path(self, gc, path, transform, rgbFace=None):
+                ctx = gc.ctx
+                transform = transform + Affine2D().scale(1.0, -1.0).\
+                    translate(0, self.height)
+                ctx.new_path()
+                self.convert_path(ctx, path, transform)
+                self._fill_and_stroke(ctx, rgbFace, gc.get_alpha(),
+                                      gc.get_forced_alpha())
+
+            def draw_image(self, gc, x, y, im):
+                # bbox - not currently used
+                rows, cols, buf = im.color_conv(self.BYTE_FORMAT)
+                surface = cairo.ImageSurface.create_for_data(
+                    buf, cairo.FORMAT_ARGB32, cols, rows, cols*4)
+                ctx = gc.ctx
+                y = self.height - y - rows
+                ctx.save()
+                ctx.set_source_surface(surface, x, y)
+                if gc.get_alpha() != 1.0:
+                    ctx.paint_with_alpha(gc.get_alpha())
+                else:
+                    ctx.paint()
+                ctx.restore()
+
         if pyplot is None:
             # Matplotlib is not installed
             return
@@ -351,22 +385,24 @@ class GridCellContentCairoRenderer(object):
 
         dpi = float(figure.dpi)
 
-        border = 10  # So that the figure is not cut off at the cell border
+        # Set a border so that the figure is not cut off at the cell border
+        border_x = 200 / (self.rect[2] / dpi) ** 2
+        border_y = 200 / (self.rect[3] / dpi) ** 2
 
-        width = (self.rect[2] - 2 * border) / dpi
-        height = (self.rect[3] - 2 * border) / dpi
+        width = (self.rect[2] - 2 * border_x) / dpi
+        height = (self.rect[3] - 2 * border_y) / dpi
 
         figure.set_figwidth(width)
         figure.set_figheight(height)
 
-        renderer = RendererCairo(dpi)
+        renderer = CustomRendererCairo(dpi)
         renderer.set_width_height(width, height)
 
         renderer.gc.ctx = self.context
         renderer.text_ctx = self.context
 
         self.context.save()
-        self.context.translate(border, border + height * dpi)
+        self.context.translate(border_x, border_y + height * dpi)
 
         figure.draw(renderer)
 
