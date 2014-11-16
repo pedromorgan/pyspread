@@ -316,6 +316,9 @@ class ExchangeActions(Actions):
 
         grid_cairo_renderer.draw()
 
+        # Finish is required for matplotlib figures
+        surface.finish()
+
 
 class PrintActions(Actions):
     """Actions for printing"""

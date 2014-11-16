@@ -34,7 +34,6 @@ Provides
 
 """
 
-import cStringIO
 import math
 import warnings
 
@@ -45,10 +44,10 @@ import wx.lib.wxcairo
 
 try:
     import matplotlib.pyplot as pyplot
-    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.backends.backend_cairo import RendererCairo
+    from matplotlib.backends.backend_cairo import FigureCanvasCairo
 except ImportError:
     pyplot = None
-    FigureCanvasAgg = None
 
 import pango
 import pangocairo
@@ -341,64 +340,37 @@ class GridCellContentCairoRenderer(object):
         svg.render_cairo(self.context)
         self.context.restore()
 
-    def draw_pdf(self, pdf):
-        """Draws pdf string to cell"""
+    def draw_matplotlib_figure(self, figure):
+        """Draws matplotlib figure to context"""
 
-        from gi.repository import Poppler
-
-        doc = Poppler.document_new_from_data(pdf, len(pdf), password='')
-
-        # Only display first page
-        page = doc.get_page(0)
-
-        page.render(self.context)
-
-    def getsvg_from_matplotlib_figure(self, figure):
-        """Returns svg from matplotlib figure"""
-
-        if FigureCanvasAgg is None:
+        if pyplot is None:
+            # Matplotlib is not installed
             return
 
-        svg_io = cStringIO.StringIO()
+        FigureCanvasCairo(figure)
 
-        # Matplotlib requires a canvas to be set up
-        canvas = FigureCanvasAgg(figure)
+        dpi = float(figure.dpi)
 
-        figure.savefig(svg_io, format='svg', transparent=True,
-                       bbox_inches='tight', pad_inches=0.1)
-        svg_str = svg_io.getvalue()
-        svg_io.close()
+        border = 10  # So that the figure is not cut off at the cell border
 
-        return svg_str
+        width = (self.rect[2] - 2 * border) / dpi
+        height = (self.rect[3] - 2 * border) / dpi
 
-    def getpdf_from_matplotlib_figure(self, figure):
-        """Returns svg from matplotlib figure"""
+        figure.set_figwidth(width)
+        figure.set_figheight(height)
 
-        if FigureCanvasAgg is None:
-            return
+        renderer = RendererCairo(dpi)
+        renderer.set_width_height(width, height)
 
-        pdf_io = cStringIO.StringIO()
+        renderer.gc.ctx = self.context
+        renderer.text_ctx = self.context
 
-        # Matplotlib requires a canvas to be set up
-        canvas = FigureCanvasAgg(figure)
+        self.context.save()
+        self.context.translate(border, border + height * dpi)
 
-        figure.savefig(pdf_io, format='pdf', transparent=True,
-                       bbox_inches='tight', pad_inches=0.1)
-        pdf_str = pdf_io.getvalue()
-        pdf_io.close()
+        figure.draw(renderer)
 
-        return pdf_str
-
-    def draw_matplotlib_figure(self, content):
-        """Draws matplotlib cell content to context"""
-
-#        pdf_str = self.getpdf_from_matplotlib_figure(content)
-#        if pdf_str:
-#            self.draw_pdf(pdf_str)
-
-        svg_str = self.getsvg_from_matplotlib_figure(content)
-        if svg_str:
-            self.draw_svg(svg_str)
+        self.context.restore()
 
     def _get_text_color(self):
         """Returns text color rgb tuple of right line"""
