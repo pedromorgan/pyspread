@@ -1081,19 +1081,16 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
 
 
 class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
-    """ComboBox for choosing the current grid table"""
+    """IntCtrl for choosing the current grid table"""
 
     def __init__(self, parent, main_window, no_tabs):
         self.parent = parent
         self.main_window = main_window
         self.no_tabs = no_tabs
 
-        self.last_change_s = time.clock()  # Measures last change in seconds
+        IntCtrl.__init__(self, parent, allow_long=True, style=wx.NO_BORDER)
 
-        IntCtrl.__init__(self, parent, limited=True, allow_long=True,
-                         style=wx.NO_BORDER)
-
-        self.min = 0
+        self.last_change_s = time.clock()
 
         tipmsg = _("For switching tables enter the table number or "
                    "use the mouse wheel.")
@@ -1136,6 +1133,7 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     def _fromGUI(self, value):
         """
         Conversion function used in getting the value of the control.
+
         """
 
         # One or more of the underlying text control implementations
@@ -1165,20 +1163,21 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     def OnInt(self, event):
         """IntCtrl event method that updates the current table"""
 
-        self.cursor_pos = wx.TextCtrl.GetInsertionPoint(self) + 1
-
         value = event.GetValue()
 
-        if value > self.no_tabs - 1:
-            self.SetValue(self.no_tabs - 1)
+        current_time = time.clock()
+        if current_time < self.last_change_s + 0.01:
             return
+        self.last_change_s = current_time
 
-        if not self.switching:
-            self.switching = True
-            post_command_event(self, self.GridActionTableSwitchMsg,
-                               newtable=value)
+        self.cursor_pos = wx.TextCtrl.GetInsertionPoint(self) + 1
 
-            self.switching = False
+        if event.GetValue() > self.no_tabs - 1:
+            value = self.no_tabs - 1
+
+        self.switching = True
+        post_command_event(self, self.GridActionTableSwitchMsg, newtable=value)
+        self.switching = False
 
     def OnFocus(self, event):
         """Focus event handler"""
@@ -1188,19 +1187,20 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
 
+        # Prevent lost IntCtrl changes
+        if self.switching:
+            return
+
+        value = self.GetValue()
+
         current_time = time.clock()
         if current_time < self.last_change_s + 0.01:
             return
 
-        self.last_change_s = current_time
-
-        value = self.GetValue()
-
         if event.GetWheelRotation() > 0:
-            if self.no_tabs - 1 > value:
-                self.SetValue(value + 1)
-        elif value > 0:
-            self.SetValue(value - 1)
+            self.SetValue(min(value+1, self.no_tabs-1))
+        else:
+            self.SetValue(max(value-1, 0))
 
     def OnShapeChange(self, event):
         """Grid shape change event handler"""
