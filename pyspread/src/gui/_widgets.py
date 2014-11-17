@@ -43,6 +43,7 @@ Provides:
 import __builtin__
 import keyword
 from copy import copy
+import time
 
 try:
     import jedi
@@ -1087,6 +1088,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         self.main_window = main_window
         self.no_tabs = no_tabs
 
+        self.last_change_s = time.clock()  # Measures last change in seconds
+
         IntCtrl.__init__(self, parent, limited=True, allow_long=True,
                          style=wx.NO_BORDER)
 
@@ -1184,6 +1187,12 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
+
+        current_time = time.clock()
+        if current_time < self.last_change_s + 0.01:
+            return
+
+        self.last_change_s = current_time
 
         value = self.GetValue()
 
