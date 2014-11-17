@@ -401,8 +401,8 @@ class TestXls(object):
         assert worksheet.rowinfo_map[row].height == int(xlsheight)
 
     param_xls2row_heights = [
-        {'row': 1, 'tab': 0, 'height': 44.390},
-        {'row': 10, 'tab': 0, 'height': 45.399},
+        {'row': 1, 'tab': 0, 'height': 44},
+        {'row': 10, 'tab': 0, 'height': 45},
     ]
 
     @params(param_xls2row_heights)
@@ -415,7 +415,7 @@ class TestXls(object):
 
         self.xls_in._xls2row_heights(worksheet, tab)
         res = self.code_array.dict_grid.row_heights[(row, tab)]
-        assert round(res, 3) == height
+        assert int(res) == height
 
     param_col_widths2xls = [
         {'col': 0, 'tab': 0, 'width': 0.1, 'points': 3},
