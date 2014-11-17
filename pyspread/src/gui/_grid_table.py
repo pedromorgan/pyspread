@@ -160,7 +160,10 @@ class GridTable(wx.grid.PyGridTableBase):
 
         # Reset cell sizes to standard cell size
 
-        grid.SetDefaultRowSize(grid.GetDefaultRowSize(), resizeExistingRows=True)
+        grid.SetDefaultRowSize(grid.GetDefaultRowSize(),
+                               resizeExistingRows=True)
+        grid.SetDefaultColSize(grid.GetDefaultColSize(),
+                               resizeExistingCols=True)
 
         # Adjust rows
         row_heights = grid.code_array.row_heights

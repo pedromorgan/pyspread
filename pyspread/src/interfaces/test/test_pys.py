@@ -209,8 +209,8 @@ class TestPys(object):
         {'row': 0, 'tab': 0, 'height': 0.1, 'code': "0\t0\t0.1\n"},
         {'row': 0, 'tab': 0, 'height': 0.0, 'code': "0\t0\t0.0\n"},
         {'row': 10, 'tab': 0, 'height': 1.0, 'code': "10\t0\t1.0\n"},
-        {'row': 10, 'tab': 10, 'height': 1.0, 'code': "10\t10\t1.0\n"},
-        {'row': 10, 'tab': 10, 'height': 100.0, 'code': "10\t10\t100.0\n"},
+        {'row': 10, 'tab': 1, 'height': 1.0, 'code': "10\t1\t1.0\n"},
+        {'row': 10, 'tab': 2, 'height': 100.0, 'code': "10\t2\t100.0\n"},
     ]
 
     @params(param_row_heights2pys)
@@ -232,8 +232,8 @@ class TestPys(object):
         {'col': 0, 'tab': 0, 'width': 0.1, 'code': "0\t0\t0.1\n"},
         {'col': 0, 'tab': 0, 'width': 0.0, 'code': "0\t0\t0.0\n"},
         {'col': 10, 'tab': 0, 'width': 1.0, 'code': "10\t0\t1.0\n"},
-        {'col': 10, 'tab': 10, 'width': 1.0, 'code': "10\t10\t1.0\n"},
-        {'col': 10, 'tab': 10, 'width': 100.0, 'code': "10\t10\t100.0\n"},
+        {'col': 10, 'tab': 1, 'width': 1.0, 'code': "10\t1\t1.0\n"},
+        {'col': 10, 'tab': 2, 'width': 100.0, 'code': "10\t2\t100.0\n"},
     ]
 
     @params(param_col_widths2pys)
