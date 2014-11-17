@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-31 23:37+0100\n"
+"POT-Creation-Date: 2014-11-17 20:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,14 +58,14 @@ msgstr ""
 msgid "File {filename} imported successfully."
 msgstr ""
 
-#: src/lib/__csv.py:437 src/actions/_main_window_actions.py:759
+#: src/lib/__csv.py:437 src/actions/_main_window_actions.py:762
 #, python-brace-format
 msgid "Error writing to file {filepath}."
 msgstr ""
 
 #: src/lib/__csv.py:451 src/actions/_grid_actions.py:382
 #: src/actions/_main_window_actions.py:103
-#: src/actions/_main_window_actions.py:730
+#: src/actions/_main_window_actions.py:733
 #, python-brace-format
 msgid "Error opening file {filepath}."
 msgstr ""
@@ -138,7 +138,7 @@ msgstr ""
 msgid "Only one file may be opened at a time."
 msgstr ""
 
-#: src/pyspread.py:242
+#: src/pyspread.py:241
 msgid "You need a unicode build of wxPython to run pyspread."
 msgstr ""
 
@@ -272,7 +272,7 @@ msgid "Setup printer page"
 msgstr ""
 
 #: src/gui/_menubars.py:206 src/gui/_menubars.py:207
-#: src/actions/_main_window_actions.py:346
+#: src/actions/_main_window_actions.py:349
 msgid "Print preview"
 msgstr ""
 
@@ -756,8 +756,8 @@ msgstr ""
 msgid "Landscape"
 msgstr ""
 
-#: src/gui/_cairo_export_dialog.py:84 src/gui/_chart_dialog.py:880
-#: src/gui/_chart_dialog.py:1098
+#: src/gui/_cairo_export_dialog.py:84 src/gui/_chart_dialog.py:879
+#: src/gui/_chart_dialog.py:1097
 msgid "Width"
 msgstr ""
 
@@ -854,7 +854,7 @@ msgstr ""
 msgid "Welcome to pyspread."
 msgstr ""
 
-#: src/gui/_main_window.py:203 src/gui/_main_window.py:595
+#: src/gui/_main_window.py:203 src/gui/_main_window.py:598
 msgid "View"
 msgstr ""
 
@@ -862,115 +862,115 @@ msgstr ""
 msgid "Main grid"
 msgstr ""
 
-#: src/gui/_main_window.py:661
+#: src/gui/_main_window.py:664
 #, python-brace-format
 msgid "New grid with dimensions {dim} created."
 msgstr ""
 
-#: src/gui/_main_window.py:702 src/gui/_main_window.py:708
-#: src/gui/_main_window.py:797 src/gui/_main_window.py:805
+#: src/gui/_main_window.py:705 src/gui/_main_window.py:711
+#: src/gui/_main_window.py:802 src/gui/_main_window.py:810
 msgid "Pyspread file"
 msgstr ""
 
-#: src/gui/_main_window.py:703 src/gui/_main_window.py:709
-#: src/gui/_main_window.py:798 src/gui/_main_window.py:806
+#: src/gui/_main_window.py:706 src/gui/_main_window.py:712
+#: src/gui/_main_window.py:803 src/gui/_main_window.py:811
 msgid "Uncompressed pyspread file"
 msgstr ""
 
-#: src/gui/_main_window.py:704 src/gui/_main_window.py:711
-#: src/gui/_main_window.py:800 src/gui/_main_window.py:807
-#: src/gui/_main_window.py:1300 src/gui/_main_window.py:1328
+#: src/gui/_main_window.py:707 src/gui/_main_window.py:714
+#: src/gui/_main_window.py:805 src/gui/_main_window.py:812
+#: src/gui/_main_window.py:1305 src/gui/_main_window.py:1333
 msgid "All files"
 msgstr ""
 
-#: src/gui/_main_window.py:710 src/gui/_main_window.py:799
+#: src/gui/_main_window.py:713 src/gui/_main_window.py:804
 msgid "Excel file"
 msgstr ""
 
-#: src/gui/_main_window.py:714
+#: src/gui/_main_window.py:717
 msgid "Choose file to open."
 msgstr ""
 
-#: src/gui/_main_window.py:799
+#: src/gui/_main_window.py:804
 msgid " (experimental)"
 msgstr ""
 
-#: src/gui/_main_window.py:810
+#: src/gui/_main_window.py:815
 msgid "Choose filename for saving."
 msgstr ""
 
-#: src/gui/_main_window.py:825
+#: src/gui/_main_window.py:830
 msgid "Directory present. Save aborted."
 msgstr ""
 
-#: src/gui/_main_window.py:833
+#: src/gui/_main_window.py:838
 #, python-brace-format
 msgid ""
 "The file {filepath} is already present.\n"
 "Overwrite?"
 msgstr ""
 
-#: src/gui/_main_window.py:835
+#: src/gui/_main_window.py:840
 msgid "File collision"
 msgstr ""
 
-#: src/gui/_main_window.py:840
+#: src/gui/_main_window.py:845
 msgid "File present. Save aborted by user."
 msgstr ""
 
-#: src/gui/_main_window.py:868 src/gui/_main_window.py:912
+#: src/gui/_main_window.py:873 src/gui/_main_window.py:917
 msgid "CSV file"
 msgstr ""
 
-#: src/gui/_main_window.py:869
+#: src/gui/_main_window.py:874
 msgid "Tab delimited text file"
 msgstr ""
 
-#: src/gui/_main_window.py:870
+#: src/gui/_main_window.py:875
 msgid "Choose file to import."
 msgstr ""
 
-#: src/gui/_main_window.py:916
+#: src/gui/_main_window.py:921
 msgid "PDF file"
 msgstr ""
 
-#: src/gui/_main_window.py:918 src/gui/_grid.py:409
+#: src/gui/_main_window.py:923 src/gui/_grid.py:409
 msgid "SVG file"
 msgstr ""
 
-#: src/gui/_main_window.py:954
+#: src/gui/_main_window.py:959
 msgid "SVG of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:955
+#: src/gui/_main_window.py:960
 msgid "EPS of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:956
+#: src/gui/_main_window.py:961
 msgid "PS of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:957
+#: src/gui/_main_window.py:962
 msgid "PDF of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:958
+#: src/gui/_main_window.py:963
 msgid "PNG of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:965
+#: src/gui/_main_window.py:970
 msgid "Choose filename for export."
 msgstr ""
 
-#: src/gui/_main_window.py:986
+#: src/gui/_main_window.py:991
 msgid "PDF"
 msgstr ""
 
-#: src/gui/_main_window.py:987
+#: src/gui/_main_window.py:992
 msgid "Choose file path for PDF export."
 msgstr ""
 
-#: src/gui/_main_window.py:1007
+#: src/gui/_main_window.py:1012
 msgid ""
 "You are going to approve and trust a file that\n"
 "you have not created yourself.\n"
@@ -983,31 +983,31 @@ msgid ""
 "Proceed and sign this file as trusted?"
 msgstr ""
 
-#: src/gui/_main_window.py:1014
+#: src/gui/_main_window.py:1019
 msgid "Security warning"
 msgstr ""
 
-#: src/gui/_main_window.py:1022
+#: src/gui/_main_window.py:1027
 msgid "Safe mode deactivated."
 msgstr ""
 
-#: src/gui/_main_window.py:1029
+#: src/gui/_main_window.py:1034
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
 msgstr ""
 
-#: src/gui/_main_window.py:1031
+#: src/gui/_main_window.py:1036
 msgid "Really delete globals and modules?"
 msgstr ""
 
-#: src/gui/_main_window.py:1038
+#: src/gui/_main_window.py:1043
 msgid "Globals cleared and base modules reloaded."
 msgstr ""
 
-#: src/gui/_main_window.py:1299 src/gui/_main_window.py:1327
+#: src/gui/_main_window.py:1304 src/gui/_main_window.py:1332
 msgid "Macro file"
 msgstr ""
 
-#: src/gui/_main_window.py:1301 src/gui/_main_window.py:1329
+#: src/gui/_main_window.py:1306 src/gui/_main_window.py:1334
 msgid "Choose macro file."
 msgstr ""
 
@@ -1019,189 +1019,189 @@ msgstr ""
 msgid "Text color"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:441
+#: src/gui/_chart_dialog.py:440
 msgid "Inside"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:441
+#: src/gui/_chart_dialog.py:440
 msgid "Outside"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:441
+#: src/gui/_chart_dialog.py:440
 msgid "Both"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:460
+#: src/gui/_chart_dialog.py:459
 msgid "Padding"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:463 src/gui/_chart_dialog.py:883
+#: src/gui/_chart_dialog.py:462 src/gui/_chart_dialog.py:882
 msgid "Size"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:468
+#: src/gui/_chart_dialog.py:467
 msgid "Secondary"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:499
+#: src/gui/_chart_dialog.py:498
 msgid "Puts ticks inside the axes, outside the axes, or both."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:501
+#: src/gui/_chart_dialog.py:500
 msgid "Distance in points between tick and label."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:503
+#: src/gui/_chart_dialog.py:502
 msgid "Tick label font size in points."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:876 src/gui/_chart_dialog.py:917
-#: src/gui/_chart_dialog.py:986 src/gui/_chart_dialog.py:1254
-#: src/gui/_chart_dialog.py:1258
+#: src/gui/_chart_dialog.py:875 src/gui/_chart_dialog.py:916
+#: src/gui/_chart_dialog.py:985 src/gui/_chart_dialog.py:1253
+#: src/gui/_chart_dialog.py:1257
 msgid "Label"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:877 src/gui/_chart_dialog.py:1092
+#: src/gui/_chart_dialog.py:876 src/gui/_chart_dialog.py:1091
 msgid "X"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:878 src/gui/_chart_dialog.py:1093
+#: src/gui/_chart_dialog.py:877 src/gui/_chart_dialog.py:1092
 msgid "Y"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:879 src/gui/_chart_dialog.py:882
-#: src/gui/_chart_dialog.py:1097
+#: src/gui/_chart_dialog.py:878 src/gui/_chart_dialog.py:881
+#: src/gui/_chart_dialog.py:1096
 msgid "Style"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:881 src/gui/_chart_dialog.py:991
+#: src/gui/_chart_dialog.py:880 src/gui/_chart_dialog.py:990
 msgid "Color"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:884
+#: src/gui/_chart_dialog.py:883
 msgid "Face color"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:885 src/gui/_chart_dialog.py:923
+#: src/gui/_chart_dialog.py:884 src/gui/_chart_dialog.py:922
 msgid "Edge color"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:892 src/gui/_chart_dialog.py:930
-#: src/gui/_chart_dialog.py:961 src/gui/_chart_dialog.py:998
-#: src/gui/_chart_dialog.py:1034 src/gui/_chart_dialog.py:1109
-#: src/gui/_chart_dialog.py:1175
+#: src/gui/_chart_dialog.py:891 src/gui/_chart_dialog.py:929
+#: src/gui/_chart_dialog.py:960 src/gui/_chart_dialog.py:997
+#: src/gui/_chart_dialog.py:1033 src/gui/_chart_dialog.py:1108
+#: src/gui/_chart_dialog.py:1174
 msgid "Data"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:893
+#: src/gui/_chart_dialog.py:892
 msgid "Line"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:894
+#: src/gui/_chart_dialog.py:893
 msgid "Marker"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:899 src/gui/_chart_dialog.py:935
-#: src/gui/_chart_dialog.py:1003
+#: src/gui/_chart_dialog.py:898 src/gui/_chart_dialog.py:934
+#: src/gui/_chart_dialog.py:1002
 #, python-format
 msgid "String or anything printable with ‘%s’ conversion"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:900
+#: src/gui/_chart_dialog.py:899
 msgid ""
 "The data np.array for x\n"
 "Code must eval to 1D array."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:902
+#: src/gui/_chart_dialog.py:901
 msgid ""
 "The data np.array for y\n"
 "Code must eval to 1D array."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:904
+#: src/gui/_chart_dialog.py:903
 msgid "The line width in points"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:905
+#: src/gui/_chart_dialog.py:904
 msgid "The line marker"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:906
+#: src/gui/_chart_dialog.py:905
 msgid "The marker size in points"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:918
+#: src/gui/_chart_dialog.py:917
 msgid "Left positions"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:919
+#: src/gui/_chart_dialog.py:918
 msgid "Bar heights"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:920
+#: src/gui/_chart_dialog.py:919
 msgid "Bar widths"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:921
+#: src/gui/_chart_dialog.py:920
 msgid "Bar bottoms"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:922
+#: src/gui/_chart_dialog.py:921
 msgid "Bar color"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:931
+#: src/gui/_chart_dialog.py:930
 msgid "Bar"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:936
+#: src/gui/_chart_dialog.py:935
 msgid "The x coordinates of the left sides of the bars"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:937
+#: src/gui/_chart_dialog.py:936
 msgid "The heights of the bars"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:938
+#: src/gui/_chart_dialog.py:937
 msgid "The widths of the bars"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:939
+#: src/gui/_chart_dialog.py:938
 msgid "The y coordinates of the bottom edges of the bars"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:950 src/gui/_chart_dialog.py:987
-#: src/gui/_chart_dialog.py:1023 src/gui/_chart_dialog.py:1476
-#: src/gui/_chart_dialog.py:1574
+#: src/gui/_chart_dialog.py:949 src/gui/_chart_dialog.py:986
+#: src/gui/_chart_dialog.py:1022 src/gui/_chart_dialog.py:1475
+#: src/gui/_chart_dialog.py:1575
 msgid "Series"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:951
+#: src/gui/_chart_dialog.py:950
 msgid "Box widths"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:952
+#: src/gui/_chart_dialog.py:951
 msgid "Vertical"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:953
+#: src/gui/_chart_dialog.py:952
 msgid "Flier"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:954
+#: src/gui/_chart_dialog.py:953
 msgid "Notch"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:962
+#: src/gui/_chart_dialog.py:961
 msgid "Box plot"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:966
+#: src/gui/_chart_dialog.py:965
 msgid "An array or a sequence of vectors"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:967
+#: src/gui/_chart_dialog.py:966
 msgid ""
 "Either a scalar or a vector and sets the width of each box\n"
 "The default is 0.5, or\n"
@@ -1209,42 +1209,42 @@ msgid ""
 "if that is smaller"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:970
+#: src/gui/_chart_dialog.py:969
 msgid ""
 "If True then boxes are drawn vertical\n"
 "If False then boxes are drawn horizontal"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:972
+#: src/gui/_chart_dialog.py:971
 msgid ""
 "The symbol for flier points\n"
 "Enter an empty string (‘’)\n"
 "if you don’t want to show fliers"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:974
+#: src/gui/_chart_dialog.py:973
 msgid ""
 "False produces a rectangular box plot\n"
 "True produces a notched box plot"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:988
+#: src/gui/_chart_dialog.py:987
 msgid "Bins"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:989
+#: src/gui/_chart_dialog.py:988
 msgid "Normed"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:990
+#: src/gui/_chart_dialog.py:989
 msgid "Cumulative"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:999
+#: src/gui/_chart_dialog.py:998
 msgid "Histogram"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1004
+#: src/gui/_chart_dialog.py:1003
 msgid ""
 "Histogram data series\n"
 "Multiple data sets can be provided as a list or as a 2-D ndarray in which "
@@ -1252,55 +1252,55 @@ msgid ""
 "to the list form."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1008
+#: src/gui/_chart_dialog.py:1007
 msgid "Either an integer number of bins or a bin sequence"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1009
+#: src/gui/_chart_dialog.py:1008
 msgid ""
 "If True then the first element is the counts normalizedto form a probability "
 "density, i.e., n/(len(x)*dbin)."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1011
+#: src/gui/_chart_dialog.py:1010
 msgid ""
 "If True then each bin gives the counts in that bin\n"
 "plus all bins for smaller values."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1024 src/gui/_chart_dialog.py:1112
-#: src/gui/_chart_dialog.py:1158
+#: src/gui/_chart_dialog.py:1023 src/gui/_chart_dialog.py:1111
+#: src/gui/_chart_dialog.py:1157
 msgid "Labels"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1025 src/gui/_chart_dialog.py:1095
+#: src/gui/_chart_dialog.py:1024 src/gui/_chart_dialog.py:1094
 msgid "Colors"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1026
+#: src/gui/_chart_dialog.py:1025
 msgid "Start angle"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1027
+#: src/gui/_chart_dialog.py:1026
 msgid "Shadow"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1035
+#: src/gui/_chart_dialog.py:1034
 msgid "Pie"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1039
+#: src/gui/_chart_dialog.py:1038
 msgid ""
 "Pie chart data\n"
 "The fractional area of each wedge is given by x/sum(x)\n"
 "The wedges are plotted counterclockwise"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1041
+#: src/gui/_chart_dialog.py:1040
 msgid "Sequence of wedge label strings"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1042
+#: src/gui/_chart_dialog.py:1041
 msgid ""
 "Sequence of matplotlib color args through which the pie cycles.\n"
 "Supported strings are:\n"
@@ -1318,97 +1318,97 @@ msgid ""
 "and 'chartreuse' are supported."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1051
+#: src/gui/_chart_dialog.py:1050
 msgid ""
 "Rotates the start of the pie chart by angle degrees counterclockwise from "
 "the x-axis."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1053
+#: src/gui/_chart_dialog.py:1052
 msgid "If True then a shadow beneath the pie is drawn"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1064
+#: src/gui/_chart_dialog.py:1063
 msgid "Text"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1065
+#: src/gui/_chart_dialog.py:1064
 msgid "Point"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1066
+#: src/gui/_chart_dialog.py:1065
 msgid "Coordinates"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1073
+#: src/gui/_chart_dialog.py:1072
 msgid "Annotation"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1077
+#: src/gui/_chart_dialog.py:1076
 msgid "Annotation text"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1078
+#: src/gui/_chart_dialog.py:1077
 msgid "Point that is annotated"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1079
+#: src/gui/_chart_dialog.py:1078
 msgid "String that indicates the coordinates of xy"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1080
+#: src/gui/_chart_dialog.py:1079
 msgid "Location of annotation text"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1081
+#: src/gui/_chart_dialog.py:1080
 msgid "String that indicates the coordinates of xytext."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1094
+#: src/gui/_chart_dialog.py:1093
 msgid "Z"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1096
+#: src/gui/_chart_dialog.py:1095
 msgid "Alpha"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1099
+#: src/gui/_chart_dialog.py:1098
 msgid "Contour labels"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1100
+#: src/gui/_chart_dialog.py:1099
 msgid "Font size"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1101
+#: src/gui/_chart_dialog.py:1100
 msgid "Fill contour"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1102
+#: src/gui/_chart_dialog.py:1101
 msgid "Hatches"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1110
+#: src/gui/_chart_dialog.py:1109
 msgid "Lines"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1111
+#: src/gui/_chart_dialog.py:1110
 msgid "Areas"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1116
+#: src/gui/_chart_dialog.py:1115
 msgid "X coordinates of the surface"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1117
+#: src/gui/_chart_dialog.py:1116
 msgid "Y coordinates of the surface"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1118
+#: src/gui/_chart_dialog.py:1117
 msgid "Z coordinates of the surface (contour height)"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1119
+#: src/gui/_chart_dialog.py:1118
 msgid ""
 "If None, the colormap specified by cmap will be used.\n"
 "If a string, like ‘r’ or ‘red’, all levels will be plotted in this color.\n"
@@ -1416,27 +1416,27 @@ msgid ""
 "levels will be plotted in different colors in the order specified."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1125
+#: src/gui/_chart_dialog.py:1124
 msgid "The alpha blending value"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1126
+#: src/gui/_chart_dialog.py:1125
 msgid "Contour line style"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1127
+#: src/gui/_chart_dialog.py:1126
 msgid "All contour levels will be plotted with this linewidth."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1129
+#: src/gui/_chart_dialog.py:1128
 msgid "Adds contour labels"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1130
+#: src/gui/_chart_dialog.py:1129
 msgid "Contour font label size in points"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1131
+#: src/gui/_chart_dialog.py:1130
 msgid ""
 "A list of cross hatch patterns to use on the filled areas. A hatch can be "
 "one of:\n"
@@ -1454,69 +1454,69 @@ msgid ""
 "If same letter repeats, it increases the density of hatching of that pattern."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1156
+#: src/gui/_chart_dialog.py:1155
 msgid "Flows"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1157
+#: src/gui/_chart_dialog.py:1156
 msgid "Orientations"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1159
+#: src/gui/_chart_dialog.py:1158
 msgid "Format"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1160
+#: src/gui/_chart_dialog.py:1159
 msgid "Unit"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1161
+#: src/gui/_chart_dialog.py:1160
 msgid "Rotation"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1162
+#: src/gui/_chart_dialog.py:1161
 msgid "Gap"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1163
+#: src/gui/_chart_dialog.py:1162
 msgid "Radius"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1164
+#: src/gui/_chart_dialog.py:1163
 msgid "Shoulder"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1165
+#: src/gui/_chart_dialog.py:1164
 msgid "Offset"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1166
+#: src/gui/_chart_dialog.py:1165
 msgid "Angle"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1167
+#: src/gui/_chart_dialog.py:1166
 msgid "Edge"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1168
+#: src/gui/_chart_dialog.py:1167
 msgid "Face"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1176
+#: src/gui/_chart_dialog.py:1175
 msgid "Diagram"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1178
+#: src/gui/_chart_dialog.py:1177
 msgid "Area"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1182
+#: src/gui/_chart_dialog.py:1181
 msgid ""
 "Array of flow values.\n"
 "By convention, inputs are positive and outputs are negative."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1184
+#: src/gui/_chart_dialog.py:1183
 msgid ""
 "List of orientations of the paths.\n"
 "Valid values are 1 (from/to the top), 0 (from/to the left or right), or -1 "
@@ -1525,7 +1525,7 @@ msgid ""
 "break away to the right."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1189
+#: src/gui/_chart_dialog.py:1188
 msgid ""
 "List of specifications of the labels for the flows.\n"
 "Each value may be None (no labels), ‘’ (just label the quantities), or a "
@@ -1536,51 +1536,51 @@ msgid ""
 "value of this argument."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1198
+#: src/gui/_chart_dialog.py:1197
 msgid ""
 "String representing the physical unit associated with the flow quantities.\n"
 "If unit is None, then none of the quantities are labeled."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1201
+#: src/gui/_chart_dialog.py:1200
 msgid ""
 "A Python number formatting string to be used in labeling the flow as a "
 "quantity (i.e., a number times a unit, where the unit is given)"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1204
+#: src/gui/_chart_dialog.py:1203
 msgid "Angle of rotation of the diagram [deg]"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1205
+#: src/gui/_chart_dialog.py:1204
 msgid "Space between paths that break in/break away to/from the top or bottom."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1207
+#: src/gui/_chart_dialog.py:1206
 msgid "Inner radius of the vertical paths"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1208
+#: src/gui/_chart_dialog.py:1207
 msgid "Size of the shoulders of output arrows"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1209
+#: src/gui/_chart_dialog.py:1208
 msgid "Text offset (from the dip or tip of the arrow)"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1210
+#: src/gui/_chart_dialog.py:1209
 msgid "Angle of the arrow heads (and negative of the angle of the tails) [deg]"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1212
+#: src/gui/_chart_dialog.py:1211
 msgid "Edge color of Sankey diagram"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1213
+#: src/gui/_chart_dialog.py:1212
 msgid "Face color of Sankey diagram"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1222
+#: src/gui/_chart_dialog.py:1221
 msgid ""
 "\n"
 "Code \tMeaning\n"
@@ -1610,93 +1610,93 @@ msgid ""
 "%% \tA literal '%' character."
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1253
+#: src/gui/_chart_dialog.py:1252
 msgid "Title"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1255 src/gui/_chart_dialog.py:1259
+#: src/gui/_chart_dialog.py:1254 src/gui/_chart_dialog.py:1258
 msgid "Limits"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1256 src/gui/_chart_dialog.py:1260
+#: src/gui/_chart_dialog.py:1255 src/gui/_chart_dialog.py:1259
 msgid "Log. scale"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1257
+#: src/gui/_chart_dialog.py:1256
 msgid "X-axis ticks"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1261
+#: src/gui/_chart_dialog.py:1260
 msgid "Y-axis ticks"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1262
+#: src/gui/_chart_dialog.py:1261
 msgid "X-axis grid"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1263
+#: src/gui/_chart_dialog.py:1262
 msgid "Y-axis grid"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1264
+#: src/gui/_chart_dialog.py:1263
 msgid "Legend"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1265
+#: src/gui/_chart_dialog.py:1264
 msgid "Date format"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1272
+#: src/gui/_chart_dialog.py:1271
 msgid "Figure"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1273
+#: src/gui/_chart_dialog.py:1272
 msgid "X-Axis"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1275
+#: src/gui/_chart_dialog.py:1274
 msgid "Y-Axis"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1279
+#: src/gui/_chart_dialog.py:1278
 msgid "The figure title"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1280
+#: src/gui/_chart_dialog.py:1279
 msgid "The label for the x axis"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1281
+#: src/gui/_chart_dialog.py:1280
 msgid ""
 "The data limits for the x axis\n"
 "Format: (xmin, xmax)"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1282
+#: src/gui/_chart_dialog.py:1281
 msgid "The label for the y axis"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1283
+#: src/gui/_chart_dialog.py:1282
 msgid ""
 "The data limits for the y axis\n"
 "Format: (ymin, ymax)"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1284
+#: src/gui/_chart_dialog.py:1283
 msgid ""
 "If non-empty then the x axis is displays dates.\n"
 "Enter an unquoted strftime() format string.\n"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1444 src/gui/_chart_dialog.py:1460
+#: src/gui/_chart_dialog.py:1443 src/gui/_chart_dialog.py:1459
 msgid "+"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1571 src/gui/_toolbars.py:199
+#: src/gui/_chart_dialog.py:1572 src/gui/_toolbars.py:199
 msgid "Insert chart"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1573
+#: src/gui/_chart_dialog.py:1574
 msgid "Axes"
 msgstr ""
 
@@ -1765,41 +1765,41 @@ msgstr ""
 msgid "Enter text angle in degrees."
 msgstr ""
 
-#: src/gui/_grid.py:894
+#: src/gui/_grid.py:900
 #, python-brace-format
 msgid "Cell {key} outside grid shape {shape}"
 msgstr ""
 
-#: src/gui/_grid.py:1012
+#: src/gui/_grid.py:1018
 #, python-brace-format
 msgid "'{text}' not found."
 msgstr ""
 
-#: src/gui/_grid.py:1019
+#: src/gui/_grid.py:1025
 #, python-brace-format
 msgid "Found '{text}' in cell {key}."
 msgstr ""
 
-#: src/gui/_grid.py:1073
+#: src/gui/_grid.py:1079
 #, python-brace-format
 msgid "'{find_string}' not found."
 msgstr ""
 
-#: src/gui/_grid.py:1081
+#: src/gui/_grid.py:1087
 #, python-brace-format
 msgid "Replaced '{find_string}' in cell {key} with {replace_string}."
 msgstr ""
 
-#: src/gui/_grid.py:1257
+#: src/gui/_grid.py:1263
 #, python-brace-format
 msgid "Grid dimensions changed to {shape}."
 msgstr ""
 
-#: src/gui/_grid.py:1354 src/gui/_grid.py:1367
+#: src/gui/_grid.py:1360 src/gui/_grid.py:1373
 msgid "Sorting complete."
 msgstr ""
 
-#: src/gui/_grid.py:1357 src/gui/_grid.py:1370
+#: src/gui/_grid.py:1363 src/gui/_grid.py:1376
 msgid "Sorting failed: {}"
 msgstr ""
 
@@ -2256,7 +2256,7 @@ msgstr ""
 msgid "File version {version} unsupported (not 0.1)."
 msgstr ""
 
-#: src/interfaces/pys.py:322 src/actions/_grid_actions.py:245
+#: src/interfaces/pys.py:334 src/actions/_grid_actions.py:245
 msgid "File format unsupported."
 msgstr ""
 
@@ -2341,22 +2341,22 @@ msgstr ""
 msgid "Pasting cells... "
 msgstr ""
 
-#: src/actions/_grid_actions.py:1166
+#: src/actions/_grid_actions.py:1168
 #, python-brace-format
 msgid "Zoomed to {0:.2f}."
 msgstr ""
 
-#: src/actions/_grid_actions.py:1473
+#: src/actions/_grid_actions.py:1475
 #, python-brace-format
 msgid "Cell reference copied to clipboard: {access_string}"
 msgstr ""
 
-#: src/actions/_grid_actions.py:1577
+#: src/actions/_grid_actions.py:1579
 #, python-brace-format
 msgid "Replaced {no_cells} cells."
 msgstr ""
 
-#: src/actions/_grid_actions.py:1612
+#: src/actions/_grid_actions.py:1614
 #, python-brace-format
 msgid "Replaced {old} with {new} in cell {key}."
 msgstr ""
@@ -2397,6 +2397,6 @@ msgstr ""
 msgid "Error writing SVG file"
 msgstr ""
 
-#: src/actions/_main_window_actions.py:643
+#: src/actions/_main_window_actions.py:646
 msgid "Error evaluating data: "
 msgstr ""
