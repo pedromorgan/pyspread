@@ -1090,8 +1090,7 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         IntCtrl.__init__(self, parent, limited=True, allow_long=True,
                          style=wx.NO_BORDER)
 
-        self.SetMin(0)
-        self.SetMax(no_tabs - 1)
+        self.min = 0
 
         tipmsg = _("For switching tables enter the table number or "
                    "use the mouse wheel.")
@@ -1123,8 +1122,6 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         if self.GetValue() >= no_tabs:
             self.SetValue(no_tabs - 1)
-
-        self.SetMax(no_tabs - 1)
 
     # Event handlers
 
@@ -1167,16 +1164,16 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         self.cursor_pos = wx.TextCtrl.GetInsertionPoint(self) + 1
 
-        self.SetMax(self.no_tabs - 1)
+        value = event.GetValue()
 
-        if event.GetValue() > self.GetMax():
-            self.SetValue(self.GetMax())
+        if value > self.no_tabs - 1:
+            self.SetValue(self.no_tabs - 1)
             return
 
         if not self.switching:
             self.switching = True
             post_command_event(self, self.GridActionTableSwitchMsg,
-                               newtable=event.GetValue())
+                               newtable=value)
 
             self.switching = False
 
@@ -1188,19 +1185,13 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     def OnMouseWheel(self, event):
         """Mouse wheel event handler"""
 
-        # Prevent lost IntCtrl changes
-        if self.switching:
-            return
-
-        self.SetMax(self.no_tabs - 1)
+        value = self.GetValue()
 
         if event.GetWheelRotation() > 0:
-            new_table = self.GetValue() + 1
-        else:
-            new_table = self.GetValue() - 1
-
-        if self.IsInBounds(new_table):
-            self.SetValue(new_table)
+            if self.no_tabs - 1 > value:
+                self.SetValue(value + 1)
+        elif value > 0:
+            self.SetValue(value - 1)
 
     def OnShapeChange(self, event):
         """Grid shape change event handler"""
