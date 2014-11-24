@@ -47,12 +47,17 @@ from src.lib.testlib import params, pytest_generate_tests
 from src.lib.testlib import basic_setup_test, restore_basic_grid
 
 from src.gui._events import *
+from src.lib.gpg import genkey
 
 
 class TestFileActions(object):
     """File actions test class"""
 
     def setup_method(self, method):
+
+        # Generate a GPG key if not present
+        genkey(ui=False)
+
         self.main_window = MainWindow(None, title="pyspread", S=None)
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array

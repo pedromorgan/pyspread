@@ -41,6 +41,13 @@ sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
 import src.lib.gpg as gpg
 from src.lib.testlib import params, pytest_generate_tests
+from src.lib.gpg import genkey
+
+
+def setup_function(function):
+    """Creates a GPG key if necessary"""
+
+    genkey(ui=False)
 
 
 def _set_sig(filename, sigfilename):

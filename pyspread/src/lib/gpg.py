@@ -82,8 +82,28 @@ def choose_key(gpg_private_keys, gpg_private_fingerprints):
     return key
 
 
-def genkey():
-    """Creates a new standard GPG key"""
+def _register_key(fingerprint, gpg):
+    """Registers key in config"""
+
+    for private_key in gpg.list_keys(True):
+        try:
+            if str(fingerprint) == private_key['fingerprint']:
+                config["gpg_key_fingerprint"] = \
+                    repr(private_key['fingerprint'])
+        except KeyError:
+            pass
+
+
+def genkey(ui=True):
+    """Creates a new standard GPG key
+
+    Parameters
+    ----------
+
+    ui: Bool
+    \tIf True, then a new key is created when required without user interaction
+
+    """
 
     gpg = gnupg.GPG()
 
@@ -102,7 +122,7 @@ def genkey():
         if pyspread_key_fingerprint == fingerprint:
             pyspread_key = private_key
 
-    if pyspread_key is None:
+    if ui and pyspread_key is None:
         # If no GPG key is set in config, choose one
         pyspread_key = choose_key(gpg_private_keys, gpg_private_fingerprints)
 
@@ -114,39 +134,48 @@ def genkey():
 
     else:
         # No key has been chosen --> Create new one
-        gpg_key_parameters = get_key_params_from_user()
+        if ui:
+            gpg_key_parameters = get_key_params_from_user()
+        else:
+            gpg_key_parameters = dict([
+                ('key_type', 'DSA'),
+                ('key_length', '1024'),
+                ('subkey_type', 'ELG-E'),
+                ('subkey_length', '1024'),
+                ('expire_date', '0'),
+                ('name_real', 'test_key'),
+            ])
 
         input_data = gpg.gen_key_input(**gpg_key_parameters)
 
         # Generate key
         # ------------
 
-        # Show information dialog
+        if ui:
+            # Show information dialog
 
-        style = wx.ICON_INFORMATION | wx.DIALOG_NO_PARENT | wx.OK | wx.CANCEL
-        pyspread_key_uid = gpg_key_parameters["name_real"]
-        short_message = _("New GPG key").format(pyspread_key_uid)
-        message = _("After confirming this dialog, a new GPG key ") + \
-            _("'{key}' will be generated.").format(key=pyspread_key_uid) + \
-            _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
-            _("Canceling this operation exits pyspread.")
-        dlg = wx.MessageDialog(None, message, short_message, style)
-        dlg.Centre()
+            style = wx.ICON_INFORMATION | wx.DIALOG_NO_PARENT | wx.OK | \
+                wx.CANCEL
+            pyspread_key_uid = gpg_key_parameters["name_real"]
+            short_message = _("New GPG key").format(pyspread_key_uid)
+            message = _("After confirming this dialog, a new GPG key ") + \
+                _("'{key}' will be generated.").format(key=pyspread_key_uid) +\
+                _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
+                _("Canceling this operation exits pyspread.")
+            dlg = wx.MessageDialog(None, message, short_message, style)
+            dlg.Centre()
 
-        if dlg.ShowModal() == wx.ID_OK:
-            dlg.Destroy()
-            fingerprint = gpg.gen_key(input_data)
+            if dlg.ShowModal() == wx.ID_OK:
+                dlg.Destroy()
+                fingerprint = gpg.gen_key(input_data)
+                _register_key(fingerprint, gpg)
+            else:
+                dlg.Destroy()
+                sys.exit()
 
-            for private_key in gpg.list_keys(True):
-                try:
-                    if str(fingerprint) == private_key['fingerprint']:
-                        config["gpg_key_fingerprint"] = \
-                            repr(private_key['fingerprint'])
-                except KeyError:
-                    pass
         else:
-            dlg.Destroy()
-            sys.exit()
+            fingerprint = gpg.gen_key(input_data)
+            _register_key(fingerprint, gpg)
 
 
 def sign(filename):
