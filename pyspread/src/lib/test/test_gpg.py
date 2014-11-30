@@ -39,16 +39,31 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
+import gnupg
+
 import src.lib.gpg as gpg
 from src.lib.testlib import params, pytest_generate_tests
 from src.lib.gpg import genkey
+from src.config import config
 
+config_fingerprint = config["gpg_key_fingerprint"]
+fingerprint = None
 
 def setup_function(function):
     """Creates a GPG key if necessary"""
 
-    genkey(ui=False)
+    global fingerprint
+    fingerprint = genkey(key_name="pyspread_test_key")
 
+def teardown_module(module):
+    """Deletes previously generated GPG key"""
+
+    if fingerprint != config_fingerprint:
+        gpg = gnupg.GPG()
+
+        # Secret key must be deleted first
+        gpg.delete_keys(fingerprint, True)
+        gpg.delete_keys(fingerprint)
 
 def _set_sig(filename, sigfilename):
     """Creates a signature sigfilename for file filename"""

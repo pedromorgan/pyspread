@@ -28,10 +28,12 @@ Unit tests for _grid_actions.py
 
 """
 
+import bz2
 import os
 import sys
 
-import bz2
+import gnupg
+
 import wx
 app = wx.App()
 
@@ -48,7 +50,7 @@ from src.lib.testlib import basic_setup_test, restore_basic_grid
 
 from src.gui._events import *
 from src.lib.gpg import genkey
-
+from src.config import config
 
 class TestFileActions(object):
     """File actions test class"""
@@ -56,7 +58,7 @@ class TestFileActions(object):
     def setup_method(self, method):
 
         # Generate a GPG key if not present
-        genkey(ui=False)
+        self.fingerprint = genkey(key_name="pyspread_test_key")
 
         self.main_window = MainWindow(None, title="pyspread", S=None)
         self.grid = self.main_window.grid
@@ -90,6 +92,15 @@ class TestFileActions(object):
 
         # File for testing save
         self.filename_save = TESTPATH + "test_save.pys"
+
+    def teardown_method(self, method):
+        if self.fingerprint != config["gpg_key_fingerprint"] and \
+           self.fingerprint is not None:
+            gpg = gnupg.GPG()
+            print repr(self.fingerprint)
+            # Secret key must be deleted first
+            gpg.delete_keys(self.fingerprint, True)
+            gpg.delete_keys(self.fingerprint)
 
     def test_validate_signature(self):
         """Tests signature validation"""

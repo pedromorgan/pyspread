@@ -94,7 +94,7 @@ def _register_key(fingerprint, gpg):
             pass
 
 
-def genkey(ui=True):
+def genkey(key_name=None):
     """Creates a new standard GPG key
 
     Parameters
@@ -122,7 +122,7 @@ def genkey(ui=True):
         if pyspread_key_fingerprint == fingerprint:
             pyspread_key = private_key
 
-    if ui and pyspread_key is None:
+    if key_name is None and pyspread_key is None:
         # If no GPG key is set in config, choose one
         pyspread_key = choose_key(gpg_private_keys, gpg_private_fingerprints)
 
@@ -134,7 +134,7 @@ def genkey(ui=True):
 
     else:
         # No key has been chosen --> Create new one
-        if ui:
+        if key_name is None:
             gpg_key_parameters = get_key_params_from_user()
         else:
             gpg_key_parameters = dict([
@@ -143,7 +143,7 @@ def genkey(ui=True):
                 ('subkey_type', 'ELG-E'),
                 ('subkey_length', '1024'),
                 ('expire_date', '0'),
-                ('name_real', 'test_key'),
+                ('name_real', '{key_name}'.format(key_name=key_name)),
             ])
 
         input_data = gpg.gen_key_input(**gpg_key_parameters)
@@ -151,7 +151,7 @@ def genkey(ui=True):
         # Generate key
         # ------------
 
-        if ui:
+        if key_name is None:
             # Show information dialog
 
             style = wx.ICON_INFORMATION | wx.DIALOG_NO_PARENT | wx.OK | \
@@ -167,16 +167,19 @@ def genkey(ui=True):
 
             if dlg.ShowModal() == wx.ID_OK:
                 dlg.Destroy()
-                fingerprint = gpg.gen_key(input_data)
-                _register_key(fingerprint, gpg)
+                gpg_key = gpg.gen_key(input_data)
+                _register_key(gpg_key, gpg)
+                fingerprint = gpg_key.fingerprint
             else:
                 dlg.Destroy()
                 sys.exit()
 
         else:
-            fingerprint = gpg.gen_key(input_data)
-            _register_key(fingerprint, gpg)
+            gpg_key = gpg.gen_key(input_data)
+            _register_key(gpg_key, gpg)
+            fingerprint = gpg_key.fingerprint
 
+    return fingerprint
 
 def sign(filename):
     """Returns detached signature for file"""
