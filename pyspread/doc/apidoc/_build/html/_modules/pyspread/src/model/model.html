@@ -1,0 +1,1582 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspread.src.model.model &mdash; Pyspread 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Pyspread 0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspread.src.model.model</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c"># Copyright Martin Manns</span>
+<span class="c"># Distributed under the terms of the GNU General Public License</span>
+
+<span class="c"># --------------------------------------------------------------------</span>
+<span class="c"># pyspread is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># pyspread is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with pyspread.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c"># --------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Model</span>
+<span class="sd">=====</span>
+
+<span class="sd">The model contains the core data structures of pyspread.</span>
+<span class="sd">It is divided into layers.</span>
+
+<span class="sd">Layer 3: CodeArray</span>
+<span class="sd">Layer 2: DataArray</span>
+<span class="sd">Layer 1: DictGrid</span>
+<span class="sd">Layer 0: KeyValueStore</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">bz2</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">import</span> <span class="nn">cStringIO</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">imap</span><span class="p">,</span> <span class="n">ifilter</span><span class="p">,</span> <span class="n">product</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SliceType</span><span class="p">,</span> <span class="n">IntType</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">import</span> <span class="nn">wx</span>
+
+<span class="kn">from</span> <span class="nn">src.config</span> <span class="kn">import</span> <span class="n">config</span>
+
+<span class="kn">from</span> <span class="nn">src.lib.typechecks</span> <span class="kn">import</span> <span class="n">is_slice_like</span><span class="p">,</span> <span class="n">is_string_like</span><span class="p">,</span> <span class="n">is_generator_like</span>
+<span class="kn">from</span> <span class="nn">src.lib.selection</span> <span class="kn">import</span> <span class="n">Selection</span>
+
+<span class="kn">import</span> <span class="nn">src.lib.charts</span> <span class="kn">as</span> <span class="nn">charts</span>
+
+<span class="kn">from</span> <span class="nn">src.sysvars</span> <span class="kn">import</span> <span class="n">get_color</span><span class="p">,</span> <span class="n">get_font_string</span>
+
+<span class="kn">from</span> <span class="nn">unredo</span> <span class="kn">import</span> <span class="n">UnRedo</span>
+
+
+<div class="viewcode-block" id="KeyValueStore"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.KeyValueStore">[docs]</a><span class="k">class</span> <span class="nc">KeyValueStore</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Key-Value store in memory. Currently a dict with default value None.</span>
+
+<span class="sd">    This class represents layer 0 of the model.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__missing__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the default value None&quot;&quot;&quot;</span>
+
+        <span class="k">return</span>
+
+<span class="c"># End of class KeyValueStore</span>
+
+<span class="c"># -----------------------------------------------------------------------------</span>
+
+</div>
+<div class="viewcode-block" id="CellAttributes"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CellAttributes">[docs]</a><span class="k">class</span> <span class="nc">CellAttributes</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stores cell formatting attributes in a list of 3 - tuples</span>
+
+<span class="sd">    The first element of each tuple is a Selection.</span>
+<span class="sd">    The second element is the table</span>
+<span class="sd">    The third element is a dict of attributes that are altered.</span>
+
+<span class="sd">    The class provides attribute read access to single cells via __getitem__</span>
+<span class="sd">    Otherwise it behaves similar to a list.</span>
+
+<span class="sd">    Note that for the method undoable_append to work, unredo has to be</span>
+<span class="sd">    defined as class attribute.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_cell_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s">&quot;borderwidth_right&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s">&quot;bordercolor_bottom&quot;</span><span class="p">:</span> <span class="n">get_color</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;grid_color&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">(),</span>
+        <span class="s">&quot;bordercolor_right&quot;</span><span class="p">:</span> <span class="n">get_color</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;grid_color&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">(),</span>
+        <span class="s">&quot;bgcolor&quot;</span><span class="p">:</span> <span class="n">get_color</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;background_color&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">(),</span>
+        <span class="s">&quot;textfont&quot;</span><span class="p">:</span> <span class="n">get_font_string</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;font&quot;</span><span class="p">]),</span>
+        <span class="s">&quot;pointsize&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s">&quot;fontweight&quot;</span><span class="p">:</span> <span class="n">wx</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span>
+        <span class="s">&quot;fontstyle&quot;</span><span class="p">:</span> <span class="n">wx</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span>
+        <span class="s">&quot;textcolor&quot;</span><span class="p">:</span> <span class="n">get_color</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;text_color&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">(),</span>
+        <span class="s">&quot;underline&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s">&quot;strikethrough&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s">&quot;locked&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s">&quot;angle&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s">&quot;column-width&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+        <span class="s">&quot;row-height&quot;</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span>
+        <span class="s">&quot;vertical_align&quot;</span><span class="p">:</span> <span class="s">&quot;top&quot;</span><span class="p">,</span>
+        <span class="s">&quot;justification&quot;</span><span class="p">:</span> <span class="s">&quot;left&quot;</span><span class="p">,</span>
+        <span class="s">&quot;frozen&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s">&quot;merge_area&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="s">&quot;markup&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s">&quot;button_cell&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c"># Cache for __getattr__ maps key to tuple of len and attr_dict</span>
+
+    <span class="n">_attr_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="CellAttributes.undoable_append"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CellAttributes.undoable_append">[docs]</a>    <span class="k">def</span> <span class="nf">undoable_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Appends item to list and provides undo and redo functionality&quot;&quot;&quot;</span>
+
+        <span class="n">undo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">redo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">undoable_append</span><span class="p">,</span> <span class="p">[</span><span class="n">value</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">redo_operation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns attribute dict for a single key&quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">key_ele</span><span class="p">)</span> <span class="ow">is</span> <span class="n">SliceType</span> <span class="k">for</span> <span class="n">key_ele</span> <span class="ow">in</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_cache</span><span class="p">:</span>
+            <span class="n">cache_len</span><span class="p">,</span> <span class="n">cache_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="c"># Use cache result only if no new attrs have been defined</span>
+            <span class="k">if</span> <span class="n">cache_len</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">cache_dict</span>
+
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_cell_attributes</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">selection</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">attr_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tab</span> <span class="o">==</span> <span class="n">table</span> <span class="ow">and</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="n">selection</span><span class="p">:</span>
+                <span class="n">result_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr_dict</span><span class="p">)</span>
+
+        <span class="c"># Upddate cache with current length and dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">result_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_dict</span>
+
+<div class="viewcode-block" id="CellAttributes.get_merging_cell"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CellAttributes.get_merging_cell">[docs]</a>    <span class="k">def</span> <span class="nf">get_merging_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns key of cell that merges the cell key</span>
+
+<span class="sd">        or None if cell key not merged</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: 3-tuple of Integer</span>
+<span class="sd">        \tThe key of the cell that is merged</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="n">merging_cell</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">def</span> <span class="nf">is_in_merge_area</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">merge_area</span><span class="p">):</span>
+            <span class="n">top</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">merge_area</span>
+            <span class="k">return</span> <span class="n">top</span> <span class="o">&lt;=</span> <span class="n">row</span> <span class="o">&lt;=</span> <span class="n">bottom</span> <span class="ow">and</span> <span class="n">left</span> <span class="o">&lt;=</span> <span class="n">col</span> <span class="o">&lt;=</span> <span class="n">right</span>
+
+        <span class="k">for</span> <span class="n">selection</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">attr_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">merge_area</span> <span class="o">=</span> <span class="n">attr_dict</span><span class="p">[</span><span class="s">&quot;merge_area&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">table</span> <span class="o">==</span> <span class="n">tab</span> <span class="ow">and</span> <span class="n">merge_area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="c"># We have a merge area in the cell&#39;s table</span>
+                    <span class="k">if</span> <span class="n">is_in_merge_area</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">merge_area</span><span class="p">):</span>
+                        <span class="n">merging_cell</span> <span class="o">=</span> <span class="n">merge_area</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">merge_area</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tab</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">merging_cell</span>
+
+    <span class="c"># Allow getting and setting elements in list</span></div>
+    <span class="n">get_item</span> <span class="o">=</span> <span class="nb">list</span><span class="o">.</span><span class="n">__getitem__</span>
+    <span class="n">set_item</span> <span class="o">=</span> <span class="nb">list</span><span class="o">.</span><span class="n">__setitem__</span>
+
+<span class="c"># End of class CellAttributes</span>
+
+</div>
+<div class="viewcode-block" id="DictGrid"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DictGrid">[docs]</a><span class="k">class</span> <span class="nc">DictGrid</span><span class="p">(</span><span class="n">KeyValueStore</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The core data class with all information that is stored in a pys file.</span>
+
+<span class="sd">    Besides grid code access via standard dict operations, it provides</span>
+<span class="sd">    the following attributes:</span>
+
+<span class="sd">    * cell_attributes: Stores cell formatting attributes</span>
+<span class="sd">    * macros:          String of all macros</span>
+
+<span class="sd">    This class represents layer 1 of the model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape: n-tuple of integer</span>
+<span class="sd">    \tShape of the grid</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="n">KeyValueStore</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span> <span class="o">=</span> <span class="n">CellAttributes</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">macros</span> <span class="o">=</span> <span class="s">u&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># Keys have the format (row, table)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># Keys have the format (col, table)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">key_ele</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">key_ele</span> <span class="ow">or</span> <span class="n">key_ele</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Grid index {key} outside grid shape {shape}.&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">KeyValueStore</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+<span class="c"># End of class DictGrid</span>
+
+<span class="c"># -----------------------------------------------------------------------------</span>
+
+</div>
+<div class="viewcode-block" id="DataArray"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray">[docs]</a><span class="k">class</span> <span class="nc">DataArray</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;DataArray provides enhanced grid read/write access.</span>
+
+<span class="sd">    Enhancements comprise:</span>
+<span class="sd">     * Slicing</span>
+<span class="sd">     * Multi-dimensional operations such as insertion and deletion along 1 axis</span>
+<span class="sd">     * Undo/redo operations</span>
+
+<span class="sd">    This class represents layer 2 of the model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape: n-tuple of integer</span>
+<span class="sd">    \tShape of the grid</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span> <span class="o">=</span> <span class="n">DictGrid</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c"># Undo and redo management</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span> <span class="o">=</span> <span class="n">UnRedo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">cell_attributes</span><span class="o">.</span><span class="n">unredo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span>
+
+        <span class="c"># Safe mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">safe_mode</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="c"># Data is the central content interface for loading / saving data.</span>
+    <span class="c"># It shall be used for loading and saving from and to pys and other files.</span>
+    <span class="c"># It shall be used for loading and saving macros.</span>
+    <span class="c"># It is not used for importinf and exporting data because these operations</span>
+    <span class="c"># are partial to the grid.</span>
+
+    <span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns dict of data content.</span>
+
+<span class="sd">        Keys</span>
+<span class="sd">        ----</span>
+
+<span class="sd">        shape: 3-tuple of Integer</span>
+<span class="sd">        \tGrid shape</span>
+<span class="sd">        grid: Dict of 3-tuples to strings</span>
+<span class="sd">        \tCell content</span>
+<span class="sd">        attributes: List of 3-tuples</span>
+<span class="sd">        \tCell attributes</span>
+<span class="sd">        row_heights: Dict of 2-tuples to float</span>
+<span class="sd">        \t(row, tab): row_height</span>
+<span class="sd">        col_widths: Dict of 2-tuples to float</span>
+<span class="sd">        \t(col, tab): col_width</span>
+<span class="sd">        macros: String</span>
+<span class="sd">        \tMacros from macro list</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&quot;grid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&quot;attributes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">ca</span> <span class="k">for</span> <span class="n">ca</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&quot;row_heights&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&quot;col_widths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&quot;macros&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">macros</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">_set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets data from given parameters</span>
+
+<span class="sd">        Old values are deleted.</span>
+<span class="sd">        If a paremeter is not given, nothing is changed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        shape: 3-tuple of Integer</span>
+<span class="sd">        \tGrid shape</span>
+<span class="sd">        grid: Dict of 3-tuples to strings</span>
+<span class="sd">        \tCell content</span>
+<span class="sd">        attributes: List of 3-tuples</span>
+<span class="sd">        \tCell attributes</span>
+<span class="sd">        row_heights: Dict of 2-tuples to float</span>
+<span class="sd">        \t(row, tab): row_height</span>
+<span class="sd">        col_widths: Dict of 2-tuples to float</span>
+<span class="sd">        \t(col, tab): col_width</span>
+<span class="sd">        macros: String</span>
+<span class="sd">        \tMacros from macro list</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s">&quot;shape&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;shape&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;grid&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;grid&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s">&quot;attributes&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;attributes&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;row_heights&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;row_heights&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;col_widths&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;col_widths&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;macros&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">macros</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;macros&quot;</span><span class="p">]</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_data</span><span class="p">,</span> <span class="n">_set_data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DataArray.get_row_height"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.get_row_height">[docs]</a>    <span class="k">def</span> <span class="nf">get_row_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns row height&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;default_row_height&quot;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="DataArray.get_col_width"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.get_col_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_col_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns column width&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span><span class="p">[(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;default_col_width&quot;</span><span class="p">]</span>
+
+    <span class="c"># Row and column attributes mask</span>
+    <span class="c"># Keys have the format (row, table)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_get_row_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns row_heights dict&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">row_heights</span>
+
+    <span class="k">def</span> <span class="nf">_set_row_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_heights</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets  macros string&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">row_heights</span> <span class="o">=</span> <span class="n">row_heights</span>
+
+    <span class="n">row_heights</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_row_heights</span><span class="p">,</span> <span class="n">_set_row_heights</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_col_widths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns col_widths dict&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">col_widths</span>
+
+    <span class="k">def</span> <span class="nf">_set_col_widths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_widths</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets  macros string&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">col_widths</span> <span class="o">=</span> <span class="n">col_widths</span>
+
+    <span class="n">col_widths</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_col_widths</span><span class="p">,</span> <span class="n">_set_col_widths</span><span class="p">)</span>
+
+    <span class="c"># Cell attributes mask</span>
+    <span class="k">def</span> <span class="nf">_get_cell_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns cell_attributes list&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">cell_attributes</span>
+
+    <span class="k">def</span> <span class="nf">_set_cell_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for cell_atributes&quot;&quot;&quot;</span>
+
+        <span class="c"># Empty cell_attributes first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">cell_attributes</span> <span class="o">=</span> <span class="n">attributes</span> <span class="o">=</span> \
+        <span class="nb">property</span><span class="p">(</span><span class="n">_get_cell_attributes</span><span class="p">,</span> <span class="n">_set_cell_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns iterator over self.dict_grid&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_macros</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns macros string&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">macros</span>
+
+    <span class="k">def</span> <span class="nf">_set_macros</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macros</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets  macros string&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">macros</span> <span class="o">=</span> <span class="n">macros</span>
+
+    <span class="n">macros</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_macros</span><span class="p">,</span> <span class="n">_set_macros</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DataArray.keys"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns keys in self.dict_grid&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="DataArray.pop"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pops dict_grid with undo and redo support</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: 3-tuple of Integer</span>
+<span class="sd">        \tCell key that shall be popped</span>
+<span class="sd">        mark_unredo: Boolean, defaults to True</span>
+<span class="sd">        \tIf True then an unredo marker is set after the operation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c"># UnRedo support</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="n">undo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">,</span> <span class="p">[</span><span class="n">key</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+        <span class="n">redo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="p">[</span><span class="n">key</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">redo_operation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="c"># End UnRedo support</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c"># Shape mask</span>
+</div>
+    <span class="k">def</span> <span class="nf">_get_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns dict_grid shape&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">def</span> <span class="nf">_set_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deletes all cells beyond new shape and sets dict_grid shape</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape: 3-tuple of Integer</span>
+<span class="sd">        \tTarget shape for grid</span>
+<span class="sd">        mark_unredo: Boolean, defaults to True</span>
+<span class="sd">        \tIf True then an unredo marker is set after the operation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># Delete each cell that is beyond new borders</span>
+
+        <span class="n">old_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">new_axis</span> <span class="o">&lt;</span> <span class="n">old_axis</span>
+               <span class="k">for</span> <span class="n">new_axis</span><span class="p">,</span> <span class="n">old_axis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">old_shape</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">key_ele</span> <span class="o">&gt;=</span> <span class="n">new_axis</span>
+                       <span class="k">for</span> <span class="n">key_ele</span><span class="p">,</span> <span class="n">new_axis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c"># Set dict_grid shape attribute</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
+
+        <span class="c"># UnRedo support</span>
+
+        <span class="n">undo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_shape</span><span class="p">,</span> <span class="p">[</span><span class="n">old_shape</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+        <span class="n">redo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_shape</span><span class="p">,</span> <span class="p">[</span><span class="n">shape</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">redo_operation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="c"># End UnRedo support</span>
+
+    <span class="n">shape</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_shape</span><span class="p">,</span> <span class="n">_set_shape</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DataArray.get_last_filled_cell"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.get_last_filled_cell">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_filled_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns key for the bottommost rightmost cell with content</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        table: Integer, defaults to None</span>
+<span class="sd">        \tLimit search to this table</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">maxrow</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">maxcol</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">table</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">tab</span> <span class="o">==</span> <span class="n">table</span><span class="p">:</span>
+                <span class="n">maxrow</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">maxrow</span><span class="p">)</span>
+                <span class="n">maxcol</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">maxcol</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">maxrow</span><span class="p">,</span> <span class="n">maxcol</span><span class="p">,</span> <span class="n">table</span>
+
+    <span class="c"># Pickle support</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns dict_grid for pickling</span>
+
+<span class="sd">        Note that all persistent data is contained in the DictGrid class</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s">&quot;dict_grid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="p">}</span>
+
+    <span class="c"># Slice support</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds slicing access to cell code retrieval</span>
+
+<span class="sd">        The cells are returned as a generator of generators, of ... of unicode.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: n-tuple of integer or slice</span>
+<span class="sd">        \tKeys of the cell code that is returned</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        Classical Excel type addressing (A$1, ...) may be added here</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">key_ele</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_slice_like</span><span class="p">(</span><span class="n">key_ele</span><span class="p">):</span>
+                <span class="c"># We have something slice-like here</span>
+
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_array_generator</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">is_string_like</span><span class="p">(</span><span class="n">key_ele</span><span class="p">):</span>
+                <span class="c"># We have something string-like here</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Cell string based access not implemented&quot;</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c"># key_ele should be a single cell</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Accepts index and slice keys</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: 3-tuple of Integer or Slice object</span>
+<span class="sd">        \tCell key(s) that shall be set</span>
+<span class="sd">        value: Object (should be Unicode or similar)</span>
+<span class="sd">        \tCode for cell(s) to be set</span>
+<span class="sd">        mark_unredo: Boolean, defaults to True</span>
+<span class="sd">        \tIf True then an unredo marker is set after the operation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">single_keys_per_dim</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">key_ele</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">is_slice_like</span><span class="p">(</span><span class="n">key_ele</span><span class="p">):</span>
+                <span class="c"># We have something slice-like here</span>
+
+                <span class="n">length</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+                <span class="n">slice_range</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="o">*</span><span class="n">key_ele</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">length</span><span class="p">))</span>
+                <span class="n">single_keys_per_dim</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slice_range</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">is_string_like</span><span class="p">(</span><span class="n">key_ele</span><span class="p">):</span>
+                <span class="c"># We have something string-like here</span>
+
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># key_ele is a single cell</span>
+
+                <span class="n">single_keys_per_dim</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key_ele</span><span class="p">,</span> <span class="p">))</span>
+
+        <span class="n">single_keys</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">single_keys_per_dim</span><span class="p">)</span>
+
+        <span class="n">unredo_mark</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">for</span> <span class="n">single_key</span> <span class="ow">in</span> <span class="n">single_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="c"># UnRedo support</span>
+
+                <span class="n">old_value</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">old_value</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">old_value</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="c"># We seem to have double calls on __setitem__</span>
+                <span class="c"># This hack catches them</span>
+
+                <span class="k">if</span> <span class="n">old_value</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+
+                    <span class="n">unredo_mark</span> <span class="o">=</span> <span class="bp">True</span>
+
+                    <span class="n">undo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">,</span>
+                                      <span class="p">[</span><span class="n">key</span><span class="p">,</span> <span class="n">old_value</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+                    <span class="n">redo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">,</span>
+                                      <span class="p">[</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">redo_operation</span><span class="p">)</span>
+
+                    <span class="c"># End UnRedo support</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="p">[</span><span class="n">single_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Value is empty --&gt; delete cell</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span> <span class="ow">and</span> <span class="n">unredo_mark</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DataArray.cell_array_generator"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.cell_array_generator">[docs]</a>    <span class="k">def</span> <span class="nf">cell_array_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generator traversing cells specified in key</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: Iterable of Integer or slice</span>
+<span class="sd">        \tThe key specifies the cell keys of the generator</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key_ele</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+
+            <span class="c"># Get first element of key that is a slice</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key_ele</span><span class="p">)</span> <span class="ow">is</span> <span class="n">SliceType</span><span class="p">:</span>
+                <span class="n">slc_keys</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="o">*</span><span class="n">key_ele</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">key_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                <span class="n">key_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+                <span class="n">has_subslice</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span> <span class="ow">is</span> <span class="n">SliceType</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">key_list</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">slc_key</span> <span class="ow">in</span> <span class="n">slc_keys</span><span class="p">:</span>
+                    <span class="n">key_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">slc_key</span>
+
+                    <span class="k">if</span> <span class="n">has_subslice</span><span class="p">:</span>
+                        <span class="c"># If there is a slice left yield generator</span>
+                        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_array_generator</span><span class="p">(</span><span class="n">key_list</span><span class="p">)</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c"># No slices? Yield value</span>
+                        <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">key_list</span><span class="p">)]</span>
+
+                <span class="k">break</span>
+</div>
+    <span class="k">def</span> <span class="nf">_shift_rowcol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shifts row and column sizes when a table is inserted or deleted&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="c"># Shift row heights</span>
+
+        <span class="n">new_row_heights</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">del_row_heights</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tab</span> <span class="o">&gt;</span> <span class="n">insertion_point</span><span class="p">:</span>
+                <span class="n">new_row_heights</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">no_to_insert</span><span class="p">)]</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span>
+                <span class="n">del_row_heights</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="n">new_row_heights</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_row_height</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">new_row_heights</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">)],</span>
+                                <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="n">del_row_heights</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_row_heights</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_row_height</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c"># Shift column widths</span>
+
+        <span class="n">new_col_widths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">del_col_widths</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tab</span> <span class="o">&gt;</span> <span class="n">insertion_point</span><span class="p">:</span>
+                <span class="n">new_col_widths</span><span class="p">[(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="o">+</span> <span class="n">no_to_insert</span><span class="p">)]</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span><span class="p">[(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span>
+                <span class="n">del_col_widths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="n">new_col_widths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_col_width</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">new_col_widths</span><span class="p">[(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">)],</span>
+                               <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="n">del_col_widths</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_col_widths</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_col_width</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_adjust_rowcol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                       <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adjusts row and column sizes on insertion/deletion&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shift_rowcol</span><span class="p">(</span><span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">assert</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="n">cell_sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span> <span class="k">if</span> <span class="n">axis</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span>
+        <span class="n">set_cell_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_col_width</span> <span class="k">if</span> <span class="n">axis</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_row_height</span>
+
+        <span class="n">new_sizes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">del_sizes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">cell_sizes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="n">insertion_point</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tab</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">tab</span> <span class="o">==</span> <span class="n">table</span><span class="p">):</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">no_to_insert</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+                    <span class="n">new_sizes</span><span class="p">[(</span><span class="n">pos</span> <span class="o">+</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">table</span><span class="p">)]</span> <span class="o">=</span> \
+                        <span class="n">cell_sizes</span><span class="p">[(</span><span class="n">pos</span><span class="p">,</span> <span class="n">table</span><span class="p">)]</span>
+                <span class="n">del_sizes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">table</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">new_sizes</span><span class="p">:</span>
+            <span class="n">set_cell_size</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">new_sizes</span><span class="p">[(</span><span class="n">pos</span><span class="p">,</span> <span class="n">table</span><span class="p">)],</span>
+                          <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">del_sizes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_sizes</span><span class="p">:</span>
+                <span class="n">set_cell_size</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_adjust_cell_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span>
+                                <span class="n">tab</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cell_attrs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adjusts cell attributes on insertion/deletion&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="n">old_cell_attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">[:]</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c"># Adjust selections</span>
+
+            <span class="k">if</span> <span class="n">cell_attrs</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">cell_attrs</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">:</span>
+                    <span class="n">selection</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="k">if</span> <span class="n">tab</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">tab</span> <span class="o">==</span> <span class="n">table</span><span class="p">:</span>
+                        <span class="n">new_sel</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+                        <span class="n">new_val</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                        <span class="n">new_sel</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+                        <span class="c"># Update merge area if present</span>
+                        <span class="k">if</span> <span class="s">&quot;merge_area&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> \
+                           <span class="n">value</span><span class="p">[</span><span class="s">&quot;merge_area&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">top</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&quot;merge_area&quot;</span><span class="p">]</span>
+                            <span class="n">ma_sel</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">([(</span><span class="n">top</span><span class="p">,</span> <span class="n">left</span><span class="p">)],</span>
+                                               <span class="p">[(</span><span class="n">bottom</span><span class="p">,</span> <span class="n">right</span><span class="p">)],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[])</span>
+                            <span class="n">ma_sel</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+                            <span class="n">__top</span><span class="p">,</span> <span class="n">__left</span> <span class="o">=</span> <span class="n">ma_sel</span><span class="o">.</span><span class="n">block_tl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="n">__bottom</span><span class="p">,</span> <span class="n">__right</span> <span class="o">=</span> <span class="n">ma_sel</span><span class="o">.</span><span class="n">block_br</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                            <span class="n">new_val</span><span class="p">[</span><span class="s">&quot;merge_area&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                                <span class="n">__top</span><span class="p">,</span> <span class="n">__left</span><span class="p">,</span> <span class="n">__bottom</span><span class="p">,</span> <span class="n">__right</span>
+
+                        <span class="n">cell_attrs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">new_sel</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">new_val</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">cell_attrs</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="o">.</span><span class="n">_attr_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c"># Adjust tabs</span>
+            <span class="n">new_tabs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">selection</span><span class="p">,</span> <span class="n">old_tab</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">old_tab</span> <span class="o">&gt;</span> <span class="n">insertion_point</span> <span class="ow">and</span> \
+                   <span class="p">(</span><span class="n">tab</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">tab</span> <span class="o">==</span> <span class="n">old_tab</span><span class="p">):</span>
+                    <span class="n">new_tabs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">selection</span><span class="p">,</span> <span class="n">old_tab</span> <span class="o">+</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_tabs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sel_tab_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">new_tabs</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">sel_tab_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">cell_attributes</span><span class="o">.</span><span class="n">set_item</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sel_tab_val</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="o">.</span><span class="n">_attr_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Axis must be in [0, 1, 2]&quot;</span><span class="p">)</span>
+
+        <span class="n">undo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adjust_cell_attributes</span><span class="p">,</span>
+                          <span class="p">[</span><span class="n">insertion_point</span><span class="p">,</span> <span class="o">-</span><span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span>
+                           <span class="n">old_cell_attrs</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+        <span class="n">redo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adjust_cell_attributes</span><span class="p">,</span>
+                          <span class="p">[</span><span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span>
+                           <span class="n">cell_attrs</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">redo_operation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DataArray.insert"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inserts no_to_insert rows/cols/tabs/... before insertion_point</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        insertion_point: Integer</span>
+<span class="sd">        \tPont on axis, before which insertion takes place</span>
+<span class="sd">        no_to_insert: Integer &gt;= 0</span>
+<span class="sd">        \tNumber of rows/cols/tabs that shall be inserted</span>
+<span class="sd">        axis: Integer</span>
+<span class="sd">        \tSpecifies number of dimension, i.e. 0 == row, 1 == col, ...</span>
+<span class="sd">        tab: Integer, defaults to None</span>
+<span class="sd">        \tIf given then insertion is limited to this tab for axis &lt; 2</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Axis not in grid dimensions&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">insertion_point</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="ow">or</span> \
+           <span class="n">insertion_point</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s">&quot;Insertion point not in grid&quot;</span><span class="p">)</span>
+
+        <span class="n">new_keys</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">del_keys</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">insertion_point</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tab</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">tab</span> <span class="o">==</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="n">new_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">new_key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+=</span> <span class="n">no_to_insert</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">new_key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+                    <span class="n">new_keys</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">new_key</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">del_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c"># Now re-insert moved keys</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new_keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">new_keys</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">del_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_keys</span> <span class="ow">and</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_rowcol</span><span class="p">(</span><span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="n">tab</span><span class="p">,</span>
+                            <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_cell_attributes</span><span class="p">(</span><span class="n">insertion_point</span><span class="p">,</span> <span class="n">no_to_insert</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span>
+                                     <span class="n">tab</span><span class="o">=</span><span class="n">tab</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="DataArray.delete"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deletion_point</span><span class="p">,</span> <span class="n">no_to_delete</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deletes no_to_delete rows/cols/... starting with deletion_point</span>
+
+<span class="sd">        Axis specifies number of dimension, i.e. 0 == row, 1 == col, ...</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Axis not in grid dimensions&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">no_to_delete</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Cannot delete negative number of rows/cols/...&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">no_to_delete</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Last row/column/table must not be deleted&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">deletion_point</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="ow">or</span> \
+           <span class="n">deletion_point</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s">&quot;Deletion point not in grid&quot;</span><span class="p">)</span>
+
+        <span class="n">new_keys</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">del_keys</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># Note that the loop goes over a list that copies all dict keys</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">tab</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">tab</span> <span class="o">==</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">deletion_point</span> <span class="o">&lt;=</span> <span class="n">key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">deletion_point</span> <span class="o">+</span> <span class="n">no_to_delete</span><span class="p">:</span>
+                    <span class="n">del_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">deletion_point</span> <span class="o">+</span> <span class="n">no_to_delete</span><span class="p">:</span>
+                    <span class="n">new_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">new_key</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-=</span> <span class="n">no_to_delete</span>
+
+                    <span class="n">new_keys</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">new_key</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">del_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c"># Now re-insert moved keys</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new_keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">new_keys</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">del_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_keys</span> <span class="ow">and</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_rowcol</span><span class="p">(</span><span class="n">deletion_point</span><span class="p">,</span> <span class="o">-</span><span class="n">no_to_delete</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="n">tab</span><span class="p">,</span>
+                            <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_cell_attributes</span><span class="p">(</span><span class="n">deletion_point</span><span class="p">,</span> <span class="o">-</span><span class="n">no_to_delete</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span>
+                                     <span class="n">tab</span><span class="o">=</span><span class="n">tab</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="DataArray.set_row_height"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.set_row_height">[docs]</a>    <span class="k">def</span> <span class="nf">set_row_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets row height&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">old_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span><span class="o">.</span><span class="n">pop</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">old_height</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">row_heights</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+
+        <span class="c"># Make undoable</span>
+
+        <span class="n">undo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_row_height</span><span class="p">,</span>
+                          <span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">old_height</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+        <span class="n">redo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_row_height</span><span class="p">,</span> <span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">redo_operation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="DataArray.set_col_width"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.DataArray.set_col_width">[docs]</a>    <span class="k">def</span> <span class="nf">set_col_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets column width&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">old_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span><span class="o">.</span><span class="n">pop</span><span class="p">((</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">old_width</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">col_widths</span><span class="p">[(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+
+        <span class="c"># Make undoable</span>
+
+        <span class="n">undo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_col_width</span><span class="p">,</span>
+                          <span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">old_width</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+        <span class="n">redo_operation</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_col_width</span><span class="p">,</span> <span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">redo_operation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mark_unredo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unredo</span><span class="o">.</span><span class="n">mark</span><span class="p">()</span>
+
+    <span class="c"># Element access via call</span>
+</div>
+    <span class="n">__call__</span> <span class="o">=</span> <span class="n">__getitem__</span>
+
+<span class="c"># End of class DataArray</span>
+
+<span class="c"># -----------------------------------------------------------------------------</span>
+
+</div>
+<div class="viewcode-block" id="CodeArray"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray">[docs]</a><span class="k">class</span> <span class="nc">CodeArray</span><span class="p">(</span><span class="n">DataArray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CodeArray provides objects when accessing cells via __getitem__</span>
+
+<span class="sd">    Cell code can be accessed via function call</span>
+
+<span class="sd">    This class represents layer 3 of the model.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Cache for results from __getitem__ calls</span>
+    <span class="n">result_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c"># Cache for frozen objects</span>
+    <span class="n">frozen_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets cell code and resets result cache&quot;&quot;&quot;</span>
+
+        <span class="c"># Prevent unchanged cells from being recalculated on cursor movement</span>
+
+        <span class="n">repr_key</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">unchanged</span> <span class="o">=</span> <span class="p">(</span><span class="n">repr_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span> <span class="ow">and</span>
+                     <span class="n">value</span> <span class="o">==</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="ow">or</span> \
+                    <span class="p">((</span><span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="ow">and</span>
+                     <span class="n">repr_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span><span class="p">)</span>
+
+        <span class="n">DataArray</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="n">mark_unredo</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">unchanged</span><span class="p">:</span>
+            <span class="c"># Reset result cache</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns _eval_cell&quot;&quot;&quot;</span>
+
+        <span class="c"># Frozen cell handling</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">SliceType</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">):</span>
+            <span class="n">frozen_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s">&quot;frozen&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">frozen_res</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frozen_cache</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frozen_cache</span><span class="p">[</span><span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># Frozen cache is empty.</span>
+                    <span class="c"># Maybe we have a reload without the frozen cache</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_cell</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">frozen_cache</span><span class="p">[</span><span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">result</span>
+                    <span class="k">return</span> <span class="n">result</span>
+
+        <span class="c"># Normal cell handling</span>
+
+        <span class="k">if</span> <span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span><span class="p">[</span><span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_cell</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span><span class="p">[</span><span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">result</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_make_nested_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Makes nested list from generator for creating numpy.array&quot;&quot;&quot;</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ele</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_string_like</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_generator_like</span><span class="p">(</span><span class="n">ele</span><span class="p">):</span>
+                <span class="c"># Nested generator</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_nested_list</span><span class="p">(</span><span class="n">ele</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">_get_assignment_target_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ast_module</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns position of 1st char after assignment traget.</span>
+
+<span class="sd">        If there is no assignment, -1 is returned</span>
+
+<span class="sd">        If there are more than one of any ( expressions or assigments)</span>
+<span class="sd">        then a ValueError is raised.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ast_module</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;More than one expression or assignment.&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">ast_module</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> \
+                <span class="nb">type</span><span class="p">(</span><span class="n">ast_module</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="n">ast</span><span class="o">.</span><span class="n">Assign</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ast_module</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;More than one assignment target.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ast_module</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_get_updated_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_dict</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns globals environment with &#39;magic&#39; variable</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        env_dict: Dict, defaults to {&#39;S&#39;: self}</span>
+<span class="sd">        \tDict that maps global variable name to value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">env_dict</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">env_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;S&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
+
+        <span class="n">env</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">env</span>
+
+    <span class="k">def</span> <span class="nf">_eval_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates one cell and returns its result&quot;&quot;&quot;</span>
+
+        <span class="c"># Flatten helper function</span>
+        <span class="k">def</span> <span class="nf">nn</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Returns flat numpy arraz without None values&quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">val</span><span class="o">.</span><span class="n">flat</span><span class="p">))</span>
+
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c"># Probably no numpy array</span>
+                <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+
+        <span class="c"># Set up environment for evaluation</span>
+
+        <span class="n">env_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;X&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;Y&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;Z&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#39;bz2&#39;</span><span class="p">:</span> <span class="n">bz2</span><span class="p">,</span>
+                    <span class="s">&#39;base64&#39;</span><span class="p">:</span> <span class="n">base64</span><span class="p">,</span> <span class="s">&#39;charts&#39;</span><span class="p">:</span> <span class="n">charts</span><span class="p">,</span> <span class="s">&#39;nn&#39;</span><span class="p">:</span> <span class="n">nn</span><span class="p">,</span>
+                    <span class="s">&#39;R&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;C&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;T&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#39;S&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_updated_environment</span><span class="p">(</span><span class="n">env_dict</span><span class="o">=</span><span class="n">env_dict</span><span class="p">)</span>
+
+        <span class="n">_old_code</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c"># Return cell value if in safe mode</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">code</span>
+
+        <span class="c"># If cell is not present return None</span>
+
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">elif</span> <span class="n">is_generator_like</span><span class="p">(</span><span class="n">code</span><span class="p">):</span>
+            <span class="c"># We have a generator object</span>
+
+            <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_nested_list</span><span class="p">(</span><span class="n">code</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;O&quot;</span><span class="p">)</span>
+
+        <span class="c"># If only 1 term in front of the &quot;=&quot; --&gt; global</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">assignment_target_error</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+            <span class="n">assignment_target_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_assignment_target_end</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">assignment_target_error</span> <span class="o">=</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+            <span class="c"># Attribute Error includes RunTimeError</span>
+            <span class="n">assignment_target_error</span> <span class="o">=</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">assignment_target_error</span> <span class="o">=</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">assignment_target_error</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">assignment_target_end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">glob_var</span> <span class="o">=</span> <span class="n">code</span><span class="p">[:</span><span class="n">assignment_target_end</span><span class="p">]</span>
+            <span class="n">expression</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="c"># Delete result cache because assignment changes results</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">glob_var</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">expression</span> <span class="o">=</span> <span class="n">code</span>
+
+        <span class="k">if</span> <span class="n">assignment_target_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">assignment_target_error</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">signal</span>
+
+                <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">)</span>
+                <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;timeout&quot;</span><span class="p">])</span>
+
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c"># No POSIX system</span>
+                <span class="k">pass</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+                <span class="c"># Attribute Error includes RunTimeError</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="c"># No POSIX system</span>
+                    <span class="k">pass</span>
+
+        <span class="c"># Change back cell value for evaluation from other cells</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_grid</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_old_code</span>
+
+        <span class="k">if</span> <span class="n">glob_var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">glob_var</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="CodeArray.pop"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pops dict_grid with undo and redo support</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key: 3-tuple of Integer</span>
+<span class="sd">        \tCell key that shall be popped</span>
+<span class="sd">        mark_unredo: Boolean, defaults to True</span>
+<span class="sd">        \tIf True then an unredo marker is set after the operation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">DataArray</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mark_unredo</span><span class="o">=</span><span class="n">mark_unredo</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CodeArray.reload_modules"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.reload_modules">[docs]</a>    <span class="k">def</span> <span class="nf">reload_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reloads modules that are available in cells&quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">src.lib.charts</span> <span class="kn">as</span> <span class="nn">charts</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">charts</span><span class="p">,</span> <span class="n">bz2</span><span class="p">,</span> <span class="n">base64</span><span class="p">,</span> <span class="n">re</span><span class="p">,</span> <span class="n">ast</span><span class="p">,</span> <span class="n">sys</span><span class="p">,</span> <span class="n">wx</span><span class="p">,</span> <span class="n">numpy</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
+            <span class="nb">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CodeArray.clear_globals"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.clear_globals">[docs]</a>    <span class="k">def</span> <span class="nf">clear_globals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clears all newly assigned globals&quot;&quot;&quot;</span>
+
+        <span class="n">base_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;cStringIO&#39;</span><span class="p">,</span> <span class="s">&#39;IntType&#39;</span><span class="p">,</span> <span class="s">&#39;KeyValueStore&#39;</span><span class="p">,</span> <span class="s">&#39;UnRedo&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;is_generator_like&#39;</span><span class="p">,</span> <span class="s">&#39;is_string_like&#39;</span><span class="p">,</span> <span class="s">&#39;bz2&#39;</span><span class="p">,</span> <span class="s">&#39;base64&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;__package__&#39;</span><span class="p">,</span> <span class="s">&#39;re&#39;</span><span class="p">,</span> <span class="s">&#39;config&#39;</span><span class="p">,</span> <span class="s">&#39;__doc__&#39;</span><span class="p">,</span> <span class="s">&#39;SliceType&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;CellAttributes&#39;</span><span class="p">,</span> <span class="s">&#39;product&#39;</span><span class="p">,</span> <span class="s">&#39;ast&#39;</span><span class="p">,</span> <span class="s">&#39;__builtins__&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;__file__&#39;</span><span class="p">,</span> <span class="s">&#39;charts&#39;</span><span class="p">,</span> <span class="s">&#39;sys&#39;</span><span class="p">,</span> <span class="s">&#39;is_slice_like&#39;</span><span class="p">,</span> <span class="s">&#39;__name__&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;copy&#39;</span><span class="p">,</span> <span class="s">&#39;imap&#39;</span><span class="p">,</span> <span class="s">&#39;wx&#39;</span><span class="p">,</span> <span class="s">&#39;ifilter&#39;</span><span class="p">,</span> <span class="s">&#39;Selection&#39;</span><span class="p">,</span> <span class="s">&#39;DictGrid&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;numpy&#39;</span><span class="p">,</span> <span class="s">&#39;CodeArray&#39;</span><span class="p">,</span> <span class="s">&#39;DataArray&#39;</span><span class="p">,</span> <span class="s">&#39;datetime&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_keys</span><span class="p">:</span>
+                <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CodeArray.get_globals"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.get_globals">[docs]</a>    <span class="k">def</span> <span class="nf">get_globals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns globals dict&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">globals</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CodeArray.execute_macros"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.execute_macros">[docs]</a>    <span class="k">def</span> <span class="nf">execute_macros</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Executes all macros and returns result string</span>
+
+<span class="sd">        Executes macros only when not in safe_mode</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&quot;Safe mode activated. Code not executed.&quot;</span>
+
+        <span class="c"># Windows exec does not like Windows newline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">macros</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">macros</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+        <span class="c"># Set up environment for evaluation</span>
+        <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_updated_environment</span><span class="p">())</span>
+
+        <span class="c"># Create file-like string to capture output</span>
+        <span class="n">code_out</span> <span class="o">=</span> <span class="n">cStringIO</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">code_err</span> <span class="o">=</span> <span class="n">cStringIO</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="n">cStringIO</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+
+        <span class="c"># Capture output and errors</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">code_out</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">code_err</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">signal</span>
+
+            <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">)</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;timeout&quot;</span><span class="p">])</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c"># No POSIX system</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">macros</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c"># No POSIX system</span>
+                <span class="k">pass</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c"># Print exception</span>
+            <span class="c"># (Because of how the globals are handled during execution</span>
+            <span class="c"># we must import modules here)</span>
+            <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">print_exception</span>
+            <span class="kn">from</span> <span class="nn">src.lib.exception_handling</span> <span class="kn">import</span> <span class="n">get_user_codeframe</span>
+            <span class="n">exc_info</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+            <span class="n">user_tb</span> <span class="o">=</span> <span class="n">get_user_codeframe</span><span class="p">(</span><span class="n">exc_info</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="ow">or</span> <span class="n">exc_info</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">print_exception</span><span class="p">(</span><span class="n">exc_info</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">exc_info</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">user_tb</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">)</span>
+        <span class="c"># Restore stdout and stderr</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="n">code_out</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">errs</span> <span class="o">=</span> <span class="n">code_err</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span> <span class="o">+</span> <span class="n">err_msg</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+        <span class="n">code_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">code_err</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c"># Reset result cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c"># Reset frozen cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frozen_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">errs</span>
+</div>
+    <span class="k">def</span> <span class="nf">_sorted_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">startkey</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generator that yields sorted keys starting with startkey</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        keys: Iterable of tuple/list</span>
+<span class="sd">        \tKey sequence that is sorted</span>
+<span class="sd">        startkey: Tuple/list</span>
+<span class="sd">        \tFirst key to be yielded</span>
+<span class="sd">        reverse: Bool</span>
+<span class="sd">        \tSort direction reversed if True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">tuple_key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">tuple_cmp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">startkey</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tuple_cmp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">startkey</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">searchkeys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">tuple_key</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+        <span class="n">searchpos</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ifilter</span><span class="p">(</span><span class="n">tuple_cmp</span><span class="p">,</span> <span class="n">searchkeys</span><span class="p">))</span>
+
+        <span class="n">searchkeys</span> <span class="o">=</span> <span class="n">searchkeys</span><span class="p">[</span><span class="n">searchpos</span><span class="p">:]</span> <span class="o">+</span> <span class="n">searchkeys</span><span class="p">[:</span><span class="n">searchpos</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">searchkeys</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">key</span>
+
+<div class="viewcode-block" id="CodeArray.string_match"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.string_match">[docs]</a>    <span class="k">def</span> <span class="nf">string_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datastring</span><span class="p">,</span> <span class="n">findstring</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns position of findstring in datastring or None if not found.</span>
+<span class="sd">        Flags is a list of strings. Supported strings are:</span>
+<span class="sd">         * &quot;MATCH_CASE&quot;: The case has to match for valid find</span>
+<span class="sd">         * &quot;WHOLE_WORD&quot;: The word has to be surrounded by whitespace characters</span>
+<span class="sd">                         if in the middle of the string</span>
+<span class="sd">         * &quot;REG_EXP&quot;:    A regular expression is evaluated.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">datastring</span><span class="p">)</span> <span class="ow">is</span> <span class="n">IntType</span><span class="p">:</span>  <span class="c"># Empty cell</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">flags</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">flags</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s">&quot;REG_EXP&quot;</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">findstring</span><span class="p">,</span> <span class="n">datastring</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&quot;MATCH_CASE&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">:</span>
+                <span class="n">datastring</span> <span class="o">=</span> <span class="n">datastring</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="n">findstring</span> <span class="o">=</span> <span class="n">findstring</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s">&quot;WHOLE_WORD&quot;</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">matchstring</span> <span class="o">=</span> <span class="s">r&#39;\b&#39;</span> <span class="o">+</span> <span class="n">findstring</span> <span class="o">+</span> <span class="s">r&#39;+\b&#39;</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">matchstring</span><span class="p">,</span> <span class="n">datastring</span><span class="p">):</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                    <span class="k">break</span>  <span class="c"># find 1st occurrance</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">datastring</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">findstring</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pos</span>
+</div>
+<div class="viewcode-block" id="CodeArray.findnextmatch"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.findnextmatch">[docs]</a>    <span class="k">def</span> <span class="nf">findnextmatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startkey</span><span class="p">,</span> <span class="n">find_string</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">search_result</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a tuple with the position of the next match of find_string</span>
+
+<span class="sd">        Returns None if string not found.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        startkey:   Start position of search</span>
+<span class="sd">        find_string:String to be searched for</span>
+<span class="sd">        flags:      List of strings, out of</span>
+<span class="sd">                    [&quot;UP&quot; xor &quot;DOWN&quot;, &quot;WHOLE_WORD&quot;, &quot;MATCH_CASE&quot;, &quot;REG_EXP&quot;]</span>
+<span class="sd">        search_result: Bool, defaults to True</span>
+<span class="sd">        \tIf True then the search includes the result string (slower)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="s">&quot;UP&quot;</span> <span class="ow">in</span> <span class="n">flags</span> <span class="ow">or</span> <span class="s">&quot;DOWN&quot;</span> <span class="ow">in</span> <span class="n">flags</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="s">&quot;UP&quot;</span> <span class="ow">in</span> <span class="n">flags</span> <span class="ow">and</span> <span class="s">&quot;DOWN&quot;</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">search_result</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">is_matching</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">find_string</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_match</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">find_string</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">res_str</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_match</span><span class="p">(</span><span class="n">res_str</span><span class="p">,</span> <span class="n">find_string</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span> \
+                        <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">is_matching</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">find_string</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_match</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">find_string</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+
+        <span class="c"># List of keys in sgrid in search order</span>
+
+        <span class="n">reverse</span> <span class="o">=</span> <span class="s">&quot;UP&quot;</span> <span class="ow">in</span> <span class="n">flags</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">startkey</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_matching</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">find_string</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">key</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c"># re errors are cryptical: sre_constants,...</span>
+                <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CodeArray.handler"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.model.CodeArray.handler">[docs]</a>    <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Timeout after {} s.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;timeout&quot;</span><span class="p">]))</span>
+
+<span class="c"># End of class CodeArray</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/pyspread.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Martin Manns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

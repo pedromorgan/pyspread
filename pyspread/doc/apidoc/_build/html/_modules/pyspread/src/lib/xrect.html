@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspread.src.lib.xrect &mdash; Pyspread 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Pyspread 0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspread.src.lib.xrect</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;2D Rectangle collision library&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">pi</span>
+
+
+<div class="viewcode-block" id="Rect"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.Rect">[docs]</a><span class="k">class</span> <span class="nc">Rect</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rectangle class for axis aligned 2D rectangles</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: Number</span>
+<span class="sd">    \tX-Coordinate of rectangle origin (lower left dot if angle == 0)</span>
+<span class="sd">    y: Number</span>
+<span class="sd">    \tY-Coordinate of rectangle origin (lower left dot if angle == 0)</span>
+<span class="sd">    width: Number</span>
+<span class="sd">    \tRectangle number</span>
+<span class="sd">    height: Number</span>
+<span class="sd">    \tRectangle height</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Rect(&quot;</span> <span class="o">+</span> \
+               <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)))</span> <span class="o">+</span> \
+               <span class="s">&quot;)&quot;</span>
+
+<div class="viewcode-block" id="Rect.get_bbox"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.Rect.get_bbox">[docs]</a>    <span class="k">def</span> <span class="nf">get_bbox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns bounding box (xmin, xmax, ymin, ymax)&quot;&quot;&quot;</span>
+
+        <span class="n">x_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_min</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">y_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="k">return</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span>
+</div>
+<div class="viewcode-block" id="Rect.is_bbox_not_intersecting"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.Rect.is_bbox_not_intersecting">[docs]</a>    <span class="k">def</span> <span class="nf">is_bbox_not_intersecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns False iif bounding boxed of self and other intersect&quot;&quot;&quot;</span>
+
+        <span class="n">self_x_min</span><span class="p">,</span> <span class="n">self_x_max</span><span class="p">,</span> <span class="n">self_y_min</span><span class="p">,</span> <span class="n">self_y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bbox</span><span class="p">()</span>
+        <span class="n">other_x_min</span><span class="p">,</span> <span class="n">other_x_max</span><span class="p">,</span> <span class="n">other_y_min</span><span class="p">,</span> <span class="n">other_y_max</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">get_bbox</span><span class="p">()</span>
+
+        <span class="k">return</span> \
+            <span class="n">self_x_min</span> <span class="o">&gt;</span> <span class="n">other_x_max</span> <span class="ow">or</span> \
+            <span class="n">other_x_min</span> <span class="o">&gt;</span> <span class="n">self_x_max</span> <span class="ow">or</span> \
+            <span class="n">self_y_min</span> <span class="o">&gt;</span> <span class="n">other_y_max</span> <span class="ow">or</span> \
+            <span class="n">other_y_min</span> <span class="o">&gt;</span> <span class="n">self_y_max</span>
+</div>
+<div class="viewcode-block" id="Rect.is_point_in_rect"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.Rect.is_point_in_rect">[docs]</a>    <span class="k">def</span> <span class="nf">is_point_in_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pt_x</span><span class="p">,</span> <span class="n">pt_y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True iif point is inside the rectangle (border included)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">         * pt_x: Number</span>
+<span class="sd">        \tx-value of point</span>
+<span class="sd">         * pt_y: Number</span>
+<span class="sd">        \ty-value of point</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bbox</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">x_min</span> <span class="o">&lt;=</span> <span class="n">pt_x</span> <span class="o">&lt;=</span> <span class="n">x_max</span> <span class="ow">and</span> <span class="n">y_min</span> <span class="o">&lt;=</span> <span class="n">pt_y</span> <span class="o">&lt;=</span> <span class="n">y_max</span>
+</div>
+<div class="viewcode-block" id="Rect.collides"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.Rect.collides">[docs]</a>    <span class="k">def</span> <span class="nf">collides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns collision with axis aligned rect&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_bbox_not_intersecting</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="RotoOriginRect"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoOriginRect">[docs]</a><span class="k">class</span> <span class="nc">RotoOriginRect</span><span class="p">(</span><span class="n">Rect</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rectangle class for origin centered rotated rectangles</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    width: Number</span>
+<span class="sd">    \tRectangle number</span>
+<span class="sd">    height: Number</span>
+<span class="sd">    \tRectangle height</span>
+<span class="sd">    angle: Number:</span>
+<span class="sd">    \tRectangle rotation angle clock-wise around origin</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+        <span class="n">Rect</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="n">angle</span> <span class="o">/</span> <span class="mf">180.0</span> <span class="o">*</span> <span class="n">pi</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;RotoOriginRect(&quot;</span> <span class="o">+</span> \
+            <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)))</span> <span class="o">+</span> \
+            <span class="s">&quot;)&quot;</span>
+
+<div class="viewcode-block" id="RotoOriginRect.get_bbox"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoOriginRect.get_bbox">[docs]</a>    <span class="k">def</span> <span class="nf">get_bbox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns bounding box (xmin, xmax, ymin, ymax)&quot;&quot;&quot;</span>
+
+        <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="n">cos_angle</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span>
+        <span class="n">sin_angle</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span>
+
+        <span class="n">x_diff</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">width</span>
+        <span class="n">y_diff</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">height</span>
+
+        <span class="c"># self rotates around (0, 0).</span>
+        <span class="n">c_x_diff</span> <span class="o">=</span> <span class="n">cos_angle</span> <span class="o">*</span> <span class="n">x_diff</span>
+        <span class="n">s_x_diff</span> <span class="o">=</span> <span class="n">sin_angle</span> <span class="o">*</span> <span class="n">x_diff</span>
+
+        <span class="n">c_y_diff</span> <span class="o">=</span> <span class="n">cos_angle</span> <span class="o">*</span> <span class="n">y_diff</span>
+        <span class="n">s_y_diff</span> <span class="o">=</span> <span class="n">sin_angle</span> <span class="o">*</span> <span class="n">y_diff</span>
+
+        <span class="k">if</span> <span class="n">cos_angle</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sin_angle</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x_max</span> <span class="o">=</span> <span class="n">c_x_diff</span> <span class="o">+</span> <span class="n">s_y_diff</span>
+                <span class="n">x_min</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_max</span>
+                <span class="n">y_max</span> <span class="o">=</span> <span class="n">c_y_diff</span> <span class="o">+</span> <span class="n">s_x_diff</span>
+                <span class="n">y_min</span> <span class="o">=</span> <span class="o">-</span><span class="n">y_max</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c"># sin_angle &lt;= 0.0</span>
+                <span class="n">x_max</span> <span class="o">=</span> <span class="n">c_x_diff</span> <span class="o">-</span> <span class="n">s_y_diff</span>
+                <span class="n">x_min</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_max</span>
+                <span class="n">y_max</span> <span class="o">=</span> <span class="n">c_y_diff</span> <span class="o">-</span> <span class="n">s_x_diff</span>
+                <span class="n">y_min</span> <span class="o">=</span> <span class="o">-</span><span class="n">y_max</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c"># cos(angle) &lt;= 0.0</span>
+            <span class="k">if</span> <span class="n">sin_angle</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x_min</span> <span class="o">=</span> <span class="n">c_x_diff</span> <span class="o">-</span> <span class="n">s_y_diff</span>
+                <span class="n">x_max</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_min</span>
+                <span class="n">y_min</span> <span class="o">=</span> <span class="n">c_y_diff</span> <span class="o">-</span> <span class="n">s_x_diff</span>
+                <span class="n">y_max</span> <span class="o">=</span> <span class="o">-</span><span class="n">y_min</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c"># sin_angle &lt;= 0.0</span>
+                <span class="n">x_min</span> <span class="o">=</span> <span class="n">c_x_diff</span> <span class="o">+</span> <span class="n">s_y_diff</span>
+                <span class="n">x_max</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_min</span>
+                <span class="n">y_min</span> <span class="o">=</span> <span class="n">c_y_diff</span> <span class="o">+</span> <span class="n">s_x_diff</span>
+                <span class="n">y_max</span> <span class="o">=</span> <span class="o">-</span><span class="n">y_min</span>
+
+        <span class="k">return</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span>
+</div>
+<div class="viewcode-block" id="RotoOriginRect.is_edge_not_excluding_vertices"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoOriginRect.is_edge_not_excluding_vertices">[docs]</a>    <span class="k">def</span> <span class="nf">is_edge_not_excluding_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns False iif any edge excludes all vertices of other.&quot;&quot;&quot;</span>
+
+        <span class="n">c_a</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span>
+        <span class="n">s_a</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span>
+
+        <span class="c"># Get min and max of other.</span>
+
+        <span class="n">other_x_min</span><span class="p">,</span> <span class="n">other_x_max</span><span class="p">,</span> <span class="n">other_y_min</span><span class="p">,</span> <span class="n">other_y_max</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">get_bbox</span><span class="p">()</span>
+
+        <span class="n">self_x_diff</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">self_y_diff</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="k">if</span> <span class="n">c_a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s_a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">&gt;</span>  <span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_y_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">&gt;</span>  <span class="n">self_y_diff</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c"># s_a &lt;= 0.0</span>
+                <span class="k">return</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">&gt;</span>  <span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_y_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">&gt;</span>  <span class="n">self_y_diff</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c"># c_a &lt;= 0.0</span>
+            <span class="k">if</span> <span class="n">s_a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">&gt;</span>  <span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_y_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">&gt;</span>  <span class="n">self_y_diff</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c"># s_a &lt;= 0.0</span>
+                <span class="k">return</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">+</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">&gt;</span>  <span class="n">self_x_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_min</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_max</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">self_y_diff</span> <span class="ow">or</span> \
+                    <span class="n">c_a</span> <span class="o">*</span> <span class="n">other_y_max</span> <span class="o">-</span> <span class="n">s_a</span> <span class="o">*</span> <span class="n">other_x_min</span> <span class="o">&gt;</span>  <span class="n">self_y_diff</span>
+</div>
+<div class="viewcode-block" id="RotoOriginRect.collides"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoOriginRect.collides">[docs]</a>    <span class="k">def</span> <span class="nf">collides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns collision with axis aligned rect&quot;&quot;&quot;</span>
+
+        <span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angle</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="k">if</span> <span class="n">angle</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">collides</span><span class="p">(</span><span class="n">Rect</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">width</span><span class="p">,</span>
+                                       <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+
+        <span class="c"># Phase 1</span>
+        <span class="c">#</span>
+        <span class="c">#  * Form bounding box on tilted rectangle P.</span>
+        <span class="c">#  * Check whether bounding box and other intersect.</span>
+        <span class="c">#  * If not, then self and other do not intersect.</span>
+        <span class="c">#  * Otherwise proceed to Phase 2.</span>
+
+        <span class="c"># Now perform the standard rectangle intersection test.</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_bbox_not_intersecting</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="c"># Phase 2</span>
+        <span class="c">#</span>
+        <span class="c"># If we get here, check the edges of self to see</span>
+        <span class="c">#  * if one of them excludes all vertices of other.</span>
+        <span class="c">#  * If so, then self and other do not intersect.</span>
+        <span class="c">#  * (If not, then self and other do intersect.)</span>
+
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_edge_not_excluding_vertices</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="RotoRect"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect">[docs]</a><span class="k">class</span> <span class="nc">RotoRect</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rectangle class for generic rotated rectangles</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: Number</span>
+<span class="sd">    \tX-Coordinate of rectangle origin (lower left dot if angle == 0)</span>
+<span class="sd">    y: Number</span>
+<span class="sd">    \tY-Coordinate of rectangle origin (lower left dot if angle == 0)</span>
+<span class="sd">    width: Number</span>
+<span class="sd">    \tRectangle number</span>
+<span class="sd">    height: Number</span>
+<span class="sd">    \tRectangle height</span>
+<span class="sd">    angle: Number:</span>
+<span class="sd">    \tRectangle rotation angle counter clock-wise around origin</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="n">angle</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;RotoRect(&quot;</span> <span class="o">+</span> \
+            <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)))</span> <span class="o">+</span> \
+            <span class="s">&quot;)&quot;</span>
+
+<div class="viewcode-block" id="RotoRect.sin_a"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.sin_a">[docs]</a>    <span class="k">def</span> <span class="nf">sin_a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns sin of rect angle&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">/</span> <span class="mf">180.0</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="RotoRect.cos_a"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.cos_a">[docs]</a>    <span class="k">def</span> <span class="nf">cos_a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns cos of rect angle&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">/</span> <span class="mf">180.0</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="RotoRect.get_vec_lr"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.get_vec_lr">[docs]</a>    <span class="k">def</span> <span class="nf">get_vec_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns vector from left to right&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cos_a</span><span class="p">(),</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sin_a</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="RotoRect.get_vec_tb"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.get_vec_tb">[docs]</a>    <span class="k">def</span> <span class="nf">get_vec_tb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns vector from top to bottom&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sin_a</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cos_a</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="RotoRect.get_center"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.get_center">[docs]</a>    <span class="k">def</span> <span class="nf">get_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns rectangle center&quot;&quot;&quot;</span>
+
+        <span class="n">lr_x</span><span class="p">,</span> <span class="n">lr_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vec_lr</span><span class="p">()</span>
+        <span class="n">tb_x</span><span class="p">,</span> <span class="n">tb_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vec_tb</span><span class="p">()</span>
+
+        <span class="n">center_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">lr_x</span> <span class="o">+</span> <span class="n">tb_x</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">center_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">lr_y</span> <span class="o">+</span> <span class="n">tb_y</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+        <span class="k">return</span> <span class="n">center_x</span><span class="p">,</span> <span class="n">center_y</span>
+</div>
+<div class="viewcode-block" id="RotoRect.get_edges"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.get_edges">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns 2-tuples for each edge</span>
+
+<span class="sd">        top_left</span>
+<span class="sd">        top_right</span>
+<span class="sd">        bottom_left</span>
+<span class="sd">        bottom_right</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">lr_x</span><span class="p">,</span> <span class="n">lr_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vec_lr</span><span class="p">()</span>
+        <span class="n">tb_x</span><span class="p">,</span> <span class="n">tb_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vec_tb</span><span class="p">()</span>
+
+        <span class="n">top_left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">top_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">lr_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">lr_y</span>
+        <span class="n">bottom_left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">tb_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">tb_y</span>
+        <span class="n">bottom_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">lr_x</span> <span class="o">+</span> <span class="n">tb_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">lr_y</span> <span class="o">+</span> <span class="n">tb_y</span>
+
+        <span class="k">return</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">top_right</span><span class="p">,</span> <span class="n">bottom_left</span><span class="p">,</span> <span class="n">bottom_right</span>
+</div>
+<div class="viewcode-block" id="RotoRect.collides_axisaligned_rect"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.collides_axisaligned_rect">[docs]</a>    <span class="k">def</span> <span class="nf">collides_axisaligned_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns collision with axis aligned other rect&quot;&quot;&quot;</span>
+
+        <span class="c"># Shift both rects so that self is centered at origin</span>
+
+        <span class="n">self_shifted</span> <span class="o">=</span> <span class="n">RotoOriginRect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)</span>
+
+        <span class="n">s_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sin_a</span><span class="p">()</span>
+        <span class="n">c_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cos_a</span><span class="p">()</span>
+
+        <span class="n">center_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">c_a</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">s_a</span>
+        <span class="n">center_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">c_a</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">s_a</span>
+
+        <span class="n">other_shifted</span> <span class="o">=</span> <span class="n">Rect</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">center_x</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">center_y</span><span class="p">,</span>
+                             <span class="n">other</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+
+        <span class="c"># Calculate collision</span>
+
+        <span class="k">return</span> <span class="n">self_shifted</span><span class="o">.</span><span class="n">collides</span><span class="p">(</span><span class="n">other_shifted</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="RotoRect.collides"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.xrect.RotoRect.collides">[docs]</a>    <span class="k">def</span> <span class="nf">collides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns collision with other rect&quot;&quot;&quot;</span>
+
+        <span class="c"># Is other rect not axis aligned?</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s">&quot;angle&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Non-axis aligned rects not implemented&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c"># Other rect is axis aligned</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collides_axisaligned_rect</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/pyspread.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Martin Manns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

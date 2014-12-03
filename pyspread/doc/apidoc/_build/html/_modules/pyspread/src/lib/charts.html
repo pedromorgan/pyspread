@@ -1,0 +1,442 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspread.src.lib.charts &mdash; Pyspread 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Pyspread 0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspread.src.lib.charts</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c"># Copyright Martin Manns</span>
+<span class="c"># Distributed under the terms of the GNU General Public License</span>
+
+<span class="c"># --------------------------------------------------------------------</span>
+<span class="c"># pyspread is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># pyspread is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with pyspread. If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c"># --------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">charts</span>
+<span class="sd">======</span>
+
+<span class="sd">Provides matplotlib figure that are chart templates</span>
+
+<span class="sd">Provides</span>
+<span class="sd">--------</span>
+
+<span class="sd">* object2code: Returns code for widget from dict object</span>
+<span class="sd">* fig2bmp: Returns wx.Bitmap from matplotlib chart</span>
+<span class="sd">* ChartFigure: Main chart class</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">i18n</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="kn">import</span> <span class="nn">wx</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">matplotlib.sankey</span> <span class="kn">import</span> <span class="n">Sankey</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">dates</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_agg</span> <span class="kn">import</span> <span class="n">FigureCanvasAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+
+<span class="c"># Use ugettext instead of getttext to avoid unicode errors</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">i18n</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="n">ugettext</span>
+
+
+<div class="viewcode-block" id="object2code"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.charts.object2code">[docs]</a><span class="k">def</span> <span class="nf">object2code</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns code for widget from dict object&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;xscale&quot;</span><span class="p">,</span> <span class="s">&quot;yscale&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s">&quot;log&quot;</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">code</span>
+
+</div>
+<div class="viewcode-block" id="fig2bmp"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.charts.fig2bmp">[docs]</a><span class="k">def</span> <span class="nf">fig2bmp</span><span class="p">(</span><span class="n">figure</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">dpi</span><span class="p">,</span> <span class="n">zoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns wx.Bitmap from matplotlib chart</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fig: Object</span>
+<span class="sd">    \tMatplotlib figure</span>
+<span class="sd">    width: Integer</span>
+<span class="sd">    \tImage width in pixels</span>
+<span class="sd">    height: Integer</span>
+<span class="sd">    \tImage height in pixels</span>
+<span class="sd">    dpi = Float</span>
+<span class="sd">    \tDC resolution</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpi</span> <span class="o">*=</span> <span class="nb">float</span><span class="p">(</span><span class="n">zoom</span><span class="p">)</span>
+
+    <span class="n">figure</span><span class="o">.</span><span class="n">set_figwidth</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="n">dpi</span><span class="p">)</span>
+    <span class="n">figure</span><span class="o">.</span><span class="n">set_figheight</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="n">dpi</span><span class="p">)</span>
+    <span class="n">figure</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s">&quot;ignore&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># The padding is too small for small sizes. This fixes it.</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">zoom</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">figure</span><span class="o">.</span><span class="n">set_canvas</span><span class="p">(</span><span class="n">FigureCanvas</span><span class="p">(</span><span class="n">figure</span><span class="p">))</span>
+    <span class="n">png_stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+
+    <span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">png_stream</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="p">(</span><span class="n">dpi</span><span class="p">))</span>
+
+    <span class="n">png_stream</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">ImageFromStream</span><span class="p">(</span><span class="n">png_stream</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">wx</span><span class="o">.</span><span class="n">BITMAP_TYPE_PNG</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="fig2x"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.charts.fig2x">[docs]</a><span class="k">def</span> <span class="nf">fig2x</span><span class="p">(</span><span class="n">figure</span><span class="p">,</span> <span class="n">format</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns svg from matplotlib chart&quot;&quot;&quot;</span>
+
+    <span class="c"># Save svg to file like object svg_io</span>
+    <span class="n">io</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">io</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="n">format</span><span class="p">)</span>
+
+    <span class="c"># Rewind the file like object</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+</div>
+<div class="viewcode-block" id="ChartFigure"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.charts.ChartFigure">[docs]</a><span class="k">class</span> <span class="nc">ChartFigure</span><span class="p">(</span><span class="n">Figure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Chart figure class with drawing method&quot;&quot;&quot;</span>
+
+    <span class="n">plot_type_fixed_attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;plot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;ydata&quot;</span><span class="p">],</span>
+        <span class="s">&quot;bar&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;height&quot;</span><span class="p">],</span>
+        <span class="s">&quot;boxplot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">],</span>
+        <span class="s">&quot;hist&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">],</span>
+        <span class="s">&quot;pie&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">],</span>
+        <span class="s">&quot;contour&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;X&quot;</span><span class="p">,</span> <span class="s">&quot;Y&quot;</span><span class="p">,</span> <span class="s">&quot;Z&quot;</span><span class="p">],</span>
+        <span class="s">&quot;contourf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;X&quot;</span><span class="p">,</span> <span class="s">&quot;Y&quot;</span><span class="p">,</span> <span class="s">&quot;Z&quot;</span><span class="p">],</span>
+        <span class="s">&quot;Sankey&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="p">}</span>
+
+    <span class="n">plot_type_xy_mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;plot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;xdata&quot;</span><span class="p">,</span> <span class="s">&quot;ydata&quot;</span><span class="p">],</span>
+        <span class="s">&quot;bar&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;height&quot;</span><span class="p">],</span>
+        <span class="s">&quot;boxplot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="s">&quot;x&quot;</span><span class="p">],</span>
+        <span class="s">&quot;hist&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;label&quot;</span><span class="p">,</span> <span class="s">&quot;x&quot;</span><span class="p">],</span>
+        <span class="s">&quot;pie&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;labels&quot;</span><span class="p">,</span> <span class="s">&quot;x&quot;</span><span class="p">],</span>
+        <span class="s">&quot;annotate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;xy&quot;</span><span class="p">,</span> <span class="s">&quot;xy&quot;</span><span class="p">],</span>
+        <span class="s">&quot;contour&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;X&quot;</span><span class="p">,</span> <span class="s">&quot;Y&quot;</span><span class="p">],</span>
+        <span class="s">&quot;contourf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;X&quot;</span><span class="p">,</span> <span class="s">&quot;Y&quot;</span><span class="p">,</span> <span class="s">&quot;Z&quot;</span><span class="p">],</span>
+        <span class="s">&quot;Sankey&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;flows&quot;</span><span class="p">,</span> <span class="s">&quot;orientations&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="n">contour_label_attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;contour_labels&quot;</span><span class="p">:</span> <span class="s">&quot;contour_labels&quot;</span><span class="p">,</span>
+        <span class="s">&quot;contour_label_fontsize&quot;</span><span class="p">:</span> <span class="s">&quot;fontsize&quot;</span><span class="p">,</span>
+        <span class="s">&quot;contour_label_colors&quot;</span><span class="p">:</span> <span class="s">&quot;colors&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">contourf_attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;contour_fill&quot;</span><span class="p">:</span> <span class="s">&quot;contour_fill&quot;</span><span class="p">,</span>
+        <span class="s">&quot;hatches&quot;</span><span class="p">:</span> <span class="s">&quot;hatches&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">attributes</span><span class="p">):</span>
+
+        <span class="n">Figure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&quot;white&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">attributes</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+        <span class="c"># Insert empty attributes with a dict for figure attributes</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">[{}]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_chart</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_xdate_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdate_format</span><span class="o">=</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Makes x axis a date axis with auto format</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        xdate_format: String</span>
+<span class="sd">        \tSets date formatting</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">xdate_format</span><span class="p">:</span>
+            <span class="c"># We have to validate xdate_format. If wrong then bail out.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">xdate_format</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">xaxis_date</span><span class="p">()</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="n">xdate_format</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+            <span class="c"># The autofmt method does not work in matplotlib 1.3.0</span>
+            <span class="c"># self.autofmt_xdate()</span>
+
+    <span class="k">def</span> <span class="nf">_setup_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets up axes for drawing chart&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">key2setter</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">,</span>
+            <span class="s">&quot;xlabel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">,</span>
+            <span class="s">&quot;ylabel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">,</span>
+            <span class="s">&quot;xscale&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">,</span>
+            <span class="s">&quot;yscale&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">,</span>
+            <span class="s">&quot;xtick_params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">tick_params</span><span class="p">,</span>
+            <span class="s">&quot;ytick_params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">tick_params</span><span class="p">,</span>
+            <span class="s">&quot;xlim&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">,</span>
+            <span class="s">&quot;ylim&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">,</span>
+            <span class="s">&quot;xgrid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+            <span class="s">&quot;ygrid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+            <span class="s">&quot;xdate_format&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xdate_setter</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">key2setter</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">axes_data</span> <span class="ow">and</span> <span class="n">axes_data</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">kwargs_key</span> <span class="o">=</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&quot;_kwargs&quot;</span>
+                    <span class="n">kwargs</span> <span class="o">=</span> <span class="n">axes_data</span><span class="p">[</span><span class="n">kwargs_key</span><span class="p">]</span>
+
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&quot;title&quot;</span><span class="p">:</span>
+                    <span class="c"># Shift title up</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.08</span>
+
+                <span class="n">key2setter</span><span class="p">[</span><span class="n">key</span><span class="p">](</span><span class="n">axes_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets up legend for drawing chart&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s">&quot;legend&quot;</span> <span class="ow">in</span> <span class="n">axes_data</span> <span class="ow">and</span> <span class="n">axes_data</span><span class="p">[</span><span class="s">&quot;legend&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ChartFigure.draw_chart"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.charts.ChartFigure.draw_chart">[docs]</a>    <span class="k">def</span> <span class="nf">draw_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots chart from self.attributes&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;attributes&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="c"># The first element is always axes data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_axes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+
+            <span class="n">series</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
+            <span class="c"># Extract chart type</span>
+            <span class="n">chart_type_string</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">)</span>
+
+            <span class="n">x_str</span><span class="p">,</span> <span class="n">y_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_type_xy_mapping</span><span class="p">[</span><span class="n">chart_type_string</span><span class="p">]</span>
+            <span class="c"># Check xdata length</span>
+            <span class="k">if</span> <span class="n">x_str</span> <span class="ow">in</span> <span class="n">series</span> <span class="ow">and</span> \
+               <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="n">x_str</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="n">y_str</span><span class="p">]):</span>
+                <span class="c"># Wrong length --&gt; ignore xdata</span>
+                <span class="n">series</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">x_str</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Solve the problem that the series data may contain utf-8 data</span>
+                <span class="n">series_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="n">x_str</span><span class="p">])</span>
+                <span class="n">series_unicode_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">StringType</span><span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">series_unicode_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ele</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="n">series_unicode_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">series_unicode_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span>
+                <span class="n">series</span><span class="p">[</span><span class="n">x_str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">series_unicode_list</span><span class="p">)</span>
+
+            <span class="n">fixed_attrs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">chart_type_string</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_type_fixed_attrs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_type_fixed_attrs</span><span class="p">[</span><span class="n">chart_type_string</span><span class="p">]:</span>
+                    <span class="c"># Remove attr if it is a fixed (non-kwd) attr</span>
+                    <span class="c"># If a fixed attr is missing, insert a dummy</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">fixed_attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">attr</span><span class="p">)))</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="n">fixed_attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(())</span>
+
+            <span class="c"># Remove contour chart label info from series</span>
+            <span class="n">cl_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">contour_label_attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_label_attrs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">contour_label_attr</span> <span class="ow">in</span> <span class="n">series</span><span class="p">:</span>
+                    <span class="n">cl_attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">contour_label_attrs</span><span class="p">[</span><span class="n">contour_label_attr</span><span class="p">]]</span> <span class="o">=</span> \
+                        <span class="n">series</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">contour_label_attr</span><span class="p">)</span>
+
+            <span class="c"># Remove contourf attributes from series</span>
+            <span class="n">cf_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">contourf_attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contourf_attrs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">contourf_attr</span> <span class="ow">in</span> <span class="n">series</span><span class="p">:</span>
+                    <span class="n">cf_attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">contourf_attrs</span><span class="p">[</span><span class="n">contourf_attr</span><span class="p">]]</span> <span class="o">=</span> \
+                        <span class="n">series</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">contourf_attr</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">fixed_attrs</span> <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="n">fixed_attrs</span><span class="p">):</span>
+                <span class="c"># Draw series to axes</span>
+
+                <span class="c"># Do we have a Sankey plot --&gt; build it</span>
+                <span class="k">if</span> <span class="n">chart_type_string</span> <span class="o">==</span> <span class="s">&quot;Sankey&quot;</span><span class="p">:</span>
+                    <span class="n">Sankey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="p">,</span> <span class="o">**</span><span class="n">series</span><span class="p">)</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">chart_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="p">,</span> <span class="n">chart_type_string</span><span class="p">)</span>
+                    <span class="n">plot</span> <span class="o">=</span> <span class="n">chart_method</span><span class="p">(</span><span class="o">*</span><span class="n">fixed_attrs</span><span class="p">,</span> <span class="o">**</span><span class="n">series</span><span class="p">)</span>
+
+                <span class="c"># Do we have a filled contour?</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cf_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;contour_fill&quot;</span><span class="p">):</span>
+                        <span class="n">cf_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="s">&quot;linewidths&quot;</span> <span class="ow">in</span> <span class="n">cf_attrs</span><span class="p">:</span>
+                            <span class="n">cf_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;linewidths&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="s">&quot;linestyles&quot;</span> <span class="ow">in</span> <span class="n">cf_attrs</span><span class="p">:</span>
+                            <span class="n">cf_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;linestyles&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">cf_attrs</span><span class="p">[</span><span class="s">&quot;hatches&quot;</span><span class="p">]:</span>
+                            <span class="n">cf_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;hatches&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">plot</span><span class="p">,</span> <span class="o">**</span><span class="n">cf_attrs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="c"># Do we have a contour chart label?</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cl_attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;contour_labels&quot;</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__axes</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">plot</span><span class="p">,</span> <span class="o">**</span><span class="n">cl_attrs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c"># The legend has to be set up after all series are drawn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_legend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+</div></div>
+<div class="viewcode-block" id="BasemapFigure"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.charts.BasemapFigure">[docs]</a><span class="k">class</span> <span class="nc">BasemapFigure</span><span class="p">(</span><span class="n">Figure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basemap figure class with drawing method&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BasemapFigure.draw_basemap"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.charts.BasemapFigure.draw_basemap">[docs]</a>    <span class="k">def</span> <span class="nf">draw_basemap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots basemap from self.attributes&quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/pyspread.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Martin Manns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+pyspread.pyspread package
+=========================
+
+Subpackages
+-----------
+
+.. toctree::
+
+    pyspread.pyspread.src
+
+Module contents
+---------------
+
+.. automodule:: pyspread.pyspread
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,102 @@
+src.lib package
+===============
+
+Submodules
+----------
+
+src.lib.charts module
+---------------------
+
+.. automodule:: src.lib.charts
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.clipboard module
+------------------------
+
+.. automodule:: src.lib.clipboard
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.exception_handling module
+---------------------------------
+
+.. automodule:: src.lib.exception_handling
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.fileio module
+---------------------
+
+.. automodule:: src.lib.fileio
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.gpg module
+------------------
+
+.. automodule:: src.lib.gpg
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.i18n module
+-------------------
+
+.. automodule:: src.lib.i18n
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.parsers module
+----------------------
+
+.. automodule:: src.lib.parsers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.selection module
+------------------------
+
+.. automodule:: src.lib.selection
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.testlib module
+----------------------
+
+.. automodule:: src.lib.testlib
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.typechecks module
+-------------------------
+
+.. automodule:: src.lib.typechecks
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.lib.xrect module
+--------------------
+
+.. automodule:: src.lib.xrect
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: src.lib
+    :members:
+    :undoc-members:
+    :show-inheritance:

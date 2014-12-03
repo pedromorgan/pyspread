@@ -1,0 +1,22 @@
+pyspread.pyspread.src.gui package
+=================================
+
+Submodules
+----------
+
+pyspread.pyspread.src.gui.icons module
+--------------------------------------
+
+.. automodule:: pyspread.pyspread.src.gui.icons
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pyspread.pyspread.src.gui
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspread.src.model.unredo &mdash; Pyspread 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Pyspread 0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspread.src.model.unredo</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c"># Copyright Martin Manns</span>
+<span class="c"># Distributed under the terms of the GNU General Public License</span>
+
+<span class="c"># --------------------------------------------------------------------</span>
+<span class="c"># pyspread is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># pyspread is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with pyspread.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c"># --------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">UnRedo</span>
+<span class="sd">======</span>
+
+<span class="sd">UnRedo contains the UnRedo class that manages undo and redo operations.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">src.config</span> <span class="kn">import</span> <span class="n">config</span>
+
+
+<div class="viewcode-block" id="UnRedo"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.unredo.UnRedo">[docs]</a><span class="k">class</span> <span class="nc">UnRedo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Undo/Redo framework class.</span>
+
+<span class="sd">    For each undo-able operation, the undo/redo framework stores the</span>
+<span class="sd">    undo operation and the redo operation. For each step, a 4-tuple of:</span>
+<span class="sd">    1) the function object that has to be called for the undo operation</span>
+<span class="sd">    2) the undo function parameters as a list</span>
+<span class="sd">    3) the function object that has to be called for the redo operation</span>
+<span class="sd">    4) the redo function parameters as a list</span>
+<span class="sd">    is stored.</span>
+
+<span class="sd">    One undo step in the application can comprise of multiple operations.</span>
+<span class="sd">    Undo steps are separated by the string &quot;MARK&quot;.</span>
+
+<span class="sd">    The attributes should only be written to by the class methods.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    undolist: List</span>
+<span class="sd">    \t</span>
+<span class="sd">    redolist: List</span>
+<span class="sd">    \t</span>
+<span class="sd">    active: Boolean</span>
+<span class="sd">    \tTrue while an undo or a redo step is executed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[(undofunc, [undoparams, ...], redofunc, [redoparams, ...]),</span>
+<span class="sd">        ..., &quot;MARK&quot;, ...]</span>
+<span class="sd">        &quot;MARK&quot; separartes undo/redo steps</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="UnRedo.mark"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.unredo.UnRedo.mark">[docs]</a>    <span class="k">def</span> <span class="nf">mark</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inserts a mark in undolist and empties redolist&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;MARK&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;MARK&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="UnRedo.undo"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.unredo.UnRedo.undo">[docs]</a>    <span class="k">def</span> <span class="nf">undo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Undos operations until next mark and stores them in the redolist&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;MARK&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;MARK&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;MARK&quot;</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="s">&quot;MARK&quot;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="o">*</span><span class="n">step</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="UnRedo.redo"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.unredo.UnRedo.redo">[docs]</a>    <span class="k">def</span> <span class="nf">redo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Redos operations until next mark and stores them in the undolist&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;MARK&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;MARK&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;MARK&quot;</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="s">&quot;MARK&quot;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+            <span class="n">step</span><span class="p">[</span><span class="mi">2</span><span class="p">](</span><span class="o">*</span><span class="n">step</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="UnRedo.reset"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.unredo.UnRedo.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Empties both undolist and redolist&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="UnRedo.append"><a class="viewcode-back" href="../../../../pyspread.src.model.html#pyspread.src.model.unredo.UnRedo.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undo_operation</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stores an operation and its undo operation in the undolist</span>
+
+<span class="sd">        undo_operation: (undo_function, [undo_function_attribute_1, ...])</span>
+<span class="sd">        operation: (redo_function, [redo_function_attribute_1, ...])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="c"># If the lists grow too large they are emptied</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;max_unredo&quot;</span><span class="p">]</span> <span class="ow">or</span> \
+           <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redolist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;max_unredo&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c"># Check attribute types</span>
+        <span class="k">for</span> <span class="n">unredo_operation</span> <span class="ow">in</span> <span class="p">[</span><span class="n">undo_operation</span><span class="p">,</span> <span class="n">operation</span><span class="p">]:</span>
+            <span class="nb">iter</span><span class="p">(</span><span class="n">unredo_operation</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">unredo_operation</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">unredo_operation</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;__call__&quot;</span><span class="p">)</span>
+            <span class="nb">iter</span><span class="p">(</span><span class="n">unredo_operation</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undolist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">undo_operation</span> <span class="o">+</span> <span class="n">operation</span><span class="p">)</span>
+
+<span class="c"># End of class UnRedo</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/pyspread.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Martin Manns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

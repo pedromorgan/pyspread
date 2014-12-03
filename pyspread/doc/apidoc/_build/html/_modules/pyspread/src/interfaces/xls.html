@@ -1,0 +1,953 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspread.src.interfaces.xls &mdash; Pyspread 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Pyspread 0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspread.src.interfaces.xls</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c"># Copyright Martin Manns</span>
+<span class="c"># Distributed under the terms of the GNU General Public License</span>
+
+<span class="c"># --------------------------------------------------------------------</span>
+<span class="c"># xlspread is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># xlspread is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with xlspread.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c"># --------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">xls</span>
+<span class="sd">===</span>
+
+<span class="sd">This file contains interfaces to Excel xls file format.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span><span class="p">,</span> <span class="n">repeat</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">xlrd</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">xlrd</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">xlwt</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">xlwt</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="kn">import</span> <span class="nn">wx</span>
+
+<span class="kn">import</span> <span class="nn">src.lib.i18n</span> <span class="kn">as</span> <span class="nn">i18n</span>
+
+<span class="kn">from</span> <span class="nn">src.lib.selection</span> <span class="kn">import</span> <span class="n">Selection</span>
+
+<span class="kn">from</span> <span class="nn">src.sysvars</span> <span class="kn">import</span> <span class="n">get_dpi</span><span class="p">,</span> <span class="n">get_default_text_extent</span><span class="p">,</span> <span class="n">get_color</span>
+
+<span class="kn">from</span> <span class="nn">src.config</span> <span class="kn">import</span> <span class="n">config</span>
+
+
+<span class="c">#use ugettext instead of getttext to avoid unicode errors</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">i18n</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="n">ugettext</span>
+
+
+<div class="viewcode-block" id="Xls"><a class="viewcode-back" href="../../../../pyspread.src.interfaces.html#pyspread.src.interfaces.xls.Xls">[docs]</a><span class="k">class</span> <span class="nc">Xls</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interface between code_array and xls file</span>
+
+<span class="sd">    The xls file is read from disk with the read method.</span>
+<span class="sd">    The xls file is written to disk with the write method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    code_array: model.CodeArray object</span>
+<span class="sd">    \tThe code_array object data structure</span>
+<span class="sd">    workbook: xlrd Workbook object</span>
+<span class="sd">    \tFile like object in xls format</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_array</span><span class="p">,</span> <span class="n">workbook</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span> <span class="o">=</span> <span class="n">code_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span> <span class="o">=</span> <span class="n">workbook</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_rows</span> <span class="o">=</span> <span class="mi">65536</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_cols</span> <span class="o">=</span> <span class="mi">256</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_tabs</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c"># Limit tables to 255 to avoid cluttered Excel</span>
+
+<div class="viewcode-block" id="Xls.idx2colour"><a class="viewcode-back" href="../../../../pyspread.src.interfaces.html#pyspread.src.interfaces.xls.Xls.idx2colour">[docs]</a>    <span class="k">def</span> <span class="nf">idx2colour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns wx.Colour&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">colour_map</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="Xls.color2idx"><a class="viewcode-back" href="../../../../pyspread.src.interfaces.html#pyspread.src.interfaces.xls.Xls.color2idx">[docs]</a>    <span class="k">def</span> <span class="nf">color2idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get an Excel index from&quot;&quot;&quot;</span>
+
+        <span class="n">xlwt_colors</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="p">(</span><span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">),</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">204</span><span class="p">),</span> <span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">204</span><span class="p">),</span> <span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">204</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span> <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">204</span><span class="p">),</span> <span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span> <span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">204</span><span class="p">),</span> <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span> <span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span> <span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">51</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">red</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">green</span> <span class="o">-</span> <span class="n">g</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">blue</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">xlwt_colors</span><span class="p">]</span>
+
+        <span class="n">min_dist_idx</span> <span class="o">=</span> <span class="n">distances</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">distances</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">min_dist_idx</span>
+</div>
+    <span class="k">def</span> <span class="nf">_shape2xls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes shape to xls file</span>
+
+<span class="sd">        Format: &lt;rows&gt;\t&lt;cols&gt;\t&lt;tabs&gt;\n</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">__</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">tabs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="n">tabs</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_tabs</span><span class="p">:</span>
+            <span class="n">tabs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_tabs</span>
+
+        <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">tabs</span><span class="p">):</span>
+            <span class="n">worksheet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">add_sheet</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tab</span><span class="p">))</span>
+            <span class="n">worksheets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">worksheet</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_xls2shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates shape in code_array&quot;&quot;&quot;</span>
+
+        <span class="n">sheets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">sheets</span><span class="p">()</span>
+        <span class="n">nrows</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">sheet</span> <span class="ow">in</span> <span class="n">sheets</span><span class="p">:</span>
+            <span class="n">nrows</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">sheet</span><span class="o">.</span><span class="n">nrows</span><span class="p">)</span>
+            <span class="n">ncols</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span> <span class="n">sheet</span><span class="o">.</span><span class="n">ncols</span><span class="p">)</span>
+        <span class="n">ntabs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sheets</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">ntabs</span>
+
+    <span class="k">def</span> <span class="nf">_code2xls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes code to xls file</span>
+
+<span class="sd">        Format: &lt;row&gt;\t&lt;col&gt;\t&lt;tab&gt;\t&lt;code&gt;\n</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">code_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span>
+
+        <span class="n">xls_max_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_tabs</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">code_array</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">kele</span> <span class="o">&lt;</span> <span class="n">mele</span> <span class="k">for</span> <span class="n">kele</span><span class="p">,</span> <span class="n">mele</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">xls_max_shape</span><span class="p">)):</span>
+                <span class="c"># Cell lies within Excel boundaries</span>
+                <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="n">code_str</span> <span class="o">=</span> <span class="n">code_array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_xfstyle</span><span class="p">(</span><span class="n">worksheets</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="n">worksheets</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">code_str</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
+
+        <span class="c"># Handle cell formatting in cells without code</span>
+
+        <span class="c"># Get bboxes for all cell_attributes</span>
+        <span class="n">max_shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">xls_max_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">code_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                     <span class="nb">min</span><span class="p">(</span><span class="n">xls_max_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">code_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+        <span class="c"># Prevent systems from blocking</span>
+        <span class="k">if</span> <span class="n">max_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">max_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1024000</span><span class="p">:</span>
+            <span class="c"># Ignore all cell attributes below row 3999</span>
+            <span class="n">max_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4000</span>
+
+        <span class="n">cell_attributes</span> <span class="o">=</span> <span class="n">code_array</span><span class="o">.</span><span class="n">dict_grid</span><span class="o">.</span><span class="n">cell_attributes</span>
+        <span class="n">bboxes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">__tab</span><span class="p">,</span> <span class="n">__</span> <span class="ow">in</span> <span class="n">cell_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">:</span>
+                <span class="n">bboxes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">get_grid_bbox</span><span class="p">(</span><span class="n">code_array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">__tab</span><span class="p">))</span>
+
+        <span class="c"># Get bbox_cell_set from bboxes</span>
+        <span class="n">cells</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">((</span><span class="n">bb_top</span><span class="p">,</span> <span class="n">bb_left</span><span class="p">),</span> <span class="p">(</span><span class="n">bb_bottom</span><span class="p">,</span> <span class="n">bb_right</span><span class="p">)),</span> <span class="n">__tab</span> <span class="ow">in</span> <span class="n">bboxes</span><span class="p">:</span>
+            <span class="n">__bb_bottom</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">bb_bottom</span><span class="p">,</span> <span class="n">max_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">__bb_right</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">bb_right</span><span class="p">,</span> <span class="n">max_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">__row</span><span class="p">,</span> <span class="n">__col</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">bb_top</span><span class="p">,</span> <span class="n">__bb_bottom</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                        <span class="nb">xrange</span><span class="p">(</span><span class="n">bb_left</span><span class="p">,</span> <span class="n">__bb_right</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+                <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">__row</span><span class="p">,</span> <span class="n">__col</span><span class="p">,</span> <span class="n">__tab</span><span class="p">))</span>
+
+        <span class="n">cell_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span>
+        <span class="c"># Loop over those with non-standard attributes</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cell_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">code_array</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">ele</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">key</span><span class="p">):</span>
+                <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_xfstyle</span><span class="p">(</span><span class="n">worksheets</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="n">worksheets</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_xls2code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates code in xls code_array&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">xlrddate2datetime</span><span class="p">(</span><span class="n">xlrd_date</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Returns datetime from xlrd_date&quot;&quot;&quot;</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">xldate_tuple</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">xlrd_date</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">datemode</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">datetime</span><span class="p">(</span><span class="n">xldate_tuple</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s">&#39;&#39;</span>
+
+        <span class="n">type2mapper</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>  <span class="c"># Empty cell</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>  <span class="c"># Text cell</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>  <span class="c"># Number cell</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">xlrddate2datetime</span><span class="p">,</span>  <span class="c"># Date</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>  <span class="c"># Boolean cell</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>  <span class="c"># Error cell</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>  <span class="c"># Blank cell</span>
+        <span class="p">}</span>
+
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">ncols</span>
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cols</span><span class="p">)):</span>
+            <span class="n">cell_type</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">cell_type</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="n">cell_value</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">cell_value</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+
+            <span class="n">key</span> <span class="o">=</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span>
+            <span class="n">mapper</span> <span class="o">=</span> <span class="n">type2mapper</span><span class="p">[</span><span class="n">cell_type</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">(</span><span class="n">cell_value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_font</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pys_style</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns xlwt.Font for pyspread style&quot;&quot;&quot;</span>
+
+        <span class="c"># Return None if there is no font</span>
+        <span class="k">if</span> <span class="s">&quot;textfont&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">font</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Font</span><span class="p">()</span>
+
+        <span class="n">font</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;textfont&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;pointsize&quot;</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="n">font</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;pointsize&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">20.0</span>
+
+        <span class="k">if</span> <span class="s">&quot;fontweight&quot;</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="n">font</span><span class="o">.</span><span class="n">bold</span> <span class="o">=</span> <span class="p">(</span><span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;fontweight&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">BOLD</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s">&quot;fontstyle&quot;</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="n">font</span><span class="o">.</span><span class="n">italic</span> <span class="o">=</span> <span class="p">(</span><span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;fontstyle&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">ITALIC</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s">&quot;textcolor&quot;</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="n">textcolor</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">()</span>
+            <span class="n">textcolor</span><span class="o">.</span><span class="n">SetRGB</span><span class="p">(</span><span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;textcolor&quot;</span><span class="p">])</span>
+            <span class="n">font</span><span class="o">.</span><span class="n">colour_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color2idx</span><span class="p">(</span><span class="o">*</span><span class="n">textcolor</span><span class="o">.</span><span class="n">Get</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="s">&quot;underline&quot;</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="n">font</span><span class="o">.</span><span class="n">underline_type</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;underline&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;strikethrough&quot;</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="n">font</span><span class="o">.</span><span class="n">struck_out</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;strikethrough&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">font</span>
+
+    <span class="k">def</span> <span class="nf">_get_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pys_style</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns xlwt.Alignment for pyspread style&quot;&quot;&quot;</span>
+
+        <span class="c"># Return None if there is no alignment</span>
+        <span class="n">alignment_styles</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;justification&quot;</span><span class="p">,</span> <span class="s">&quot;vertical_align&quot;</span><span class="p">,</span> <span class="s">&quot;angle&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">astyle</span> <span class="ow">in</span> <span class="n">pys_style</span> <span class="k">for</span> <span class="n">astyle</span> <span class="ow">in</span> <span class="n">alignment_styles</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">def</span> <span class="nf">angle2xfrotation</span><span class="p">(</span><span class="n">angle</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Returns angle from xlrotatation&quot;&quot;&quot;</span>
+
+            <span class="c"># angle is counterclockwise</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="mi">90</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">angle</span>
+
+            <span class="k">elif</span> <span class="o">-</span><span class="mi">90</span> <span class="o">&lt;=</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">90</span> <span class="o">-</span> <span class="n">angle</span>
+
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">justification2xfalign</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;left&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s">&quot;center&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s">&quot;right&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">vertical_align2xfalign</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;top&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s">&quot;middle&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s">&quot;bottom&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">alignment</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Alignment</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">alignment</span><span class="o">.</span><span class="n">horz</span> <span class="o">=</span> <span class="n">justification2xfalign</span><span class="p">[</span><span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;justification&quot;</span><span class="p">]]</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">alignment</span><span class="o">.</span><span class="n">vert</span> <span class="o">=</span> \
+                <span class="n">vertical_align2xfalign</span><span class="p">[</span><span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;vertical_align&quot;</span><span class="p">]]</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">alignment</span><span class="o">.</span><span class="n">rota</span> <span class="o">=</span> <span class="n">angle2xfrotation</span><span class="p">(</span><span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;angle&quot;</span><span class="p">])</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">alignment</span>
+
+    <span class="k">def</span> <span class="nf">_get_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pys_style</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns xlwt.pattern for pyspread style&quot;&quot;&quot;</span>
+
+        <span class="c"># Return None if there is no bgcolor</span>
+        <span class="k">if</span> <span class="s">&quot;bgcolor&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pys_style</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Pattern</span><span class="p">()</span>
+        <span class="n">pattern</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Pattern</span><span class="o">.</span><span class="n">SOLID_PATTERN</span>
+
+        <span class="n">bgcolor</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">()</span>
+        <span class="n">bgcolor</span><span class="o">.</span><span class="n">SetRGB</span><span class="p">(</span><span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;bgcolor&quot;</span><span class="p">])</span>
+        <span class="n">pattern</span><span class="o">.</span><span class="n">pattern_fore_colour</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color2idx</span><span class="p">(</span><span class="o">*</span><span class="n">bgcolor</span><span class="o">.</span><span class="n">Get</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">pattern</span>
+
+    <span class="k">def</span> <span class="nf">_get_borders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pys_style</span><span class="p">,</span> <span class="n">pys_style_above</span><span class="p">,</span> <span class="n">pys_style_left</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns xlwt.Borders for pyspread style&quot;&quot;&quot;</span>
+
+        <span class="c"># Return None if there is no border key</span>
+        <span class="n">border_keys</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s">&quot;borderwidth_right&quot;</span><span class="p">,</span>
+            <span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">,</span>
+            <span class="s">&quot;bordercolor_right&quot;</span><span class="p">,</span>
+            <span class="s">&quot;bordercolor_bottom&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">border_key</span> <span class="ow">in</span> <span class="n">pys_style</span> <span class="k">for</span> <span class="n">border_key</span> <span class="ow">in</span> <span class="n">border_keys</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">def</span> <span class="nf">width2border_line_style</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Borders</span><span class="o">.</span><span class="n">NO_LINE</span>
+
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">width</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Borders</span><span class="o">.</span><span class="n">THIN</span>
+
+            <span class="k">if</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">width</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Borders</span><span class="o">.</span><span class="n">MEDIUM</span>
+
+            <span class="k">if</span> <span class="n">width</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Borders</span><span class="o">.</span><span class="n">THICK</span>
+
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Width {} unknown&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">width</span><span class="p">))</span>
+
+        <span class="n">DEFAULT_LINE_STYLE</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Borders</span><span class="o">.</span><span class="n">THIN</span>
+        <span class="n">DEFAULT_COLOR_IDX</span> <span class="o">=</span> <span class="mh">0x16</span>  <span class="c"># Tried out with gnumeric and LibreOffice</span>
+
+        <span class="n">borders</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Borders</span><span class="p">()</span>
+
+        <span class="c"># Width / style</span>
+        <span class="c"># -------------</span>
+
+        <span class="c"># Bottom width</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bottom_pys_style</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">]</span>
+            <span class="n">bottom_line_style</span> <span class="o">=</span> <span class="n">width2border_line_style</span><span class="p">(</span><span class="n">bottom_pys_style</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border width</span>
+            <span class="n">bottom_line_style</span> <span class="o">=</span> <span class="n">DEFAULT_LINE_STYLE</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">bottom</span> <span class="o">=</span> <span class="n">bottom_line_style</span>
+
+        <span class="c"># Right width</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">right_pys_style</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;borderwidth_right&quot;</span><span class="p">]</span>
+            <span class="n">right_line_style</span> <span class="o">=</span> <span class="n">width2border_line_style</span><span class="p">(</span><span class="n">right_pys_style</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border width</span>
+            <span class="n">right_line_style</span> <span class="o">=</span> <span class="n">DEFAULT_LINE_STYLE</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right_line_style</span>
+
+        <span class="c"># Top width</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">top_pys_style</span> <span class="o">=</span> <span class="n">pys_style_above</span><span class="p">[</span><span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">]</span>
+            <span class="n">top_line_style</span> <span class="o">=</span> <span class="n">width2border_line_style</span><span class="p">(</span><span class="n">top_pys_style</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border width</span>
+            <span class="n">top_line_style</span> <span class="o">=</span> <span class="n">DEFAULT_LINE_STYLE</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="n">top_line_style</span>
+
+        <span class="c"># Left width</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">left_pys_style</span> <span class="o">=</span> <span class="n">pys_style_left</span><span class="p">[</span><span class="s">&quot;borderwidth_right&quot;</span><span class="p">]</span>
+            <span class="n">left_line_style</span> <span class="o">=</span> <span class="n">width2border_line_style</span><span class="p">(</span><span class="n">left_pys_style</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border width</span>
+            <span class="n">left_line_style</span> <span class="o">=</span> <span class="n">DEFAULT_LINE_STYLE</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left_line_style</span>
+
+        <span class="c"># Border colors</span>
+        <span class="c"># -------------</span>
+
+        <span class="c"># Bottom color</span>
+
+        <span class="k">def</span> <span class="nf">_get_color_idx</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Converts wx.Colour to Excel color index</span>
+
+<span class="sd">            Differs from self.color2idx because it maps</span>
+<span class="sd">            the pyspread default grid color to the Excel default color</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            color: wx.Colour</span>
+<span class="sd">            \tColor to be converted</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="n">get_color</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;grid_color&quot;</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="n">DEFAULT_COLOR_IDX</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">color2idx</span><span class="p">(</span><span class="o">*</span><span class="n">color</span><span class="o">.</span><span class="n">Get</span><span class="p">())</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bottom_color_pys_style</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;bordercolor_bottom&quot;</span><span class="p">]</span>
+            <span class="n">bcolor</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">()</span>
+            <span class="n">bcolor</span><span class="o">.</span><span class="n">SetRGB</span><span class="p">(</span><span class="n">bottom_color_pys_style</span><span class="p">)</span>
+            <span class="n">bottom_color_idx</span> <span class="o">=</span> <span class="n">_get_color_idx</span><span class="p">(</span><span class="n">bcolor</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border color</span>
+            <span class="n">bottom_color_idx</span> <span class="o">=</span> <span class="n">DEFAULT_COLOR_IDX</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">bottom_colour</span> <span class="o">=</span> <span class="n">bottom_color_idx</span>
+
+        <span class="c"># Right color</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">right_color_pys_style</span> <span class="o">=</span> <span class="n">pys_style</span><span class="p">[</span><span class="s">&quot;bordercolor_right&quot;</span><span class="p">]</span>
+            <span class="n">rcolor</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">()</span>
+            <span class="n">rcolor</span><span class="o">.</span><span class="n">SetRGB</span><span class="p">(</span><span class="n">right_color_pys_style</span><span class="p">)</span>
+            <span class="n">right_colour_idx</span> <span class="o">=</span> <span class="n">_get_color_idx</span><span class="p">(</span><span class="n">rcolor</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border color</span>
+            <span class="n">right_colour_idx</span> <span class="o">=</span> <span class="n">DEFAULT_COLOR_IDX</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">right_colour</span> <span class="o">=</span> <span class="n">right_colour_idx</span>
+
+        <span class="c"># Top color</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">top_color_pys_style</span> <span class="o">=</span> <span class="n">pys_style_above</span><span class="p">[</span><span class="s">&quot;bordercolor_bottom&quot;</span><span class="p">]</span>
+            <span class="n">tcolor</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">()</span>
+            <span class="n">tcolor</span><span class="o">.</span><span class="n">SetRGB</span><span class="p">(</span><span class="n">top_color_pys_style</span><span class="p">)</span>
+            <span class="n">top_color_idx</span> <span class="o">=</span> <span class="n">_get_color_idx</span><span class="p">(</span><span class="n">tcolor</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border color</span>
+            <span class="n">top_color_idx</span> <span class="o">=</span> <span class="n">DEFAULT_COLOR_IDX</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">top_colour</span> <span class="o">=</span> <span class="n">top_color_idx</span>
+
+        <span class="c"># Left color</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">left_color_pys_style</span> <span class="o">=</span> <span class="n">pys_style_left</span><span class="p">[</span><span class="s">&quot;bordercolor_right&quot;</span><span class="p">]</span>
+            <span class="n">lcolor</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">()</span>
+            <span class="n">lcolor</span><span class="o">.</span><span class="n">SetRGB</span><span class="p">(</span><span class="n">left_color_pys_style</span><span class="p">)</span>
+            <span class="n">left_colour_idx</span> <span class="o">=</span> <span class="n">_get_color_idx</span><span class="p">(</span><span class="n">lcolor</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># No or unknown border color</span>
+            <span class="n">left_colour_idx</span> <span class="o">=</span> <span class="n">DEFAULT_COLOR_IDX</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">borders</span><span class="o">.</span><span class="n">left_colour</span> <span class="o">=</span> <span class="n">left_colour_idx</span>
+
+        <span class="k">return</span> <span class="n">borders</span>
+
+    <span class="k">def</span> <span class="nf">_get_xfstyle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheets</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets XFStyle for cell key&quot;&quot;&quot;</span>
+
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">dict_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">dict_grid</span>
+
+        <span class="n">pys_style</span> <span class="o">=</span> <span class="n">dict_grid</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">pys_style_above</span> <span class="o">=</span> <span class="n">dict_grid</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">[</span><span class="n">row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">]</span>
+        <span class="n">pys_style_left</span> <span class="o">=</span> <span class="n">dict_grid</span><span class="o">.</span><span class="n">cell_attributes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tab</span><span class="p">]</span>
+
+        <span class="n">xfstyle</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">XFStyle</span><span class="p">()</span>
+
+        <span class="c"># Font</span>
+        <span class="c"># ----</span>
+
+        <span class="n">font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_font</span><span class="p">(</span><span class="n">pys_style</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">font</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">xfstyle</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">font</span>
+
+        <span class="c"># Alignment</span>
+        <span class="c"># ---------</span>
+
+        <span class="n">alignment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_alignment</span><span class="p">(</span><span class="n">pys_style</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">alignment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">xfstyle</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="n">alignment</span>
+
+        <span class="c"># Background / pattern</span>
+        <span class="c"># --------------------</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pattern</span><span class="p">(</span><span class="n">pys_style</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">xfstyle</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+
+        <span class="c"># Border</span>
+        <span class="c"># ------</span>
+
+        <span class="n">borders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_borders</span><span class="p">(</span><span class="n">pys_style</span><span class="p">,</span> <span class="n">pys_style_above</span><span class="p">,</span> <span class="n">pys_style_left</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">borders</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">xfstyle</span><span class="o">.</span><span class="n">borders</span> <span class="o">=</span> <span class="n">borders</span>
+
+        <span class="k">return</span> <span class="n">xfstyle</span>
+
+    <span class="k">def</span> <span class="nf">_cell_attribute_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">attributes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Appends to cell_attributes with checks&quot;&quot;&quot;</span>
+
+        <span class="n">cell_attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">cell_attributes</span>
+
+        <span class="n">thick_bottom_cells</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">thick_right_cells</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># Does any cell in selection.cells have a larger bottom border?</span>
+
+        <span class="k">if</span> <span class="s">&quot;borderwidth_bottom&quot;</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+            <span class="n">bwidth</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">selection</span><span class="o">.</span><span class="n">cells</span><span class="p">:</span>
+                <span class="n">__bwidth</span> <span class="o">=</span> <span class="n">cell_attributes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">][</span><span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">__bwidth</span> <span class="o">&gt;</span> <span class="n">bwidth</span><span class="p">:</span>
+                    <span class="n">thick_bottom_cells</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
+
+        <span class="c"># Does any cell in selection.cells have a larger right border?</span>
+        <span class="k">if</span> <span class="s">&quot;borderwidth_right&quot;</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+            <span class="n">rwidth</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;borderwidth_right&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">selection</span><span class="o">.</span><span class="n">cells</span><span class="p">:</span>
+                <span class="n">__rwidth</span> <span class="o">=</span> <span class="n">cell_attributes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">][</span><span class="s">&quot;borderwidth_right&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">__rwidth</span> <span class="o">&gt;</span> <span class="n">rwidth</span><span class="p">:</span>
+                    <span class="n">thick_right_cells</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">thick_cell</span> <span class="ow">in</span> <span class="n">thick_bottom_cells</span> <span class="o">+</span> <span class="n">thick_right_cells</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">selection</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">thick_cell</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="n">cell_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">selection</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">attributes</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">thick_bottom_cells</span><span class="p">:</span>
+            <span class="n">bsel</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+            <span class="n">bsel</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">thick_bottom_cells</span>
+            <span class="n">battrs</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+            <span class="n">battrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">)</span>
+            <span class="n">cell_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bsel</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">battrs</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">thick_right_cells</span><span class="p">:</span>
+            <span class="n">rsel</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+            <span class="n">rsel</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">thick_right_cells</span>
+            <span class="n">rattrs</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+            <span class="n">rattrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;borderwidth_right&quot;</span><span class="p">)</span>
+            <span class="n">cell_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rsel</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">rattrs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_xls2attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates attributes in code_array&quot;&quot;&quot;</span>
+
+        <span class="c"># Merged cells</span>
+        <span class="k">for</span> <span class="n">top</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">merged_cells</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;merge_area&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">right</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}</span>
+            <span class="n">selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">([(</span><span class="n">top</span><span class="p">,</span> <span class="n">left</span><span class="p">)],</span> <span class="p">[(</span><span class="n">bottom</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">right</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)],</span>
+                                  <span class="p">[],</span> <span class="p">[],</span> <span class="p">[])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">cell_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">selection</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">attrs</span><span class="p">))</span>
+
+        <span class="c"># Which cell comprise which format ids</span>
+        <span class="n">xf2cell</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">xfid</span><span class="p">,</span> <span class="p">[])</span> <span class="k">for</span> <span class="n">xfid</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">xfcount</span><span class="p">))</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">ncols</span>
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cols</span><span class="p">)):</span>
+            <span class="n">xfid</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">cell_xf_index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="n">xf2cell</span><span class="p">[</span><span class="n">xfid</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">xfid</span><span class="p">,</span> <span class="n">xf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">xf_list</span><span class="p">):</span>
+            <span class="n">selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">xf2cell</span><span class="p">[</span><span class="n">xfid</span><span class="p">])</span>
+            <span class="n">selection_above</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">shifted</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">selection_left</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">shifted</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="c"># Alignment</span>
+
+            <span class="n">xfalign2justification</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s">&quot;left&quot;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s">&quot;left&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s">&quot;center&quot;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s">&quot;right&quot;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s">&quot;left&quot;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s">&quot;left&quot;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s">&quot;center&quot;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s">&quot;left&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="n">xfalign2vertical_align</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s">&quot;top&quot;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s">&quot;middle&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s">&quot;bottom&quot;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s">&quot;middle&quot;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s">&quot;middle&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="k">def</span> <span class="nf">xfrotation2angle</span><span class="p">(</span><span class="n">xfrotation</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;Returns angle from xlrotatation&quot;&quot;&quot;</span>
+
+                <span class="c"># angle is counterclockwise</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">xfrotation</span> <span class="o">&lt;=</span> <span class="mi">90</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">xfrotation</span>
+
+                <span class="k">elif</span> <span class="mi">90</span> <span class="o">&lt;</span> <span class="n">xfrotation</span> <span class="o">&lt;=</span> <span class="mi">180</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="o">-</span> <span class="p">(</span><span class="n">xfrotation</span> <span class="o">-</span> <span class="mi">90</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="mi">0</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;justification&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">xfalign2justification</span><span class="p">[</span><span class="n">xf</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">hor_align</span><span class="p">]</span>
+
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;vertical_align&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">xfalign2vertical_align</span><span class="p">[</span><span class="n">xf</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">vert_align</span><span class="p">]</span>
+
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;angle&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">xfrotation2angle</span><span class="p">(</span><span class="n">xf</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">rotation</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="c"># Background</span>
+            <span class="k">if</span> <span class="n">xf</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">fill_pattern</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">color_idx</span> <span class="o">=</span> <span class="n">xf</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">pattern_colour_index</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx2colour</span><span class="p">(</span><span class="n">color_idx</span><span class="p">)</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;bgcolor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">()</span>
+
+            <span class="c"># Border</span>
+            <span class="n">__border_line_style2width</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="k">def</span> <span class="nf">constant_factory</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">repeat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">next</span>
+
+            <span class="n">border_line_style2width</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">constant_factory</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">border_line_style2width</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">__border_line_style2width</span><span class="p">)</span>
+
+            <span class="n">bottom_color_idx</span> <span class="o">=</span> <span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">bottom_colour_index</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">colour_map</span><span class="p">[</span><span class="n">bottom_color_idx</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">bottom_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx2colour</span><span class="p">(</span><span class="n">bottom_color_idx</span><span class="p">)</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;bordercolor_bottom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bottom_color</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">()</span>
+
+            <span class="n">right_color_idx</span> <span class="o">=</span> <span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">right_colour_index</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">colour_map</span><span class="p">[</span><span class="n">right_color_idx</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">right_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx2colour</span><span class="p">(</span><span class="n">right_color_idx</span><span class="p">)</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;bordercolor_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_color</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">()</span>
+
+            <span class="n">bottom_width</span> <span class="o">=</span> <span class="n">border_line_style2width</span><span class="p">[</span><span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">bottom_line_style</span><span class="p">]</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bottom_width</span>
+
+            <span class="n">right_width</span> <span class="o">=</span> <span class="n">border_line_style2width</span><span class="p">[</span><span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">right_line_style</span><span class="p">]</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;borderwidth_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_width</span>
+
+            <span class="c"># Font</span>
+
+            <span class="n">font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">font_list</span><span class="p">[</span><span class="n">xf</span><span class="o">.</span><span class="n">font_index</span><span class="p">]</span>
+
+            <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;textfont&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;pointsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">20.0</span>
+
+            <span class="n">fontweight</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BOLD</span> <span class="k">if</span> <span class="n">font</span><span class="o">.</span><span class="n">weight</span> <span class="o">==</span> <span class="mi">700</span> <span class="k">else</span> <span class="n">wx</span><span class="o">.</span><span class="n">NORMAL</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;fontweight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fontweight</span>
+
+            <span class="k">if</span> <span class="n">font</span><span class="o">.</span><span class="n">italic</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;fontstyle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">ITALIC</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">colour_map</span><span class="p">[</span><span class="n">font</span><span class="o">.</span><span class="n">colour_index</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;textcolor&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">idx2colour</span><span class="p">(</span><span class="n">font</span><span class="o">.</span><span class="n">colour_index</span><span class="p">)</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">font</span><span class="o">.</span><span class="n">underline_type</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;underline&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="k">if</span> <span class="n">font</span><span class="o">.</span><span class="n">struck_out</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s">&quot;strikethrough&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="c"># Handle top cells&#39; top borders</span>
+
+            <span class="n">attributes_above</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">top_width</span> <span class="o">=</span> <span class="n">border_line_style2width</span><span class="p">[</span><span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">top_line_style</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">top_width</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">attributes_above</span><span class="p">[</span><span class="s">&quot;borderwidth_bottom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_width</span>
+            <span class="n">top_color_idx</span> <span class="o">=</span> <span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">top_colour_index</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">colour_map</span><span class="p">[</span><span class="n">top_color_idx</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">top_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx2colour</span><span class="p">(</span><span class="n">top_color_idx</span><span class="p">)</span>
+                <span class="n">attributes_above</span><span class="p">[</span><span class="s">&quot;bordercolor_bottom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_color</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">()</span>
+
+            <span class="c"># Handle leftmost cells&#39; left borders</span>
+
+            <span class="n">attributes_left</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">left_width</span> <span class="o">=</span> <span class="n">border_line_style2width</span><span class="p">[</span><span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">left_line_style</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">left_width</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">attributes_left</span><span class="p">[</span><span class="s">&quot;borderwidth_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">left_width</span>
+            <span class="n">left_color_idx</span> <span class="o">=</span> <span class="n">xf</span><span class="o">.</span><span class="n">border</span><span class="o">.</span><span class="n">left_colour_index</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">colour_map</span><span class="p">[</span><span class="n">left_color_idx</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">left_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx2colour</span><span class="p">(</span><span class="n">left_color_idx</span><span class="p">)</span>
+                <span class="n">attributes_above</span><span class="p">[</span><span class="s">&quot;bordercolor_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">left_color</span><span class="o">.</span><span class="n">GetRGB</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">attributes_above</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cell_attribute_append</span><span class="p">(</span><span class="n">selection_above</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span>
+                                            <span class="n">attributes_above</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attributes_left</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cell_attribute_append</span><span class="p">(</span><span class="n">selection_left</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span>
+                                            <span class="n">attributes_left</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attributes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cell_attribute_append</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_row_heights2xls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes row_heights to xls file</span>
+
+<span class="sd">        Format: &lt;row&gt;\t&lt;tab&gt;\t&lt;value&gt;\n</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">xls_max_rows</span><span class="p">,</span> <span class="n">xls_max_tabs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_tabs</span>
+
+        <span class="n">dict_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">dict_grid</span>
+
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="n">dict_grid</span><span class="o">.</span><span class="n">row_heights</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">xls_max_rows</span> <span class="ow">and</span> <span class="n">tab</span> <span class="o">&lt;</span> <span class="n">xls_max_tabs</span><span class="p">:</span>
+                <span class="n">height_pixels</span> <span class="o">=</span> <span class="n">dict_grid</span><span class="o">.</span><span class="n">row_heights</span><span class="p">[(</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span>
+                <span class="n">height_inches</span> <span class="o">=</span> <span class="n">height_pixels</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">get_dpi</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">height_points</span> <span class="o">=</span> <span class="n">height_inches</span> <span class="o">*</span> <span class="mf">72.0</span>
+
+                <span class="n">worksheets</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">row</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">height_mismatch</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">worksheets</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">row</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height_points</span> <span class="o">*</span> <span class="mf">20.0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_xls2row_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates row_heights in code_array&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">worksheet</span><span class="o">.</span><span class="n">nrows</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">height_points</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">rowinfo_map</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">20.0</span>
+                <span class="n">height_inches</span> <span class="o">=</span> <span class="n">height_points</span> <span class="o">/</span> <span class="mf">72.0</span>
+                <span class="n">height_pixels</span> <span class="o">=</span> <span class="n">height_inches</span> <span class="o">*</span> <span class="n">get_dpi</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">row_heights</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">tab</span><span class="p">]</span> <span class="o">=</span> <span class="n">height_pixels</span>
+
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_col_widths2xls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes col_widths to xls file</span>
+
+<span class="sd">        Format: &lt;col&gt;\t&lt;tab&gt;\t&lt;value&gt;\n</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">xls_max_cols</span><span class="p">,</span> <span class="n">xls_max_tabs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xls_max_tabs</span>
+
+        <span class="n">dict_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">dict_grid</span>
+
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">tab</span> <span class="ow">in</span> <span class="n">dict_grid</span><span class="o">.</span><span class="n">col_widths</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="n">xls_max_cols</span> <span class="ow">and</span> <span class="n">tab</span> <span class="o">&lt;</span> <span class="n">xls_max_tabs</span><span class="p">:</span>
+                <span class="n">width_0</span> <span class="o">=</span> <span class="n">get_default_text_extent</span><span class="p">(</span><span class="s">&quot;0&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">width_pixels</span> <span class="o">=</span> <span class="n">dict_grid</span><span class="o">.</span><span class="n">col_widths</span><span class="p">[(</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">)]</span>
+                <span class="n">width_0_char</span> <span class="o">=</span> <span class="n">width_pixels</span> <span class="o">*</span> <span class="mf">1.2</span> <span class="o">/</span> <span class="n">width_0</span>
+
+                <span class="n">worksheets</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">width_mismatch</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">worksheets</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width_0_char</span> <span class="o">*</span> <span class="mf">256.0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_xls2col_widths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates col_widths in code_array&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">worksheet</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">width_0_char</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">colinfo_map</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">256.0</span>
+                <span class="n">width_0</span> <span class="o">=</span> <span class="n">get_default_text_extent</span><span class="p">(</span><span class="s">&quot;0&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c"># Scale relative to 10 point font instead of 12 point</span>
+                <span class="n">width_pixels</span> <span class="o">=</span> <span class="n">width_0_char</span> <span class="o">*</span> <span class="n">width_0</span> <span class="o">/</span> <span class="mf">1.2</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">code_array</span><span class="o">.</span><span class="n">col_widths</span><span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="n">tab</span><span class="p">]</span> <span class="o">=</span> <span class="n">width_pixels</span>
+
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+    <span class="c"># Access via model.py data</span>
+    <span class="c"># ------------------------</span>
+
+<div class="viewcode-block" id="Xls.from_code_array"><a class="viewcode-back" href="../../../../pyspread.src.interfaces.html#pyspread.src.interfaces.xls.Xls.from_code_array">[docs]</a>    <span class="k">def</span> <span class="nf">from_code_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns xls workbook object with everything from code_array&quot;&quot;&quot;</span>
+
+        <span class="n">worksheets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape2xls</span><span class="p">(</span><span class="n">worksheets</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_code2xls</span><span class="p">(</span><span class="n">worksheets</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_heights2xls</span><span class="p">(</span><span class="n">worksheets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_col_widths2xls</span><span class="p">(</span><span class="n">worksheets</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span>
+</div>
+<div class="viewcode-block" id="Xls.to_code_array"><a class="viewcode-back" href="../../../../pyspread.src.interfaces.html#pyspread.src.interfaces.xls.Xls.to_code_array">[docs]</a>    <span class="k">def</span> <span class="nf">to_code_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Replaces everything in code_array from xls_file&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xls2shape</span><span class="p">()</span>
+
+        <span class="n">worksheets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">sheet_names</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">tab</span><span class="p">,</span> <span class="n">worksheet_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">worksheets</span><span class="p">):</span>
+            <span class="n">worksheet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">sheet_by_name</span><span class="p">(</span><span class="n">worksheet_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_xls2code</span><span class="p">(</span><span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_xls2attributes</span><span class="p">(</span><span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_xls2row_heights</span><span class="p">(</span><span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_xls2col_widths</span><span class="p">(</span><span class="n">worksheet</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/pyspread.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Martin Manns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

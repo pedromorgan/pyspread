@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspread.src.lib.gpg &mdash; Pyspread 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Pyspread 0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspread.src.lib.gpg</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c"># Copyright Martin Manns</span>
+<span class="c"># Distributed under the terms of the GNU General Public License</span>
+
+<span class="c"># --------------------------------------------------------------------</span>
+<span class="c"># pyspread is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># pyspread is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with pyspread.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c"># --------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">gpg</span>
+<span class="sd">===</span>
+
+<span class="sd">GPG handling functions</span>
+
+<span class="sd">Provides</span>
+<span class="sd">--------</span>
+
+<span class="sd"> * genkey: Generates gpg key</span>
+<span class="sd"> * sign: Returns detached signature for file</span>
+<span class="sd"> * verify: verifies stream against signature</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">wx</span>
+<span class="kn">import</span> <span class="nn">gnupg</span>
+
+<span class="kn">import</span> <span class="nn">src.lib.i18n</span> <span class="kn">as</span> <span class="nn">i18n</span>
+<span class="kn">from</span> <span class="nn">src.config</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">src.gui._gui_interfaces</span> <span class="kn">import</span> <span class="n">get_key_params_from_user</span>
+
+<span class="c"># Use ugettext instead of getttext to avoid unicode errors</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">i18n</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="n">ugettext</span>
+
+
+<div class="viewcode-block" id="choose_key"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.gpg.choose_key">[docs]</a><span class="k">def</span> <span class="nf">choose_key</span><span class="p">(</span><span class="n">gpg_private_keys</span><span class="p">,</span> <span class="n">gpg_private_fingerprints</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Displays gpg key choice and returns key&quot;&quot;&quot;</span>
+
+    <span class="n">uid_strings_fp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">uid_string_fp2key</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fingerprint</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gpg_private_keys</span><span class="p">,</span> <span class="n">gpg_private_fingerprints</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">uid_string</span> <span class="ow">in</span> <span class="n">key</span><span class="p">[</span><span class="s">&#39;uids&#39;</span><span class="p">]:</span>
+            <span class="n">uid_string_fp</span> <span class="o">=</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">uid_string</span> <span class="o">+</span> <span class="s">&#39; (&#39;</span> <span class="o">+</span> <span class="n">fingerprint</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span>
+            <span class="n">uid_strings_fp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uid_string_fp</span><span class="p">)</span>
+            <span class="n">uid_string_fp2key</span><span class="p">[</span><span class="n">uid_string_fp</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;Choose a GPG key for signing pyspread save files.</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="s">&#39;The GPG key must not have a passphrase set.&#39;</span><span class="p">)</span>
+
+    <span class="n">dlg</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">SingleChoiceDialog</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;Choose key&#39;</span><span class="p">),</span> <span class="n">uid_strings_fp</span><span class="p">,</span>
+                                <span class="n">wx</span><span class="o">.</span><span class="n">CHOICEDLG_STYLE</span><span class="p">)</span>
+
+    <span class="n">childlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dlg</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">())</span>
+    <span class="n">childlist</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">SetLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Use chosen key&quot;</span><span class="p">))</span>
+    <span class="n">childlist</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">SetLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Create new key&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">dlg</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_OK</span><span class="p">:</span>
+        <span class="n">uid_string_fp</span> <span class="o">=</span> <span class="n">dlg</span><span class="o">.</span><span class="n">GetStringSelection</span><span class="p">()</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">uid_string_fp2key</span><span class="p">[</span><span class="n">uid_string_fp</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">dlg</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">key</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_register_key</span><span class="p">(</span><span class="n">fingerprint</span><span class="p">,</span> <span class="n">gpg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Registers key in config&quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">private_key</span> <span class="ow">in</span> <span class="n">gpg</span><span class="o">.</span><span class="n">list_keys</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">fingerprint</span><span class="p">)</span> <span class="o">==</span> <span class="n">private_key</span><span class="p">[</span><span class="s">&#39;fingerprint&#39;</span><span class="p">]:</span>
+                <span class="n">config</span><span class="p">[</span><span class="s">&quot;gpg_key_fingerprint&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">private_key</span><span class="p">[</span><span class="s">&#39;fingerprint&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="genkey"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.gpg.genkey">[docs]</a><span class="k">def</span> <span class="nf">genkey</span><span class="p">(</span><span class="n">key_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new standard GPG key</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    ui: Bool</span>
+<span class="sd">    \tIf True, then a new key is created when required without user interaction</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">gpg_key_param_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;key_type&#39;</span><span class="p">,</span> <span class="s">&#39;DSA&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;key_length&#39;</span><span class="p">,</span> <span class="s">&#39;2048&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;subkey_type&#39;</span><span class="p">,</span> <span class="s">&#39;ELG-E&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;subkey_length&#39;</span><span class="p">,</span> <span class="s">&#39;2048&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;expire_date&#39;</span><span class="p">,</span> <span class="s">&#39;0&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">gpg</span> <span class="o">=</span> <span class="n">gnupg</span><span class="o">.</span><span class="n">GPG</span><span class="p">()</span>
+
+    <span class="n">gpg</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="s">&#39;utf-8&#39;</span>
+
+    <span class="c"># Check if standard key is already present</span>
+
+    <span class="n">pyspread_key_fingerprint</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;gpg_key_fingerprint&quot;</span><span class="p">]</span>
+    <span class="n">gpg_private_keys</span> <span class="o">=</span> <span class="n">gpg</span><span class="o">.</span><span class="n">list_keys</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">gpg_private_fingerprints</span> <span class="o">=</span> <span class="n">gpg</span><span class="o">.</span><span class="n">list_keys</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">fingerprints</span>
+
+    <span class="n">pyspread_key</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">for</span> <span class="n">private_key</span><span class="p">,</span> <span class="n">fingerprint</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gpg_private_keys</span><span class="p">,</span>
+                                        <span class="n">gpg_private_fingerprints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">pyspread_key_fingerprint</span><span class="p">)</span> <span class="o">==</span> <span class="n">fingerprint</span><span class="p">:</span>
+            <span class="n">pyspread_key</span> <span class="o">=</span> <span class="n">private_key</span>
+
+    <span class="k">if</span> <span class="n">key_name</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">pyspread_key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># If no GPG key is set in config, choose one</span>
+        <span class="n">pyspread_key</span> <span class="o">=</span> <span class="n">choose_key</span><span class="p">(</span><span class="n">gpg_private_keys</span><span class="p">,</span> <span class="n">gpg_private_fingerprints</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pyspread_key</span><span class="p">:</span>
+        <span class="c"># A key has been chosen</span>
+        <span class="n">fingerprint</span> <span class="o">=</span> \
+            <span class="n">gpg_private_fingerprints</span><span class="p">[</span><span class="n">gpg_private_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pyspread_key</span><span class="p">)]</span>
+        <span class="n">config</span><span class="p">[</span><span class="s">&quot;gpg_key_fingerprint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">fingerprint</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># No key has been chosen --&gt; Create new one</span>
+        <span class="k">if</span> <span class="n">key_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">gpg_key_parameters</span> <span class="o">=</span> <span class="n">get_key_params_from_user</span><span class="p">(</span><span class="n">gpg_key_param_list</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gpg_key_parameters</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># No name entered</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gpg_key_param_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="s">&#39;name_real&#39;</span><span class="p">,</span> <span class="s">&#39;{key_name}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_name</span><span class="o">=</span><span class="n">key_name</span><span class="p">)))</span>
+            <span class="n">gpg_key_parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">gpg_key_param_list</span><span class="p">)</span>
+
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">gpg</span><span class="o">.</span><span class="n">gen_key_input</span><span class="p">(</span><span class="o">**</span><span class="n">gpg_key_parameters</span><span class="p">)</span>
+
+        <span class="c"># Generate key</span>
+        <span class="c"># ------------</span>
+
+        <span class="k">if</span> <span class="n">key_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># Show information dialog</span>
+
+            <span class="n">style</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">ICON_INFORMATION</span> <span class="o">|</span> <span class="n">wx</span><span class="o">.</span><span class="n">DIALOG_NO_PARENT</span> <span class="o">|</span> <span class="n">wx</span><span class="o">.</span><span class="n">OK</span> <span class="o">|</span> \
+                <span class="n">wx</span><span class="o">.</span><span class="n">CANCEL</span>
+            <span class="n">pyspread_key_uid</span> <span class="o">=</span> <span class="n">gpg_key_parameters</span><span class="p">[</span><span class="s">&quot;name_real&quot;</span><span class="p">]</span>
+            <span class="n">short_message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;New GPG key&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pyspread_key_uid</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;After confirming this dialog, a new GPG key &quot;</span><span class="p">)</span> <span class="o">+</span> \
+                <span class="n">_</span><span class="p">(</span><span class="s">&quot;&#39;{key}&#39; will be generated.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">pyspread_key_uid</span><span class="p">)</span> <span class="o">+</span>\
+                <span class="n">_</span><span class="p">(</span><span class="s">&quot; </span><span class="se">\n</span><span class="s"> </span><span class="se">\n</span><span class="s">This may take some time.</span><span class="se">\n</span><span class="s">Please wait.&quot;</span><span class="p">)</span>
+            <span class="n">dlg</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">short_message</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+            <span class="n">dlg</span><span class="o">.</span><span class="n">Centre</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">dlg</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_OK</span><span class="p">:</span>
+                <span class="n">dlg</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+                <span class="n">gpg_key</span> <span class="o">=</span> <span class="n">gpg</span><span class="o">.</span><span class="n">gen_key</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+                <span class="n">_register_key</span><span class="p">(</span><span class="n">gpg_key</span><span class="p">,</span> <span class="n">gpg</span><span class="p">)</span>
+                <span class="n">fingerprint</span> <span class="o">=</span> <span class="n">gpg_key</span><span class="o">.</span><span class="n">fingerprint</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dlg</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+                <span class="k">return</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gpg_key</span> <span class="o">=</span> <span class="n">gpg</span><span class="o">.</span><span class="n">gen_key</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+            <span class="n">_register_key</span><span class="p">(</span><span class="n">gpg_key</span><span class="p">,</span> <span class="n">gpg</span><span class="p">)</span>
+            <span class="n">fingerprint</span> <span class="o">=</span> <span class="n">gpg_key</span><span class="o">.</span><span class="n">fingerprint</span>
+
+    <span class="k">return</span> <span class="n">fingerprint</span>
+
+</div>
+<div class="viewcode-block" id="sign"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.gpg.sign">[docs]</a><span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns detached signature for file&quot;&quot;&quot;</span>
+
+    <span class="n">gpg</span> <span class="o">=</span> <span class="n">gnupg</span><span class="o">.</span><span class="n">GPG</span><span class="p">()</span>
+
+    <span class="n">signfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span>
+
+    <span class="n">signed_data</span> <span class="o">=</span> <span class="n">gpg</span><span class="o">.</span><span class="n">sign_file</span><span class="p">(</span><span class="n">signfile</span><span class="p">,</span> <span class="n">keyid</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;gpg_key_fingerprint&quot;</span><span class="p">],</span>
+                                <span class="n">detach</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">signfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">signed_data</span>
+
+</div>
+<div class="viewcode-block" id="verify"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.gpg.verify">[docs]</a><span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="n">sigfilename</span><span class="p">,</span> <span class="n">filefilename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Verifies a signature, returns True if successful else False.&quot;&quot;&quot;</span>
+
+    <span class="n">gpg</span> <span class="o">=</span> <span class="n">gnupg</span><span class="o">.</span><span class="n">GPG</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sigfilename</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sigfile</span><span class="p">:</span>
+        <span class="n">verified</span> <span class="o">=</span> <span class="n">gpg</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="n">sigfile</span><span class="p">,</span> <span class="n">filefilename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">verified</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/pyspread.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Martin Manns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

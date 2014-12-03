@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspread.src.lib.fileio &mdash; Pyspread 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Pyspread 0.4 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspread.src.lib.fileio</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c"># Copyright Martin Manns</span>
+<span class="c"># Distributed under the terms of the GNU General Public License</span>
+
+<span class="c"># --------------------------------------------------------------------</span>
+<span class="c"># pyspread is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># pyspread is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with pyspread.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c"># --------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">fileio</span>
+<span class="sd">======</span>
+
+<span class="sd">This module provides file reader and writer classes.</span>
+<span class="sd">These classes behave like open but provide status messages and can be aborted.</span>
+
+
+<span class="sd">Provides</span>
+<span class="sd">--------</span>
+
+<span class="sd"> * AOpen: Read and write files with status messages and abort option</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">bz2</span>
+<span class="kn">import</span> <span class="nn">i18n</span>
+
+<span class="kn">import</span> <span class="nn">wx</span>
+
+<span class="kn">from</span> <span class="nn">src.gui._events</span> <span class="kn">import</span> <span class="n">post_command_event</span>
+<span class="kn">from</span> <span class="nn">src.sysvars</span> <span class="kn">import</span> <span class="n">is_gtk</span>
+
+<span class="c">#use ugettext instead of getttext to avoid unicode errors</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">i18n</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="n">ugettext</span>
+
+
+<div class="viewcode-block" id="AOpenMixin"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.AOpenMixin">[docs]</a><span class="k">class</span> <span class="nc">AOpenMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;AOpen mixin class&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AOpenMixin.set_initial_state"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.AOpenMixin.set_initial_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets class state from kwargs attributes, pops extra kwargs&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;main_window&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">statustext</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;statustext&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">statustext</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lines</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;total_lines&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statustext</span> <span class="o">=</span> <span class="n">statustext</span> <span class="o">+</span> \
+                <span class="n">_</span><span class="p">(</span><span class="s">&quot;{nele} of {totalele} elements processed.&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_lines</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statustext</span> <span class="o">=</span> <span class="n">statustext</span> <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;{nele} elements processed.&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;freq&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="mi">1000</span>
+
+        <span class="c"># The aborted attribute makes next() to raise StopIteration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aborted</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c"># Line counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c"># Bindings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_KEY_DOWN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_key</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AOpenMixin.next"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.AOpenMixin.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;Next that shows progress in statusbar for each &lt;freq&gt; cells&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress_status</span><span class="p">()</span>
+
+        <span class="c"># Check abortes state and raise StopIteration if aborted</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aborted</span><span class="p">:</span>
+            <span class="n">statustext</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;File loading aborted.&quot;</span><span class="p">)</span>
+            <span class="n">post_command_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">StatusBarMsg</span><span class="p">,</span>
+                               <span class="n">text</span><span class="o">=</span><span class="n">statustext</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_cls</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AOpenMixin.write"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.AOpenMixin.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write that shows progress in statusbar for each &lt;freq&gt; cells&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress_status</span><span class="p">()</span>
+
+        <span class="c"># Check abortes state and raise StopIteration if aborted</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aborted</span><span class="p">:</span>
+            <span class="n">statustext</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;File saving aborted.&quot;</span><span class="p">)</span>
+            <span class="n">post_command_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">StatusBarMsg</span><span class="p">,</span>
+                               <span class="n">text</span><span class="o">=</span><span class="n">statustext</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_cls</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AOpenMixin.progress_status"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.AOpenMixin.progress_status">[docs]</a>    <span class="k">def</span> <span class="nf">progress_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Displays progress in statusbar&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statustext</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nele</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span>
+                                          <span class="n">totalele</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_lines</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">pasting</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">post_command_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">StatusBarMsg</span><span class="p">,</span>
+                                       <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="c"># The main window does not exist any more</span>
+                    <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Write directly to the status bar because the event queue</span>
+                <span class="c"># is not emptied during file access</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">GetStatusBar</span><span class="p">()</span><span class="o">.</span><span class="n">SetStatusText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="c"># Now wait for the statusbar update to be written on screen</span>
+            <span class="k">if</span> <span class="n">is_gtk</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">wx</span><span class="o">.</span><span class="n">Yield</span><span class="p">()</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">+=</span> <span class="mi">1</span>
+</div>
+<div class="viewcode-block" id="AOpenMixin.on_key"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.AOpenMixin.on_key">[docs]</a>    <span class="k">def</span> <span class="nf">on_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets aborted state if escape is pressed&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">pasting</span> <span class="ow">and</span> \
+           <span class="n">event</span><span class="o">.</span><span class="n">GetKeyCode</span><span class="p">()</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">WXK_ESCAPE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aborted</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="AOpen"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.AOpen">[docs]</a><span class="k">class</span> <span class="nc">AOpen</span><span class="p">(</span><span class="n">AOpenMixin</span><span class="p">,</span> <span class="nb">file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read and write files with status messages and abort option</span>
+
+<span class="sd">    Extra Key Word Parameters (extends open)</span>
+<span class="sd">    ----------------------------------------</span>
+
+<span class="sd">    main_window: Object</span>
+<span class="sd">    \tMain window object, must be set</span>
+<span class="sd">    statustext: String, defaults to &quot;&quot;</span>
+<span class="sd">    \tLeft text in statusbar to be displayed</span>
+<span class="sd">    total_lines: Integer, defaults to None</span>
+<span class="sd">    \tThe number of elements that have to be processed</span>
+<span class="sd">    freq: Integer, defaults to 1000</span>
+<span class="sd">    \tNo. operations between two abort possibilities</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parent_cls</span> <span class="o">=</span> <span class="nb">file</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_state</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="nb">file</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Bz2AOpen"><a class="viewcode-back" href="../../../../pyspread.src.lib.html#pyspread.src.lib.fileio.Bz2AOpen">[docs]</a><span class="k">class</span> <span class="nc">Bz2AOpen</span><span class="p">(</span><span class="n">AOpenMixin</span><span class="p">,</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read and write bz2 files with status messages and abort option</span>
+
+<span class="sd">    Extra Key Word Parameters (extends open)</span>
+<span class="sd">    ----------------------------------------</span>
+
+<span class="sd">    main_window: Object</span>
+<span class="sd">    \tMain window object, must be set</span>
+<span class="sd">    statustext: String, defaults to &quot;&quot;</span>
+<span class="sd">    \tLeft text in statusbar to be displayed</span>
+<span class="sd">    total_lines: Integer, defaults to None</span>
+<span class="sd">    \tThe number of elements that have to be processed</span>
+<span class="sd">    freq: Integer, defaults to 1000</span>
+<span class="sd">    \tNo. operations between two abort possibilities</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parent_cls</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_state</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/pyspread.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Pyspread 0.4 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Martin Manns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
