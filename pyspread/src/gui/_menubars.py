@@ -211,9 +211,9 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.PreferencesMsg, _("Preferences..."),
                         _("Change preferences of pyspread"),
                         wx.ID_PREFERENCES]],
-                [item, [self.NewGpgKeyMsg, _("GPG key..."),
-                        _("Create or choose a GPG key pair for signing pys "
-                          "files")]],
+                [item, [self.NewGpgKeyMsg, _("Switch GPG key..."),
+                        _("Create or choose a GPG key pair for signing and "
+                          "verifying pyspread files")]],
                 ["Separator"],
                 [item, [self.CloseMsg, _("&Quit") + "\tCtrl+q",
                         _("Quit pyspread"), wx.ID_EXIT]]]],

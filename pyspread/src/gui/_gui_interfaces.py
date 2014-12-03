@@ -32,7 +32,6 @@ Provides:
 import csv
 from itertools import islice
 import os
-import sys
 import types
 
 import wx
@@ -170,7 +169,7 @@ class ModalDialogInterfaceMixin(object):
         """Opens print setup dialog and returns print_data"""
 
         psd = wx.PageSetupDialogData(print_data)
-        ##psd.EnablePrinter(False)
+        # psd.EnablePrinter(False)
         psd.CalculatePaperSizeFromId()
         dlg = wx.PageSetupDialog(self.main_window, psd)
         dlg.ShowModal()
@@ -392,7 +391,8 @@ def get_key_params_from_user(gpg_key_param_list):
             textctrl.SetValue(val)
 
         if dlg.ShowModal() != wx.ID_OK:
-            sys.exit()
+            dlg.Destroy()
+            return
 
         vals = [textctrl.Value for textctrl in dlg.textctrls]
 

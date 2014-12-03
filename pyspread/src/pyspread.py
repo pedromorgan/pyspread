@@ -199,7 +199,7 @@ class MainApplication(wx.App, GridActionEventMixin):
 
             try:
                 from src.lib.gpg import genkey
-                self.config["gpg_key_fingerprint"] = ""
+                self.config["gpg_key_fingerprint"] = repr("")
                 genkey()
 
             except ImportError:

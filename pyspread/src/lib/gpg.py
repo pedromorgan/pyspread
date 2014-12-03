@@ -35,8 +35,6 @@ Provides
 
 """
 
-import sys
-
 import wx
 import gnupg
 
@@ -144,6 +142,9 @@ def genkey(key_name=None):
         # No key has been chosen --> Create new one
         if key_name is None:
             gpg_key_parameters = get_key_params_from_user(gpg_key_param_list)
+            if gpg_key_parameters is None:
+                # No name entered
+                return
         else:
             gpg_key_param_list.append(
                 ('name_real', '{key_name}'.format(key_name=key_name)))
@@ -163,8 +164,7 @@ def genkey(key_name=None):
             short_message = _("New GPG key").format(pyspread_key_uid)
             message = _("After confirming this dialog, a new GPG key ") + \
                 _("'{key}' will be generated.").format(key=pyspread_key_uid) +\
-                _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
-                _("Canceling this operation exits pyspread.")
+                _(" \n \nThis may take some time.\nPlease wait.")
             dlg = wx.MessageDialog(None, message, short_message, style)
             dlg.Centre()
 
@@ -175,7 +175,7 @@ def genkey(key_name=None):
                 fingerprint = gpg_key.fingerprint
             else:
                 dlg.Destroy()
-                sys.exit()
+                return
 
         else:
             gpg_key = gpg.gen_key(input_data)
@@ -183,6 +183,7 @@ def genkey(key_name=None):
             fingerprint = gpg_key.fingerprint
 
     return fingerprint
+
 
 def sign(filename):
     """Returns detached signature for file"""
