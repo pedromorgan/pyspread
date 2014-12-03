@@ -47,7 +47,7 @@ from sysvars import get_program_path
 import lib.i18n as i18n
 
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 sys.setrecursionlimit(10000)
@@ -94,7 +94,6 @@ class Commandlineparser(object):
 
     def __init__(self):
         from src.config import config
-        self.config = config
 
         usage_str = _("usage: %prog [options] [filename]")
         version = config["version"]
@@ -112,7 +111,14 @@ class Commandlineparser(object):
             "-d", "--dimensions", type="int", nargs=3,
             dest="dimensions", default=grid_shape,
             help=_("Dimensions of empty grid (works only without filename) "
-                   "rows, cols, tables [default: %default]")
+                   "rows, cols, tables [default: %default]"),
+        )
+
+        self.parser.add_option(
+            "-g", "--new_gpgkey",
+            action="store_true", dest="new_gpgkey", default=False,
+            help=_("Lets the user create or choose a new GPG key for signing "
+                   "pys files."),
         )
 
     def parse(self):
@@ -124,6 +130,7 @@ class Commandlineparser(object):
         \tThe name of the file that is loaded on start-up
 
         """
+
         options, args = self.parser.parse_args()
 
         # If one dimension is 0 then the grid has no cells
@@ -140,6 +147,8 @@ class Commandlineparser(object):
         if len(args) == 1:
             # A filename is provided and hence opened
             filename = args[0]
+        else:
+            filename = None
 
         return options, filename
 
@@ -149,16 +158,15 @@ class Commandlineparser(object):
 class MainApplication(wx.App, GridActionEventMixin):
     """Main application class for pyspread."""
 
-    dimensions = (1, 1, 1)  # Will be overridden anyways
-    options = {}
-    filename = None
-
     def __init__(self, *args, **kwargs):
 
         try:
             self.S = kwargs.pop("S")
         except KeyError:
             self.S = None
+
+        from src.config import config
+        self.config = config
 
         # call parent class initializer
         wx.App.__init__(self, *args, **kwargs)
@@ -167,7 +175,12 @@ class MainApplication(wx.App, GridActionEventMixin):
         """Init class that is automatically run on __init__"""
 
         # Get command line options and arguments
-        self.get_cmd_args()
+        cmdp = Commandlineparser()
+        options, filename = cmdp.parse()
+
+        # Store command line input in config if no file is provided
+        if filename is None:
+            self.options_to_config(options)
 
         # Main window creation
         from src.gui._main_window import MainWindow
@@ -180,14 +193,18 @@ class MainApplication(wx.App, GridActionEventMixin):
 
         try:
             from src.lib.gpg import genkey
-            genkey()
+
+            if options.new_gpgkey:
+                self.config["gpg_key_fingerprint"] = ""
+                genkey()
+            else:
+                genkey(key_name="pyspread_signature_key")
 
         except ImportError:
             pass
 
         except ValueError:
-            # python-gnupg is installed but gnupg is not insatlled
-
+            # python-gnupg is installed but gnupg is not installed
             pass
 
         # Show application window
@@ -195,40 +212,25 @@ class MainApplication(wx.App, GridActionEventMixin):
         self.main_window.Show()
 
         # Load filename if provided
-        if self.filepath is not None:
+        if filename is not None:
             post_command_event(self.main_window, self.GridActionOpenMsg,
-                               attr={"filepath": self.filepath})
-            self.main_window.filepath = self.filepath
+                               attr={"filepath": filename})
+            self.main_window.filepath = filename
 
         return True
 
-    def get_cmd_args(self):
-        """Returns command line arguments
+    def options_to_config(self, options):
+        """Stores options in pyspread configuration"""
 
-        Created attributes
-        ------------------
+        rows, columns, tables = options.dimensions
 
-        options: dict
-        \tCommand line options
-        dimensions: Three tuple of Int
-        \tGrid dimensions, default value (1,1,1).
-        filename: String
-        \tFile name that is loaded on start
-
-        """
-
-        cmdp = Commandlineparser()
-        self.options, self.filepath = cmdp.parse()
-
-        if self.filename is None:
-            rows, columns, tables = self.options.dimensions
-            cmdp.config["grid_rows"] = str(rows)
-            cmdp.config["grid_columns"] = str(columns)
-            cmdp.config["grid_tables"] = str(tables)
+        self.config["grid_rows"] = str(rows)
+        self.config["grid_columns"] = str(columns)
+        self.config["grid_tables"] = str(tables)
 
 
 def pyspread(S=None):
-    """Parses command line and starts pyspread"""
+    """Holds application main loop"""
 
     # Initialize main application
     app = MainApplication(S=S, redirect=False)

@@ -105,13 +105,21 @@ def genkey(key_name=None):
 
     """
 
+    gpg_key_param_list = [
+        ('key_type', 'DSA'),
+        ('key_length', '2048'),
+        ('subkey_type', 'ELG-E'),
+        ('subkey_length', '2048'),
+        ('expire_date', '0'),
+    ]
+
     gpg = gnupg.GPG()
 
     gpg.encoding = 'utf-8'
 
     # Check if standard key is already present
 
-    pyspread_key_fingerprint = str(config["gpg_key_fingerprint"])
+    pyspread_key_fingerprint = config["gpg_key_fingerprint"]
     gpg_private_keys = gpg.list_keys(True)
     gpg_private_fingerprints = gpg.list_keys(True).fingerprints
 
@@ -119,7 +127,7 @@ def genkey(key_name=None):
 
     for private_key, fingerprint in zip(gpg_private_keys,
                                         gpg_private_fingerprints):
-        if pyspread_key_fingerprint == fingerprint:
+        if str(pyspread_key_fingerprint) == fingerprint:
             pyspread_key = private_key
 
     if key_name is None and pyspread_key is None:
@@ -135,16 +143,11 @@ def genkey(key_name=None):
     else:
         # No key has been chosen --> Create new one
         if key_name is None:
-            gpg_key_parameters = get_key_params_from_user()
+            gpg_key_parameters = get_key_params_from_user(gpg_key_param_list)
         else:
-            gpg_key_parameters = dict([
-                ('key_type', 'DSA'),
-                ('key_length', '1024'),
-                ('subkey_type', 'ELG-E'),
-                ('subkey_length', '1024'),
-                ('expire_date', '0'),
-                ('name_real', '{key_name}'.format(key_name=key_name)),
-            ])
+            gpg_key_param_list.append(
+                ('name_real', '{key_name}'.format(key_name=key_name)))
+            gpg_key_parameters = dict(gpg_key_param_list)
 
         input_data = gpg.gen_key_input(**gpg_key_parameters)
 

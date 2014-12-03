@@ -369,20 +369,18 @@ class GuiInterfaces(DialogInterfaceMixin, ModalDialogInterfaceMixin):
         self.main_window = main_window
 
 
-def get_key_params_from_user():
-    """Displays parameter entry dialog and returns parameter dict"""
+def get_key_params_from_user(gpg_key_param_list):
+    """Displays parameter entry dialog and returns parameter dict
 
-    gpg_key_parameters = [
-        ('key_type', 'DSA'),
-        ('key_length', '2048'),
-        ('subkey_type', 'ELG-E'),
-        ('subkey_length', '2048'),
-        ('expire_date', '0'),
-    ]
+    Parameters
+    ----------
 
-    params = [
-        [_('Real name'), 'name_real'],
-    ]
+    gpg_key_param_list: List of 2-tuples
+    \tContains GPG key generation parameters but not name_real
+
+    """
+
+    params = [[_('Real name'), 'name_real']]
 
     vals = [""] * len(params)
 
@@ -409,6 +407,6 @@ def get_key_params_from_user():
             dlg.Destroy()
 
     for (__, key), val in zip(params, vals):
-        gpg_key_parameters.insert(-2, (key, val))
+        gpg_key_param_list.insert(-2, (key, val))
 
-    return dict(gpg_key_parameters)
+    return dict(gpg_key_param_list)

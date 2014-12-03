@@ -162,6 +162,11 @@ class Config(object):
 
             return literal_eval(getattr(self.data, key))
 
+        except SyntaxError:
+            # May happen if a file is not present any more
+
+            return None
+
     def __setitem__(self, key, value):
         """Main config element write access"""
 
