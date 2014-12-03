@@ -56,7 +56,7 @@ from src.model.model import CodeArray
 from src.actions._grid_actions import AllGridActions
 from src.gui._grid_cell_editor import GridCellEditor
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 

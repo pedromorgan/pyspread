@@ -67,6 +67,7 @@ class MainWindowEventMixin(object):
     SafeModeExitMsg, EVT_CMD_SAFE_MODE_EXIT = new_command_event()
 
     PreferencesMsg, EVT_CMD_PREFERENCES = new_command_event()
+    NewGpgKeyMsg, EVT_CMD_NEW_GPG_KEY = new_command_event()
 
     CloseMsg, EVT_CMD_CLOSE = new_command_event()
 

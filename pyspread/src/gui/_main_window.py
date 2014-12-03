@@ -50,6 +50,11 @@ try:
 except ImportError:
     xlrd = None
 
+try:
+    from src.lib.gpg import genkey
+except ImportError:
+    genkey = None
+
 import src.lib.i18n as i18n
 from src.config import config
 from src.sysvars import get_python_tutorial_path, is_gtk
@@ -84,6 +89,15 @@ class MainWindow(wx.Frame, EventMixin):
         except KeyError:
             S = None
 
+        try:
+            dimensions = kwargs.pop("dimensions")
+
+        except KeyError:
+            dimensions = (
+                config["grid_rows"],
+                config["grid_columns"],
+                config["grid_tables"])
+
         wx.Frame.__init__(self, parent, *args, **kwargs)
 
         self.interfaces = GuiInterfaces(self)
@@ -92,9 +106,9 @@ class MainWindow(wx.Frame, EventMixin):
             self._mgr = aui.AuiManager(self)
 
         except Exception:
-            # This may fail if py.testv runs under Windows
+            # This may fail if py.test runs under Windows
             # Therefore, we set up a basic framework for the unit tests
-            self.grid = Grid(self, -1, S=S, dimensions=(1000, 100, 3))
+            self.grid = Grid(self, -1, S=S, dimensions=dimensions)
             self.clipboard = Clipboard()
             self.actions = AllMainWindowActions(self.grid)
 
@@ -136,13 +150,6 @@ class MainWindow(wx.Frame, EventMixin):
         self.entry_line_panel = EntryLineToolbarPanel(self, -1)
 
         # Main grid
-
-        dimensions = (
-            config["grid_rows"],
-            config["grid_columns"],
-            config["grid_tables"],
-        )
-
         self.grid = Grid(self, -1, S=S, dimensions=dimensions)
 
         # Clipboard
@@ -288,6 +295,7 @@ class MainWindow(wx.Frame, EventMixin):
         # Preferences events
 
         self.Bind(self.EVT_CMD_PREFERENCES, handlers.OnPreferences)
+        self.Bind(self.EVT_CMD_NEW_GPG_KEY, handlers.OnNewGpgKey)
 
         # Toolbar toggle events
 
@@ -504,6 +512,23 @@ class MainWindowEventHandlers(EventMixin):
                     config[key] = preferences[key]
                 else:
                     config[key] = ast.literal_eval(preferences[key])
+
+    def OnNewGpgKey(self, event):
+        """New GPG key event handler.
+
+        Launches GPG choice and creation dialog
+
+        """
+
+        if genkey is None:
+            # gnupg is not present
+            self.interfaces.display_warning(
+                _("Python gnupg not found. No key selected."),
+                _("Key selection failed."))
+        else:
+            # gnupg is present
+            config["gpg_key_fingerprint"] = ""
+            genkey()
 
     # Toolbar events
 

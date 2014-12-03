@@ -178,34 +178,36 @@ class MainApplication(wx.App, GridActionEventMixin):
         cmdp = Commandlineparser()
         options, filename = cmdp.parse()
 
+        kwargs = {
+            "title": "pyspread",
+            "S": self.S
+        }
+
         # Store command line input in config if no file is provided
         if filename is None:
-            self.options_to_config(options)
+            kwargs["dimensions"] = options.dimensions
 
         # Main window creation
         from src.gui._main_window import MainWindow
 
-        self.main_window = MainWindow(None, title="pyspread", S=self.S)
+        self.main_window = MainWindow(None, **kwargs)
 
         # Initialize file loading via event
 
-        # Create GPG key if not present
+        if options.new_gpgkey:
+            # Create GPG key if not present
 
-        try:
-            from src.lib.gpg import genkey
-
-            if options.new_gpgkey:
+            try:
+                from src.lib.gpg import genkey
                 self.config["gpg_key_fingerprint"] = ""
                 genkey()
-            else:
-                genkey(key_name="pyspread_signature_key")
 
-        except ImportError:
-            pass
+            except ImportError:
+                pass
 
-        except ValueError:
-            # python-gnupg is installed but gnupg is not installed
-            pass
+            except ValueError:
+                # python-gnupg is installed but gnupg is not installed
+                pass
 
         # Show application window
         self.SetTopWindow(self.main_window)
@@ -218,15 +220,6 @@ class MainApplication(wx.App, GridActionEventMixin):
             self.main_window.filepath = filename
 
         return True
-
-    def options_to_config(self, options):
-        """Stores options in pyspread configuration"""
-
-        rows, columns, tables = options.dimensions
-
-        self.config["grid_rows"] = str(rows)
-        self.config["grid_columns"] = str(columns)
-        self.config["grid_tables"] = str(tables)
 
 
 def pyspread(S=None):
