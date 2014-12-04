@@ -31,7 +31,11 @@ po and pot files are now included in the distribution tarball
 Pango markup warnings are now caught and displayed inside the cell
 Unit tests are now adapted to new unicode code quotation
 Button functionality included into weather example
-Matplotlib charts are now drawn via rsvg
+Matplotlib charts are now drawn via Cairo
+Table switching with the mouse wheel is now more robust
+Unit tests now work without a config file present
+GPG keys are not any more automatically generated on first start
+New GPG key generation option in the menu
 Known issue: Files with special characters in filename are never verified as trusted.
 
 
