@@ -1,1 +1,0 @@
-sphinx-apidoc -H Pyspread -A "Martin Manns" -V 0.4 -R 0.4 -F -o . ../../../pyspread /home/mn/prog/pyspread/pyspread/src/actions/test /home/mn/prog/pyspread/pyspread/src/interfaces/test /home/mn/prog/pyspread/pyspread/src/lib/test /home/mn/prog/pyspread/pyspread/src/model/test/
