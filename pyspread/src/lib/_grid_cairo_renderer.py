@@ -154,6 +154,16 @@ class GridCairoRenderer(object):
 
         return pos_x, pos_y, width, height
 
+    def _get_merge_area(self, key):
+        """Returns the merge area of a merged cell
+
+        Merge area is a 4 tuple (top, left, bottom, right)
+
+        """
+
+        cell_attributes = self.code_array.cell_attributes[key]
+        return cell_attributes["merge_area"]
+
     def draw(self):
         """Draws slice to context"""
 
@@ -164,8 +174,22 @@ class GridCairoRenderer(object):
         for tab in xrange(tab_start, tab_stop):
             # Scale context to page extent
             # In order to keep the aspect ration intact use the maximum
-            first_rect = self.get_cell_rect(row_start, col_start, tab)
-            last_rect = self.get_cell_rect(row_stop - 1, col_stop - 1, tab)
+            first_key = row_start, col_start, tab
+            first_rect = self.get_cell_rect(*first_key)
+
+            # If we have a merged cell then use the top left cell rect
+            if first_rect is None:
+                top, left, __, __ = self._get_merge_area(first_key)
+                first_rect = self.get_cell_rect(top, left, tab)
+
+            last_key = row_stop - 1, col_stop - 1, tab
+            last_rect = self.get_cell_rect(*last_key)
+
+            # If we have a merged cell then use the top left cell rect
+            if last_rect is None:
+                top, left, __, __ = self._get_merge_area(last_key)
+                last_rect = self.get_cell_rect(top, left, tab)
+
             x_extent = last_rect[0] + last_rect[2] - first_rect[0]
             y_extent = last_rect[1] + last_rect[3] - first_rect[1]
 
