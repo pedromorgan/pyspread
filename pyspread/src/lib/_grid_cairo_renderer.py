@@ -122,8 +122,7 @@ class GridCairoRenderer(object):
         pos_x = self.x_offset
         pos_y = self.y_offset
 
-        cell_attributes = self.code_array.cell_attributes[(row, col, tab)]
-        merge_area = cell_attributes["merge_area"]
+        merge_area = self._get_merge_area((row, col, tab))
 
         for __row in xrange(top_row, row):
             __row_height = self.code_array.get_row_height(__row, tab)
