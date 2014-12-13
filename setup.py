@@ -53,7 +53,7 @@ setup(
     author_email='mmanns@gmx.net',
     url='http://manns.github.io/pyspread/',
     requires=['numpy (>=1.1)', 'wx (>=2.8.10)', 'matplotlib (>=1.1.1)',
-              'python_gnupg (>=0.3.0)', 'pycairo (>=1.8.8)', 'rsvg (>=2.32.0)',
+              'python_gnupg (>=0.3.0)', 'pycairo (>=1.8.8)',
               ],
     packages=['pyspread'],
     scripts=['pyspread/pyspread'],
