@@ -198,6 +198,7 @@ class TestXls(object):
     ]
 
     @params(param_get_font)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_get_font(self, pointsize, fontweight, fontstyle, easyxf):
         """Test _get_font method"""
 
@@ -227,6 +228,7 @@ class TestXls(object):
     ]
 
     @params(param_get_alignment)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_get_alignment(self, justification, vertical_align, angle, easyxf):
         """Test _get_alignment method"""
 
@@ -253,6 +255,7 @@ class TestXls(object):
     ]
 
     @params(param_get_pattern)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_get_pattern(self, bgcolor, easyxf):
         """Test _get_pattern method"""
 
@@ -279,6 +282,7 @@ class TestXls(object):
     ]
 
     @params(param_get_borders)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_get_borders(self, borderwidth_right, borderwidth_bottom,
                          bordercolor_right, bordercolor_bottom, easyxf):
         """Test _get_borders method"""
@@ -310,6 +314,7 @@ class TestXls(object):
     ]
 
     @params(param_get_xfstyle)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_get_xfstyle(self, key, sec_key, subsec_key, style_key, val,
                          easyxf):
         """Test _get_xfstyle method"""
