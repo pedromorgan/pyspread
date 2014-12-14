@@ -24,6 +24,12 @@ from distutils.core import setup, Command
 import sys
 import subprocess
 
+# Uncomment this to package with setuptools. Then extras_require is usable
+#try:
+#    import setuptools
+#except ImportError:
+#    pass
+
 
 class PyTest(Command):
     """Class for running py.test via setup.py"""
@@ -54,6 +60,13 @@ setup(
     url='http://manns.github.io/pyspread/',
     requires=['numpy (>=1.1)', 'wx (>=2.8.10)', 'matplotlib (>=1.1.1)',
               'pycairo (>=1.8.8)'],
+#    extras_require = {
+#        'GPG': ['gnupg>=0.3.0'],
+#        'SVG': [],  # May require python_rsvg if not shipped with pyCairo
+#        'XLS': ['xlrd>=0.9.1', 'xlwt>=0.7.5'],
+#        'code_completion': ['jedi>=0.8'],
+#        'basemap': ['basemap>=1.0.7'],
+#    },
     packages=['pyspread'],
     scripts=['pyspread/pyspread'],
     cmdclass={'test': PyTest},
