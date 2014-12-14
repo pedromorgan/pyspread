@@ -32,7 +32,12 @@ import bz2
 import os
 import sys
 
-import gnupg
+try:
+    import gnupg
+except ImportError:
+    gnupg = None
+
+import pytest
 
 import wx
 app = wx.App()
@@ -49,7 +54,12 @@ from src.lib.testlib import params, pytest_generate_tests
 from src.lib.testlib import basic_setup_test, restore_basic_grid
 
 from src.gui._events import *
-from src.lib.gpg import genkey
+
+try:
+    from src.lib.gpg import genkey
+except ImportError:
+    genkey = None
+
 from src.config import config
 
 class TestFileActions(object):
@@ -58,7 +68,8 @@ class TestFileActions(object):
     def setup_method(self, method):
 
         # Generate a GPG key if not present
-        self.fingerprint = genkey(key_name="pyspread_test_key")
+        if genkey is not None:
+            self.fingerprint = genkey(key_name="pyspread_test_key")
 
         self.main_window = MainWindow(None, title="pyspread", S=None)
         self.grid = self.main_window.grid
@@ -94,7 +105,8 @@ class TestFileActions(object):
         self.filename_save = TESTPATH + "test_save.pys"
 
     def teardown_method(self, method):
-        if self.fingerprint != config["gpg_key_fingerprint"] and \
+        if gnupg is not None and \
+           self.fingerprint != config["gpg_key_fingerprint"] and \
            self.fingerprint is not None:
             gpg = gnupg.GPG()
             print repr(self.fingerprint)
@@ -102,6 +114,7 @@ class TestFileActions(object):
             gpg.delete_keys(self.fingerprint, True)
             gpg.delete_keys(self.fingerprint)
 
+    @pytest.mark.skipif(gnupg is None, reason="requires gnupg")
     def test_validate_signature(self):
         """Tests signature validation"""
 
@@ -129,6 +142,7 @@ class TestFileActions(object):
         self.grid.actions.leave_safe_mode()
         assert not self.grid.code_array.safe_mode
 
+    @pytest.mark.skipif(gnupg is None, reason="requires gnupg")
     def test_approve(self):
 
         # Test if safe_mode is correctly set for invalid sig
@@ -256,34 +270,35 @@ class TestFileActions(object):
 
         assert self.grid.GetTable().data_array.safe_mode  # sig is also empty
 
-        # Test invalid sig files
-        event.attr["filepath"] = self.filename_invalid_sig
-        self.grid.actions.open(event)
+        if gnupg is not None:
+            # Test invalid sig files
+            event.attr["filepath"] = self.filename_invalid_sig
+            self.grid.actions.open(event)
 
-        assert self.grid.GetTable().data_array.safe_mode
+            assert self.grid.GetTable().data_array.safe_mode
 
-        # Test file with sig
-        event.attr["filepath"] = self.filename_valid_sig
-        self.grid.actions.open(event)
+            # Test file with sig
+            event.attr["filepath"] = self.filename_valid_sig
+            self.grid.actions.open(event)
 
-        assert not self.grid.GetTable().data_array.safe_mode
+            assert not self.grid.GetTable().data_array.safe_mode
 
-        # Test file without sig
-        event.attr["filepath"] = self.filename_no_sig
-        self.grid.actions.open(event)
+            # Test file without sig
+            event.attr["filepath"] = self.filename_no_sig
+            self.grid.actions.open(event)
 
-        assert self.grid.GetTable().data_array.safe_mode
+            assert self.grid.GetTable().data_array.safe_mode
 
-        # Test self.grid size for valid file
-        event.attr["filepath"] = self.filename_gridsize
-        self.grid.actions.open(event)
+            # Test self.grid size for valid file
+            event.attr["filepath"] = self.filename_gridsize
+            self.grid.actions.open(event)
 
-        new_shape = self.grid.GetTable().data_array.shape
-        assert new_shape == (1000, 100, 10)
+            new_shape = self.grid.GetTable().data_array.shape
+            assert new_shape == (1000, 100, 10)
 
-        # Test self.grid content for valid file
-        assert not self.grid.code_array.safe_mode
-        assert self.grid.GetTable().data_array[0, 0, 0] == "test4"
+            # Test self.grid content for valid file
+            assert not self.grid.code_array.safe_mode
+            assert self.grid.GetTable().data_array[0, 0, 0] == "test4"
 
     def test_save(self):
         """Tests save functionality"""
@@ -325,15 +340,17 @@ class TestFileActions(object):
         except TypeError:
             pass
 
-        # Test sig creation is happening
+        if gnupg is not None:
+            # Test sig creation is happening
 
-        sigfile = open(self.filename_save + ".sig")
-        assert sigfile
-        sigfile.close()
+            sigfile = open(self.filename_save + ".sig")
+            assert sigfile
+            sigfile.close()
+            os.remove(self.filename_save + ".sig")
 
         os.remove(self.filename_save)
-        os.remove(self.filename_save + ".sig")
 
+    @pytest.mark.skipif(gnupg is None, reason="requires gnupg")
     def test_sign_file(self):
         """Tests signing functionality"""
 

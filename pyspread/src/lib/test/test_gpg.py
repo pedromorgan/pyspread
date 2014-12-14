@@ -31,6 +31,8 @@ Unit tests for gpg.py
 import os
 import sys
 
+import pytest
+
 import wx
 app = wx.App()
 
@@ -39,12 +41,16 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
-import gnupg
-
-import src.lib.gpg as gpg
-from src.lib.testlib import params, pytest_generate_tests
-from src.lib.gpg import genkey
 from src.config import config
+
+from src.lib.testlib import params, pytest_generate_tests
+
+try:
+    import gnupg
+    import src.lib.gpg as gpg
+    from src.lib.gpg import genkey
+except ImportError:
+    gnupg = None
 
 config_fingerprint = config["gpg_key_fingerprint"]
 fingerprint = None
@@ -58,6 +64,10 @@ def setup_function(function):
 def teardown_module(module):
     """Deletes previously generated GPG key"""
 
+    if gnupg is None:
+        # gnupg is not installed
+        return
+
     if fingerprint != config_fingerprint:
         gpg = gnupg.GPG()
 
@@ -65,6 +75,7 @@ def teardown_module(module):
         gpg.delete_keys(fingerprint, True)
         gpg.delete_keys(fingerprint)
 
+@pytest.mark.skipif(gnupg is None, reason="requires gnupg")
 def _set_sig(filename, sigfilename):
     """Creates a signature sigfilename for file filename"""
 
@@ -74,7 +85,7 @@ def _set_sig(filename, sigfilename):
     sigfile.write(signature)
     sigfile.close()
 
-
+@pytest.mark.skipif(gnupg is None, reason="requires gnupg")
 def test_sign():
     """Unit test for sign"""
 
@@ -96,8 +107,8 @@ param_verify = [
      'sigfilename': TESTPATH + "test1.pys.nonsense", 'valid': 0},
 ]
 
-
 @params(param_verify)
+@pytest.mark.skipif(gnupg is None, reason="requires gnupg")
 def test_sign_verify(filename, sigfilename, valid):
     """Unit test for verify"""
 

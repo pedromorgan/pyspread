@@ -30,8 +30,18 @@ Unit tests for xls.py
 
 import os
 import sys
-import xlrd
-import xlwt
+
+try:
+    import xlrd
+except ImportError:
+    xlrd = None
+
+try:
+    import xlwt
+except ImportError:
+    xlwt = None
+
+import pytest
 
 import wx
 app = wx.App()
@@ -47,7 +57,7 @@ from src.lib.testlib import params, pytest_generate_tests
 from src.model.model import CodeArray
 from src.sysvars import get_dpi, get_default_font
 
-
+@pytest.mark.skipif(xlrd is None, reason="requires xlrd")
 class TestXls(object):
     """Unit tests for Xls"""
 
@@ -118,6 +128,7 @@ class TestXls(object):
     ]
 
     @params(param_shape2xls)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_shape2xls(self, tabs, res):
         """Test _shape2xls method"""
 
@@ -141,6 +152,7 @@ class TestXls(object):
     ]
 
     @params(param_code2xls)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_code2xls(self, key, val, code):
         """Test _code2xls method"""
 
@@ -339,7 +351,7 @@ class TestXls(object):
         self.xls_in._xls2attributes(worksheet, 0)
 
         attrs = self.code_array.dict_grid.cell_attributes[key]
-        print attrs
+
         assert attrs[attr] == val
 #
 #    param_cell_attribute_append = [
@@ -380,6 +392,7 @@ class TestXls(object):
     ]
 
     @params(param_row_heights2xls)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_row_heights2xls(self, row, tab, hpixels):
         """Test _row_heights2xls method"""
 
@@ -426,6 +439,7 @@ class TestXls(object):
     ]
 
     @params(param_col_widths2xls)
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_col_widths2xls(self, col, tab, width, points):
         """Test _col_widths2xls method"""
 
@@ -460,6 +474,7 @@ class TestXls(object):
         res = self.code_array.dict_grid.col_widths[(col, tab)]
         assert round(res, 3) == width
 
+    @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_from_code_array(self):
         """Test from_code_array method"""
 
