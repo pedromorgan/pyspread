@@ -1399,14 +1399,26 @@ class SelectionActions(Actions):
                 for col in xrange(col_slc.start, col_slc.stop, col_slc.step):
                     self.select_cell(row, col, add_to_selected=True)
 
-    def delete_selection(self):
-        """Deletes selected cells, marks content as changed"""
+    def delete_selection(self, selection=None):
+        """Deletes selection, marks content as changed
+
+        If selection is None then the current grid selection is used.
+
+        Parameters
+        ----------
+
+        selection: Selection, defaults to None
+        \tSelection that shall be deleted
+
+        """
 
         # Mark content as changed
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        selection = self.get_selection()
+        if selection is None:
+            selection = self.get_selection()
+
         current_table = self.grid.current_table
 
         for row, col, tab in self.grid.code_array.dict_grid.keys():

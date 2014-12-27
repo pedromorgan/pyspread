@@ -368,7 +368,15 @@ class CellActions(Actions):
         """Merges top left cell with all cells until bottom_right"""
 
         top, left, bottom, right = merge_area
+
+        cursor = self.grid.actions.cursor
+        top_left_code = self.code_array((top, left, cursor[2]))
+
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+
+        self.delete_selection(selection)
+        self.code_array[(top, left, cursor[2])] = top_left_code
+
         attr = {"merge_area": merge_area, "locked": True}
 
         self._set_cell_attr(selection, tab, attr)

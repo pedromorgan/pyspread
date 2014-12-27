@@ -648,7 +648,11 @@ class DataArray(object):
 
                     # End UnRedo support
 
-                self.dict_grid[single_key] = value
+                # Never change merged cells
+                merging_cell = \
+                    self.cell_attributes.get_merging_cell(single_key)
+                if merging_cell is None or merging_cell == single_key:
+                    self.dict_grid[single_key] = value
             else:
                 # Value is empty --> delete cell
                 try:
