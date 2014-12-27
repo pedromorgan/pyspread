@@ -89,6 +89,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         grid = self.main_window.grid
         key = grid.actions.cursor
+
         drawn_rect = grid.grid_renderer._get_drawn_rect(grid, key, rect)
 
         self._tc.SetDimensions(drawn_rect.x, drawn_rect.y,
@@ -133,6 +134,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         # Disable if cell is locked, enable if cell is not locked
         grid = self.main_window.grid
         key = grid.actions.cursor
+
         locked = grid.code_array.cell_attributes[key]["locked"]or \
             grid.code_array.cell_attributes[key]["button_cell"]
         self._tc.Enable(not locked)
@@ -252,6 +254,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         If the editor is enabled by pressing keys on the grid, this will be
         called to let the editor do something about that first key if desired.
         """
+
         key = evt.GetKeyCode()
         ch = None
         if key in [
