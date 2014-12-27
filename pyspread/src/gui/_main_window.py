@@ -208,11 +208,12 @@ class MainWindow(wx.Frame, EventMixin):
 
             # Get menu item to toggle
             toggle_id = self.menubar.FindMenuItem(_("View"), toggle_label)
+            if toggle_id != -1:
+                # Check may fail if translation is incomplete
+                toggle_item = self.menubar.FindItemById(toggle_id)
 
-            toggle_item = self.menubar.FindItemById(toggle_id)
-
-            # Adjust toggle to pane visibility
-            toggle_item.Check(pane.IsShown())
+                # Adjust toggle to pane visibility
+                toggle_item.Check(pane.IsShown())
 
     def _do_layout(self):
         """Adds widgets to the aui manager and controls the layout"""
