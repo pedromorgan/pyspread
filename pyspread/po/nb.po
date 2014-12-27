@@ -82,7 +82,7 @@ msgstr "Bruk: %prog [parametre] filnavn"
 
 #: src/pyspread.py:97
 msgid "%prog {version}"
-msgstr "%prog {versjon}"
+msgstr "%prog {version}"
 
 #: src/pyspread.py:110
 #, python-format
@@ -525,7 +525,7 @@ msgstr "Sett tekstrotasjon"
 
 #: src/gui/_menubars.py:331
 msgid "&Macro"
-msgstr "&Makro …"
+msgstr "&Makro…"
 
 #: src/gui/_menubars.py:332
 msgid "&Macro list"
