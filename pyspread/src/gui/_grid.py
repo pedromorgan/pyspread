@@ -736,34 +736,20 @@ class GridCellEventHandlers(object):
     def OnCellSelected(self, event):
         """Cell selection event handler"""
 
+        key = row, col, tab = event.Row, event.Col, self.grid.current_table
+
+        # Is the cell merged then go to merging cell
+        cell_attributes = self.grid.code_array.cell_attributes
+        merging_cell = cell_attributes.get_merging_cell(key)
+        if merging_cell is not None and merging_cell != key:
+            post_command_event(self.grid, self.grid.GotoCellMsg,
+                               key=merging_cell)
+            return
+
         # If in selection mode do nothing
         # This prevents the current cell from changing
         if not self.grid.IsEditable():
             return
-
-        key = row, col, tab = event.Row, event.Col, self.grid.current_table
-
-        # Is the cell merged then go to merging cell
-        merge_area = self.grid.code_array.cell_attributes[key]["merge_area"]
-
-        if merge_area is not None:
-            top, left, bottom, right = merge_area
-            if self.grid._last_selected_cell == (top, left, tab):
-                if row == top + 1:
-                    if bottom + 1 < self.grid.code_array.shape[0]:
-                        self.grid.actions.set_cursor((bottom + 1, left, tab))
-                    else:
-                        self.grid.actions.set_cursor((top, left, tab))
-                    return
-                elif col == left + 1:
-                    if right + 1 < self.grid.code_array.shape[1]:
-                        self.grid.actions.set_cursor((top, right + 1, tab))
-                    else:
-                        self.grid.actions.set_cursor((top, left, tab))
-                    return
-            elif (row, col) != (top, left):
-                self.grid.actions.set_cursor((top, left, tab))
-                return
 
         # Redraw cursor
         self.grid.ForceRefresh()
