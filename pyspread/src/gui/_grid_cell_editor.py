@@ -21,7 +21,7 @@
 
 """
 _grid_cell_editor.py
-=====
+====================
 
 Provides
 --------
@@ -39,9 +39,12 @@ from src.lib._string_helpers import quote
 
 class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
     """In grid cell editor for entering code
+
     Refer to :
     https://github.com/wxWidgets/wxPython/blob/master/demo/GridCustEditor.py
+
     """
+
     def __init__(self, main_window, max_char_width=50):
 
         self.main_window = main_window
@@ -81,8 +84,15 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Called to position/size the edit control within the cell rectangle.
         If you don't fill the cell (the rect) then be sure to override
         PaintBackground and do something meaningful there.
+
         """
-        self._tc.SetDimensions(rect.x, rect.y, rect.width+2, rect.height+2,
+
+        grid = self.main_window.grid
+        key = grid.actions.cursor
+        drawn_rect = grid.grid_renderer._get_drawn_rect(grid, key, rect)
+
+        self._tc.SetDimensions(drawn_rect.x, drawn_rect.y,
+                               drawn_rect.width+2, drawn_rect.height+2,
                                wx.SIZE_ALLOW_MINUS_ONE)
         self._tc.Layout()
 
@@ -90,7 +100,9 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         """
         Show or hide the edit control.  You can use the attr (if not None)
         to set colours or fonts for the control.
+
         """
+
         super(GridCellEditor, self).Show(show, attr)
 
     def PaintBackground(self, rect, attr, *args):
@@ -99,6 +111,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         base  class version just fills it with background colour from the
         attribute.  In this class the edit control fills the whole cell so
         don't do anything at all in order to reduce flicker.
+
         """
 
     def _execute_cell_code(self, row, col, grid):
@@ -114,6 +127,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Fetch the value from the table and prepare the edit control
         to begin editing.  Set the focus to the edit control.
         *Must Override*
+
         """
 
         # Disable if cell is locked, enable if cell is not locked
@@ -172,7 +186,9 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         it has not changed then simply return None, otherwise return
         the value in its string form.
         *Must Override*
+
         """
+
         # Mirror our changes onto the main_window's code bar
         self._tc.Unbind(wx.EVT_KEY_UP)
 
@@ -216,6 +232,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         Return True to allow the given key to start editing: the base class
         version only checks that the event has no modifiers.  F2 is special
         and will always start the editor.
+
         """
 
         ## We can ask the base class to do it
@@ -260,17 +277,21 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         If the editor is enabled by clicking on the cell, this method will be
         called to allow the editor to simulate the click on the control if
         needed.
+
         """
 
     def Destroy(self):
         """final cleanup"""
+
         super(GridCellEditor, self).Destroy()
 
     def Clone(self):
         """
         Create a new object which is the copy of this one
         *Must Override*
+
         """
+
         return GridCellEditor()
 
     def OnChar(self, event):
