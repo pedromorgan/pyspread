@@ -179,24 +179,31 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
                 return rect
 
-    def Draw(self, grid, attr, dc, rect, row, col, isSelected):
-        """Draws the cell border and content using pycairo"""
+    def _get_drawn_rect(self, grid, key, rect):
+        """Replaces drawn rect if the one provided by wx is incorrect
 
-        key = row, col, grid.current_table
+        This handles merged rects including those that are partly off screen.
+
+        """
 
         rect = self.get_merged_rect(grid, key, rect)
         if rect is None:
-            # Merged cell
+            # Merged cell is drawn
             if grid.is_merged_cell_drawn(key):
+                # Merging cell is outside view
                 row, col, __ = key = self.get_merging_cell(grid, key)
                 rect = grid.CellToRect(row, col)
                 rect = self.get_merged_rect(grid, key, rect)
             else:
                 return
 
-        rect_tuple = 0, 0, rect.width / self.zoom, rect.height / self.zoom
+        return rect
 
-        sorted_keys = sorted(grid.code_array.cell_attributes[key].iteritems())
+    def _get_draw_cache_key(self, grid, key, drawn_rect, is_selected):
+        """Returns key for the screen draw cache"""
+
+        zoomed_width = drawn_rect.width / self.zoom
+        zoomed_height = drawn_rect.height / self.zoom
 
         # Button cells shall not be executed for preview
         if grid.code_array.cell_attributes[key]["button_cell"]:
@@ -204,61 +211,72 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         else:
             cell_preview = repr(grid.code_array[key])[:100]
 
-        cell_cache_key = (rect_tuple[2], rect_tuple[3], isSelected,
-                          cell_preview, tuple(sorted_keys))
+        sorted_keys = sorted(grid.code_array.cell_attributes[key].iteritems())
+
+        return (zoomed_width, zoomed_height, is_selected, cell_preview,
+                tuple(sorted_keys))
+
+    def _get_cairo_bmp(self, mdc, key, rect, is_selected):
+        """Returns a wx.Bitmap of cell key in size rect"""
+
+        bmp = wx.EmptyBitmap(rect.width, rect.height)
+        mdc.SelectObject(bmp)
+        mdc.SetBackgroundMode(wx.SOLID)
+        mdc.SetBackground(wx.WHITE_BRUSH)
+        mdc.Clear()
+        mdc.SetDeviceOrigin(0, 0)
+
+        context = wx.lib.wxcairo.ContextFromDC(mdc)
+
+        context.save()
+
+        # Zoom context
+        zoom = self.zoom
+        context.scale(zoom, zoom)
+
+        # Set off cell renderer by 1/2 a pixel to avoid blurry lines
+        rect_tuple = \
+            -0.5, -0.5, rect.width / zoom + 0.5, rect.height / zoom + 0.5
+        cell_renderer = GridCellCairoRenderer(context, self.data_array,
+                                              key, rect_tuple)
+        # Draw cell
+        cell_renderer.draw()
+
+        # Draw selection if present
+        if is_selected:
+            context.set_source_rgba(*self.selection_color_tuple)
+            context.rectangle(*rect_tuple)
+            context.fill()
+
+        context.restore()
+
+        return bmp
+
+    def Draw(self, grid, attr, dc, rect, row, col, isSelected):
+        """Draws the cell border and content using pycairo"""
+
+        key = row, col, grid.current_table
+
+        drawn_rect = self._get_drawn_rect(grid, key, rect)
+        if drawn_rect is None:
+            return
+
+        cell_cache_key = self._get_draw_cache_key(grid, key, drawn_rect,
+                                                  isSelected)
 
         mdc = wx.MemoryDC()
-        pxoffs = int(self.zoom)
+
         if cell_cache_key in self.cell_cache:
             mdc.SelectObject(self.cell_cache[cell_cache_key])
 
         else:
-            bmp = wx.EmptyBitmap(rect.width + pxoffs, rect.height + pxoffs)
-            mdc.SelectObject(bmp)
-            mdc.SetBackgroundMode(wx.TRANSPARENT)
-            mdc.SetDeviceOrigin(0, 0)
-            context = wx.lib.wxcairo.ContextFromDC(mdc)
-
-            # Set hint style off to get consistent zooming
-            font_options = cairo.FontOptions()
-            font_options.set_hint_metrics(cairo.HINT_METRICS_OFF)
-            font_options.set_hint_style(cairo.HINT_STYLE_NONE)
-            context.set_font_options(font_options)
-
-            # Shift by 0.5 * zoom in order to avoid blurry lines
-            x_shift = 0.5 * self.zoom
-            y_shift = 0.5 * self.zoom
-            context.translate(x_shift, y_shift)
-
-            context.set_source_rgb(1, 1, 1)
-            context.rectangle(0, 0, rect.width + pxoffs, rect.height + pxoffs)
-            context.fill()
-            context.stroke()
-
-            # Zoom context
-            context.scale(self.zoom, self.zoom)
-
-            # Draw cell
-            cell_renderer = GridCellCairoRenderer(context, self.data_array,
-                                                  key, rect_tuple)
-
-            cell_renderer.draw()
-
-            # Draw selection if present
-            if isSelected:
-                context.set_source_rgba(*self.selection_color_tuple)
-                context.rectangle(*rect_tuple)
-                context.fill()
-
-            context.scale(1.0/self.zoom, 1.0/self.zoom)
-            context.translate(-x_shift, -y_shift)
+            bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected)
 
             # Put resulting bmp into cache
             self.cell_cache[cell_cache_key] = bmp
 
-        dc.Blit(rect.x-1, rect.y-1,
-                rect.width + pxoffs,
-                rect.height + pxoffs,
+        dc.Blit(drawn_rect.x, drawn_rect.y,
+                drawn_rect.width, drawn_rect.height,
                 mdc, 0, 0, wx.COPY)
 
         # Draw cursor
