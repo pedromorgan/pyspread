@@ -31,7 +31,7 @@ msgstr "Bruk: %prog [parametre] filnavn"
 
 #: src/pyspread.py:100
 msgid "%prog {version}"
-msgstr "%prog {versjon}"
+msgstr "%prog {version}"
 
 #: src/pyspread.py:113
 #, python-format
