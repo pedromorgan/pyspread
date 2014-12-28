@@ -1,0 +1,42 @@
+h1, p, ul {
+    font-size:12pt;
+    margin-right: 220px;
+}
+
+
+h1 {
+    width:140px;
+}
+
+p {
+    text-align:justify;
+    position: relative;
+    left:140px;
+    padding-right:140px;
+}
+
+ul {
+    text-align:justify;
+    position: relative;
+    left:120px;
+    padding-right:120px;
+}
+
+p.one_line_heading, ul.one_line_heading {
+    top:-2.1em;
+}
+
+p.impressum {
+    font-size:10pt;
+    font-style: italic;
+    text-align:left;
+}
+
+aside {
+    line-height: 15em;
+    display: block;
+    background-color: yellow;
+    width: 220px;
+    text-align: right;
+    float: right;
+}
