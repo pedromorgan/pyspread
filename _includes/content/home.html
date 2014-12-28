@@ -1,182 +1,178 @@
-    <table style="text-align: left; width: 100%; margin-left: auto;
-      margin-right: auto;" border="0" cellpadding="15" cellspacing="0">
-      <tbody>
-        <tr>
-          <th style="vertical-align: top; background-color: white;
-            width: 102px;"> About<br>
-          </th>
-          <td style="vertical-align: top;"> Pyspread is a
-            non-traditional spreadsheet application that is based on and
-            written in the programming language <a
-              href="http://www.python.org/">Python</a>.<br>
-            <br>
-            The goal of pyspread is to be the most pythonic spreadsheet.<br>
-            <br>
-            Pyspread expects Python expressions in its grid cells, which
-            makes a spreadsheet specific language obsolete. Each cell
-            returns a Python object that can be accessed from other
-            cells. These objects can represent anything including lists
-            or matrices.<br>
-            <br>
-            Pyspread is free software. It is released under the <a
-              href="http://www.gnu.org/copyleft/gpl.html">GPL v3</a>.<br>
-          </td>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td style="width: 211px;"> <a
-              href="images/screenshot_main_window.png"><img
-                alt="Pyspread main window"
-                src="images/screenshot_main_window_preview.png"
-                style="border: 0px solid ; width: 200px; height: 154px;"></a><br>
-          </td>
-        </tr>
-        <tr>
-          <th style="vertical-align: top; width: 102px;">Features<br>
-          </th>
-          <td style="vertical-align: top;">
-            <ul style="text-align: left;">
-              <li>CSV import and export</li>
-              <li>Chart creation dialog based on <a
-                  href="http://matplotlib.org/"> matplotlib</a> </li>
-              <li>Python objects as cell results</li>
-              <li>Python macros</li>
-              <li>GPG based save file signatures for preventing foreign
-                code execution<br>
-              </li>
-              <li>Access to all Python modules from within cells. These
-                modules allow for example matrix operations via <a
-                  href="http://www.numpy.org/"> numpy</a> or fixed point
-                decimal numbers for business calculations via <a
-                  href="http://docs.python.org/library/decimal.html">
-                  decimal</a>. </li>
-            </ul>
-          </td>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td style="width: 211px;"> <a
-              href="images/screenshot_sinus_large.png"><img
-                alt="Pyspread screenshot"
-                src="images/screenshot_sinus_thumb.png" style="border:
-                0px solid ; width: 200px; height: 173px;"></a><br>
-            <a href="images/screenshot_fonts.png"><br>
-            </a> </td>
-        </tr>
-        <tr>
-          <th style="vertical-align: top;">Target user group<br>
-          </th>
-          <td style="vertical-align: top; text-align: left;">
-            Directly using Python code in a grid is a core feature of pyspread.
-            The target user group has experience with or wants to learn the
-            programming language Python:<p>
-            <ul>
-                <li>Peter regularly documents layout planning projects. He already has
-                    a large base of Python code for doing calculations in
-                    this task. Peter has to provide project documentation in pdf files
-                    with a consistant layout. In the documentation, he has to visualize
-                    building layouts and calculation charts.
-                <li>Clara is a research engineer and wants to quickly create presentations
-                    and posters with a consistent layout and publication ready figures for
-                    her publications.
-                    She is proficient with Python and uses it for her scientific analyses.
-            </ul>
-            Not part of the target user group of Dolphin are Donna and Jack:
-            <ul>
-                <li>Donna is looking for a free replacement for Ms. Excel.
-                    She does not know any programming language.
-                <li>Jack does computation intensive data analysis that may take hours
-                    to compute. He is looking for a visually interactive data mining
-                    tool.
-            </ul>
-            This does not mean that Donna or Jack cannot work with pyspread. However,
-            Donna might find the larning curve for using Python code in cells too steep.
-            Jack on the other hand might be disappointed because his long running tasks
-            are likely to lock up pyspread.
-          </td>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td style="width: 211px;"> <a
-              href="images/screenshot_basemap_large.png"><img
-                alt="Pyspread screenshot"
-                src="images/screenshot_basemap_thumb.png" style="border:
-                0px solid ; width: 200px; height: 173px;"></a><br>
-            <a href="images/screenshot_fonts.png"><br>
-            </a> </td>
-        </tr>
-        <tr>
-          <th style="vertical-align: top; width: 102px;"> Requirements<br>
-          </th>
-          <td style="vertical-align: top;"> Pyspread is designed for
-            Linux and other GTK platforms. Windows<sup>&reg;</sup> is also supported.
-            <p><br>
-              <span style="text-decoration: underline;">Dependencies</span><br>
-            </p>
-            <ul>
-              <li> <a href="http://www.python.org/">Python</a>
-                (&gt;=2.7, &lt;3.0) </li>
-              <li> <a href="http://www.numpy.org/">numpy</a>
-                (&gt;=1.1.0) </li>
-              <li> <a href="http://www.wxpython.org/">wxPython</a>
-                (&gt;=2.8.10.1, Unicode version required) </li>
-              <li> <a href="http://matplotlib.org/">matplotlib</a>
-                (&gt;=1.1.1)</li>
-              <li> <a href="http://cairographics.org/pycairo/">pycairo</a>
-                (&gt;=1.8.8)</li>
-            </ul>
-            <span style="text-decoration: underline;">Optional
-              dependencies</span>
-            <ul>
-              <li> <a href="http://code.google.com/p/python-gnupg/">python-gnupg</a>
-                (&gt;=0.3.0, for opening own files without approval) <br>
-              </li>
-              <li> <a href="http://www.python-excel.org/">xlrd</a>
-                (&gt;=0.9.2, for loading Excel<sup>&reg;</sup> files)</li>
-              <li><a href="http://www.python-excel.org/">xlwt</a>
-                (&gt;=0.9.2, for saving Excel<sup>&reg;</sup> files)</li>
-              <li><a href="http://jedi.jedidjah.ch">jedi</a>
-                (&gt;=0.8.0, for tab completion and context help in the
-                entry line)</li>
-              <li> <a href="http://cairographics.org/pyrsvg/">pyrsvg</a>
-                (&gt;=2.32, for displaying SVG files in cells)</li>
-              <li><a href="http://matplotlib.org/basemap/">basemap</a>
-                (&gt;=1.0.7, for the weather example pys file)<br>
-              </li>
-            </ul>
-          </td>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td style="width: 211px;"> <a
-              href="images/screenshot_wagner_large.png"><img
-                alt="Pyspread screenshot"
-                src="images/screenshot_wagner_thumb.png" style="border:
-                0px solid ; width: 200px; height: 144px;"></a> </td>
-        </tr>
-        <tr>
-          <th style="vertical-align: top;">contact<br>
-          </th>
-          <td style="vertical-align: top;"> For user questions or
-            feedback please post to the pyspread-users mailing list by
-            sending an e-mail to <a
-              href="mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.
-            You can <a
-              href="https://mail.gna.org/listinfo/pyspread-users/">here</a>
-            subscribe to the list.<br>
-            <br>
-            For contributions, patches, development discussions and
-            ideas please post to the pyspread-dev mailing list by
-            sending an e-mail to <a href="mailto:pyspread-dev@gna.org">pyspread-dev@gna.org</a>.
-            You can <a
-              href="https://mail.gna.org/listinfo/pyspread-dev/">here</a>
-            subscribe to the list. </td>
-          <td style="vertical-align: top;"><br>
-          </td>
-          <td><br>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p></p>
-    <p><span style="font-style: italic;">Copyright Martin Manns<br>
-        Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br
-          style="font-style: italic;">
-      </span> <span style="font-style: italic;">Last changed: 27. December
-        2014</span></p>
+<link href="pyspread_webdesign.css" type="text/css" rel="stylesheet">
+
+<aside>
+  <br> <br>
+  <a href="images/screenshot_main_window.png">
+    <img alt="Pyspread main window"
+         src="images/screenshot_main_window_preview.png"
+         style="border: 0px solid ; width: 200px; height: 166px;">
+  </a>
+  <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+  <a href="images/screenshot_sinus_large.png">
+    <img alt="Pyspread screenshot"
+         src="images/screenshot_sinus_thumb.png"
+         style="border: 0px solid ; width: 200px; height: 162px;">
+  </a>
+  <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+  <a href="images/screenshot_basemap_large.png">
+    <img alt="Pyspread screenshot"
+         src="images/screenshot_basemap_thumb.png"
+         style="border: 0px solid ; width: 200px; height: 141px;">
+  </a>
+  <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+  <a href="images/screenshot_wagner_large.png">
+    <img alt="Pyspread screenshot"
+         src="images/screenshot_wagner_thumb.png"
+         style="border: 0px solid ; width: 200px; height: 157px;"></a>
+
+</aside>
+
+
+<h1>About</h1>
+
+<p class="one_line_heading">
+  Pyspread is a non-traditional spreadsheet application that is based on and
+  written in the programming language
+  <a href="http://www.python.org/">Python</a>.
+</p>
+<p class="one_line_heading">
+  The goal of pyspread is to be the most pythonic spreadsheet.
+</p>
+<p class="one_line_heading">
+  Pyspread expects Python expressions in its grid cells, which makes a
+  spreadsheet specific language obsolete. Each cell returns a Python object that
+  can be accessed from other cells. These objects can represent anything
+  including lists or matrices.
+</p>
+<p class="one_line_heading">
+  Pyspread is free software. It is released under the
+<a href="http://www.gnu.org/copyleft/gpl.html">GPL v3</a>.
+</p>
+
+<h1>Features</h1>
+
+<ul class="one_line_heading">
+  <li>CSV import and export</li>
+  <li>Chart creation dialog based on <a
+      href="http://matplotlib.org/"> matplotlib</a> </li>
+  <li>Python objects as cell results</li>
+  <li>Python macros</li>
+  <li>GPG based save file signatures for preventing foreign
+    code execution<br>
+  </li>
+  <li>Access to all Python modules from within cells. These
+    modules allow for example matrix operations via <a
+      href="http://www.numpy.org/"> numpy</a> or fixed point
+    decimal numbers for business calculations via <a
+      href="http://docs.python.org/library/decimal.html">
+      decimal</a>.
+  </li>
+</ul>
+
+
+<h1>Target group</h1>
+
+<p class="one_line_heading">
+  Directly using Python code in a grid is a core feature of pyspread.
+  The target user group has experience with or wants to learn the
+  programming language Python:
+</p>
+
+<ul class="one_line_heading">
+    <li>Peter regularly documents layout planning projects. He already has
+        a large base of Python code for doing calculations in
+        this task. Peter has to provide project documentation in pdf files
+        with a consistant layout. In the documentation, he has to visualize
+        building layouts and calculation charts.
+    <li>Clara is a research engineer and wants to quickly create presentations
+        and posters with a consistent layout and publication ready figures for
+        her publications.
+        She is proficient with Python and uses it for her scientific analyses.
+</ul>
+
+<p class="one_line_heading">
+  Not part of the target user group of Dolphin are Donna and Jack:
+</p>
+
+<ul class="one_line_heading">
+    <li>Donna is looking for a free replacement for Ms. Excel.
+        She does not know any programming language.
+    <li>Jack does computation intensive data analysis that may take hours
+        to compute. He is looking for a visually interactive data mining
+        tool.
+</ul>
+
+<p class="one_line_heading">
+  This does not mean that Donna or Jack cannot work with pyspread. However,
+  Donna might find the larning curve for using Python code in cells too steep.
+  Jack on the other hand might be disappointed because his long running tasks
+  are likely to lock up pyspread.
+</p>
+
+
+<h1>Dependencies</h1>
+
+<p class="one_line_heading">
+Pyspread works on Linux and other GTK platforms as well as on Windows.
+While there have been reports that pyspread can be used on OSX as well,
+OSX is currently unsupported.
+Pyspread requires the following software to be installed:
+</p>
+<ul class="one_line_heading">
+  <li> <a href="http://www.python.org/">Python</a>
+    (&gt;=2.7, &lt;3.0) </li>
+  <li> <a href="http://www.numpy.org/">numpy</a>
+    (&gt;=1.1.0) </li>
+  <li> <a href="http://www.wxpython.org/">wxPython</a>
+    (&gt;=2.8.10.1, Unicode version required) </li>
+  <li> <a href="http://matplotlib.org/">matplotlib</a>
+    (&gt;=1.1.1)</li>
+  <li> <a href="http://cairographics.org/pycairo/">pycairo</a>
+    (&gt;=1.8.8)</li>
+</ul>
+<p class="one_line_heading">
+The following optional dependencies improve user experience:
+</p>
+<ul class="one_line_heading">
+  <li> <a href="http://code.google.com/p/python-gnupg/">python-gnupg</a>
+    (&gt;=0.3.0, for opening own files without approval) <br>
+  </li>
+  <li> <a href="http://www.python-excel.org/">xlrd</a>
+    (&gt;=0.9.2, for loading Excel<sup>&reg;</sup> files)</li>
+  <li><a href="http://www.python-excel.org/">xlwt</a>
+    (&gt;=0.9.2, for saving Excel<sup>&reg;</sup> files)</li>
+  <li><a href="http://jedi.jedidjah.ch">jedi</a>
+    (&gt;=0.8.0, for tab completion and context help in the
+    entry line)</li>
+  <li> <a href="http://cairographics.org/pyrsvg/">pyrsvg</a>
+    (&gt;=2.32, for displaying SVG files in cells)</li>
+  <li><a href="http://matplotlib.org/basemap/">basemap</a>
+    (&gt;=1.0.7, for the weather example pys file)<br>
+  </li>
+</ul>
+
+<h1>Contact</h1>
+
+<p class="one_line_heading">
+  For user questions or user feedback please post to the pyspread-users mailing
+  list by sending an e-mail to
+  <a href="mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.
+  You can subscribe to the list
+  <a href="https://mail.gna.org/listinfo/pyspread-users/">here</a>.
+</p>
+<p class="one_line_heading">
+  For contributions, patches, development discussions and ideas please post to
+  the pyspread-dev mailing list by sending an e-mail to
+  <a href="mailto:pyspread-dev@gna.org">pyspread-dev@gna.org</a>.
+  You can subscribe to the list <a
+  href="https://mail.gna.org/listinfo/pyspread-dev/">here</a>.
+</p>
+
+<p class="impressum">
+  Copyright
+  <a href="mailto:mmanns <at> gmx <dot> net">
+    Martin Manns (mmanns &lt; at &gt; gmx &lt; dot &gt; net)
+  </a>
+  <br> <br>
+  Last changed: 28. December  2014</span>
+</p>
