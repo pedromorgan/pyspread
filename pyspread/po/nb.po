@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pyspread-0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-14 15:13+0100\n"
-"PO-Revision-Date: 2014-12-28 09:05+0100\n"
+"PO-Revision-Date: 2014-12-28 09:53+0100\n"
 "Last-Translator: Andreas Noteng <andreas@noteng.no>\n"
 "Language-Team: Norwegian Bokmaal <i18n-nb@lister.ping.uio.no>\n"
 "Language: nb\n"
@@ -300,28 +300,34 @@ msgid "The marker size in points"
 msgstr "Markørstørrelse i punkter"
 
 #: src/gui/_chart_dialog.py:917
+#, fuzzy
 msgid "Left positions"
-msgstr ""
+msgstr "Total balanse: %s %s (%s)"
 
 #: src/gui/_chart_dialog.py:918
+#, fuzzy
 msgid "Bar heights"
-msgstr ""
+msgstr "Stolpehøyde"
 
 #: src/gui/_chart_dialog.py:919
+#, fuzzy
 msgid "Bar widths"
-msgstr ""
+msgstr "Boksbredde"
 
 #: src/gui/_chart_dialog.py:920
+#, fuzzy
 msgid "Bar bottoms"
-msgstr ""
+msgstr "halvlinje"
 
 #: src/gui/_chart_dialog.py:921
+#, fuzzy
 msgid "Bar color"
-msgstr ""
+msgstr "Bakgrunnsfarge"
 
 #: src/gui/_chart_dialog.py:930
+#, fuzzy
 msgid "Bar"
-msgstr ""
+msgstr "Søyle"
 
 #: src/gui/_chart_dialog.py:935
 msgid "The x coordinates of the left sides of the bars"
@@ -363,8 +369,9 @@ msgid "Notch"
 msgstr ""
 
 #: src/gui/_chart_dialog.py:961
+#, fuzzy
 msgid "Box plot"
-msgstr ""
+msgstr "<b>Type _plott</b>"
 
 #: src/gui/_chart_dialog.py:965
 msgid "An array or a sequence of vectors"
@@ -447,8 +454,9 @@ msgid "Start angle"
 msgstr ""
 
 #: src/gui/_chart_dialog.py:1026
+#, fuzzy
 msgid "Shadow"
-msgstr ""
+msgstr "Skygge"
 
 #: src/gui/_chart_dialog.py:1034
 msgid "Pie"
@@ -503,16 +511,18 @@ msgid "Coordinates"
 msgstr "Punktkoordinater"
 
 #: src/gui/_chart_dialog.py:1072
+#, fuzzy
 msgid "Annotation"
-msgstr ""
+msgstr "Egenskaper for anmerkninger"
 
 #: src/gui/_chart_dialog.py:1076
 msgid "Annotation text"
 msgstr "Kommentartekst"
 
 #: src/gui/_chart_dialog.py:1077
+#, fuzzy
 msgid "Point that is annotated"
-msgstr ""
+msgstr "Programmet som hindrer skjermspareren"
 
 #: src/gui/_chart_dialog.py:1078
 msgid "String that indicates the coordinates of xy"
@@ -626,8 +636,9 @@ msgid "Flows"
 msgstr ""
 
 #: src/gui/_chart_dialog.py:1156
+#, fuzzy
 msgid "Orientations"
-msgstr ""
+msgstr "Egenskaper for anmerkninger"
 
 #: src/gui/_chart_dialog.py:1158
 #, fuzzy
@@ -783,8 +794,9 @@ msgid "Limits"
 msgstr "Grenser"
 
 #: src/gui/_chart_dialog.py:1255 src/gui/_chart_dialog.py:1259
+#, fuzzy
 msgid "Log. scale"
-msgstr ""
+msgstr "Beaufort styrke"
 
 #: src/gui/_chart_dialog.py:1256
 msgid "X-axis ticks"
@@ -815,8 +827,9 @@ msgid "Date format"
 msgstr "Datoformat:"
 
 #: src/gui/_chart_dialog.py:1271
+#, fuzzy
 msgid "Figure"
-msgstr ""
+msgstr "Figur"
 
 #: src/gui/_chart_dialog.py:1272
 msgid "X-Axis"
@@ -1053,8 +1066,9 @@ msgid "&Redo"
 msgstr "Gjenta"
 
 #: src/gui/_menubars.py:224
+#, fuzzy
 msgid "Redo last undone step"
-msgstr ""
+msgstr "Gjenopprett forrige angrede handling"
 
 #: src/gui/_menubars.py:229
 msgid "Copy the input strings of the cells to clipboard"
@@ -1285,32 +1299,37 @@ msgid "Bold"
 msgstr "Fet"
 
 #: src/gui/_menubars.py:324
+#, fuzzy
 msgid "Toggles bold."
-msgstr ""
+msgstr "Understreket satt"
 
 #: src/gui/_menubars.py:325 src/gui/_toolbars.py:504
 msgid "Italics"
 msgstr ""
 
 #: src/gui/_menubars.py:326
+#, fuzzy
 msgid "Toggles italics."
-msgstr ""
+msgstr "Understreket satt"
 
 #: src/gui/_menubars.py:327 src/gui/_toolbars.py:506
 msgid "Underline"
 msgstr "Understreket"
 
 #: src/gui/_menubars.py:328
+#, fuzzy
 msgid "Toggles underline."
-msgstr ""
+msgstr "Understreket satt"
 
 #: src/gui/_menubars.py:329 src/gui/_toolbars.py:508
+#, fuzzy
 msgid "Strikethrough"
-msgstr ""
+msgstr "Gjennomstreket"
 
 #: src/gui/_menubars.py:330
+#, fuzzy
 msgid "Toggles strikethrough."
-msgstr ""
+msgstr "Gjennomstreket satt"
 
 #: src/gui/_menubars.py:332
 msgid "Frozen"
@@ -1341,8 +1360,9 @@ msgid "Merges / unmerges selected cells. "
 msgstr ""
 
 #: src/gui/_menubars.py:342 src/gui/_toolbars.py:538
+#, fuzzy
 msgid "Justification"
-msgstr ""
+msgstr "Justering"
 
 #: src/gui/_menubars.py:343
 msgid "Left"
@@ -1565,8 +1585,9 @@ msgid "CSV file"
 msgstr "CSV-fil"
 
 #: src/gui/_main_window.py:899
+#, fuzzy
 msgid "Tab delimited text file"
-msgstr ""
+msgstr "«%s» er en kjørbar tekstfil."
 
 #: src/gui/_main_window.py:900
 msgid "Choose file to import."
@@ -1823,13 +1844,13 @@ msgstr ""
 
 #: src/gui/_toolbars.py:581
 #, fuzzy
-#| msgid "Box widths"
 msgid "Border width"
 msgstr "Boksbredde"
 
 #: src/gui/_toolbars.py:608
+#, fuzzy
 msgid "Border line color"
-msgstr ""
+msgstr "Bakgrunnsfarge"
 
 #: src/gui/_toolbars.py:609
 msgid "Cell background"
@@ -1858,8 +1879,9 @@ msgid ""
 msgstr ""
 
 #: src/gui/_dialogs.py:188
+#, fuzzy
 msgid "Delimiter"
-msgstr ""
+msgstr "Skilletegn"
 
 #: src/gui/_dialogs.py:189
 msgid "A one-character string used to separate fields."
@@ -2088,8 +2110,9 @@ msgid "Starts key generation."
 msgstr "Starter nøkkelgenerering"
 
 #: src/gui/_dialogs.py:1389
+#, fuzzy
 msgid "Exits pyspread."
-msgstr ""
+msgstr "Om PySpread"
 
 #: src/gui/_dialogs.py:1409
 msgid "Paste as"
