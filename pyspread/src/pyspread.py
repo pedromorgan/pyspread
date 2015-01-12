@@ -50,7 +50,7 @@ import lib.i18n as i18n
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
-sys.setrecursionlimit(10000)
+sys.setrecursionlimit(65535)
 sys.path.insert(0, get_program_path())
 
 # Separate icon in the Windows dock for Ms Windows
