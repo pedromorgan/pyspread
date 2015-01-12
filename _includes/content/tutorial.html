@@ -3,10 +3,9 @@
 
 
 <h1 class="title">Pyspread Tutorial</h1>
-
+<br>
 
 <h1>Running pyspread</h1>
-
 
 <p class="one_line_heading">
     Run pyspread with
@@ -61,180 +60,246 @@
 
 <h2>Absolute addressing of cells</h2>
 
-<p>To access a cell, we can index the grid. Replace S with<br></p>
-<pre>
-S[0, 0, 0]
-</pre><br>
 
-<p>and the same result as in the top-left cell that has the index (0, 0, 0) is
-displayed.<br>
-The first index is the row, the second parameter is the column and the third
-parameter is the table.<br>
-Now replace the expression in the top-left cell by<br></p>
-<pre>
-1
-</pre><br>
+<p class="one_line_heading">
+    To access a cell, we can index the grid. Replace S with
+    <pre>
+        S[0, 0, 0]
+    </pre>
+    and the same result as in the top-left cell that has the index (0, 0, 0) is
+    displayed.<br>
+    The first index is the row, the second parameter is the column and the third
+    parameter is the table.<br>
+    Now replace the expression in the top-left cell by
+    <pre>
+        1
+    </pre>
+</p>
 
-<p>Both cells change immediately because all visible cells are updated.</p>
+<p class="one_line_heading">
+    Both cells change immediately because all visible cells are updated.
+</p>
 
-<p><img alt="image:Tutorial2.png" border="0" src="images/Tutorial2.png"></p>
+<p class="one_line_heading">
+    <img alt="image:Tutorial2.png" border="0" src="images/Tutorial2.png">
+</p>
 
-<p>The main grid S can be sliced, too.<br>
-Write into cell (3, 0, 0):<br></p>
-<pre>
-S[:2, 0, 0]
-</pre><br>
+<p class="one_line_heading">
+    The main grid S can be sliced, too.<br>
+    Write into cell (3, 0, 0):
+    <pre>
+        S[:2, 0, 0]
+    </pre>
+</p>
 
-<p>It now displays [1 1], which is a list of the results of the cells in [:2,
-0, 0].</p>
+<p class="one_line_heading">
+    It now displays [1 1], which is a list of the results of the cells in [:2, 0, 0].
+</p>
+
 
 <h2>Relative addressing of cells</h2>
 
-<p>Since cells are addressed via slicing, the cell content behaves similar to
-absolute addressing in other spreadsheets. In order to achieve relative
-addressing, three magic variables X (row), Y (column) and Z (table) are
-used.<br>
-These magic variables correspond to the position of the current cell in the
-grid.</p>
 
-<p>Change to table 2 by selecting 2 in the iconbar combobox. Type into cell (1,
-2, 2):<br></p>
-<pre>
-[X, Y, Z]
-</pre><br>
+<p class="one_line_heading">
+    Since cells are addressed via slicing, the cell content behaves similar to
+    absolute addressing in other spreadsheets. In order to achieve relative
+    addressing, three magic variables X (row), Y (column) and Z (table) are
+    used.<br>
+    These magic variables correspond to the position of the current cell in the
+    grid.
+</p>
 
-<p>The result is [1 2 2] as expected. Now copy the cell (Crtl-C) and paste it
-into the next lower cell (Ctrl-V). [2 2 2] is displayed. Therefore,
-relative addressing is achieved. Note that if cells are called from
-within other cells, the innermost cell is considered the current cell and its
-position is returned.</p>
+<p class="one_line_heading">
+    Change to table 2 by selecting 2 in the iconbar combobox.
+    Type into cell (1, 2, 2):
+    <pre>
+        [X, Y, Z]
+    </pre>
+</p>
+
+<p class="one_line_heading">
+    The result is [1 2 2] as expected. Now copy the cell (Crtl-C) and paste it
+    into the next lower cell (Ctrl-V). [2 2 2] is displayed. Therefore,
+    relative addressing is achieved. Note that if cells are called from
+    within other cells, the innermost cell is considered the current cell and its
+    position is returned.
+</p>
+
 
 <h2>Filling cells</h2>
 
-<p>The easiest method for filling cells with sequences is setting up an initial
-value and a function that calculates the next value.<br></p>
 
-<p>Write into cell (1, 1, 2):<br></p>
-<pre>
-0
-</pre>
+<p class="one_line_heading">
+    The easiest method for filling cells with sequences is setting up an initial
+    value and a function that calculates the next value.<br></p>
 
-<p>and into cell (2, 1, 2):<br></p>
-<pre>
-S[X-1, Y, Z] + 1
-</pre>
+<p class="one_line_heading">
+    Write into cell (1, 1, 2):
+    <pre>
+        0
+    </pre>
+</p>
 
-<p>Then copy cell (2, 1, 2), select the cells (3, 1, 2) to (99, 1, 2) and paste
-via &lt;Crtl&gt; + V. Now the cells (1, 1, 2) to (99, 1, 2) contain consecutive
-values.<br></p>
+<p class="one_line_heading">
+    and into cell (2, 1, 2):
+    <pre>
+        S[X-1, Y, Z] + 1
+    </pre>
+</p>
 
-<p>Another way to fill cells is to create a string, in which columns are
-separated by tabs ans rows by new line characters. Copy such a string with copy
-results and paste it into another cell without (!) selecting multiple cells
-fills cells with the selected cell in the upper left corner.<br></p>
+<p class="one_line_heading">
+    Then copy cell (2, 1, 2), select the cells (3, 1, 2) to (99, 1, 2) and paste
+    via &lt;Crtl&gt; + V. Now the cells (1, 1, 2) to (99, 1, 2) contain consecutive
+    values.
+</p>
 
-<p>Note: The old "spread" method has been removed because of cell update
-problems.<br></p>
+<p class="one_line_heading">
+    Another way to fill cells is to create a string, in which columns are
+    separated by tabs ans rows by new line characters. Copy such a string with copy
+    results and paste it into another cell without (!) selecting multiple cells
+    fills cells with the selected cell in the upper left corner.
+</p>
+
+<p class="one_line_heading">
+    Note: The old "spread" method has been removed because of cell update
+    problems.
+</p>
+
 
 <h2>Named cells</h2>
 
-<p>Cells can be named by preceding the Python expression with "&lt;name&gt; =".
-Type into cell (2, 4, 2):<br></p>
-<pre>
-a = 3 * 5
-</pre><br>
 
-<p>and in cell (3, 4, 2):<br></p>
-<pre>
-a ** 2
-</pre><br>
+<p class="one_line_heading">
+    Cells can be named by preceding the Python expression with "&lt;name&gt; =".
+    Type into cell (2, 4, 2):
+    <pre>
+        a = 3 * 5
+    </pre>
+</p>
 
-<p>The results 15 and 225 appear. a is globally available in all cells.</p>
+<p class="one_line_heading">
+    and in cell (3, 4, 2):
+    <pre>
+        a ** 2
+    </pre>
+</p>
+
+<p class="one_line_heading">
+    The results 15 and 225 appear. a is globally available in all cells.
+</p>
+
 
 <h2>External modules</h2>
 
-<p>External modules can be imported into pyspread. Therefore, powerful types
-and manipulation methods are available.<br>
-Type into cell (5, 2, 2):<br></p>
-<pre>
-gmpy = __import__("fractions")
-</pre><br>
 
-<p>&lt;module 'fractions' etc. is displayed. Now we redefine the rational
-number object in cell (6, 2, 2) in order to reduce typing and type in two
-rationals in the next two cells:<br></p>
-<pre>
-q = fractions.fraction("1/37")
-</pre><br>
-<pre>
-1/37
-</pre><br>
-<pre>
-229 / 13
-</pre><br>
+<p class="one_line_heading">
+    External modules can be imported into pyspread. Therefore, powerful types
+    and manipulation methods are available.<br>
+    Type into cell (5, 2, 2):
+    <pre>
+        gmpy = __import__("fractions")
+    </pre>
+</p>
 
-<p>In the next cell (9, 2, 2) type:<br></p>
-<pre>
-S[X - 2, Y, Z] + S[X - 1, Y, Z]
-</pre><br>
+<p class="one_line_heading">
+    &lt;module 'fractions' etc. is displayed. Now we redefine the rational
+    number object in cell (6, 2, 2) in order to reduce typing and type in two
+    rationals in the next two cells:
+    <pre>
+        q = fractions.fraction("1/37")
+    </pre><br>
+    <pre>
+        1/37
+    </pre><br>
+    <pre>
+        229 / 13
+    </pre><br>
+</p>
 
-<p>The result is 8486/481.</p>
+<p class="one_line_heading">
+    In the next cell (9, 2, 2) type:
+    <pre>
+        S[X - 2, Y, Z] + S[X - 1, Y, Z]
+    </pre>
 
-<p><img alt="image:Tutorial3.png" border="0" src="images/Tutorial3.png"></p>
+<p class="one_line_heading">
+    The result is 8486/481.
+</p>
+
+<p class="one_line_heading">
+    <img alt="image:Tutorial3.png" border="0" src="images/Tutorial3.png">
+</p>
+
 
 <h2>Working with cells</h2>
 
-<p>Summing up cells:<br>
-Assuming that the cells (1,0,0) - (15, 0, 0) contain the values 1 to 15,
-entering into cell (16,0,0):</p>
-<pre>
-sum(S[1:16,0,0])<br>
-</pre>
 
-<p>yields 120 as expected.</p>
+<p class="one_line_heading">
+    Summing up cells:<br>
+    Assuming that the cells (1,0,0) - (15, 0, 0) contain the values 1 to 15,
+    entering into cell (16,0,0):
+    <pre>
+        sum(S[1:16,0,0])
+    </pre><br>
+    yields 120 as expected.
+</p>
 
-<p>However, if there are more columns (or tables) to sum up, each row is summed
-up individually. Therefore, copying the data to column 2 and changing the cell
-(16,0,0) to</p>
-<pre>
-sum(S[1:16,0:2,0])<br>
-</pre>
+<p class="one_line_heading">
+    However, if there are more columns (or tables) to sum up, each row is summed
+    up individually. Therefore, copying the data to column 2 and changing the cell
+    (16,0,0) to
+    <pre>
+        sum(S[1:16,0:2,0])
+    </pre><br>
+    yields [120 120].
+</p>
 
-<p>yields [120 120].</p>
+<p class="one_line_heading">
+    If everything shall be summed, the numpy.sum function has to be used:
+    <pre>
+        numpy.sum(S[1:16,0:2,0])
+    </pre><br>
+    yields 240.
+</p>
 
-<p>If everything shall be summed, the numpy.sum function has to be used:</p>
-<pre>
-numpy.sum(S[1:16,0:2,0])<br>
-</pre>
 
-<p>yields 240.</p>
+<h2>Plotting</h2>
 
-<h2>Plotting</h2>Pyspread renders a plot in any cell that returns a matplotlib
-figure. Merging the cell with other cells can increase plot size. In order to
-make generating plots easier, a chart dialog has been added to the Macros menu.
-This chart dialog generates a formula for the current cell. This formula uses a
-pyspread specific function that returns a matplotlib figure. You can use the
-object S inside the chart dialog window.<br>
 
-<p>Type into cell (1, 0, 3):<br></p>
-<pre>
-numpy.arange(0.0, 10.0, 0.1)<br><br>
-</pre>
+<p class="one_line_heading">
+    Pyspread renders a plot in any cell that returns a matplotlib
+    figure. Merging the cell with other cells can increase plot size. In order to
+    make generating plots easier, a chart dialog has been added to the Macros menu.
+    This chart dialog generates a formula for the current cell. This formula uses a
+    pyspread specific function that returns a matplotlib figure. You can use the
+    object S inside the chart dialog window.
 
-<p>Create the y value list in cell (2, 0, 3):<br></p>
-<pre>
-[math.sin(x) for x in S[1, 0, 3]]
-</pre><br>
-Now open the chart dialog window and enter<br>
-<pre>
-S[1, 0, 3]<br><br>
-</pre>for x values and<br>
-<pre>
-S[2, 0, 3]<br><br>
-</pre>for y values. A figure displays inside the dialog. Press Ok and the
-figure is displayed inside the current cell. It scales with cell size.<br>
+<p<p class="one_line_heading">
+    Type into cell (1, 0, 3):
+    <pre>
+        numpy.arange(0.0, 10.0, 0.1)
+    </pre><br>
+    Create the y value list in cell (2, 0, 3):
+    <pre>
+        [math.sin(x) for x in S[1, 0, 3]]
+    </pre><br>
+    Now open the chart dialog window and enter
+    <pre>
+        S[1, 0, 3]
+    </pre><br>
+    for x values and
+    <pre>
+        S[2, 0, 3]
+    </pre><br>
+    for y values. A figure displays inside the dialog. Press Ok and the
+    figure is displayed inside the current cell. It scales with cell size.
+</p>
 
-<p><span style="font-style: italic;">Copyright Martin Manns<br>
-Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br style=
-"font-style: italic;"></span> <span style="font-style: italic;">Last changed:
-27. December 2014</span></p>
+<p class="impressum">
+  Author:
+  <a href="mailto:mmanns <at> gmx <dot> net">
+    Martin Manns (mmanns &lt; at &gt; gmx &lt; dot &gt; net)
+  </a>
+  <br> <br>
+  Last changed: 12. January 2014</span>
+</p>
