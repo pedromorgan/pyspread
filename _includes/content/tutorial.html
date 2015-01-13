@@ -290,6 +290,14 @@
     object S inside the chart dialog window.
 
 <p class="one_line_heading">
+    Swith to table 3.<br>
+    Type into cell (0,0,3):
+    <pre>
+        math=__import__("math")
+    </pre>
+</p>
+
+<p class="one_line_heading">
     Type into cell (1, 0, 3):
     <pre>
         numpy.arange(0.0, 10.0, 0.1)
@@ -302,6 +310,7 @@
     </pre>
 </p>
 <p class="one_line_heading">
+    Move the cursor to cell (2,2,3).<br>
     Now open the chart dialog window and enter
     <pre>
         S[1, 0, 3]
@@ -314,8 +323,10 @@
     </pre>
 </p>
 <p class="one_line_heading">
-    for y values. A figure displays inside the dialog. Press Ok and the
-    figure is displayed inside the current cell. It scales with cell size.
+    for y values. A figure is displayed inside the dialog. Press Ok and a tiny
+    figure is drawn inside the current cell. It scales with cell size.
+    Increase cell sized by selecting the cells (2,2,3) to (12,5,3) and
+    select press Format -> Merge cells.
 </p>
 
 
