@@ -156,10 +156,24 @@
 </p>
 
 <p class="one_line_heading">
-    Another way to fill cells is to create a string, in which columns are
-    separated by tabs ans rows by new line characters. Copy such a string with copy
-    results and paste it into another cell without (!) selecting multiple cells
-    fills cells with the selected cell in the upper left corner.
+    Another way to fill cells is to create a list in one cell and use Edit -> Paste As... to
+    distribute it into cells. Delete column 0 by selecting it and pressing the &lt;del&gt; key.
+    Write into cell (0,0,2):
+    <pre>
+        range(99)
+    </pre>
+</p>
+
+<p class="one_line_heading">
+    A list appears in this cell. Copy the <b>resulting</b> list with 
+    &lt;Shift&gt; + &lt;Ctrl&gt; + C.
+    (Do not use the &lt;Ctrl&gt; + C command because this would copy the code rather than the
+    result the the Clipboard.) 
+    Then move the cursor to cell (1,0,2) and press &lt;Shift&gt; + &lt;Ctrl&gt; + V.
+    A dialog opens. Set 1 as object dimension.
+    If 0 is set then the list object is considered as a siongle item and not spread across cells.
+    Do not check transpose so that the pasting is done top down.
+    Next delete cell (0,0,0).
 </p>
 
 <p class="one_line_heading">
@@ -239,36 +253,35 @@
 
 <p class="one_line_heading">
     Summing up cells:<br>
-    Assuming that the cells (1,0,0) - (15, 0, 0) contain the values 1 to 15,
-    entering into cell (16,0,0):
+    The sum function sums up cell values. Enter into cell (16,2,2):
     <pre>
-        sum(S[1:16,0,0])
+        sum(S[1:10,1,2])
     </pre>
 </p>
 <p class="one_line_heading">
-    yields 120 as expected.
+    yields 36 as expected.
 </p>
 
 <p class="one_line_heading">
     However, if there are more columns (or tables) to sum up, each row is summed
-    up individually. Therefore, copying the data to column 2 and changing the cell
-    (16,0,0) to
+    up individually. Therefore, copying the data to column 0 and changing the cell
+    (16,2,2) to
     <pre>
-        sum(S[1:16,0:2,0])
+        sum(S[1:10,0:2,2])
     </pre>
 </p>
 <p class="one_line_heading">
-    yields [120 120].
+    yields [36 36].
 </p>
 
 <p class="one_line_heading">
     If everything shall be summed, the numpy.sum function has to be used:
     <pre>
-        numpy.sum(S[1:16,0:2,0])
+        numpy.sum(S[1:10,0:2,2])
     </pre>
 </p>
 <p class="one_line_heading">
-    yields 240.
+    yields 72.
 </p>
 
 
