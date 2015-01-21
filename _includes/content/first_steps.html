@@ -929,11 +929,11 @@
     <code>[i ** 2 for i in xrange(100) if i % 3]</code>
 </p>
 <p class="one_line_heading">
-    However, statements such as
+    However, statements such as<br>
     <code>print 2</code>
 </p>
 <p class="one_line_heading">
-    or
+    or<br>
     <code>import math</code>
 </p>
 <p class="one_line_heading">
@@ -955,7 +955,7 @@
     other cells.
 </p>
 <p class="one_line_heading">
-    For example
+    For example<br>
     <code>a = 5 + 3</code>
 </p>
 <p class="one_line_heading">
@@ -964,7 +964,7 @@
 </p>
 <p class="one_line_heading">
     Since only one assignment is
-    possible,
+    possible,<br>
     <code>b = c = 4</code>
 </p>
 <p class="one_line_heading">
@@ -1012,8 +1012,8 @@
     which string representations are displayed in the grid,
     can be accessed from other cells (and from macros as well)
     via the __getitem__ method of the grid, where the grid
-    object is globally accessible via the name S. For example
-    <code>S[3, 2, 1]</code>
+    object is globally accessible via the name S. For example<br>
+    <code>S[3, 2, 1]</code><br>
     returns the result object
     from the cell in row 3, column 2, table 1. This type of
     access is called absolute because the targeted cell does
@@ -1036,8 +1036,8 @@
     relative to the current cell position, 3 variables X, Y
     and Z are provided that point to the row, the column and
     the table of the calling cell. The values stay the same
-    for called cells. Therefore,
-    <code>S[X-1, Y+1, Z]</code>
+    for called cells. Therefore,<br>
+    <code>S[X-1, Y+1, Z]</code><br>
     returns the result object of
     the cell that is in the same table two rows above and 1
     column right of the current cell. This type of access is
@@ -1052,10 +1052,11 @@
     Cell access can refer to
     multiple cells by slicing similar to slicing a matrix in
     numpy. Therefore, a slice object is used in the
-    __getitem__ call. For example
-    <code>S[:3, 0, 0]</code>returns the first three rows
-    of column 0 in table 0 and
-    <code>S[1:4:2, :2, -1]</code>
+    __getitem__ call. For example<br>
+    <code>S[:3, 0, 0]</code><br>
+    returns the first three rows
+    of column 0 in table 0 and<br>
+    <code>S[1:4:2, :2, -1]</code><br>
     returns row 1 and 3 and
     column 0 and 1 of the last table of the grid.
 </p>
@@ -1064,8 +1065,8 @@
     numpy object array of the result objects. This object
     allows utilization of the numpy commands such as numpy.sum
     that address all array dimensions instead of only the
-    outermost. For example
-    <code>numpy.sum(S[1:10, 2:4, 0])</code>
+    outermost. For example<br>
+    <code>numpy.sum(S[1:10, 2:4, 0])</code><br>
     sums up the results of all
     cells from 1, 2, 0 to 9, 3, 0 instead of summing each row,
     which Pythons sum function does.
@@ -1074,8 +1075,8 @@
     One disadvantage of this
     approach is that slicing results are not sparse as the
     grid itself and therefore consume memory for each cell.
-    Therefore,
-    <code>S[:, :, :]</code>
+    Therefore,<br>
+    <code>S[:, :, :]</code><br>
     will lock up or even crash
     pyspread with a memory error if the grid size is too
     large.
@@ -1159,8 +1160,8 @@
     imported with the import statement from within a cell
     because this statement is no Python expression. Therefore,
     module import from within a cell has to be realized by
-    calling the function __import__:
-    <code>&lt;module_name&gt; = __import__("&lt;module name&gt;")</code>
+    calling the function __import__:<br>
+    <code>&lt;module_name&gt; = __import__("&lt;module name&gt;")</code><br>
     This cell makes the module
     available from each other cell. Alternatively, a module
     can be imported as a macro with the import statement.
