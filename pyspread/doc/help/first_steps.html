@@ -25,15 +25,14 @@
 </p>
 
 <p class="one_line_heading">
-    The core mission of pyspread is to make coding in a
-    spreadsheet as pythonic as possible.
+    The core mission of pyspread is to be the most pythonic spreadsheet.
 </p>
 
 <p class="one_line_heading">
     Pyspread does not follow the traditional spreadsheet approach.
     Cell functions that are known from conventional spreadsheets
     such as Excel, gnumeric or OpenOffice.org Calc are not supported.
-    Instead Python expressions are entered into the spreadsheet
+    Instead, Python expressions are entered into the spreadsheet
     cells. Each cell returns a Python object. These objects can
     represent anything including lists or matrices.
 </p>
@@ -54,325 +53,6 @@
 </p>
 
 
-<h1>Current limitations</h1>
-
-
-<p class="one_line_heading">
-    External libraries that set states in several steps may be
-    hard to use because in pyspread cell execution order is <b>not</b>
-    guaranteed. They should be used from within a macro.
-</p>
-
-<p class="one_line_heading">
-    There is no selection rectangle for auto-filling cells. Some
-    of this functionality is provided by repeating cell content
-    when pasting into selections.
-</p>
-
-<p class="one_line_heading">
-    Execution of C code that is called from Python expressions
-    cannot be interrupted or terminated if slow. Therefore, such
-    code may block pyspread.
-</p>
-
-<p class="one_line_heading">
-    Cyclic dependencies of cells are unsupported.
-</p>
-
-<p class="one_line_heading">
-    Loading and saving Excel files is not feature complete.
-    Data will be lost when saving a document
-    as an xls file and loading it again.
-</p>
-
-
-<h1>Installation</h1>
-
-
-<h2>Dependencies</h2>
-
-<p class="one_line_heading">
-    Pyspread works on Linux and other GTK platforms as well as on Windows.
-    While there have been reports that pyspread can be used on OS X as well,
-    OS X is currently unsupported.
-    <br>
-    Pyspread requires the following software to be installed:
-</p>
-
-<ul class="one_line_heading">
-  <li> <a href="http://www.python.org/">Python</a>
-    (&gt;=2.7, &lt;3.0) </li>
-  <li> <a href="http://www.numpy.org/">numpy</a>
-    (&gt;=1.1.0) </li>
-  <li> <a href="http://www.wxpython.org/">wxPython</a>
-    (&gt;=2.8.10.1, Unicode version required) </li>
-  <li> <a href="http://matplotlib.org/">matplotlib</a>
-    (&gt;=1.1.1)</li>
-  <li> <a href="http://cairographics.org/pycairo/">pycairo</a>
-    (&gt;=1.8.8)</li>
-</ul>
-
-<p class="one_line_heading">
-  The following optional dependencies improve user experience:
-</p>
-
-<ul class="one_line_heading">
-  <li> <a href="http://code.google.com/p/python-gnupg/">python-gnupg</a>
-    (&gt;=0.3.0, for opening own files without approval) <br>
-  </li>
-  <li> <a href="http://www.python-excel.org/">xlrd</a>
-    (&gt;=0.9.2, for loading Excel files)</li>
-  <li><a href="http://www.python-excel.org/">xlwt</a>
-    (&gt;=0.9.2, for saving Excel files)</li>
-  <li><a href="http://jedi.jedidjah.ch">jedi</a>
-    (&gt;=0.8.0, for tab completion and context help in the
-    entry line)</li>
-  <li> <a href="http://cairographics.org/pyrsvg/">pyrsvg</a>
-    (&gt;=2.32, for displaying SVG files in cells)</li>
-  <li><a href="http://matplotlib.org/basemap/">basemap</a>
-    (&gt;=1.0.7, for the weather example pys file)<br>
-  </li>
-</ul>
-
-
-<h1>Source</h1>
-
-<p class="one_line_heading">
-
-  These instructions are for installing the source tarball
-  <br>
-  <a href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.4.tar.gz#md5=6188e2c4c2ed9c58add7f26b70b7e05d">pyspread v0.4</a>
-  (<a href="https://manns.github.io/pyspread/releases/pyspread-0.4.tar.gz.sig">gpg sig</a>).
-  <br> <br>
-  Installation:
-  <br>
-  <ol class="one_line_heading">
-    <li>
-      Ensure that <span style="text-decoration: underline;">all</span>
-      dependencies are installed.
-      <br> <br>
-    </li>
-    <li>
-      Unpack the tarball
-      <br> <br>
-    </li>
-    <li>
-      cd to the extraction directory
-      <br> <br>
-    </li>
-    <li>
-      Type in
-      <br>
-      <tt>python setup.py install</tt>
-    </li>
-  </ol>
-</p>
-
-
-<h1>Linux</h1>
-
-<p class="one_line_heading">
-
-  The following distributions provide pyspread as a package
-  (latest release linked):
-  <br> <br>
-
-</p>
-
-<table class="one_line_heading" style=" text-align: left;"
-       border="0" cellpadding="4" cellspacing="7">
-  <tbody>
-    <tr>
-      <td style="text-align: center;"><img style=" width:
-          24px; height: 24px;" alt="Arch logo"
-          src="http://manns.github.io/pyspread/images/arch-logo-small.png"
-          align="middle"><br>
-      </td>
-      <td style="text-align: left;">Arch</td>
-      <td><a
-          href="https://aur.archlinux.org/packages/pyspread/">pyspread v0.3.2</a><br>
-      </td>
-    </tr>
-    <tr>
-      <td style="text-align: center;"><img style=" width:
-          20px; height: 24px;" alt="Debian logo"
-          src="http://manns.github.io/pyspread/images/debian-logo-small.png"
-          align="middle"></td>
-      <td style="text-align: left;">Debian</td>
-      <td><a
-          href="https://packages.debian.org/de/sid/pyspread">pyspread v0.3.3</a></td>
-    </tr>
-    <tr>
-      <td style="text-align: center;"><img style=" width:
-          23px; height: 24px;" alt="Mageia logo"
-          src="http://manns.github.io/pyspread/images/mageia-logo-small.png"
-          align="middle"></td>
-      <td style=" text-align: left;">Mageia</td>
-      <td><a href="http://rpm.pbone.net/index.php3/stat/4/idpl/27539765/dir/mageia_cauldron/com/pyspread-0.3.3-3.mga5.x86_64.rpm.html">pyspread v0.3.3</a></td>
-    </tr>
-    <tr>
-      <td style="text-align: center;"><img style=" width:
-          24px; height: 24px;" alt="Slackware logo"
-          src="http://manns.github.io/pyspread/images/slackware-logo-small.png"><br>
-      </td>
-      <td style="text-align: left;">Slackware</td>
-      <td><a
-          href="http://slackbuilds.org/repository/14.1/office/pyspread/">pyspread v0.3.2</a></td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; text-align: center;"><img
-          style=" width: 24px; height: 24px;" alt="Ubuntu
-          logo" src="http://manns.github.io/pyspread/images/ubuntu-logo-small.png"
-          align="middle"></td>
-      <td style="vertical-align: top;">Ubuntu</td>
-      <td style="vertical-align: top;"><a
-          href="http://packages.ubuntu.com/de/vivid/pyspread">pyspread v0.3.3</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<p class="one_line_heading">
-
-  For these distributions, the easiest way is to install
-  pyspread from the repositories. The source distribution can
-  also be used e.g. if the packaged version is outdated.
-
-</p>
-
-
-<h1>Windows</h1>
-
-<p class="one_line_heading">
-
-  For Windows, please follow these instructions. In order to make Windows
-  installation easier, links point to sites where both 32 bit and to 64 bit versions are provided.<br>
-  <ol class="one_line_heading">
-    <li>Download and install Python, numpy and matplotlib.
-      You can find 32bit and 64bit packages of WinPython <a
-        href="http://winpython.sourceforge.net/">here</a>.
-      Make sure to get the Python2 version.
-      If WinPython is used then the WinPython control panel is recommended for all installations.<br> <br>
-    </li>
-    <li>Download and install Cairo and pycairo. Working binaries are available <a
-        href="http://www.lfd.uci.edu/%7Egohlke/pythonlibs/">here</a>. Note that Cairo has to be installed by maunually copying it. Make sure to read the installation instructions.<br>
-      <br>
-    </li>
-    <li>Download and install <a
-        href="http://www.wxpython.org/download.php#stable">wxPython 2.8.x</a>.<br>
-      <br>
-    </li>
-    <li>Download and install gnupg (<a
-        href="http://www.gpg4win.org/">Gpg4win</a> supports
-      32&amp;64bit)<br>
-      <br>
-    </li>
-    <li>Download and install <a
-        href="http://pythonhosted.org/python-gnupg/#download">python-gnupg</a>.<br>
-      <br>
-      For&nbsp; <span style="font-weight: bold;">32 bit
-        systems</span>, an exe installer
-      (python-gnupg-0.3.4.win32.exe) is provided on the linked
-      page.<br>
-      <br>
-      For <span style="font-weight: bold;">64 bit systems</span>,
-      the python-gnupg tarball (python-gnupg-0.3.4.tar.gz) has
-      to be extracted (e.g. with 7zip) and installed as
-      follows:<br>
-      <br>
-    </li>
-    <li>Download and install the source distribution of pyspread<br>
-      <br>
-    </li>
-    <li>Start pyspread by double-clicking on the file
-      pyspread.bat in the extraction directory</li>
-  </ol>
-
-</p>
-
-
-<h1>The pyspread workplace</h1>
-
-
-<h2>Starting pyspread</h2>
-
-<p class="one_line_heading">
-    On Linux or *nix systems, type
-    <pre>
-        $ pyspread
-    </pre>
-</p>
-<p class="one_line_heading">
-    from the command prompt. If you want to run pyspread without
-    installation then cd into the pyspread directory and type
-    <pre>
-        $ pyspread.sh
-    </pre>
-</p>
-<p class="one_line_heading">
-    On Windows, type 
-    <pre>
-        &gt; pyspread.bat
-    </pre>
-</p>
-<p class="one_line_heading">
-    in the command line or launch the file via the Windows Explorer
-    (click or double click)
-</p>
-
-<h2>Exiting pyspread</h2>
-
-<p class="one_line_heading">
-    You can exit pyspread by closing the main window or by selecting
-    File -&gt; Quit from the menu.
-</p>
-
-<h2>Pyspread main window</h2>
-
-<p class="one_line_heading">
-    The main window consists of
-    the title bar, the menu, toolbars, the entry line, the
-    table selector, the grid and a status bar (see Figure).
-</p>
-
-<p class="one_line_heading">
-    <a href="images/screenshot_main_window.png">
-        <img alt="Pyspread main window"
-             src="images/screenshot_main_window_preview.png"
-             style="border: 0px solid ; width: 200px; height: 154px;">
-    </a>
-</p>
-
-<h2>Using menus</h2>
-
-<p class="one_line_heading">
-    There are two menus in pyspread: The main menu and the context
-    menu. The main menu is visible above the tool bars. The context
-    menu is accessible by right-clicking on the grid.
-</p>
-
-<p class="one_line_heading">
-    All options in the context menu are available from the main menu
-    as well.
-</p>
-
-<h2>Pyspread preferences</h2>
-
-<p class="one_line_heading">
-    On *nix, Pyspread stores its configuration in a file
-    ~/.pyspreadrc <br>
-    This file is created when pyspread is started the first time.
-    Removing it resets configuration.
-</p>
-
-<p class="one_line_heading">
-    On Windows, them same information is stored in the registry.
-</p>
-
-<p class="one_line_heading">
-    Initial configuration can be found in pyspread/src/config.py
-</p>
-
-
 <h1>Basic concepts</h1>
 
 
@@ -384,7 +64,7 @@
     rows, columns and tables. This concept's benefit is
     that each dimension is accessed and handled equally.
     Note that in order to prevent data loss, adding or
-    deleting rows only affect the current table.
+    deleting rows only affects the current table.
 </p>
 
 <h2>Everything is accessible</h2>
@@ -498,9 +178,9 @@
     Python gnupg interface installed then a signature is saved
     with it (suffix .pys.sig). Only you can re-open the file
     directly. If anyone else opens the file, it is displayed
-    in safe mode, i. e. each cell displays the cell code and
-    no cell code is evaluated. The user can approve the file,
-    after which the cell code is evaluated. When the user then
+    in safe mode, i.e. each cell displays the cell code and
+    no cell code is evaluated. The user can approve the file.
+    Afterwards, cell code is evaluated. When the user then
     saves the file, it is newly signed. Then it can be
     re-opened without safe mode.
 </p>
@@ -515,16 +195,462 @@
 
 <p class="one_line_heading">
     Technically, signing is done
-    with GPG. When starting pyspread the first time as a user,
-    a new GPG key pair (name pyspred_&lt;user_id&gt;) is
-    created, which is then used for signing files.
+    with GPG. When starting pyspread the first time, no GPG key
+    is present and saved files are not signed. In order to activate 
+    signing, you can generate or choose an existing key via  
+    File->Switch GPG key...
 </p>
 
 
-<h1>Common spreadsheet tasks</h1>
+<h1>Current limitations</h1>
 
 
-<h2>Moving in the spreadsheet</h2>
+<p class="one_line_heading">
+    External libraries that set states in several steps (e.g. rpy2)
+    may be hard to use because in pyspread cell execution order is
+    <b>not</b> guaranteed. Such libraries should be used from within
+    a macro.
+</p>
+
+<p class="one_line_heading">
+    There is no selection rectangle for auto-filling cells. Some
+    of this functionality is provided by repeating cell content
+    when pasting into selections.
+</p>
+
+<p class="one_line_heading">
+    Execution of C code that is called from Python expressions
+    cannot be interrupted or terminated if slow. C code means that
+    creating very large integers cannot be interrupted while a for
+    loop can. Since spreadsheet code is executed sequentially, such
+    long running C code may block pyspread.
+</p>
+
+<p class="one_line_heading">
+    Cyclic dependencies of cells stop at maximum recursion depth.
+    If there are many cyclic dependencies, this may slow down 
+    pyspread.
+</p>
+
+<p class="one_line_heading">
+    Loading and saving Excel files is not feature complete.
+    Data will be lost when saving a document
+    as an xls file and loading it again.
+</p>
+
+
+<h1>Installation</h1>
+
+
+<h2>Dependencies</h2>
+
+<p class="one_line_heading">
+    Pyspread works on Linux and other GTK platforms as well as on Windows.
+    While there have been reports that pyspread can be used on OS X as well,
+    OS X is currently unsupported.
+    <br>
+    Pyspread requires the following software to be installed:
+</p>
+
+<ul class="one_line_heading">
+  <li> <a href="http://www.python.org/">Python</a>
+    (&gt;=2.7, &lt;3.0) </li>
+  <li> <a href="http://www.numpy.org/">numpy</a>
+    (&gt;=1.1.0) </li>
+  <li> <a href="http://www.wxpython.org/">wxPython</a>
+    (&gt;=2.8.10.1, Unicode version required) </li>
+  <li> <a href="http://matplotlib.org/">matplotlib</a>
+    (&gt;=1.1.1)</li>
+  <li> <a href="http://cairographics.org/pycairo/">pycairo</a>
+    (&gt;=1.8.8)</li>
+</ul>
+
+<p class="one_line_heading">
+  The following optional dependencies improve user experience:
+</p>
+
+<ul class="one_line_heading">
+  <li> <a href="http://code.google.com/p/python-gnupg/">python-gnupg</a>
+    (&gt;=0.3.0, for opening own files without approval) <br>
+  </li>
+  <li> <a href="http://www.python-excel.org/">xlrd</a>
+    (&gt;=0.9.2, for loading Excel files)</li>
+  <li><a href="http://www.python-excel.org/">xlwt</a>
+    (&gt;=0.9.2, for saving Excel files)</li>
+  <li><a href="http://jedi.jedidjah.ch">jedi</a>
+    (&gt;=0.8.0, for tab completion and context help in the
+    entry line)</li>
+  <li> <a href="http://cairographics.org/pyrsvg/">pyrsvg</a>
+    (&gt;=2.32, for displaying SVG files in cells)</li>
+  <li><a href="http://matplotlib.org/basemap/">basemap</a>
+    (&gt;=1.0.7, for the weather example pys file)<br>
+  </li>
+</ul>
+
+
+<h2>Source</h2>
+
+<p class="one_line_heading">
+
+  These instructions are for installing the source tarball
+  <br>
+  <a href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.4.tar.gz#md5=6188e2c4c2ed9c58add7f26b70b7e05d">pyspread v0.4</a>
+  (<a href="https://manns.github.io/pyspread/releases/pyspread-0.4.tar.gz.sig">gpg sig</a>).
+  <br> <br>
+  Installation:
+  <br>
+  <ol class="one_line_heading">
+    <li>
+      Ensure that <span style="text-decoration: underline;">all</span>
+      dependencies are installed.
+      <br> <br>
+    </li>
+    <li>
+      Unpack the tarball
+      <br> <br>
+    </li>
+    <li>
+      cd to the extraction directory
+      <br> <br>
+    </li>
+    <li>
+      Type in
+      <br>
+      <tt>python setup.py install</tt>
+    </li>
+  </ol>
+</p>
+
+
+<h2>Linux</h2>
+
+<p class="one_line_heading">
+
+  The following distributions provide pyspread as a package
+  (latest release linked):
+  <br>
+
+</p>
+
+<table class="one_line_heading" style=" text-align: left;"
+       border="0" cellpadding="4" cellspacing="7">
+  <tbody>
+    <tr>
+      <td style="text-align: center;"><img style=" width:
+          24px; height: 24px;" alt="Arch logo"
+          src="http://manns.github.io/pyspread/images/arch-logo-small.png"
+          align="middle"><br>
+      </td>
+      <td style="text-align: left;">Arch</td>
+      <td><a
+          href="https://aur.archlinux.org/packages/pyspread/">pyspread v0.3.2</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><img style=" width:
+          20px; height: 24px;" alt="Debian logo"
+          src="http://manns.github.io/pyspread/images/debian-logo-small.png"
+          align="middle"></td>
+      <td style="text-align: left;">Debian</td>
+      <td><a
+          href="https://packages.debian.org/de/sid/pyspread">pyspread v0.3.3</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><img style=" width:
+          23px; height: 24px;" alt="Mageia logo"
+          src="http://manns.github.io/pyspread/images/mageia-logo-small.png"
+          align="middle"></td>
+      <td style=" text-align: left;">Mageia</td>
+      <td><a href="http://rpm.pbone.net/index.php3/stat/4/idpl/27539765/dir/mageia_cauldron/com/pyspread-0.3.3-3.mga5.x86_64.rpm.html">pyspread v0.3.3</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><img style=" width:
+          24px; height: 24px;" alt="Slackware logo"
+          src="http://manns.github.io/pyspread/images/slackware-logo-small.png"><br>
+      </td>
+      <td style="text-align: left;">Slackware</td>
+      <td><a
+          href="http://slackbuilds.org/repository/14.1/office/pyspread/">pyspread v0.3.2</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><img
+          style=" width: 24px; height: 24px;" alt="Ubuntu
+          logo" src="http://manns.github.io/pyspread/images/ubuntu-logo-small.png"
+          align="middle"></td>
+      <td style="vertical-align: top;">Ubuntu</td>
+      <td style="vertical-align: top;"><a
+          href="http://packages.ubuntu.com/de/vivid/pyspread">pyspread v0.3.3</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="one_line_heading">
+
+  For these distributions, the easiest way is to install
+  pyspread from the repositories. The source distribution can
+  also be used e.g. if the packaged version is outdated.
+
+</p>
+
+
+<h2>Windows</h2>
+
+<p class="one_line_heading">
+
+  For Windows, please follow these instructions. In order to make Windows
+  installation easier, links point to sites where both 32 bit and to 64 bit versions are provided.<br>
+  <ol class="one_line_heading">
+    <li>Download and install Python, numpy and matplotlib.
+      You can find 32bit and 64bit packages of WinPython <a
+        href="http://winpython.sourceforge.net/">here</a>.
+      Make sure to get the Python2 version.
+      If WinPython is used then the WinPython control panel is recommended for all installations.<br> <br>
+    </li>
+    <li>Download and install Cairo and pycairo. Working binaries are available <a
+        href="http://www.lfd.uci.edu/%7Egohlke/pythonlibs/">here</a>. Note that Cairo has to be installed by maunually copying it. Make sure to read the installation instructions.<br>
+      <br>
+    </li>
+    <li>Download and install <a
+        href="http://www.wxpython.org/download.php#stable">wxPython 2.8.x</a>.<br>
+      <br>
+    </li>
+    <li>Download and install gnupg (<a
+        href="http://www.gpg4win.org/">Gpg4win</a> supports
+      32&amp;64bit)<br>
+      <br>
+    </li>
+    <li>Download and install <a
+        href="http://pythonhosted.org/python-gnupg/#download">python-gnupg</a>.<br>
+      <br>
+      For&nbsp; <span style="font-weight: bold;">32 bit
+        systems</span>, an exe installer
+      (python-gnupg-0.3.4.win32.exe) is provided on the linked
+      page.<br>
+      <br>
+      For <span style="font-weight: bold;">64 bit systems</span>,
+      the python-gnupg tarball (python-gnupg-0.3.4.tar.gz) has
+      to be extracted (e.g. with 7zip) and installed as
+      follows:<br>
+      <br>
+    </li>
+    <li>Download and install the source distribution of pyspread<br>
+      <br>
+    </li>
+    <li>Start pyspread by double-clicking on the file
+      pyspread.bat in the extraction directory</li>
+  </ol>
+
+</p>
+
+
+<h1>The pyspread workplace</h1>
+
+
+<h2>Starting and exiting pyspread</h2>
+
+<p class="one_line_heading">
+    On Linux or *nix systems, type
+    <pre>
+        $ pyspread
+    </pre>
+</p>
+<p class="one_line_heading">
+    from the command prompt. If you want to run pyspread without
+    installation then cd into the pyspread directory and type
+    <pre>
+        $ pyspread.sh
+    </pre>
+</p>
+<p class="one_line_heading">
+    On Windows, type 
+    <pre>
+        &gt; pyspread.bat
+    </pre>
+</p>
+<p class="one_line_heading">
+    in the command line or launch the file via the Windows Explorer
+    (click or double click)
+</p>
+
+<p class="one_line_heading">
+    You can exit pyspread by closing the main window or by selecting
+    File -&gt; Quit from the menu.
+</p>
+
+
+<h2>Pyspread main window</h2>
+
+<p class="one_line_heading">
+    The main window comprises the following components (see Figure):
+</p>
+<ul class="one_line_heading">
+    <li>Title bar</li>
+    <li>Menu</li>
+    <li>Toolbars</li>
+    <li>Entry line</li>
+    <li>Insertion mode toggle button (enabled on *nix only)</li>
+    <li>Table selector</li>
+    <li>Grid</li>
+    <li>Status bar</li>
+</ul>
+
+<p class="one_line_heading">
+    <a href="images/screenshot_main_window.png">
+        <img alt="Pyspread main window"
+             src="images/screenshot_main_window_preview.png"
+             style="border: 0px solid ; width: 200px; height: 154px;">
+    </a>
+</p>
+
+<h2>Title bar</h2>
+
+<p class="one_line_heading">
+    When pyspread is started or a new spreadsheet is created then the
+    title bar displays "pyspread". When a file is opened or saved
+    then the filename is presented in front of " - pyspread".
+</p>
+
+<p class="one_line_heading">
+    Whenever a spreadsheet is changed then  an askerisk "*" is
+    displayed in front of the title bar text.
+</p>
+
+
+<h2>Main menu</h2>
+
+<h3>File menu</h3>
+
+<h4>New</h4>
+<h4>Open</h4>
+<h4>Save</h4>
+<h4>Save As</h4>
+<h4>Import</h4>
+<h4>Export</h4>
+<h4>Approve file</h4>
+<h4>Clear globals</h4>
+<h4>Page setup</h4>
+<h4>Print preview</h4>
+<h4>Print</h4>
+<h4>Preferences...</h4>
+<h4>Switch GPG key...</h4>
+<h4>Quit</h4>
+
+<h3>Edit menu</h3>
+
+<h4>Undo</h4>
+<h4>Redo</h4>
+<h4>Cut</h4>
+<h4>Copy</h4>
+<h4>Copy Results</h4>
+<h4>Paste</h4>
+<h4>Paste As</h4>
+<h4>Select All</h4>
+<h4>Find</h4>
+<h4>Replace</h4>
+<h4>Quote cell(s)</h4>
+<h4>Sort ascending</h4>
+<h4>Sort descending</h4>
+<h4>Insert rows</h4>
+<h4>Insert columns</h4>
+<h4>Insert table</h4>
+<h4>Delete rows</h4>
+<h4>Delete columns</h4>
+<h4>Delete table</h4>
+<h4>Resize grid</h4>
+
+<h3>View menu </h3>
+
+<h4>Toolbars</h4>
+<h4>Entry line</h4>
+<h4>Go to cell</h4>
+<h4>Zoom in</h4>
+<h4>Zoom out</h4>
+<h4>Normal size</h4>
+<h4>Refresh selected cells</h4>
+<h4>Toggle periodic updates</h4>
+<h4>Show frozen</h4>
+
+<h3>Format menu</h3>
+
+<h4>Font...</h4>
+<h4>Bold</h4>
+<h4>Italics</h4>
+<h4>Underline</h4>
+<h4>Strikethrough</h4>
+<h4>Frozen</h4>
+<h4>Lock</h4>
+<h4>Merge cells</h4>
+<h4>Justification</h4>
+<h4>Alignment</h4>
+<h4>Text color...</h4>
+<h4>Background color...</h4>
+<h4>Rotation</h4>
+
+<h3>Macro menu</h3>
+
+<h4>Macro list</h4>
+<h4>Load macro list</h4>
+<h4>Save macro list</h4>
+<h4>Insert bitmap...</h4>
+<h4>Link bitmap...</h4>
+<h4>Insert chart...</h4>
+
+<h3>Help menu</h3>
+
+<h4>First steps</h4>
+<h4>Tutorial</h4>
+<h4>FAQ</h4>
+<h4>About</h4>
+
+<h2>Context menu</h2>
+
+<p class="one_line_heading">
+    Besides the main menu, pyspread provides a context menu that
+    is accessible by right-clicking on the grid. It contains the
+    following items:
+</p>
+
+<ul class="one_line_heading">
+    <li>Cut</li>
+    <li>Copy</li>
+    <li>Paste</li>
+    <li>Insert rows</li>
+    <li>Insert columns</li>
+    <li>Delete rows</li>
+    <li>Delete columns</li>
+</ul>
+
+<p class="one_line_heading">
+    All options in the context menu are identical to those in the
+    edit menu.
+</p>
+
+
+<h2>Toolbars</h2>
+
+<h3>Main toolbar</h3>
+
+<h3>Macro toolbar</h3>
+
+<h3>Widget toolbar</h3>
+
+<h3>Format toolbar</h3>
+
+<h3>Find toolbar</h3>
+
+
+<h2>Entry line</h2>
+
+
+<h2>Insertion mode toggle button (enabled on *nix only)</h2>
+
+
+<h2>Table selector</h2>
+
+
+<h2>Grid</h2>
+
+<h3>Moving in the grid</h3>
 
 <p class="one_line_heading">
     Row and column movement in the grid can be achieved by:
@@ -548,6 +674,43 @@
   </li>
 </ul>
 
+
+<h2>Status bar</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Pyspread preferences</h2>
+
+<p class="one_line_heading">
+    On *nix, Pyspread stores its configuration in a file
+    ~/.pyspreadrc <br>
+    This file is created when pyspread is started the first time.
+    Removing it resets configuration.
+</p>
+
+<p class="one_line_heading">
+    On Windows, them same information is stored in the registry.
+</p>
+
+<p class="one_line_heading">
+    Initial configuration can be found in pyspread/src/config.py
+</p>
+
+
+<h1>Common spreadsheet tasks</h1>
+
+
+
 <h2>Switching tables</h2>
 
 <p class="one_line_heading">
@@ -566,13 +729,11 @@
 <h2>Entering data</h2>
 
 <p class="one_line_heading">
-    Data is entered into the
-    grid cells by selecting a cell and then typing the text.
-    The text can also be entered into the text-entry line. The
-    text is accepted and evaluated when &lt;Enter&gt; is
-    pressed or when a new cell is selected. Note that
-    &lt;Enter&gt; does not work from withing the text entry
-    line.
+    Code is entered into the
+    grid cells by selecting a cell and then typing.
+    Code can also be entered into the entry line. Code
+    is accepted and evaluated when &lt;Enter&gt; is
+    pressed or when a new cell is selected.
 </p>
 
 <p class="one_line_heading">
@@ -623,7 +784,7 @@
 <p class="one_line_heading">
     Only cells of the current
     table can be selected at any time. Switching tables
-    switches cell selections to the new table, i. e. the same
+    switches cell selections to the new table, i.e. the same
     cells in the new table are selected and no cells of the
     old table are selected.
 </p>
@@ -632,7 +793,7 @@
 
 <p class="one_line_heading">
     In order to change cell
-    content double-click on the cell or select the cell and
+    content, double-click on the cell or select the cell and
     edit the text in the entry line.
 </p>
 
@@ -645,13 +806,13 @@
 <h2>Copy and Paste operations</h2>
 
 <p class="one_line_heading">
-    Copying and pasting can be
-    done from within cells, which copies the text.
+    Copying and pasting can be done while in a cell editor (after 
+    double-clicking on a cell). This copies the selected text.
 </p>
 
 <p class="one_line_heading">
-    Cells can be
-    copied and pasted. If more than one cell is selected, the
+    Cells can also be copied and pasted outside the cell editor.
+    If more than one cell is selected then the
     copied set consists of the bounding box of the marked
     cells, i. e. the smallest box, in which all cells are
     situated. Cells that are not selected in that box are
@@ -670,8 +831,8 @@
     When copying cells with
     &lt;Ctrl&gt; + C, the cell code is copied. There is a
     second type of copy &lt;Shift&gt; + &lt;Ctrl&gt; + C,
-    which copies string representation of the results. This is
-    useful, if for example the result shall be copied into an
+    which copies string representations of the cell results. This is
+    useful, if for example results shall be copied into an
     external application.
 </p>
 
