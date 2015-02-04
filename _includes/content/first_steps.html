@@ -25,15 +25,14 @@
 </p>
 
 <p class="one_line_heading">
-    The core mission of pyspread is to make coding in a
-    spreadsheet as pythonic as possible.
+    The core mission of pyspread is to be the most pythonic spreadsheet.
 </p>
 
 <p class="one_line_heading">
     Pyspread does not follow the traditional spreadsheet approach.
     Cell functions that are known from conventional spreadsheets
     such as Excel, gnumeric or OpenOffice.org Calc are not supported.
-    Instead Python expressions are entered into the spreadsheet
+    Instead, Python expressions are entered into the spreadsheet
     cells. Each cell returns a Python object. These objects can
     represent anything including lists or matrices.
 </p>
@@ -58,9 +57,10 @@
 
 
 <p class="one_line_heading">
-    External libraries that set states in several steps may be
-    hard to use because in pyspread cell execution order is <b>not</b>
-    guaranteed. They should be used from within a macro.
+    External libraries that set states in several steps (e.g. rpy2)
+    may be hard to use because in pyspread cell execution order is
+    <b>not</b> guaranteed. Such libraries should be used from within
+    a macro.
 </p>
 
 <p class="one_line_heading">
@@ -71,12 +71,16 @@
 
 <p class="one_line_heading">
     Execution of C code that is called from Python expressions
-    cannot be interrupted or terminated if slow. Therefore, such
-    code may block pyspread.
+    cannot be interrupted or terminated if slow. C code means that
+    creating very large integers cannot be interrupted while a for
+    loop can. Since spreadsheet code is executed sequentially, such
+    long running C code may block pyspread.
 </p>
 
 <p class="one_line_heading">
-    Cyclic dependencies of cells are unsupported.
+    Cyclic dependencies of cells stop at maximum recursion depth.
+    If there are many cyclic dependencies, this may slow down 
+    pyspread.
 </p>
 
 <p class="one_line_heading">
@@ -330,8 +334,9 @@
 
 <p class="one_line_heading">
     The main window consists of
-    the title bar, the menu, toolbars, the entry line, the
-    table selector, the grid and a status bar (see Figure).
+    a title bar, a menu, toolbars, an entry line, an insertion
+    mode toggle button, a table selector, a grid and a status bar
+    (see Figure).
 </p>
 
 <p class="one_line_heading">
@@ -384,7 +389,7 @@
     rows, columns and tables. This concept's benefit is
     that each dimension is accessed and handled equally.
     Note that in order to prevent data loss, adding or
-    deleting rows only affect the current table.
+    deleting rows only affects the current table.
 </p>
 
 <h2>Everything is accessible</h2>
@@ -498,9 +503,9 @@
     Python gnupg interface installed then a signature is saved
     with it (suffix .pys.sig). Only you can re-open the file
     directly. If anyone else opens the file, it is displayed
-    in safe mode, i. e. each cell displays the cell code and
-    no cell code is evaluated. The user can approve the file,
-    after which the cell code is evaluated. When the user then
+    in safe mode, i.e. each cell displays the cell code and
+    no cell code is evaluated. The user can approve the file.
+    Afterwards, cell code is evaluated. When the user then
     saves the file, it is newly signed. Then it can be
     re-opened without safe mode.
 </p>
@@ -515,9 +520,10 @@
 
 <p class="one_line_heading">
     Technically, signing is done
-    with GPG. When starting pyspread the first time as a user,
-    a new GPG key pair (name pyspred_&lt;user_id&gt;) is
-    created, which is then used for signing files.
+    with GPG. When starting pyspread the first time, no GPG key
+    is present and saved files are not signed. In order to activate 
+    signing, you can generate or choose an existing key via  
+    File->Switch GPG key...
 </p>
 
 
@@ -566,13 +572,11 @@
 <h2>Entering data</h2>
 
 <p class="one_line_heading">
-    Data is entered into the
-    grid cells by selecting a cell and then typing the text.
-    The text can also be entered into the text-entry line. The
-    text is accepted and evaluated when &lt;Enter&gt; is
-    pressed or when a new cell is selected. Note that
-    &lt;Enter&gt; does not work from withing the text entry
-    line.
+    Code is entered into the
+    grid cells by selecting a cell and then typing.
+    Code can also be entered into the entry line. Code
+    is accepted and evaluated when &lt;Enter&gt; is
+    pressed or when a new cell is selected.
 </p>
 
 <p class="one_line_heading">
@@ -623,7 +627,7 @@
 <p class="one_line_heading">
     Only cells of the current
     table can be selected at any time. Switching tables
-    switches cell selections to the new table, i. e. the same
+    switches cell selections to the new table, i.e. the same
     cells in the new table are selected and no cells of the
     old table are selected.
 </p>
@@ -632,7 +636,7 @@
 
 <p class="one_line_heading">
     In order to change cell
-    content double-click on the cell or select the cell and
+    content, double-click on the cell or select the cell and
     edit the text in the entry line.
 </p>
 
@@ -645,13 +649,13 @@
 <h2>Copy and Paste operations</h2>
 
 <p class="one_line_heading">
-    Copying and pasting can be
-    done from within cells, which copies the text.
+    Copying and pasting can be done while in a cell editor (after 
+    double-clicking on a cell). This copies the selected text.
 </p>
 
 <p class="one_line_heading">
-    Cells can be
-    copied and pasted. If more than one cell is selected, the
+    Cells can also be copied and pasted outside the cell editor.
+    If more than one cell is selected then the
     copied set consists of the bounding box of the marked
     cells, i. e. the smallest box, in which all cells are
     situated. Cells that are not selected in that box are
@@ -670,8 +674,8 @@
     When copying cells with
     &lt;Ctrl&gt; + C, the cell code is copied. There is a
     second type of copy &lt;Shift&gt; + &lt;Ctrl&gt; + C,
-    which copies string representation of the results. This is
-    useful, if for example the result shall be copied into an
+    which copies string representations of the cell results. This is
+    useful, if for example results shall be copied into an
     external application.
 </p>
 
