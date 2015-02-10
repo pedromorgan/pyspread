@@ -207,4 +207,8 @@ def is_svg(code):
     except glib.GError:
         return False
 
-    return True
+    # The SVG file has to refer to its xmlns
+    # Hopefully, it does so wiyhin the first 1000 characters
+
+    if "http://www.w3.org/2000/svg" in code[:1000]:
+        return True

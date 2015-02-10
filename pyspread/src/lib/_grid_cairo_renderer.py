@@ -677,7 +677,7 @@ class GridCellContentCairoRenderer(object):
             self.draw_matplotlib_figure(content)
 
         elif isinstance(content, basestring) and is_svg(content):
-            # The content
+            # The content is a vaid SVG xml string
             self.draw_svg(content)
 
         elif content is not None:
