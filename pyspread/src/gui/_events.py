@@ -128,7 +128,10 @@ class GridCellEventMixin(object):
     BorderColorMsg, EVT_CMD_BORDERCOLOR = new_command_event()
     BackgroundColorMsg, EVT_CMD_BACKGROUNDCOLOR = new_command_event()
     TextColorMsg, EVT_CMD_TEXTCOLOR = new_command_event()
-    RotationDialogMsg,  EVT_CMD_ROTATIONDIALOG = new_command_event()
+    Rotation0Msg,  EVT_CMD_ROTATION0 = new_command_event()
+    Rotation90Msg,  EVT_CMD_ROTATION90 = new_command_event()
+    Rotation180Msg,  EVT_CMD_ROTATION180 = new_command_event()
+    Rotation270Msg,  EVT_CMD_ROTATION270 = new_command_event()
     TextRotationMsg, EVT_CMD_TEXTROTATATION = new_command_event()
     ButtonCellMsg, EVT_CMD_BUTTON_CELL = new_command_event()
 

@@ -214,8 +214,14 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_BACKGROUNDCOLOR,
                          c_handlers.OnCellBackgroundColor)
         main_window.Bind(self.EVT_CMD_TEXTCOLOR, c_handlers.OnCellTextColor)
-        main_window.Bind(self.EVT_CMD_ROTATIONDIALOG,
-                         c_handlers.OnTextRotationDialog)
+        main_window.Bind(self.EVT_CMD_ROTATION0,
+                         c_handlers.OnTextRotation0)
+        main_window.Bind(self.EVT_CMD_ROTATION90,
+                         c_handlers.OnTextRotation90)
+        main_window.Bind(self.EVT_CMD_ROTATION180,
+                         c_handlers.OnTextRotation180)
+        main_window.Bind(self.EVT_CMD_ROTATION270,
+                         c_handlers.OnTextRotation270)
         main_window.Bind(self.EVT_CMD_TEXTROTATATION,
                          c_handlers.OnCellTextRotation)
 
@@ -701,16 +707,37 @@ class GridCellEventHandlers(object):
 
         event.Skip()
 
-    def OnTextRotationDialog(self, event):
+    def OnTextRotation0(self, event):
         """Text rotation dialog event handler"""
 
-        cond_func = lambda i: 0 <= i <= 359
-        get_int = self.grid.interfaces.get_int_from_user
-        angle = get_int(_("Enter text angle in degrees."), cond_func)
+        self.grid.actions.set_attr("angle", 0)
 
-        if angle is not None:
-            post_command_event(self.grid.main_window,
-                               self.grid.TextRotationMsg, angle=angle)
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
+    def OnTextRotation90(self, event):
+        """Text rotation dialog event handler"""
+
+        self.grid.actions.set_attr("angle", 90)
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
+    def OnTextRotation180(self, event):
+        """Text rotation dialog event handler"""
+
+        self.grid.actions.set_attr("angle", 180)
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
+    def OnTextRotation270(self, event):
+        """Text rotation dialog event handler"""
+
+        self.grid.actions.set_attr("angle", -90)
 
         self.grid.ForceRefresh()
 

@@ -350,15 +350,23 @@ class MainMenu(_filledMenu, EventMixin):
                 [wx.Menu, _("Alignment"), [
                     [item, [self.AlignmentMsg, alignment, alignment]]
                     for alignment in [_("Top"), _("Center"), _("Bottom")]]],
+                [wx.Menu, _("Rotation"), [
+                    [item, [self.Rotation0Msg,
+                            _("0°"), _("Set text rotation to 0°")]],
+                    [item, [self.Rotation90Msg,
+                            _("90°"), _("Set text rotation to 90°")]],
+                    [item, [self.Rotation180Msg,
+                            _("180°"), _("Set text rotation to 180°")]],
+                    [item, [self.Rotation270Msg,
+                            _("270°"), _("Set text rotation to 270°")]],
+                ]],
                 ["Separator"],
                 [item, [self.TextColorDialogMsg, _("Text color..."),
                         _("Launch color dialog to specify text color.")]],
                 [item, [self.BgColorDialogMsg, _("Background color..."),
                         _("Launch color dialog to specify background "
                           "color.")]],
-                ["Separator"],
-                [item, [self.RotationDialogMsg, _("Rotation..."),
-                        _("Set text rotation.")]]]],
+                ]],
             [wx.Menu, _("&Macro"), [
                 [item, [self.MacroListMsg, _("&Macro list") + "\tCtrl+m",
                         _("Choose, fill in, manage, and create macros")]],
