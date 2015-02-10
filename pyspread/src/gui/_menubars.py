@@ -329,15 +329,14 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.FontStrikethroughMsg, _("Strikethrough"),
                         _("Toggles strikethrough.")]],
                 ["Separator"],
-                [item, [self.FrozenMsg, _("Frozen"),
-                        _("Toggles frozen state of cell. ") +
-                        _("Frozen cells are updated only "
-                          "when F5 is pressed.")]],
-                [item, [self.LockMsg, _("Lock"),
-                        _("Lock cell. Locked cells cannot be changed.")]],
-                [item, [self.MergeMsg, _("Merge cells"),
-                        _("Merges / unmerges selected cells. ")]],
-
+                [item, [self.TextColorDialogMsg, _("Text color..."),
+                        _("Launch color dialog to specify text color.")]],
+                [item, [self.BgColorDialogMsg, _("Background color..."),
+                        _("Launch color dialog to specify background "
+                          "color.")]],
+                ["Separator"],
+                [item, [self.MarkupMsg, _("Markup"),
+                        _("Show cell result as Pango markup")]],
                 ["Separator"],
                 [wx.Menu, _("Justification"), [
                     [item, [self.JustificationMsg, _("Left"), _("Left"),
@@ -361,11 +360,14 @@ class MainMenu(_filledMenu, EventMixin):
                             _("270°"), _("Set text rotation to 270°")]],
                 ]],
                 ["Separator"],
-                [item, [self.TextColorDialogMsg, _("Text color..."),
-                        _("Launch color dialog to specify text color.")]],
-                [item, [self.BgColorDialogMsg, _("Background color..."),
-                        _("Launch color dialog to specify background "
-                          "color.")]],
+                [item, [self.FrozenMsg, _("Frozen"),
+                        _("Toggles frozen state of cell. ") +
+                        _("Frozen cells are updated only "
+                          "when F5 is pressed.")]],
+                [item, [self.LockMsg, _("Lock"),
+                        _("Lock cell. Locked cells cannot be changed.")]],
+                [item, [self.MergeMsg, _("Merge cells"),
+                        _("Merges / unmerges selected cells. ")]],
                 ]],
             [wx.Menu, _("&Macro"), [
                 [item, [self.MacroListMsg, _("&Macro list") + "\tCtrl+m",
