@@ -316,10 +316,113 @@ class GridCellContentCairoRenderer(object):
         except IndexError:
             pass
 
+    def _get_scalexy(self, ims_width, ims_height):
+        """Returns scale_x, scale_y for bitmap display"""
+
+        # Get cell attributes
+        cell_attributes = self.code_array.cell_attributes[self.key]
+        angle = cell_attributes["angle"]
+
+        if abs(angle) == 90:
+            scale_x = self.rect[3] / float(ims_width)
+            scale_y = self.rect[2] / float(ims_height)
+
+        else:
+            # Normal case
+            scale_x = self.rect[2] / float(ims_width)
+            scale_y = self.rect[3] / float(ims_height)
+
+        return scale_x, scale_y
+
+    def _get_translation(self, ims_width, ims_height):
+        """Returns x and y for a bitmap translation"""
+
+        # Get cell attributes
+        cell_attributes = self.code_array.cell_attributes[self.key]
+        justification = cell_attributes["justification"]
+        vertical_align = cell_attributes["vertical_align"]
+        angle = cell_attributes["angle"]
+
+        scale_x, scale_y = self._get_scalexy(ims_width, ims_height)
+        scale = min(scale_x, scale_y)
+
+        if angle not in (90, 180, -90):
+            # Standard direction
+            x = -2  # Otherwise there is a white border
+            y = -2  # Otherwise there is a white border
+
+            if scale_x > scale_y:
+                if justification == "center":
+                    x += (self.rect[2] - ims_width * scale) / 2
+
+                elif justification == "right":
+                    x += self.rect[2] - ims_width * scale
+
+            else:
+                if vertical_align == "middle":
+                    y += (self.rect[3] - ims_height * scale) / 2
+
+                elif vertical_align == "bottom":
+                    y += self.rect[3] - ims_height * scale
+
+        if angle == 90:
+            x = -ims_width * scale + 2
+            y = -2
+
+            if scale_y > scale_x:
+                if justification == "center":
+                    y += (self.rect[2] - ims_height * scale) / 2
+
+                elif justification == "right":
+                    y += self.rect[2] - ims_height * scale
+
+            else:
+                if vertical_align == "middle":
+                    x -= (self.rect[3] - ims_width * scale) / 2
+
+                elif vertical_align == "bottom":
+                    x -= self.rect[3] - ims_width * scale
+
+        elif angle == 180:
+            x = -ims_width * scale + 2
+            y = -ims_height * scale + 2
+
+            if scale_x > scale_y:
+                if justification == "center":
+                    x -= (self.rect[2] - ims_width * scale) / 2
+
+                elif justification == "right":
+                    x -= self.rect[2] - ims_width * scale
+
+            else:
+                if vertical_align == "middle":
+                    y -= (self.rect[3] - ims_height * scale) / 2
+
+                elif vertical_align == "bottom":
+                    y -= self.rect[3] - ims_height * scale
+
+        elif angle == -90:
+            x = -2
+            y = -ims_height * scale + 2
+
+            if scale_y > scale_x:
+                if justification == "center":
+                    y -= (self.rect[2] - ims_height * scale) / 2
+
+                elif justification == "right":
+                    y -= self.rect[2] - ims_height * scale
+
+            else:
+                if vertical_align == "middle":
+                    x += (self.rect[3] - ims_width * scale) / 2
+
+                elif vertical_align == "bottom":
+                    x += self.rect[3] - ims_width * scale
+
+        return x, y
+
     def draw_bitmap(self, content):
         """Draws bitmap cell content to context"""
-
-        # Get
 
         if content.HasAlpha():
             image = wx.ImageFromBitmap(content)
@@ -328,18 +431,21 @@ class GridCellContentCairoRenderer(object):
             content = wx.BitmapFromImage(image)
 
         ims = wx.lib.wxcairo.ImageSurfaceFromBitmap(content)
+
         ims_width = ims.get_width()
         ims_height = ims.get_height()
 
-        scale_x = self.rect[2] / float(ims_width)
-        scale_y = self.rect[3] / float(ims_height)
+        transx, transy = self._get_translation(ims_width, ims_height)
 
-        scale_x = min(scale_x, scale_y)
-        scale_y = scale_x
+        scale_x, scale_y = self._get_scalexy(ims_width, ims_height)
+        scale = min(scale_x, scale_y)
+
+        angle = float(self.code_array.cell_attributes[self.key]["angle"])
 
         self.context.save()
-        self.context.translate(-2, -2)  # Otherwise there is a white border
-        self.context.scale(scale_x, scale_y)
+        self.context.rotate(-angle / 360 * 2 * math.pi)
+        self.context.translate(transx, transy)
+        self.context.scale(scale, scale)
         self.context.set_source_surface(ims, 0, 0)
         self.context.paint()
         self.context.restore()
