@@ -461,13 +461,19 @@ class GridCellContentCairoRenderer(object):
 
         svg = rsvg.Handle(data=svg_str)
 
-        dim = svg.get_dimension_data()
-        scale_x = self.rect[2] / float(dim[0] + 10)  # Avoid cut offs
-        scale_y = self.rect[3] / float(dim[1] + 5)
-        scale_x = min(scale_x, scale_y)
-        scale_y = scale_x
+        svg_width, svg_height = svg.get_dimension_data()[:2]
+
+        transx, transy = self._get_translation(svg_width, svg_height)
+
+        scale_x, scale_y = self._get_scalexy(svg_width, svg_height)
+        scale = min(scale_x, scale_y)
+
+        angle = float(self.code_array.cell_attributes[self.key]["angle"])
+
         self.context.save()
-        self.context.scale(scale_x, scale_y)
+        self.context.rotate(-angle / 360 * 2 * math.pi)
+        self.context.translate(transx, transy)
+        self.context.scale(scale, scale)
         svg.render_cairo(self.context)
         self.context.restore()
 
