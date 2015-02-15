@@ -312,6 +312,7 @@ class ExchangeActions(Actions):
             width,
             height,
             orientation,
+            view_frozen=self.grid._view_frozen,
         )
 
         grid_cairo_renderer.draw()

@@ -890,6 +890,7 @@ class GridEventHandlers(object):
 
         self.grid._view_frozen = not self.grid._view_frozen
 
+        self.grid.grid_renderer.cell_cache.clear()
         self.grid.ForceRefresh()
 
         event.Skip()

@@ -39,6 +39,7 @@ import sys
 import warnings
 
 import cairo
+import numpy
 import wx
 import wx.lib.wxcairo
 
@@ -97,7 +98,8 @@ class GridCairoRenderer(object):
     """
 
     def __init__(self, context, code_array, row_tb, col_rl, tab_fl,
-                 width, height, orientation, x_offset=20.5, y_offset=20.5):
+                 width, height, orientation, x_offset=20.5, y_offset=20.5,
+                 view_frozen=False):
         self.context = context
         self.code_array = code_array
 
@@ -112,6 +114,8 @@ class GridCairoRenderer(object):
         self.y_offset = y_offset
 
         self.orientation = orientation
+
+        self.view_frozen = view_frozen
 
     def get_cell_rect(self, row, col, tab):
         """Returns rectangle of cell on canvas"""
@@ -219,7 +223,8 @@ class GridCairoRenderer(object):
                             self.context,
                             self.code_array,
                             key,  # (row, col, tab)
-                            rect
+                            rect,
+                            self.view_frozen
                         )
 
                         cell_renderer.draw()
@@ -247,11 +252,12 @@ class GridCellCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, key, rect):
+    def __init__(self, context, code_array, key, rect, view_frozen=False):
         self.context = context
         self.code_array = code_array
         self.key = key
         self.rect = rect
+        self.view_frozen = view_frozen
 
     def draw(self):
         """Draws cell to context"""
@@ -260,7 +266,8 @@ class GridCellCairoRenderer(object):
             self.context,
             self.code_array,
             self.key,
-            self.rect)
+            self.rect,
+            self.view_frozen)
 
         cell_content_renderer = GridCellContentCairoRenderer(
             self.context,
@@ -813,14 +820,17 @@ class GridCellBackgroundCairoRenderer(object):
     \tGrid data structure that yields rendering information
     * key: 3 tuple of Integer
     \tKey of cell to be rendered
+    * view_frozen: Bool
+    \tIf true then paint frozen background pattern for frozen cells
 
     """
 
-    def __init__(self, context, code_array, key, rect):
+    def __init__(self, context, code_array, key, rect, view_frozen):
         self.context = context
         self.cell_attributes = code_array.cell_attributes
         self.key = key
         self.rect = rect
+        self.view_frozen = view_frozen
 
     def _get_background_color(self):
         """Returns background color rgb tuple of right line"""
@@ -828,12 +838,34 @@ class GridCellBackgroundCairoRenderer(object):
         color = self.cell_attributes[self.key]["bgcolor"]
         return tuple(c / 255.0 for c in color_pack2rgb(color))
 
+    def _draw_frozen_pattern(self):
+        """Draws frozen pattern, i.e. diagonal lines"""
+
+        self.context.save()
+
+        x, y, w, h = self.rect
+        self.context.set_source_rgb(0, 0, 1)
+        self.context.set_line_width(0.25)
+        self.context.rectangle(*self.rect)
+        self.context.clip()
+
+        for __x in numpy.arange(x-h, x+w, 5):
+            self.context.move_to(__x, y + h)
+            self.context.line_to(__x + h, y)
+        self.context.stroke()
+
+        self.context.restore()
+
     def draw(self):
         """Draws cell background to context"""
 
         self.context.set_source_rgb(*self._get_background_color())
         self.context.rectangle(*self.rect)
         self.context.fill()
+
+        # If show frozen is active, show frozen pattern
+        if self.view_frozen and self.cell_attributes[self.key]["frozen"]:
+            self._draw_frozen_pattern()
 
 
 class GridCellBorderCairoRenderer(object):

@@ -127,7 +127,8 @@ class Printout(wx.Printout):
                                           width, height,
                                           self.orientation,
                                           x_offset=x_offset,
-                                          y_offset=y_offset)
+                                          y_offset=y_offset,
+                                          view_frozen=self.grid._view_frozen)
 
         mdc.BeginDrawing()
 

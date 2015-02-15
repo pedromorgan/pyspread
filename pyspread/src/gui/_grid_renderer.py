@@ -37,7 +37,6 @@ from src.sysvars import get_color
 from src.config import config
 import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
-import cairo
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -216,7 +215,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         return (zoomed_width, zoomed_height, is_selected, cell_preview,
                 tuple(sorted_keys))
 
-    def _get_cairo_bmp(self, mdc, key, rect, is_selected):
+    def _get_cairo_bmp(self, mdc, key, rect, is_selected, view_frozen):
         """Returns a wx.Bitmap of cell key in size rect"""
 
         bmp = wx.EmptyBitmap(rect.width, rect.height)
@@ -238,7 +237,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         rect_tuple = \
             -0.5, -0.5, rect.width / zoom + 0.5, rect.height / zoom + 0.5
         cell_renderer = GridCellCairoRenderer(context, self.data_array,
-                                              key, rect_tuple)
+                                              key, rect_tuple, view_frozen)
         # Draw cell
         cell_renderer.draw()
 
@@ -270,7 +269,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             mdc.SelectObject(self.cell_cache[cell_cache_key])
 
         else:
-            bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected)
+            bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
+                                      grid._view_frozen)
 
             # Put resulting bmp into cache
             self.cell_cache[cell_cache_key] = bmp
