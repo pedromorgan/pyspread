@@ -1126,5 +1126,6 @@ class GridCellBorderCairoRenderer(object):
 
         width_func.sort()
 
-        for _, _, draw_func in width_func:
-            draw_func()
+        for width, _, draw_func in width_func:
+            if width > 0.0:
+                draw_func()
