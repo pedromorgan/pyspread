@@ -521,11 +521,169 @@
 <h3>File menu</h3>
 
 <h4>New</h4>
+<p class="one_line_heading">
+    An empty spreadsheet can be created by File -&gt; New. <br>
+    A Dialog pops up, in which
+    the size of the new spreadsheet grid can be entered. Note
+    that even though sizes of several million rows or columns
+    are possible, there is a limit that is imposed by
+    wx.Python. Therefore, grids with more than 80 million rows
+    and 30 million columns may show problems and
+    instabilities.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot_new_dialog.png">
+        <img alt="Grid dimension dialog"
+             src="images/screenshot_new_dialog_preview.png"
+             style="border: 0px solid; border: 0px solid; width:
+             200px; height: 141px;">
+    </a>
+</p>
+
 <h4>Open</h4>
+<p class="one_line_heading">
+    Loading a spreadsheet from disk can be initiated with File
+    -&gt; Open. Opening a file expects a file with the
+    extension .pys. The file format is pyspread specific.<br>
+</p>
+<p class="one_line_heading">
+    Starting from v0.3.0 there
+    is a second file format with the extension .pysu. It is
+    identical to pys but for the file being uncompressed. This
+    format can be beneficial when using pyspread in
+    combination with file version control systems such as git.<br>
+</p>
+<p class="one_line_heading">
+    Excel xls files can also be opened via File -&gt; Open if the
+    Python module xlrd is installed.
+    Cell content and cell attributes are retrieved.
+    However, functions and macros are neither loaded nor converted.
+</p>
+
+<p class="one_line_heading">
+    Since pyspread files are
+    ultimately Python programs, a file is opened in
+    safe mode if
+    <ul>
+        <li>it has not been previously signed by the
+            current user on the current system or</li>
+        <li>gnupg is not installed or not configured to use a key
+            with an empty(!) password.</li>
+    </ul>
+</p>
+<p class="one_line_heading">
+    Safe mode means that
+    the cell content is loaded and displayed in the grid.
+    However, it is not executed, so that 2+2 remains 2+2 and
+    is not computed into 4. You can leave safe mode with File
+    -&gt; Approve.
+</p>
+
+
 <h4>Save</h4>
+<p class="one_line_heading">
+    A spreadsheet can be stored to disk with File
+    -&gt; Save.
+    If a file is already opened, Save overwrites it directly.
+    Otherwise, Save prompts for a filename.
+</p>
+
+<p class="one_line_heading">
+    When a file is saved and the Python module gnupg is installed 
+    (and configured with a key that has no password) then a
+    signature is created in an additional file with the suffix
+    .pys.sig. The signature is a PGP signature. When pyspread
+    is started the first time for a user, a pgp key pair is
+    crreated for the user pyspread_&lt;user-id&gt;. This key
+    pair is used for signing pyspread save files. A correct
+    signature file lets pyspread open a file without going
+    into safe mode. Note that the save file is <span
+    style="font-weight: bold;">not</span> encrypted in any
+    way.
+</p>
+<p class="one_line_heading">
+    The pys file format is a
+    bzip2-ed Text file with the following structure (since
+    version 0.2.0):
+</p>
+
+<p class="one_line_heading">
+    <code>
+      [Pyspread save file version]<br>
+      0.1<br>
+      [shape]<br>
+      1000 100 3<br>
+      [grid]<br>
+      7 22 0 'Testcode1'<br>
+      8 9 0 'Testcode2'<br>
+      [attributes]<br>
+      [] [] [] [] [(0, 0)]
+        0 'textfont' u'URW Chancery L'<br>
+      [] [] [] [] [(0, 0)]
+        0 'pointsize' 20<br>
+      [row_heights]<br>
+      0 0 56.0<br>
+      7 0 25.0<br>
+      [col_widths]<br>
+      0 0 80.0<br>
+      [macros]<br>
+      Macro text<br>
+    </code>
+</p>
+<p class="one_line_heading">
+    If the Python module xlwt is installed then pyspread can save
+    the spreadsheet as Excel xls file.
+    Cell attributes such as fonts and colors are preserved.
+    Python expressions are exported as strings.
+    Macros are not saved into the xls file.
+</p>
+
 <h4>Save As</h4>
+<p class="one_line_heading">
+    File -&gt; Save As saves the spreadsheet as does File -&gt; Save.
+    While Save overwrites files that are opened on pyspread directly,
+    Save As always always prompts for a file name.
+</p>
+
 <h4>Import</h4>
+<p class="one_line_heading">
+    With File -&gt; Import, a
+    csv file can be imported. There are two import filters.
+</p>
+<p class="one_line_heading">
+    "Tab-delimited text file" is
+    fast but does not handle ill-formed data or special
+    formats well. As the name suggests, only Tab delimited
+    values are allowed.
+</p>
+<p class="one_line_heading">
+    The other filter "Csv file"
+    opens the CSV file import dialog. In this dialog, CSV
+    import options can be set. Furthermore, target Python
+    types can be specified, so that import of dates becomes
+    possible. The grid of the import dialog only shows the
+    first few rows of the csv files in order to give an
+    impression how import data will look like in pyspread.
+</p>
+<p class="one_line_heading">
+    Importing a file always
+    activates safe mode (when no signature file is created
+    manually) because code in the CSV file might prove
+    harmful.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot_csv_import.png">
+        <img alt="CSV file import dialog"
+             src="images/screenshot_csv_import_preview.png"
+             style="border: 0px solid ; width: 200px; height: 208px;">
+    </a>
+</p>
+
 <h4>Export</h4>
+<p class="one_line_heading">
+    Pyspread can export spreadsheets to csv, pdf and svg files.
+</p>
+
 <h4>Approve file</h4>
 <h4>Clear globals</h4>
 <h4>Page setup</h4>
@@ -546,7 +704,33 @@
 <h4>Paste As</h4>
 <h4>Select All</h4>
 <h4>Find</h4>
+<p class="one_line_heading">
+    Cell code and cell results
+    can be searched with &lt;Ctrl&gt; + F or using the menu
+    with Edit -&gt; Find. The focus changes to the search
+    toolbar, in which search queries can be entered. Pyspread
+    allows searching contained text, word-wise contained text
+    and regular expressions, which can be toggled in the
+    search toolbar. Similarly upper and lower case sensitivity
+    can be toggled via the search toolbar.
+</p>
+
 <h4>Replace</h4>
+<p class="one_line_heading">
+    Replacing is done via the
+    Find &amp; Replace dialog that is accessible via
+    &lt;Shift&gt; + &lt;Ctrl&gt; + F or via Edit -&gt;
+    Replace... Strings that are found are replaced with the
+    replace string. Note that replace only allows searching in
+    cell code and not in results.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot_replace.png"><img alt="Find &amp; Replace dialog"
+       src="images/screenshot_replace_preview.png"
+       style="border: 0px solid ; width: 200px; height: 81px;">
+    </a>
+</p>
+
 <h4>Quote cell(s)</h4>
 <h4>Sort ascending</h4>
 <h4>Sort descending</h4>
@@ -1016,13 +1200,6 @@
     interpreted.
 </p>
 
-<p class="one_line_heading">
-    <a href="images/screenshot_csv_import.png">
-        <img alt="CSV file import dialog"
-             src="images/screenshot_csv_import_preview.png"
-             style="border: 0px solid ; width: 200px; height: 208px;">
-    </a>
-</p>
 
 <h2>Printing</h2>
 <p class="one_line_heading">
