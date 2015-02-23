@@ -694,14 +694,15 @@ class GridCellContentCairoRenderer(object):
         elif cell_attributes["vertical_align"] == "middle":
             downshift = int((rect[3] - extents[1][3]) / 2) - 2
 
+        self.context.save()
+
         self._rotate_cell(angle, rect)
         self.context.translate(0, downshift)
 
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
 
-        self.context.translate(0, -downshift)
-        self._rotate_cell(angle, rect, back=True)
+        self.context.restore()
 
     def draw_roundedrect(self, x, y, w, h, r=10):
         """Draws a rounded rectangle"""
