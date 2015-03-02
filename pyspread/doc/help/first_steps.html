@@ -682,9 +682,106 @@
 <h4>Export</h4>
 <p class="one_line_heading">
     Pyspread can export spreadsheets to csv, pdf and svg files.
+    Furthermore, if a chart cell is selected then pyspread offers to 
+    export this cell to svg, eps, ps, pdf or png files.
+</p>
+
+<p class="one_line_heading">
+    When exporting a csv file then a dialog is displayed,
+    in which the format of the csv file may be specified.
+    The start of the exported file is shown below the options.     
+</p>
+
+<p class="one_line_heading">
+    <a href="images/screenshot_csv_export.png">
+        <img alt="CSV file export dialog"
+             src="images/screenshot_csv_export.png"
+             style="border: 0px solid ; width: 200px; height: 208px;">
+    </a>
+</p>
+
+<p class="one_line_heading">
+    When exporting a spreadsheet to a pdf or svg file then a 
+    dailog opens, in which page orientation and size as well as
+    the grid section to be exported can be chosen.
+    If more than one table is chosen for a pdf file then a multiple
+    page file is exported. For svg files only the last table 
+    will be visible.
+</p>
+
+<p class="one_line_heading">
+    <a href="images/screenshot_pdf_export.png">
+        <img alt="CSV file export dialog"
+             src="images/screenshot_pdf_export.png"
+             style="border: 0px solid ; width: 200px; height: 130px;">
+    </a>
 </p>
 
 <h4>Approve file</h4>
+
+<p class="one_line_heading">
+    Pyspread cells contain
+    Python code. Instead of a special purpose language, you
+    enter code in a general purpose language. This code can do
+    everything that the operating system allows. Normally,
+    this is a lot.
+</p>
+<p class="one_line_heading">
+    Even though the situation
+    differs little to common spreadsheet applications, the
+    approach makes malicious attacks easy. Instead of knowing
+    how to circumvent blocks of the domain specific language
+    to make the computer do what you want, everything is
+    straight forward.
+</p>
+<p class="one_line_heading">
+    In order to make working
+    with pyspread as safe as possible, all save-files (pys
+    files and pysu files) are signed by the current user with
+    a gpg signature file. Only a user with a private key can
+    open the file without approving it. That should ensure
+    that when loading a pys file, only the code that a user
+    has written him- or herself is executed. Pys files without
+    a valid signatures are opened in safe mode, i. e. the code
+    is displayed and not executed. However, it can be approved
+    after inspection.
+</p>
+<p class="one_line_heading">
+    Please note that in version
+    0.2.3 or higher, keys with passwords are no longer
+    supported. Since gpg should only make sure that the file
+    that you are trying to open is your own file,
+    password-less key pairs should provide sufficient
+    security.
+</p>
+<p class="one_line_heading">
+    Therefore, never approve
+    foreign pys-files unless you have <strong>checked
+    thoroughly each cell</strong>. One cell may delete you
+    hard drive. And it is likely to be found somewhere in the
+    middle of a million rows, a million tables and a million
+    tabs. If unsure, inspect the pys-file. It is a bzip2-ed
+    text file. You can read it. You can grep in it.
+</p>
+<p class="one_line_heading">
+    It may also be a good idea
+    to run pyspread with a special user that has restricted
+    privileges.
+</p>
+<p class="one_line_heading">
+    If you like it even safer
+    then use a sandbox. Chroot may be a good idea. Qemu / kvm
+    are also worth a thought.
+</p>
+
+<p class="one_line_heading">
+    <a href="images/screenshot_approve_dialog.png">
+        <img alt="CSV file export dialog"
+             src="images/screenshot_approve_dialog.png"
+             style="border: 0px solid ; width: 200px; height: 130px;">
+    </a>
+</p>
+
 <h4>Clear globals</h4>
 <h4>Page setup</h4>
 <h4>Print preview</h4>
