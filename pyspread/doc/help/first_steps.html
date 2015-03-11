@@ -38,7 +38,7 @@
 </p>
 
 <p class="one_line_heading">
-    Pyspread's approach is comparable to the spreadsheet Siag. 
+    Pyspread's approach is comparable to the spreadsheet Siag.
     However, Siag uses the programming language Scheme.
 </p>
 
@@ -59,7 +59,7 @@
 <h2>3D grid</h2>
 
 <p class="one_line_heading">
-    Instead of work sheets that may be found in other 
+    Instead of work sheets that may be found in other
     spreadsheets, pyspread features one 3D grid that has
     rows, columns and tables. This concept's benefit is
     that each dimension is accessed and handled equally.
@@ -196,8 +196,8 @@
 <p class="one_line_heading">
     Technically, signing is done
     with GPG. When starting pyspread the first time, no GPG key
-    is present and saved files are not signed. In order to activate 
-    signing, you can generate or choose an existing key via  
+    is present and saved files are not signed. In order to activate
+    signing, you can generate or choose an existing key via
     File->Switch GPG key...
 </p>
 
@@ -228,7 +228,7 @@
 
 <p class="one_line_heading">
     Cyclic dependencies of cells stop at maximum recursion depth.
-    If there are many cyclic dependencies, this may slow down 
+    If there are many cyclic dependencies, this may slow down
     pyspread.
 </p>
 
@@ -462,7 +462,7 @@
     </pre>
 </p>
 <p class="one_line_heading">
-    On Windows, type 
+    On Windows, type
     <pre>
         &gt; pyspread.bat
     </pre>
@@ -589,7 +589,7 @@
 </p>
 
 <p class="one_line_heading">
-    When a file is saved and the Python module gnupg is installed 
+    When a file is saved and the Python module gnupg is installed
     (and configured with a key that has no password) then a
     signature is created in an additional file with the suffix
     .pys.sig. The signature is a PGP signature. When pyspread
@@ -682,14 +682,14 @@
 <h4>Export</h4>
 <p class="one_line_heading">
     Pyspread can export spreadsheets to csv, pdf and svg files.
-    Furthermore, if a chart cell is selected then pyspread offers to 
+    Furthermore, if a chart cell is selected then pyspread offers to
     export this cell to svg, eps, ps, pdf or png files.
 </p>
 
 <p class="one_line_heading">
     When exporting a csv file then a dialog is displayed,
     in which the format of the csv file may be specified.
-    The start of the exported file is shown below the options.     
+    The start of the exported file is shown below the options.
 </p>
 
 <p class="one_line_heading">
@@ -701,11 +701,11 @@
 </p>
 
 <p class="one_line_heading">
-    When exporting a spreadsheet to a pdf or svg file then a 
+    When exporting a spreadsheet to a pdf or svg file then a
     dailog opens, in which page orientation and size as well as
     the grid section to be exported can be chosen.
     If more than one table is chosen for a pdf file then a multiple
-    page file is exported. For svg files only the last table 
+    page file is exported. For svg files only the last table
     will be visible.
 </p>
 
@@ -783,9 +783,59 @@
 </p>
 
 <h4>Clear globals</h4>
+
+<p class="one_line_heading">
+    Pyspread lets you define globals from within cells via "=" as well as
+    via the macro editor. Clear globals deletes all globals but the initial
+    set. This option frees memory and also gets rid of any globals that are set
+    via macros. Afterwards, you have to re-apply the macros in order to have
+    them available from within the spreadsheet.
+</p>
+
 <h4>Page setup</h4>
+
+<p class="one_line_heading">
+    Page setup provides a dialog for printer page setup. Dialog content depends
+    on the operating system. The settings are used for print preview and print.
+</p>
+
 <h4>Print preview</h4>
+
+<p class="one_line_heading">
+    When selecting print preview, a dialog box is shown, in which the
+    spreadsheet extents (rows, columns and tables) that should be printed
+    can be selected.
+</p>
+
+<p class="one_line_heading">
+    <a href="images/screenshot_print_preview_1.png">
+        <img alt="Print extent choice"
+             src="images/screenshot_print_preview_1.png"
+             style="border: 0px solid ; width: 200px; height: 130px;">
+    </a>
+</p>
+
+<p class="one_line_heading">
+    After pressing o.k., a second dialog window displays the print preview.
+</p>
+
+<p class="one_line_heading">
+    <a href="images/screenshot_print_preview_2.png">
+        <img alt="Print extent choice"
+             src="images/screenshot_print_preview_2.png"
+             style="border: 0px solid ; width: 200px; height: 130px;">
+    </a>
+</p>
+
 <h4>Print</h4>
+
+<p class="one_line_heading">
+    Print prints the spreadsheet. First, a dialog similar to print preview
+    is opened, in which the spreadsheet extents (rows, columns and tables)
+    can be selected. After pressing o.k., a operation system specific
+    print dialog is opened. This dialog provied an option to start printing.
+</p>
+
 <h4>Preferences...</h4>
 
 <p class="one_line_heading">
@@ -797,7 +847,7 @@
             that can be undone via Edit -&gt; Undo.
             Note that pressing one butoon may result in multiple
             elementary steps.
-        </li>            
+        </li>
         <li>
             <b>Grid rows</b>:
             Initial number of grid rows when pyspread is started
@@ -832,8 +882,8 @@
             <b>Timer interval</b>:
             If View -&gt; Toggle periodic updates is activated then
             all frozen cells are updated in an interval. This interval
-            in milliseconds is set here. 
-            The change takes effect the next time that View -&gt;   
+            in milliseconds is set here.
+            The change takes effect the next time that View -&gt;
             Toggle periodic updates is activated.
             Too small values may lock up pyspread.
         </li>
@@ -842,7 +892,7 @@
             If a GPG key has been selected then its id is displayed
             here. Entering a new, valid id of an existing key that
             is <i>not</i> password protected changes the GPG key
-            similarly to File -&gt; Switch GPG key... 
+            similarly to File -&gt; Switch GPG key...
         </li>
     </ul>
 </p>
@@ -871,6 +921,16 @@
 </p>
 
 <h4>Switch GPG key...</h4>
+
+<p class="one_line_heading">
+    Pyspread lets you sign your spreadsheets so that they do not have to be
+    approved each time that they are opened. For this functionality, gnupg
+    must be installed along with its Python bindings (python-gnupg).
+    Furthermore, a GPG keypair must be created or chosen that has
+    <b>no password</b>. Key choice and creation is dialog driven.
+    Creating a new GPG may take some time depending on the machine.
+</p>
+
 <h4>Quit</h4>
 
 <p class="one_line_heading">
@@ -916,7 +976,7 @@
 <h4>Cut</h4>
 
 <p class="one_line_heading">
-    Edit -&gt; Cut behaves like Edit -&gt; Copy and pressing the   
+    Edit -&gt; Cut behaves like Edit -&gt; Copy and pressing the
     &lt;Del&gt; key afterwards, i.e. the current cell code is
     copied and the cell is deleted.
     If cells are selected then the operations are applied to all
@@ -932,7 +992,7 @@
     copied set consists of the bounding box of the marked
     cells, i. e. the smallest box, in which all cells are
     situated. Cells that are not selected in that box are
-    copied as if they were empty. 
+    copied as if they were empty.
     The format of cells that are
     copied is tab separated Unicode.
 </p>
@@ -942,7 +1002,7 @@
 <p class="one_line_heading">
     Edit -&gt; Copy Results copies a string representation of
     the current cell's result object.
-    If e.g. the cell code of the current cell is 4*"a" then 
+    If e.g. the cell code of the current cell is 4*"a" then
     aaaa is copied to the Clipboard.
     As in Edit -&gt; Copy,  if cells are selected then the
     copied set consists of the bounding box of the marked
@@ -966,7 +1026,7 @@
     Data can also be pasted with
     Paste As. The keyboard shortcut is &lt;Shift&gt; +
     &lt;Ctrl&gt; + V. A dialog appears, in which the target
-    dimensionality can be specified. If the transpose box is checked 
+    dimensionality can be specified. If the transpose box is checked
     then the data is
     transposed. With this feature, fine grained access to
     which target data object dimensions are pasted into single
@@ -1172,7 +1232,7 @@
 <h2>Copy and Paste operations</h2>
 
 <p class="one_line_heading">
-    Copying and pasting can be done while in a cell editor (after 
+    Copying and pasting can be done while in a cell editor (after
     double-clicking on a cell). This copies the selected text.
 </p>
 
@@ -1438,7 +1498,7 @@
 
 <p class="one_line_heading">
     Python expressions are terms
-    that Python evaluates to a result object. 
+    that Python evaluates to a result object.
     <a href="http://docs.python.org/reference/expressions.html">
         http://docs.python.org/reference/expressions.html
     </a>
