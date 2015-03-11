@@ -783,6 +783,16 @@ class GridCellContentCairoRenderer(object):
         pos_x, pos_y = self.rect[:2]
         self.context.translate(pos_x + 2, pos_y + 2)
 
+        cell_attributes = self.code_array.cell_attributes
+
+        # Do not draw cell content if cell is too small
+        # This allows blending out small cells by reducing height to 0
+
+        if self.rect[2] < cell_attributes[self.key]["borderwidth_right"] or \
+           self.rect[3] < cell_attributes[self.key]["borderwidth_bottom"]:
+             self.context.restore()
+             return
+
         if self.code_array.cell_attributes[self.key]["button_cell"]:
             # Render a button instead of the cell
             label = self.code_array.cell_attributes[self.key]["button_cell"]
