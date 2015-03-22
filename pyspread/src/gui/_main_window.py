@@ -999,6 +999,9 @@ class MainWindowEventHandlers(EventMixin):
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
 
+        if path is None:
+            return
+
         # If an single cell is exported then the selection bbox
         # has to be changed to the current cell
         if filters[filterindex].startswith("cell_"):
