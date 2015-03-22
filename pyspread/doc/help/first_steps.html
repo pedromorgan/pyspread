@@ -353,7 +353,7 @@
           align="middle"></td>
       <td style="text-align: left;">Debian</td>
       <td><a
-          href="https://packages.debian.org/de/sid/pyspread">pyspread v0.3.3</a></td>
+          href="https://packages.debian.org/de/sid/pyspread">pyspread v0.4</a></td>
     </tr>
     <tr>
       <td style="text-align: center;"><img style=" width:
@@ -1020,6 +1020,17 @@
     pasted as empty cell.
 </p>
 
+<p class="one_line_heading">
+    Images can be inserted via
+    copy and paste. This creates cell code, which contains a
+    serialized string that represents the bitmap. The code can
+    be of considerable size. Therefore, it is normally split
+    into multiple lines. Line breaks inside a cell are ignored
+    by pyspread. Therefore, each cell behaves like one line of
+    Python code even if multiple lines are displayed in the
+    cell editor.
+</p>
+
 <h4>Paste As</h4>
 
 <p class="one_line_heading">
@@ -1041,6 +1052,13 @@
 </p>
 
 <h4>Select All</h4>
+
+<p class="one_line_heading">
+    Select All selects all cells of the current table.
+    The keyboard shortcut is &lt;Crtl&gt; + A.
+</p>
+
+
 <h4>Find</h4>
 <p class="one_line_heading">
     Cell code and cell results
@@ -1070,15 +1088,104 @@
 </p>
 
 <h4>Quote cell(s)</h4>
+
+<p class="one_line_heading">
+    Quote cells puts Unicode quotations around the cell code of
+    each selected cell or the current cell if no selection is
+    present. Quotations mean that the cell content is interpreted
+    as a Python unicode object, i.e. u" is put before the start
+    and " at the end of the cell code.
+    The keyboard shortcut is &lt;Crtl&gt; + &lt;Enter&gt;.
+</p>
+
+<p class="one_line_heading">
+    Quotation is <i>not</i> done if
+    <ul>
+        <li>there is no code in the cell or</li>
+        <li>the character " appears in the code or</li>
+        <li>
+            the first and last character combination is any of: 
+            "", '', u', "
+        </li>
+    </ul>
+</p>
+
 <h4>Sort ascending</h4>
+
+<p class="one_line_heading">
+    Sorts all rows of the current table accendingly
+    according to the order of the
+    cell result objects from the column of the current cell.
+    Cells that return None are sorted last.
+</p>
+
 <h4>Sort descending</h4>
+
+<p class="one_line_heading">
+    Sorts all rows of the current table decendingly
+    according to the order of the
+    cell result objects from the column of the current cell.
+    Cells that return None are sorted last.
+</p>
+
 <h4>Insert rows</h4>
+
+<p class="one_line_heading">
+    Inserts one row directly above the cursor if no selections are
+    made.
+    If selections are present, then the bounding box that covers all 
+    selected cells is calculated, and the number of rows of this
+    bounding box is inserted above the bounding box.
+</p>
+
 <h4>Insert columns</h4>
+
+<p class="one_line_heading">
+    Inserts one column directly left of the cursor if no selections
+    are made.
+    If selections are present, then the bounding box that covers all 
+    selected cells is calculated, and the number of columns of this
+    bounding box is inserted just left of the the bounding box.
+</p>
+
 <h4>Insert table</h4>
+
+<p class="one_line_heading">
+    Inserts one table directly before the current table and switches
+    to this new table.
+</p>
+
 <h4>Delete rows</h4>
+
+<p class="one_line_heading">
+    Deletes the cursor row if no selections are made.
+    If selections are present, then all rows in the bounding box
+    that covers all selected cells are deleted.
+</p>
+
 <h4>Delete columns</h4>
+
+<p class="one_line_heading">
+    Deletes the cursor column if no selections are made.
+    If selections are present, then all columns in the
+    bounding box that covers all selected cells are deleted.
+</p>
+
 <h4>Delete table</h4>
+
+<p class="one_line_heading">
+    Deletes the current table.
+</p>
+
 <h4>Resize grid</h4>
+
+<p class="one_line_heading">
+    Changes the grid size. Similar to File -&gt; New, a dialog
+    is shown, in which the new number of rows, columns and tables
+    can be set. The grid size is changed accordingly. Cells that
+    stay remain identical. Cells that are added are empty. Cells
+    that are removed are deleted and cannot be accessed any more.
+</p>
 
 <h3>View menu </h3>
 
@@ -1095,6 +1202,20 @@
 <h3>Format menu</h3>
 
 <h4>Font...</h4>
+
+<p class="one_line_heading">
+    Assigns a font including style and size to the current cell
+    if no slection is present. If a seletion is present, the font
+    is assigned to each selected cell.
+</p>
+<p class="one_line_heading">
+    The fonts are <strong style="font-weight: bold;">not</strong>
+    stored within the pys file.
+    Therefore, fonts have to be available at the
+    target system when opening a pys file.
+    Otherwise, the font is replaced by the default font.
+</p>
+
 <h4>Bold</h4>
 <h4>Italics</h4>
 <h4>Underline</h4>
@@ -1111,18 +1232,161 @@
 <h3>Macro menu</h3>
 
 <h4>Macro list</h4>
+
+<p class="one_line_heading">
+    Macros can be edited from
+    within the macro editor via Macro -&gt; Macro list
+    (Figure). The editor allows editing a text file that is
+    executed when the spreadsheet is opened or when its
+    content is updated.
+</p>
+
+<a href="images/screenshot_macros.png">
+        <img alt="Macro editor" src="images/screenshot_macros_preview.png"
+             style="border: 0px solid ; width: 200px; height: 156px;">
+</a>
+
+<p class="one_line_heading">
+    The Apply button executes the macro code.
+    Output (including exceptions) are shown in the lower part of the
+    macro editor.
+</p>
+
+<p class="one_line_heading">
+    The scope of macro execution
+    is global. Therefore, all functions are directly
+    accessible from each cell. For example, the function f
+    that is displayed in the Figure can be called from a cell
+    via f(). The result is the returned string "Hello World".
+
+
+</p>
+
+<p class="one_line_heading">
+    Since cell evaluation order
+    is not guaranteed in pyspread, macros can be used for
+    operations that enforce state. One example for such
+    operations are some module imports such as rpy2.
+    Furthermore, algorithms that are too complex for a single
+    cell can be written as a macro.
+</p>
+
 <h4>Load macro list</h4>
+
+<p class="one_line_heading">
+    Macros can be loaded from files. The file format is UTF-8.
+    Basically, any pure Python file is acceptable.
+    When loaded, the new file content is appended to existing
+    macros.
+</p>
+
+<p class="one_line_heading">
+    Since macros may be harmful, loading macros makes the pys
+    file unapproved, i.e. before any further calcluations are done,
+    the file has to be approved again via File -&gt; Approve file.
+</p>
+
 <h4>Save macro list</h4>
+
+<p class="one_line_heading">
+    Saves the macros in the macro editor to a file.
+</p>
+
 <h4>Insert bitmap...</h4>
+
+<p class="one_line_heading">
+    The "Insert bitmap" option
+    in the Macros menu is Identical to the copy and paste
+    functionality.
+</p>
+
 <h4>Link bitmap...</h4>
+
+<p class="one_line_heading">
+    Since version 0.2.3, images can be displayed in cells.
+    Each cell, which yields a wx.Bitmap object, displays the bitmap.
+    For each cell that yields a valid SVG xml string, the SVG ist displayed.
+</p>
+
+<p class="one_line_heading">
+    Linking an image with the
+    "Link bitmap" option in the Macros menu generates code
+    that refers to an image on the file system. This method
+    allows displaying high resolution images in a pyspread
+    grid. Please not that the image path is currently
+    absolute. You can replace it manually with a relative
+    path.
+</p>
+
+
 <h4>Insert chart...</h4>
+
+<p class="one_line_heading">
+    Since version 0.2.3, pyspread can generate <a
+    href="http://matplotlib.org/">matplotlib</a> charts.
+    Each cell, which yields a matplotlib figure displays this
+    figure. The bitmap is stretched to the cell's extents.
+</p>
+<p class="one_line_heading">
+    The "Insert chart" option in
+    the Macros menu provides an easy way of generating
+    matplotlib figures. They generate code of a special class
+    charts.ChartFigure that is provided by pyspread. This
+    class subclasses the matplotlib Figure class. The subclass
+    takes matplotlib arguments and creates a figure in one
+    step. The dialog creates the code for doing that. It also
+    parses any code starting with charts.ChartFigure and
+    figures out, which choice had been made last time. This
+    may very well fail if you changed the cell code manually.
+</p>
+<p class="one_line_heading">
+    In version 0.4, six chart
+    types are supported: Plots, i.e. line charts, bar charts,
+    histograms, box plots, pie charts and annotations. Note
+    that pie charts cannot be combined with other chart type
+    yet. Please suggest other chart types that you find usable
+    by posting at <a href="mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.
+</p>
+<p class="one_line_heading">
+    Matplotlib figures can also
+    be used to display LaTeX equations. However, pyspread has
+    not yet an interface dialog for equations. A macro that
+    depicts LaTeX equations in a cell is provided in the
+    examples directory.
+</p>
 
 <h3>Help menu</h3>
 
 <h4>First steps</h4>
+
+<p class="one_line_heading">
+    This document can be
+    displayed from within pyspread via the menu with Help
+    -&gt; First Steps.
+</p>
+
 <h4>Tutorial</h4>
+
+<p class="one_line_heading">
+    Help -&gt; Python tutorial displays the official Python tutorial
+    from the Internet.
+    Note that a working Internet connection is required to
+    access the Python tutorial.
+</p>
+
 <h4>FAQ</h4>
+
+<p class="one_line_heading">
+    Help -&gt; FAQ, shows a page with frequently asked questions.
+</p>
+
 <h4>About</h4>
+    Help -&gt; About informs about pyspread's current version, license
+    and contributors. The exact layout depends on the oprtation
+    system.
+<p class="one_line_heading">
+    
+</p>
 
 <h2>Context menu</h2>
 
@@ -1312,183 +1576,6 @@
     A cell can be deleted by
     selecting it and pressing &lt;Del&gt;. This also works for
     selections.
-</p>
-
-
-
-<h2>Creating an empty spreadsheet</h2>
-
-<p class="one_line_heading">
-    An empty spreadsheet can be created by File -&gt; New. <br>
-    A Dialog pops up, in which
-    the size of the new spreadsheet grid can be entered. Note
-    that even though sizes of several million rows or columns
-    are possible, there is a limit that is imposed by
-    wx.Python. Therefore, grids with more than 80 million rows
-    and 30 million columns may show problems and
-    instabilities.
-</p>
-<p class="one_line_heading">
-    <a href="images/screenshot_new_dialog.png">
-        <img alt="Grid dimension dialog"
-             src="images/screenshot_new_dialog_preview.png"
-             style="border: 0px solid; border: 0px solid; width:
-             200px; height: 141px;">
-    </a>
-</p>
-
-<h2>Loading and saving a spreadsheet</h2>
-
-<p class="one_line_heading">
-    Loading and saving a
-    spreadsheet from and to disk can be initiated with File
-    -&gt; Open and<br>
-    File -&gt; Save. Opening a file expects a file with the
-    extension .pys. The file format is pyspread specific.<br>
-</p>
-<p class="one_line_heading">
-    Starting from v0.3.0 there
-    is a second file format with the extension .pysu. It is
-    identical to pys but for the file being uncompressed. This
-    format can be beneficial when using pyspread in
-    combination with file version control systems such as git.<br>
-</p>
-<p class="one_line_heading">
-    Since pyspread files are
-    ultimately Python programs, an opened file is stored in
-    safe mode if it has not been previously signed by the
-    current user on the current system. Safe mode means that
-    the cell content is loaded and displayed in the grid.
-    However, it is not executed, so that 2+2 remains 2+2 and
-    is not computed into 4. You can leave safe mode with File
-    -&gt; Approve.
-</p>
-<p class="one_line_heading">
-    When a file is saved, a
-    signature is created in an additional file with the suffix
-    .pys.sig. The signature is a PGP signature. When pyspread
-    is started the first time for a user, a pgp key pair is
-    crreated for the user pyspread_&lt;user-id&gt;. This key
-    pair is used for signing pyspread save files. A correct
-    signature file lets pyspread open a file without going
-    into safe mode. Note that the save file is <span
-    style="font-weight: bold;">not</span> encrypted in any
-    way.
-</p>
-<p class="one_line_heading">
-    The pys file format is a
-    bzip2-ed Text file with the following structure (since
-    version 0.2.0):
-</p>
-
-<p class="one_line_heading">
-    <code>
-      [Pyspread save file version]<br>
-      0.1<br>
-      [shape]<br>
-      1000 100 3<br>
-      [grid]<br>
-      7 22 0 'Testcode1'<br>
-      8 9 0 'Testcode2'<br>
-      [attributes]<br>
-      [] [] [] [] [(0, 0)]
-        0 'textfont' u'URW Chancery L'<br>
-      [] [] [] [] [(0, 0)]
-        0 'pointsize' 20<br>
-      [row_heights]<br>
-      0 0 56.0<br>
-      7 0 25.0<br>
-      [col_widths]<br>
-      0 0 80.0<br>
-      [macros]<br>
-      Macro text<br>
-    </code>
-</p>
-
-<h2>CSV data import and export</h2>
-
-<p class="one_line_heading">
-    Pyspread can import and
-    export csv data for interacting with other applications.
-    However, grid formatting is lost this way.
-</p>
-<p class="one_line_heading">
-    With File -&gt; Import, a
-    csv file can be imported. There are two import filters.
-</p>
-<p class="one_line_heading">
-    "Tab-delimited text file" is
-    fast but does not handle ill-formed data or special
-    formats well. As the name suggests, only Tab delimited
-    values are allowed.
-</p>
-<p class="one_line_heading">
-    The other filter "Csv file"
-    opens the CSV file import dialog. In this dialog, CSV
-    import options can be set. Furthermore, target Python
-    types can be specified, so that import of dates becomes
-    possible. The grid of the import dialog only shows the
-    first few rows of the csv files in order to give an
-    impression how import data will look like in pyspread.
-</p>
-<p class="one_line_heading">
-    Importing a file always
-    activates safe mode (when no signature file is created
-    manually) because code in the CSV file might prove
-    harmful.
-</p>
-
-
-<h2>XLS data import and export</h2>
-
-<p class="one_line_heading">
-    Starting with version 0.2.6, pyspread can load Excel xls
-    files. Starting with version 0.3.0, pyspread can save Excel
-    xls files. However, xls file support does not work without
-    losses in cell formatting. Excel formulas are currently not
-    interpreted.
-</p>
-
-
-<h2>Printing</h2>
-<p class="one_line_heading">
-    When selecting File -&gt;
-    Print, the grid is printed.
-</p>
-
-
-<h2>Finding and replacing</h2>
-<p class="one_line_heading">
-    Cell code and cell results
-    can be searched with &lt;Ctrl&gt; + F or using the menu
-    with Edit -&gt; Find. The focus changes to the search
-    toolbar, in which search queries can be entered. Pyspread
-    allows searching contained text, word-wise contained text
-    and regular expressions, which can be toggled in the
-    search toolbar. Similarly upper and lower case sensitivity
-    can be toggled via the search toolbar.
-</p>
-<p class="one_line_heading">
-    Replacing is done via the
-    Find &amp; Replace dialog that is accessible via
-    &lt;Shift&gt; + &lt;Ctrl&gt; + F or via Edit -&gt;
-    Replace... Strings that are found are replaced with the
-    replace string. Note that replace only allows searching in
-    cell code and not in results.
-</p>
-
-<p class="one_line_heading">
-    <a href="images/screenshot_replace.png"><img alt="Find &amp; Replace dialog"
-       src="images/screenshot_replace_preview.png"
-       style="border: 0px solid ; width: 200px; height: 81px;">
-    </a>
-</p>
-
-<h2>Sorting</h2>
-
-<p class="one_line_heading">
-    Pyspread provides sorting
-    buttons for ascending and descending sorts.
 </p>
 
 
@@ -1711,36 +1798,6 @@
     by clicking on the lock symbol on the attributes toolbar.
 </p>
 
-<h2>Macros</h2>
-
-<p class="one_line_heading">
-    Since cell evaluation order
-    is not guaranteed in pyspread, macros can be used for
-    operations that enforce state. One example for such
-    operations are some module imports such as rpy2.
-    Furthermore, algorithms that are too complex for a single
-    cell can be written as a macro.
-</p>
-<p class="one_line_heading">
-    Macros can be edited from
-    within the macro editor via Macro -&gt; Macro list
-    (Figure). The editor allows editing a text file that is
-    executed when the spreadsheet is opened or when its
-    content is updated.
-</p>
-<p class="one_line_heading">
-    The scope of macro execution
-    is global. Therefore, all functions are directly
-    accessible from each cell. For example, the function f
-    that is displayed in the Figure can be called from a cell
-    via f(). The result is the returned string "Hello World".
-
-    <a href="images/screenshot_macros.png">
-        <img alt="Macro editor" src="images/screenshot_macros_preview.png"
-             style="border: 0px solid ; width: 200px; height: 156px;">
-    </a>
-</p>
-
 <h2>Module import</h2>
 <p class="one_line_heading">
     Python modules cannot be
@@ -1788,111 +1845,6 @@
     Cells that contain
     expressions that raise an exception return the error
     string.
-</p>
-
-
-<h1>Using help</h1>
-
-<h2>Access to this document</h2>
-<p class="one_line_heading">
-    This document can be
-    displayed from within pyspread via the menu with Help
-    -&gt; First Steps.
-</p>
-
-<h2> Python tutorial</h2>
-<p class="one_line_heading">
-    With Help -&gt; Python
-    tutorial, the Python tutorial is shown via the Internet.
-    Note that a working Internet connection is required to
-    access the Python tutorial.
-</p>
-
-
-<h1>Grid layout</h1>
-
-<h2>Formatting cell output</h2>
-<p class="one_line_heading">
-Grid formatting changes cell
-attributes for all cells in a selection. All formatting is
-considered to be done consecutively.
-</p>
-
-<h2>Fonts and font attributes</h2>
-<p class="one_line_heading">
-    Fonts can be assigned by
-    selection cells and choosing a font from the format menu
-    and the attribute toolbar. Fonts are <strong
-    style="font-weight: bold;">not</strong> stored within
-    the pys file. Therefore, fonts have to be available at the
-    target system. Otherwise, the font is replaced by the
-    default font.
-</p>
-
-<h2>Text alignment, justification and rotation</h2>
-
-<p class="one_line_heading">
-    Text alignment,
-    justification and rotation of a selection of cells can be
-    changed from the format menu and from the attributes
-    toolbar. For alignment and justification, a toggle button
-    is used i. e. when pressing the button, the next setting
-    is applied. In order to get back to the original state,
-    the button has to be pressed three times in both cases.
-</p>
-
-<h2>Border and background color</h2>
-
-<p class="one_line_heading">
-    Border and background color
-    of a selection of cells can be changed from the format
-    menu and attributes toolbar. Colors are always considered
-    solid.
-</p>
-<p class="one_line_heading">
-    Color is allied to borders
-    dependent on the settings of the border drop box in the
-    attribute toolbar. In order to get only outer borders of
-    your selection a different color choose the corresponding
-    border setting.
-</p>
-
-<h2>Border width</h2>
-
-<p class="one_line_heading">
-    Border width of a selection
-    of cells can be changed from the attributes menu.
-</p>
-<p class="one_line_heading">
-    Border width is allied to
-    borders dependent on the settings of the border choice box
-    in the attribute toolbar. In order to get only outer
-    borders of your selection a different color choose the
-    corresponding border setting.
-</p>
-
-<h2>Row height and column width</h2>
-
-<p class="one_line_heading">
-    Row heights and column
-    widths can be altered by dragging the borders with the
-    mouse. Non-default widths and heights are stored in the
-    pys file.
-</p>
-
-<h2>Insertion and deletion of rows, columns and tables</h2>
-
-<p class="one_line_heading">
-    Insertion and deletion
-    commands from the main menu and the context menu insert or
-    delete one row, column or table if no selections are made.
-</p>
-<p class="one_line_heading">
-    Multiple rows and columns
-    (but not tables) can be inserted or deleted by selecting
-    cells from the respective number of columns or rows.
-    However, insertion always takes place at the cursor and <strong>not</strong>
-    at the selections.
 </p>
 
 
@@ -1980,77 +1932,6 @@ considered to be done consecutively.
 </p>
 
 
-<h1>Charts</h1>
-
-
-<p class="one_line_heading">
-    Since version 0.2.3, pyspread can generate <a
-    href="http://matplotlib.org/">matplotlib</a> charts.
-    Each cell, which yields a matplotlib figure displays this
-    figure. The bitmap is stretched to the cell's extents.
-</p>
-<p class="one_line_heading">
-    The "Insert chart" option in
-    the Macros menu provides an easy way of generating
-    matplotlib figures. They generate code of a special class
-    charts.ChartFigure that is provided by pyspread. This
-    class subclasses the matplotlib Figure class. The subclass
-    takes matplotlib arguments and creates a figure in one
-    step. The dialog creates the code for doing that. It also
-    parses any code starting with charts.ChartFigure and
-    figures out, which choice had been made last time. This
-    may very well fail if you changed the cell code manually.
-</p>
-<p class="one_line_heading">
-    In version 0.4, six chart
-    types are supported: Plots, i.e. line charts, bar charts,
-    histograms, box plots, pie charts and annotations. Note
-    that pie charts cannot be combined with other chart type
-    yet. Please suggest other chart types that you find usable
-    by posting at <a href="mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.
-</p>
-<p class="one_line_heading">
-    Matplotlib figures can also
-    be used to display LaTeX equations. However, pyspread has
-    not yet an interface dialog for equations. A macro that
-    depicts LaTeX equations in a cell is provided in the
-    examples directory.
-</p>
-
-
-<h1>Images</h1>
-
-
-<p class="one_line_heading">
-    Since version 0.2.3, images can be displayed in cells.
-    Each cell, which yields a wx.Bitmap object, displays the bitmap.
-    For each cell that yields a valid SVG xml string, the SVG ist displayed.
-</p>
-
-<p class="one_line_heading">
-    Images can be inserted via
-    copy and paste. This creates cell code, which contains a
-    serialized string that represents the bitmap. The code can
-    be of considerable size. Therefore, it is normally split
-    into multiple lines. Line breaks inside a cell are ignored
-    by pyspread. Therefore, each cell behaves like one line of
-    Python code even if multiple lines are displayed in the
-    cell editor.
-</p>
-<p class="one_line_heading">
-    The "Insert bitmap" option
-    in the Macros menu is Identical to the copy and paste
-    functionality.
-</p>
-<p class="one_line_heading">
-    Lining an image with the
-    "Link bitmap" option in the Macros menu generates code
-    that refers to an image on the file system. This method
-    allows displaying high resolution images in a pyspread
-    grid. Please not that the image path is currently
-    absolute. You can replace it manually with a relative
-    path.
-</p>
 
 
 <h1>Advanced topics</h1>
@@ -2079,19 +1960,6 @@ considered to be done consecutively.
     shown using list comprehensions.
 </p>
 
-<h2>Images in version 0.2.3</h2>
-<p class="one_line_heading">
-    In pyspread version 0.2.3, any image is shrunk until it
-    fits into the 64k character limit of a cell. Starting from
-    version 0.2.4, this limit is removed and no shrinking is
-    done.
-</p>
-<p class="one_line_heading">
-    In order to display high quality images in version 0.2.3,
-    the Insert linked image command in the Macro menu and the
-    Macro toolbar can be used. Note that it creates an absolute
-    link to the image.
-</p>
 
 
 <p class="impressum">
@@ -2100,5 +1968,5 @@ considered to be done consecutively.
     Martin Manns (mmanns &lt; at &gt; gmx &lt; dot &gt; net)
   </a>
   <br> <br>
-  Last changed: 20. January  2014</span>
+  Last changed: 22. March 2015</span>
 </p>

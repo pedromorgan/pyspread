@@ -1367,6 +1367,9 @@ class MainWindowEventHandlers(EventMixin):
             self.interfaces.get_filepath_findex_from_user(wildcard, message,
                                                           style)
 
+        if filepath is None:
+            return
+
         # Save macros to file
 
         macros = self.main_window.grid.code_array.macros
