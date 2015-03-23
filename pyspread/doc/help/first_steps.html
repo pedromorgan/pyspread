@@ -1190,14 +1190,73 @@
 <h3>View menu </h3>
 
 <h4>Toolbars</h4>
+
+<p class="one_line_heading">
+    Toolbars contains a sub menu, in which the different toolbars can
+    be switched on and off.
+</p>
+
 <h4>Entry line</h4>
+
+<p class="one_line_heading">
+    Swiches the entry line on and off.
+</p>
+
 <h4>Go to cell</h4>
+
+<p class="one_line_heading">
+    Go to cell opens a dialog, in which a cell can be specified via
+    row, column and table. After pressing o.k., the specified cell
+    becomes the current cell, and it is put into view on the grid.
+    This involves switching to another grid table if necessary.
+</p>
+
 <h4>Zoom in</h4>
+
+<p class="one_line_heading">
+    Zooms the grid in by 5%.
+</p>
+
 <h4>Zoom out</h4>
+
+<p class="one_line_heading">
+    Zooms the grid out by 5%.
+</p>
+
 <h4>Normal size</h4>
+
+<p class="one_line_heading">
+    Reset the grid zoom level to 100%.
+</p>
+
 <h4>Refresh selected cells</h4>
+
+<p class="one_line_heading">
+    Executes code of cells that are selected and frozen and updates 
+    their cell results in the grid. If no cell is selected then the
+    current cell is refreshed. The shortcut for Refresh selected cells
+    is &lt;F5&gt;.
+</p>
+
+<p class="one_line_heading">
+    This action has <i>only</i> effects on cells that are frozen.
+</p>
+
 <h4>Toggle periodic updates</h4>
+
+<p class="one_line_heading">
+    Periodically executes code of cells that are frozen and updates
+    their cell results in the grid. The period can be adjusted in the
+    Preferences dialog: Set the desired period as "Timer interval"
+    in seconds.
+</p>
+
 <h4>Show frozen</h4>
+
+<p class="one_line_heading">
+    Toggles display of a diagonal blue stripe pattern on the
+    background of each frozen cell.
+</p>
 
 <h3>Format menu</h3>
 
@@ -1217,17 +1276,228 @@
 </p>
 
 <h4>Bold</h4>
+
+<p class="one_line_heading">
+    Bold toggles the current selection's cell font bold attribute.
+    If no cell is selected, then the attribute is toggled for the
+    current cell. The shortcut for Bold is &lt;Ctrl&gt; + B.
+</p>
+
 <h4>Italics</h4>
+
+<p class="one_line_heading">
+    Italics toggles the current selection's cell font italics 
+    attribute.
+    If no cell is selected, then the attribute is toggled for the
+    current cell. The shortcut for Italics is &lt;Ctrl&gt; + I.
+</p>
+
 <h4>Underline</h4>
+
+<p class="one_line_heading">
+    Underline toggles the current selection's cell font underline 
+    attribute.
+    If no cell is selected, then the attribute is toggled for the
+    current cell. The shortcut for Underline is &lt;Ctrl&gt; + U.
+</p>
+
 <h4>Strikethrough</h4>
-<h4>Frozen</h4>
-<h4>Lock</h4>
-<h4>Merge cells</h4>
-<h4>Justification</h4>
-<h4>Alignment</h4>
+
+<p class="one_line_heading">
+    Strikethrough toggles the current selection's cell font 
+    strikethrough attribute.
+    If no cell is selected, then the attribute is toggled for the
+    current cell.
+</p>
+
 <h4>Text color...</h4>
+
+<p class="one_line_heading">
+    Opens a dialog, in which a color can be chosen.
+    On o.k., the text color is set to the chosen color for
+    all cells in the current selection. If no cell is selected,
+    then the text color is set for the current cell.
+</p>
+
 <h4>Background color...</h4>
+
+<p class="one_line_heading">
+    Opens a dialog, in which a color can be chosen.
+    On o.k., the background color is set to the chosen color for
+    all cells in the current selection. If no cell is selected,
+    then the background color is set for the current cell.
+</p>
+
+<h4>Markup</h4>
+
+<p class="one_line_heading">
+    Markup allows using pango markup for cell output formatting.
+    This is useful for formatting only parts of a cell output.
+    Any cell output is parsed for valid pango markup. If found
+    then it is interpreted.
+</p>
+
+<p class="one_line_heading">
+    An overview of pango markup can be found <a 
+    href="https://developer.gnome.org/pango/stable/PangoMarkupFormat.html">here</a>.
+    Some convenience functions are:
+</p>
+<table class="one_line_heading" style=" text-align: left;"
+       border="0" cellpadding="4" cellspacing="7">
+  <tbody>
+    <tr>
+      <td style="text-align: left;">
+        b
+      </td>
+      <td style="text-align: left;">
+        Bold
+      </td>
+    </tr>
+    <tr>
+      <td>
+        big
+      </td>
+      <td>
+        Makes font relatively larger
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">
+        i
+      </td>
+      <td style="text-align: left;">
+        Italic
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">
+        s
+      </td>
+      <td style="text-align: left;">
+        Strikethrough
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">
+        sub
+      </td>
+      <td style="text-align: left;">
+        Subscript
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">
+        sup
+      </td>
+      <td style="text-align: left;">
+        Superscript
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">
+        small
+      </td>
+      <td style="text-align: left;">
+        Makes font relatively smaller
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">
+        tt
+      </td>
+      <td style="text-align: left;">
+        Monospace font
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">
+        u
+      </td>
+      <td style="text-align: left;">
+        Underline
+      </td>
+    </tr>
+</table>
+
+<h4>Justification</h4>
+
+<p class="one_line_heading">
+    Opens a sub-menu, in which cell justifications can be chosen from
+    left, center and right. The chosen justification is applied
+    to all cells in the current selection. If no cell is selected,
+    then it is applied to the current cell.
+</p>
+
+<p class="one_line_heading">
+    Besides text output, justification also applied to bitmap and
+    vector graphics that are displayed in the cell. Matplotlib
+    charts are an exception: They are always stretched to cell
+    limits and therefore ignore justification.
+</p>
+
+<h4>Alignment</h4>
+
+<p class="one_line_heading">
+    Opens a sub-menu, in which cell alignment can be chosen from
+    top, center and bottom. The chosen alignment is applied
+    to all cells in the current selection. If no cell is selected,
+    then it is applied to the current cell.
+</p>
+
+<p class="one_line_heading">
+    Besides text output, alignment also applied to bitmap and
+    vector graphics that are displayed in the cell. Matplotlib
+    charts are an exception: They are always stretched to cell
+    limits and therefore ignore alignment.
+</p>
+
 <h4>Rotation</h4>
+
+<p class="one_line_heading">
+    Opens a sub-menu, in which cell rotatation can be chosen from
+    0, 90, 180 and 270 degree. The chosen rotatation is applied
+    to all cells in the current selection. If no cell is selected,
+    then it is applied to the current cell.
+</p>
+
+<p class="one_line_heading">
+    Besides text output, rotatation also applied to bitmap and
+    vector graphics that are displayed in the cell. Matplotlib
+    charts are an exception: They ignore cell rotation.
+</p>
+
+<h4>Frozen</h4>
+
+<p class="one_line_heading">
+    Toggles the frozen attribute for the current cell (<i>not</i> the
+    selection). Frozen cells are immediately executed once.
+    Cell results are stored and remain available until the cell
+    is refreshed.
+</p>
+
+<p class="one_line_heading">
+    Freezing cells can be beneficial for slow and memory consuming
+    processes.
+</p>
+
+<h4>Lock</h4>
+
+<p class="one_line_heading">
+    Lock toggles the current selection's cell lock attribute.
+    If no cell is selected, then the current cell is locked.
+    Locking means that the cell cannot be edited from within pyspread
+    until it is unlocked again.
+</p>
+
+<h4>Merge cells</h4>
+
+<p class="one_line_heading">
+    Merge cells merge all cells that are in the bounding box of the
+    current selection. If there is no selection the the current
+    cell will be merged (with itself) or unmerged if already merged.
+    Merged cells act as one. Output is shown for the top left cell,
+    which stays intact upon a merge.
+</p>
 
 <h3>Macro menu</h3>
 
