@@ -1068,7 +1068,8 @@
     allows searching contained text, word-wise contained text
     and regular expressions, which can be toggled in the
     search toolbar. Similarly upper and lower case sensitivity
-    can be toggled via the search toolbar.
+    can be toggled via the search toolbar. More details are
+    giveen in the Find toolbar section.
 </p>
 
 <h4>Replace</h4>
@@ -1264,7 +1265,7 @@
 
 <p class="one_line_heading">
     Assigns a font including style and size to the current cell
-    if no slection is present. If a seletion is present, the font
+    if no selection is present. If a selection is present, the font
     is assigned to each selected cell.
 </p>
 <p class="one_line_heading">
@@ -1466,7 +1467,7 @@
     charts are an exception: They ignore cell rotation.
 </p>
 
-<h4>Frozen</h4>
+<h4><a name="frozen">Frozen</a></h4>
 
 <p class="one_line_heading">
     Toggles the frozen attribute for the current cell (<i>not</i> the
@@ -1763,42 +1764,323 @@
 </p>
 
 <h3>Find toolbar</h3>
-<h4>Find in code and results</h4>
+<h4>Search textbox</h4>
+<p class="one_line_heading">
+    In this text editor, a search string can be entered.
+    When the textbox is focused via menu, toolbar or
+    via &lt;Ctrl&gt; + F then the prior text is selected.
+    When entered via mouseclick, it is not selected.
+</p>
+
+<p class="one_line_heading">
+    Cells are searched when pressing the &lt;Enter&gt; key or by
+    clicking on the magnifying glass icon in the left corner of the
+    textbox. The search always starts at the current cell.
+    If the search direction is down (standard setting) then the search
+    advances down through the current column then through the next 
+    column to the right and so on. When the search reaches the end
+    of the table, it continues with the first column of the
+    next table. When it reaches the last table then it continues
+    at the first column of the first table.
+</p>
+
+<p class="one_line_heading">
+    For each non-empty cell, the cell code is searched, i.e.
+    Python code of the cell is searched for occurrences of the search string.
+    If there is no match then the string output of the result object,
+    i.e. the result from the str method of the cell is searched.
+    If either the code or the string output contains the search string
+    then the cell is put into view and becomes the current cell.
+    Furthermore, the text in the find textbox is selected.
+</p>
+
+<p class="one_line_heading">
+    When clicking on the downfacing triangle next to the magnifying glass
+    icon in the textbox then a drop-down menu appears. The drop-down menu
+    contains up to 10 recent search strings. When one of these search
+    strings is selected, it replaces the current search string in the
+    textbox.
+</p>
+
 <h4>Search direction</h4>
+<p class="one_line_heading">
+    Toggles the search direction between down and up.
+</p>
+
+<p class="one_line_heading">
+    If the search direction
+    is down, the search behaves as described in the section search textbox.
+</p>
+
+<p class="one_line_heading">
+    If the search direction is up then the search instead advances up through
+    the current column.
+    It continues in the next column to the left. When at the top left cell
+    of the table then it continues with the previous table. If it reaches
+    cell [0, 0, 0] then it continues with the bottom right cell of the last
+    table.
+</p>
+
 <h4>Case sensitive</h4>
+<p class="one_line_heading">
+    Toggles the search between case insensitive (standard, button not activated)
+    and case sensitive (button activated).
+</p>
+
+<p class="one_line_heading">
+    If the search is case insensitive then both the search string and the searched
+    string are lowercased before looking if the search string is contained in the
+    searched string.
+</p>
+
+<p class="one_line_heading">
+    If the search is case sensitive then the original strings are used.
+</p>
+
 <h4>Regular expression</h4>
+<p class="one_line_heading">
+    Toggles the search between standard search (button not activated)
+    and regular expression search (button activated).
+</p>
+
+<p class="one_line_heading">
+    If the search is standard then the searched string is queried via Python's
+    __contains__ method, i.e. as in "search_string in seaarched_string". This is
+    the standard behavior.
+</p>
+
+<p class="one_line_heading">
+    If the search is a regular expression search then Python's module "re"
+    is invoked. The search string is treated as search pattern.
+    The <a href="https://docs.python.org/2/library/re.html">
+    Python documentation on the re module</a> provides an overview of how to
+    build regular expressions. There are various help pages and tutorials
+    on the Web that focus on use cases.
+</p>
+
+<p class="one_line_heading">   
+    Note that regular expression searches can be significantly
+    slower than standard searches.
+</p>
+
 <h4>Surrounded by whitespace</h4>
+<p class="one_line_heading">   
+    Toggles the search between standard search (button not activated)
+    and surrounded by whitespace search (button activated).
+</p>
+
+<p class="one_line_heading">
+    If the search is standard then any substring match inside
+    the searched string counts as valid.
+</p>
+
+<p class="one_line_heading">
+    If the search is a surrounded by whitespace search then the substring
+    inside the searched string has to be preceeded and succeeded by a
+    whitespace character. Otherwise, the substring does not count as
+    occurrence.
+</p>
 
 <h3>Format toolbar</h3>
 <h4>Text font</h4>
+<p class="one_line_heading">
+    Choice box that contains the fonts that are available on the system.
+    On GTK platforms, the font names are displayed in the respective font.
+</p>
+
+<p class="one_line_heading">
+    If a font is selected then it is assigned to the current cell
+    if no selection is present. If a selection is present then the font
+    is assigned to each selected cell.
+</p>
+
 <h4>Text size (points)</h4>
+<p class="one_line_heading">
+    Choice box that contains a choice of font sizes.
+</p>
+
+<p class="one_line_heading">
+    If a font size is selected then it is assigned to the current cell
+    if no selection is present. If a selection is present then the font
+    is assigned to each selected cell.
+</p>
+
 <h4>Bold</h4>
+<p class="one_line_heading">
+    Shortcut to Format -&gt; Bold.
+</p>
+
 <h4>Italics</h4>
+<p class="one_line_heading">
+    Shortcut to Format -&gt; Italics.
+</p>
+
 <h4>Underline</h4>
+<p class="one_line_heading">
+    Shortcut to Format -&gt; Underline.
+</p>
+
 <h4>Strikethrough</h4>
+<p class="one_line_heading">
+    Shortcut to Format -&gt; Strikethrough.
+</p>
+
 <h4>Freeze</h4>
+<p class="one_line_heading">
+    Shortcut to Format -&gt; Freeze.
+</p>
+
 <h4>Lock cell</h4>
+<p class="one_line_heading">
+    Shortcut to Format -&gt; Lock.
+</p>
+
 <h4>Markup</h4>
+<p class="one_line_heading">
+    Shortcut to Format -&gt; Markup.
+</p>
+
 <h4>Cell text rotation</h4>
+<p class="one_line_heading">
+    Toggle button that switches between 0&deg;, 90&deg;, 180&deg; and 270&deg;
+    cell rotation. Pressing the text rotation button is
+    equivalent to selecting
+    an entry in the Format -&gt; Rotation sub-menu.
+</p>
+
 <h4>Justification</h4>
+<p class="one_line_heading">
+    Toggle button that switches between left, centered and right
+    justification.
+    Pressing the justification button is equivalent to selecting
+    an entry in the Format -&gt; Justification sub-menu.
+</p>
+
 <h4>Alignment</h4>
-<h4>Choose border for which attributes are changed</h4>
+<p class="one_line_heading">
+    Toggle button that switches between top, center and bottom
+    alignment.
+    Pressing the alignment button is equivalent to selecting
+    an entry in the Format -&gt; Alignment sub-menu.
+</p>
+
+<h4> <a name="border_choice_box">Border choice box</a></h4>
+<p class="one_line_heading">
+    When changing border color or width, the command affects the selection
+    or -if no selection is present- the current cell. Since a cell has four
+    borders, all borders are affected by default. The border choice box
+    allows changing this behaviour by providing the following options:
+</p>
+
+<ul class="one_line_heading">
+  <li>All borders: All borders are affected</li>
+  <li>Left border: Only the left border of the smallest containing
+      bounding box is affected. </li>
+  <li>Right border: Only the right border of the smallest containing
+      bounding box is affected.</li>
+  <li>Top border: Only the top border of the smallest containing
+      bounding box is affected.</li>
+  <li>Bottom border: Only the bottom border of the smallest containing
+      bounding box is affected.</li>
+  <li>Outer borders: All outer borders of the smallest containing
+      bounding box are affected.</li>
+  <li>Top and bottom borders: Only the top and the bottom border of the
+      smallest containing bounding box are affected.</li>
+</ul>
+
+<p class="one_line_heading">
+    Each selection other that All borders refers to the smallest bounding box
+    that includes the current selection. This bounding box may include cells
+    that are not selected. Therefore, cell borders of non-selected cells may be affected.
+</p>
+
 <h4>Border width</h4>
+<p class="one_line_heading">
+    Choice box that changes cell border widthes. The section 
+    <a href="#border_choice_box">Border choice box</a>
+    explains, which borders are affected.
+    There are 11 different border widths.
+    The first width is 0, which means that no border is drawn.
+</p>
+
 <h4>Border line color</h4>
+<p class="one_line_heading">
+    Invokes a color choice dialog that changes cell border color. The section 
+    <a href="#border_choice_box">Border choice box</a>
+    explains, which borders are affected.
+    The border color is chosen as an RGB value. The color choice dialog may
+    look different depending on the operating system.
+</p>
+
 <h4>Cell background</h4>
+<p class="one_line_heading">
+    Invokes a color choice dialog that changes cell background color for
+    all selected cells or for the current cell if no cells are selected.
+    The background color is chosen as an RGB value. The color choice dialog may
+    look different depending on the operating system.
+</p>
+
 <h4>Text color</h4>
+<p class="one_line_heading">
+    Invokes a color choice dialog that changes the text color for
+    all selected cells or for the current cell if no cells are selected.
+    The text color is chosen as an RGB value. The color choice dialog may
+    look different depending on the operating system.
+</p>
+
 <h4>Merge cells</h4>
+<p class="one_line_heading">
+    Merges cells that are in the smallest bounding box of the current selection.
+    In a merge, all but the top left cells are emptied and the size of the top left
+    cell is extended so that it includes all merged cells.
+</p>
+
+<p class="one_line_heading">
+    If the top left cell of the bounding box is already merged then the merged
+    cells are unmerged and no merging takes place. This also takes place if there
+    is no selection and the current cell is a merged cell.
+</p>
+
+<p class="one_line_heading">
+    While it is posssible to create overöapping merged cells this is not recommended.
+    It may result in loosing content of cells and will result in drawing errors.
+</p>
 
 <h3>Macro toolbar</h3>
 <h4>Insert bitmap</h4>
+<p class="one_line_heading">
+    Shortcut to Macro -&gt; Insert bitmap...
+</p>
+
 <h4>Link bitmap</h4>
+<p class="one_line_heading">
+    Shortcut to Macro -&gt; Link bitmap...
+</p>
+
 <h4>Insert chart</h4>
+<p class="one_line_heading">
+    Shortcut to Macro -&gt; Insert chart...
+</p>
 
 <h3>Widget toolbar</h3>
 <h4>Button like cell</h4>
+<p class="one_line_heading">
+    When pressed, a text entry dialog is opened, in which the text for
+    a button label can be entered. If no text is entered then no button is
+    created. However, whitespace labels are possible to get "empty" buttons.
+</p>
 
+<p class="one_line_heading">
+    After pressing Ok, the current cell shows a button with the entered label.
+    The cell code of the cell now is executed only if the button cell is clicked.
+    This behavior allows manually starting functions without resorting to the
+    <a href="#frozen">frozen cell mechanism</a>.
+</p>
 
-
+<p class="one_line_heading">
+    A button can be removed by making the buttoon cell the current cell and 
+    then pressing on the tool "Button like cell" again.
+</p>
 
 <h2>Entry line</h2>
 

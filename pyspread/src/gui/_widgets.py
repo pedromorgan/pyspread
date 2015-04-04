@@ -577,7 +577,9 @@ class FontChoiceCombobox(ImageComboBox):
 
         font = get_default_font()
         font.SetFaceName(font_string)
-        font.SetFamily(wx.FONTFAMILY_SWISS)
+        if not is_gtk():
+          # Do not display fonts in font coice box for Windows
+          font.SetFamily(wx.FONTFAMILY_SWISS)
         dc.SetFont(font)
 
         text_width, text_height = dc.GetTextExtent(font_string)
