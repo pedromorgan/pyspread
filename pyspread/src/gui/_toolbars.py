@@ -171,7 +171,7 @@ class MainToolbar(ToolbarBase):
             ["S"],
             ["T", self.CutMsg, "EditCut", _("Cut")],
             ["T", self.CopyMsg, "EditCopy", _("Copy")],
-            ["T", self.CopyResultMsg, "EditCopyRes", _("Copy Results")],
+            ["T", self.CopyResultMsg, "EditCopyRes", _("Copy results")],
             ["T", self.PasteMsg, "EditPaste", _("Paste")],
             ["S"],
             ["T", self.SortAscendingMsg, "SortAscending", _("Sort ascending")],

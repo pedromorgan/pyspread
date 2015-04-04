@@ -229,7 +229,7 @@ class MainMenu(_filledMenu, EventMixin):
                         _("Copy the input strings of the cells to clipboard"),
                         wx.ID_COPY]],
                 [item, [self.CopyResultMsg,
-                        _("Copy &Results") + "\tShift+Ctrl+c",
+                        _("Copy &results") + "\tShift+Ctrl+c",
                         _("Copy the result strings of the cells to the "
                           "clipboard")]],
                 [item, [self.PasteMsg, _("&Paste") + "\tCtrl+v",
