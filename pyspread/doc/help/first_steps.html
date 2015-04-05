@@ -2110,9 +2110,46 @@
     tooltip is truncated to 1000 characters.
 </p>
 
-<h2>Insertion mode toggle button (enabled on *nix only)</h2>
+<h2>Insertion mode toggle button</h2>
 
+<p class="one_line_heading">
+    On GTK platforms, the insertion mode toggle button provides a
+    convenient way of referencing cells with the mouse so that 
+    typing S[X+a,Y+b,Z] in many cases becomes unnecessary.
+    Note that on Windows, this functionality is not available.
+    Therefore, the toggle button is permanently disabled on Windows.
+</p>
 
+<p class="one_line_heading">
+    When activating the insertion mode toggle button, make sure that
+    the cursor in the entry line is at a possition at which you want
+    to insert a cell reference. When the button is activated, the
+    entry line and the grid editors are disabled, so that no cell
+    code may be changed manually. Now, select all cells that you want
+    to reference. Selections may be chossen by dragging a selection
+    on the grid as well as with &lt;Ctrl&gt; + &lt;Left click&gt; on
+    cells. Each time that a selection is chosen, i.e. the left button
+    is clicked without pressing &lt;Ctrl&gt;, a string that references
+    to all selected cells is inserted into the text editor for the
+    cell that was current when activating insertion mode.
+</p>
+
+<p class="one_line_heading">
+    Note that inserting two selections will normally result in invalid
+    Python code. unless "+" is put between the expressions.
+</p>
+
+<p class="one_line_heading">
+    For example, if you want to sum over three cell areas, you may write
+    "sum()" into the entry line and place the cursor between the parentheses.
+    Next you click on the insertion toggle button. While you keep &lt;Ctrl&gt;
+    pressed all the time, you select one range and two cells individually.
+    Then you press the insertion toggle button again.
+    The resulting code may look like this:
+    <pre>
+        sum([S[key] for key in [(r, c, 0) for r in xrange(1, 5) for c in xrange(5, 7)] + [(9, 7, 0)] + [(11, 7, 0)] if S[key] is not None])
+    </pre>
+</p>
 <h2>Table selector</h2>
 
 <p class="one_line_heading">
