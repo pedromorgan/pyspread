@@ -728,13 +728,15 @@
     Since pyspread files are
     ultimately Python programs, a file is opened in
     safe mode if
-    <ul>
-        <li>it has not been previously signed by the
-            current user on the current system or</li>
-        <li>gnupg is not installed or not configured to use a key
-            with an empty(!) password.</li>
-    </ul>
 </p>
+
+<ul class="one_line_heading">
+    <li>it has not been previously signed by the
+        current user on the current system or</li>
+    <li>gnupg is not installed or not configured to use a key
+        with an empty(!) password.</li>
+</ul>
+
 <p class="one_line_heading">
     Safe mode means that
     the cell content is loaded and displayed in the grid.
@@ -1004,62 +1006,62 @@
 
 <p class="one_line_heading">
     The preferences dialog allows changing:
-    <ul>
-        <li>
-            <b>Max. undo steps</b>:
-            The maximum number of elementary steps
-            that can be undone via Edit -&gt; Undo.
-            Note that pressing one butoon may result in multiple
-            elementary steps.
-        </li>
-        <li>
-            <b>Grid rows</b>:
-            Initial number of grid rows when pyspread is started
-            without paramaters.
-        </li>
-        <li>
-            <b>Grid columns</b>:
-            Initial number of grid columns when pyspread is started
-            without paramaters.
-        </li>
-        <li>
-            <b>Grid tables</b>:
-            Initial number of grid tables when pyspread is started
-            without paramaters.
-        </li>
-        <li>
-            <b>Max. result length</b>:
-            If a results is displayed as a string (and not as e.g. a
-            bitmap) then the string is truncated to the value given
-            here. The string length consideerd is the number of
-            Unicode characters.
-        </li>
-        <li>
-            <b>Timeout</b>:
-            If calculations for a cell exceed the time in
-            seconds given here  then calculation is aborted.
-            This does not work
-            for Python functions that are C code, so e.g.
-            2**99999999999999999 is <i>not</i> aborted.
-        </li>
-        <li>
-            <b>Timer interval</b>:
-            If View -&gt; Toggle periodic updates is activated then
-            all frozen cells are updated in an interval. This interval
-            in milliseconds is set here.
-            The change takes effect the next time that View -&gt;
-            Toggle periodic updates is activated.
-            Too small values may lock up pyspread.
-        </li>
-        <li>
-            <b>GPG key id</b>:
-            If a GPG key has been selected then its id is displayed
-            here. Entering a new, valid id of an existing key that
-            is <i>not</i> password protected changes the GPG key
-            similarly to File -&gt; Switch GPG key...
-        </li>
-    </ul>
 </p>
+<ul class="one_line_heading">
+    <li>
+        <b>Max. undo steps</b>:
+        The maximum number of elementary steps
+        that can be undone via Edit -&gt; Undo.
+        Note that pressing one butoon may result in multiple
+        elementary steps.
+    </li>
+    <li>
+        <b>Grid rows</b>:
+        Initial number of grid rows when pyspread is started
+        without paramaters.
+    </li>
+    <li>
+        <b>Grid columns</b>:
+        Initial number of grid columns when pyspread is started
+        without paramaters.
+    </li>
+    <li>
+        <b>Grid tables</b>:
+        Initial number of grid tables when pyspread is started
+        without paramaters.
+    </li>
+    <li>
+        <b>Max. result length</b>:
+        If a results is displayed as a string (and not as e.g. a
+        bitmap) then the string is truncated to the value given
+        here. The string length consideerd is the number of
+        Unicode characters.
+    </li>
+    <li>
+        <b>Timeout</b>:
+        If calculations for a cell exceed the time in
+        seconds given here  then calculation is aborted.
+        This does not work
+        for Python functions that are C code, so e.g.
+        2**99999999999999999 is <i>not</i> aborted.
+    </li>
+    <li>
+        <b>Timer interval</b>:
+        If View -&gt; Toggle periodic updates is activated then
+        all frozen cells are updated in an interval. This interval
+        in milliseconds is set here.
+        The change takes effect the next time that View -&gt;
+        Toggle periodic updates is activated.
+        Too small values may lock up pyspread.
+    </li>
+    <li>
+        <b>GPG key id</b>:
+        If a GPG key has been selected then its id is displayed
+        here. Entering a new, valid id of an existing key that
+        is <i>not</i> password protected changes the GPG key
+        similarly to File -&gt; Switch GPG key...
+    </li>
+</ul>
 
 <p class="one_line_heading">
     <a href="images/screenshot_preferences_dialog.png">
@@ -1134,8 +1136,10 @@
 
 <h4>Redo</h4>
 
+<p class="one_line_heading">
     Undone steps can be redone with Edit -&gt; Redo
     (Shortcut: &lt;Shift&gt; + &lt;Ctrl&gt; + Z).
+</p>
 
 <h4>Cut</h4>
 
@@ -1265,15 +1269,15 @@
 
 <p class="one_line_heading">
     Quotation is <i>not</i> done if
-    <ul>
-        <li>there is no code in the cell or</li>
-        <li>the character " appears in the code or</li>
-        <li>
-            the first and last character combination is any of: 
-            "", '', u', "
-        </li>
-    </ul>
 </p>
+<ul class="one_line_heading">
+    <li>there is no code in the cell or</li>
+    <li>the character " appears in the code or</li>
+    <li>
+        the first and last character combination is any of: 
+        "", '', u', "
+    </li>
+</ul>
 
 <h4>Sort ascending</h4>
 
@@ -1695,12 +1699,13 @@
     (Figure). The editor allows editing a text file that is
     executed when the spreadsheet is opened or when its
     content is updated.
-</p>
 
-<a href="images/screenshot_macros.png">
-        <img alt="Macro editor" src="images/screenshot_macros_preview.png"
-             style="border: 0px solid ; width: 200px; height: 156px;">
-</a>
+    <a href="images/screenshot_macros.png">
+            <img alt="Macro editor" src="images/screenshot_macros_preview.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+
+</p>
 
 <p class="one_line_heading">
     The Apply button executes the macro code.
@@ -1837,11 +1842,11 @@
 </p>
 
 <h4>About</h4>
+
+<p class="one_line_heading">
     Help -&gt; About informs about pyspread's current version, license
     and contributors. The exact layout depends on the oprtation
-    system.
-<p class="one_line_heading">
-    
+    system.    
 </p>
 
 <h2>Context menu</h2>
@@ -2488,11 +2493,7 @@
 
 <p class="one_line_heading">
     One solution to this issue is to generate an SVG image
-    from each chart and insert it into the spreadsheet.
-</p>
-
-<p class="one_line_heading">
-    <br> <br>
+    from each chart and insert it into the spreadsheet. <br>
 </p>
 
 <p class="impressum">
