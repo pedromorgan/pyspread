@@ -949,7 +949,7 @@ class GridCellBorderCairoRenderer(object):
 
         rect_x, rect_y, _, _ = self.rect
 
-        start_point = rect_x, rect_y - 0.01
+        start_point = rect_x, rect_y - 0.001
         end_point = rect_x, rect_y
 
         return start_point, end_point
@@ -959,7 +959,7 @@ class GridCellBorderCairoRenderer(object):
 
         rect_x, rect_y, _, _ = self.rect
 
-        start_point = rect_x - 0.01, rect_y
+        start_point = rect_x - 0.001, rect_y
         end_point = rect_x, rect_y
 
         return start_point, end_point
@@ -1139,4 +1139,5 @@ class GridCellBorderCairoRenderer(object):
 
         for width, _, draw_func in width_func:
             if width > 0.0:
+                print self.key, width
                 draw_func()
