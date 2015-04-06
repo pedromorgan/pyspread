@@ -1139,5 +1139,4 @@ class GridCellBorderCairoRenderer(object):
 
         for width, _, draw_func in width_func:
             if width > 0.0:
-                print self.key, width
                 draw_func()
