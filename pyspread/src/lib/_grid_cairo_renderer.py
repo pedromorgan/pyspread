@@ -37,6 +37,7 @@ Provides
 import math
 import sys
 import warnings
+from operator import attrgetter
 
 import cairo
 import numpy
@@ -790,8 +791,8 @@ class GridCellContentCairoRenderer(object):
 
         if self.rect[2] < cell_attributes[self.key]["borderwidth_right"] or \
            self.rect[3] < cell_attributes[self.key]["borderwidth_bottom"]:
-             self.context.restore()
-             return
+            self.context.restore()
+            return
 
         if self.code_array.cell_attributes[self.key]["button_cell"]:
             # Render a button instead of the cell
@@ -915,74 +916,120 @@ class CellBorder(object):
 class Cell(object):
     """Cell"""
 
-    def __init__(self, key, rect, dummy_width=100, dummy_height=100):
-        self.row, self.col, self.tab = key
+    def __init__(self, key, rect, cell_attributes):
+        self.row, self.col, self.tab = self.key = key
         self.x, self.y, self.width, self.height = rect
-        self._dummy_width = dummy_width
-        self._dummy_height = dummy_height
+        self.cell_attributes = cell_attributes
 
     def get_above_key_rect(self):
-        """Returns tuple key rect of above cell with dummy height"""
+        """Returns tuple key rect of above cell"""
 
-        key_above = self.row-1, self.col, self.tab
-        rect_above = (self.x, self.y-self._dummy_height,
-                      self.width, self._dummy_height)
+        key_above = self.row - 1, self.col, self.tab
+
+        border_width_bottom = \
+            float(self.cell_attributes[key_above]["borderwidth_bottom"]) / 2.0
+
+        rect_above = (self.x, self.y-border_width_bottom,
+                      self.width, border_width_bottom)
         return key_above, rect_above
 
     def get_below_key_rect(self):
-        """Returns tuple key rect of below cell with dummy height"""
+        """Returns tuple key rect of below cell"""
 
-        key_below = self.row+1, self.col, self.tab
-        rect_below = (self.x, self.y+self.height,
-                      self.width, self._dummy_height)
+        key_below = self.row + 1, self.col, self.tab
+
+        border_width_bottom = \
+            float(self.cell_attributes[self.key]["borderwidth_bottom"]) / 2.0
+
+        rect_below = (self.x, self.y+border_width_bottom,
+                      self.width, border_width_bottom)
         return key_below, rect_below
 
     def get_left_key_rect(self):
-        """Returns tuple key rect of left cell with dummy width"""
+        """Returns tuple key rect of left cell"""
 
-        key_left = self.row, self.col-1, self.tab
-        rect_left = (self.x-self._dummy_width, self.y,
-                     self._dummy_width, self.height)
+        key_left = self.row, self.col - 1, self.tab
+
+        border_width_right = \
+            float(self.cell_attributes[key_left]["borderwidth_right"]) / 2.0
+
+        rect_left = (self.x-border_width_right, self.y,
+                     border_width_right, self.height)
         return key_left, rect_left
 
     def get_right_key_rect(self):
-        """Returns tuple key rect of right cell with dummy width"""
+        """Returns tuple key rect of right cell"""
 
-        key_right = self.row, self.col+1, self.tab
+        key_right = self.row, self.col + 1, self.tab
+
+        border_width_right = \
+            float(self.cell_attributes[self.key]["borderwidth_right"]) / 2.0
+
         rect_right = (self.x+self.width, self.y,
-                      self._dummy_width, self.height)
+                      border_width_right, self.height)
         return key_right, rect_right
 
     def get_above_left_key_rect(self):
-        """Returns tuple key rect of above left cell with dummy width"""
+        """Returns tuple key rect of above left cell"""
 
-        key_above_left = self.row-1, self.col-1, self.tab
-        rect_above_left = (self.x-self._dummy_width, self.y-self._dummy_height,
-                           self._dummy_width, self._dummy_height)
+        key_above_left = self.row - 1, self.col - 1, self.tab
+
+        border_width_right = \
+            float(self.cell_attributes[key_above_left]["borderwidth_right"]) \
+            / 2.0
+        border_width_bottom = \
+            float(self.cell_attributes[key_above_left]["borderwidth_bottom"]) \
+            / 2.0
+
+        rect_above_left = (self.x-border_width_right,
+                           self.y-border_width_bottom,
+                           border_width_right, border_width_bottom)
         return key_above_left, rect_above_left
 
     def get_above_right_key_rect(self):
-        """Returns tuple key rect of above right cell with dummy width"""
+        """Returns tuple key rect of above right cell"""
 
-        key_above_right = self.row+1, self.col-1, self.tab
-        rect_above_right = (self.x+self.width, self.y-self._dummy_height,
-                            self._dummy_width, self._dummy_height)
+        key_above = self.row - 1, self.col, self.tab
+        key_above_right = self.row - 1, self.col + 1, self.tab
+
+        border_width_right = \
+            float(self.cell_attributes[key_above]["borderwidth_right"]) / 2.0
+        border_width_bottom = \
+            float(self.cell_attributes[key_above_right]["borderwidth_bottom"])\
+            / 2.0
+
+        rect_above_right = (self.x+self.width, self.y-border_width_bottom,
+                            border_width_right, border_width_bottom)
         return key_above_right, rect_above_right
 
     def get_below_left_key_rect(self):
-        """Returns tuple key rect of below left cell with dummy width"""
+        """Returns tuple key rect of below left cell"""
 
-        key_below_left = self.row-1, self.col+1, self.tab
-        rect_below_left = (self.x-self._dummy_width, self.y-self.height,
-                           self._dummy_width, self._dummy_height)
+        key_left = self.row, self.col - 1, self.tab
+        key_below_left = self.row + 1, self.col - 1, self.tab
+
+        border_width_right = \
+            float(self.cell_attributes[key_below_left]["borderwidth_right"]) \
+            / 2.0
+        border_width_bottom = \
+            float(self.cell_attributes[key_left]["borderwidth_bottom"]) / 2.0
+
+        rect_below_left = (self.x-border_width_right, self.y-self.height,
+                           border_width_right, border_width_bottom)
         return key_below_left, rect_below_left
 
     def get_below_right_key_rect(self):
-        """Returns tuple key rect of below right cell with dummy width"""
+        """Returns tuple key rect of below right cell"""
 
-        key_below_right = self.row+1, self.col+1, self.tab
+        key_below_right = self.row + 1, self.col + 1, self.tab
+
+        border_width_right = \
+            float(self.cell_attributes[self.key]["borderwidth_right"]) / 2.0
+        border_width_bottom = \
+            float(self.cell_attributes[self.key]["borderwidth_bottom"]) / 2.0
+
         rect_below_right = (self.x+self.width, self.y-self.height,
-                            self._dummy_width, self._dummy_height)
+                            border_width_right, border_width_bottom)
         return key_below_right, rect_below_right
 
 
@@ -1008,7 +1055,7 @@ class CellBorders(object):
         self.key = key
         self.rect = rect
         self.cell_attributes = cell_attributes
-        self.cell = Cell(key, rect)
+        self.cell = Cell(key, rect, cell_attributes)
 
     def _get_bottom_line_coordinates(self):
         """Returns start and stop coordinates of bottom line"""
@@ -1186,7 +1233,9 @@ class GridCellBorderCairoRenderer(object):
         self.context.clip()
 
         cell_borders = CellBorders(self.cell_attributes, self.key, self.rect)
-        for border in cell_borders.gen_all():
+        borders = list(cell_borders.gen_all())
+        borders.sort(key=attrgetter('width', 'color'))
+        for border in borders:
             border.draw(self.context)
 
         self.context.restore()
