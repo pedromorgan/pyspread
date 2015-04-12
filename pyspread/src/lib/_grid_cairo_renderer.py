@@ -941,7 +941,7 @@ class Cell(object):
         border_width_bottom = \
             float(self.cell_attributes[self.key]["borderwidth_bottom"]) / 2.0
 
-        rect_below = (self.x, self.y+border_width_bottom,
+        rect_below = (self.x, self.y+self.height,
                       self.width, border_width_bottom)
         return key_below, rect_below
 
