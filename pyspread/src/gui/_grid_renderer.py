@@ -96,9 +96,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         pen.SetWidth(size)
 
         # Inner right and lower borders
-        border_left = rect.x
+        border_left = rect.x + size - 1
         border_right = rect.x + rect.width - size - 1
-        border_upper = rect.y
+        border_upper = rect.y + size - 1
         border_lower = rect.y + rect.height - size - 1
 
         points_lr = [
