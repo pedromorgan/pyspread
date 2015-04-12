@@ -201,6 +201,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
     def _get_draw_cache_key(self, grid, key, drawn_rect, is_selected):
         """Returns key for the screen draw cache"""
 
+        row, col, tab = key
+        cell_attributes = grid.code_array.cell_attributes
+
         zoomed_width = drawn_rect.width / self.zoom
         zoomed_height = drawn_rect.height / self.zoom
 
@@ -212,8 +215,25 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         sorted_keys = sorted(grid.code_array.cell_attributes[key].iteritems())
 
+        key_above_left = row - 1, col - 1, tab
+        key_above = row - 1, col, tab
+        key_above_right = row - 1, col + 1, tab
+        key_left = row, col - 1, tab
+        key_right = row, col + 1, tab
+        key_below_left = row + 1, col - 1, tab
+        key_below = row + 1, col, tab
+
+        borders = []
+
+        for k in [key, key_above_left, key_above, key_above_right,
+                  key_left, key_right, key_below_left, key_below]:
+            borders.append(cell_attributes[k]["borderwidth_bottom"])
+            borders.append(cell_attributes[k]["borderwidth_right"])
+            borders.append(cell_attributes[k]["bordercolor_bottom"])
+            borders.append(cell_attributes[k]["bordercolor_right"])
+
         return (zoomed_width, zoomed_height, is_selected, cell_preview,
-                tuple(sorted_keys))
+                tuple(sorted_keys), tuple(borders))
 
     def _get_cairo_bmp(self, mdc, key, rect, is_selected, view_frozen):
         """Returns a wx.Bitmap of cell key in size rect"""
