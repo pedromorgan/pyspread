@@ -63,7 +63,6 @@ Provides
 # ChartDialog provides FigureAttributesPanel, Flatnotebook of SeriesPanels,
 #                      FigurePanel
 
-from copy import copy
 
 import wx
 import matplotlib
@@ -1253,10 +1252,14 @@ Code 	Meaning
         "xlabel": (_("Label"), TextEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
+        "xticks": (_("X-axis ticks"), StringEditor, ""),
+        "xtick_labels": (_("X-axis labels"), TextEditor, ""),
         "xtick_params": (_("X-axis ticks"), TickParamsEditor, ""),
         "ylabel": (_("Label"), TextEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
+        "yticks": (_("Y-axis ticks"), StringEditor, ""),
+        "ytick_labels": (_("Y-axis labels"), TextEditor, ""),
         "ytick_params": (_("Y-axis ticks"), TickParamsEditor, ""),
         "xgrid": (_("X-axis grid"), BoolEditor, False),
         "ygrid": (_("Y-axis grid"), BoolEditor, False),
@@ -1270,8 +1273,9 @@ Code 	Meaning
     boxes = [
         (_("Figure"), ["title", "legend"]),
         (_("X-Axis"), ["xlabel", "xlim", "xscale", "xgrid", "xdate_format",
-                       "xtick_params"]),
-        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid", "ytick_params"]),
+                       "xticks", "xtick_labels", "xtick_params"]),
+        (_("Y-Axis"), ["ylabel", "ylim", "yscale", "ygrid",
+                       "yticks", "ytick_labels", "ytick_params"]),
     ]
 
     tooltips = {
@@ -1283,6 +1287,8 @@ Code 	Meaning
         "xdate_format": _(u"If non-empty then the x axis is displays dates.\n"
                           u"Enter an unquoted strftime() format string."
                           u"\n") + strftime_doc,
+        "xtick_labels": _(u"Custom labels for the x axis."),
+        "ytick_labels": _(u"Custom labels for the y axis."),
     }
 
 

@@ -213,7 +213,11 @@ class ChartFigure(Figure):
             "ylabel": self.__axes.set_ylabel,
             "xscale": self.__axes.set_xscale,
             "yscale": self.__axes.set_yscale,
+            "xticks": self.__axes.set_xticks,
+            "xtick_labels": self.__axes.set_xticklabels,
             "xtick_params": self.__axes.tick_params,
+            "yticks": self.__axes.set_yticks,
+            "ytick_labels": self.__axes.set_yticklabels,
             "ytick_params": self.__axes.tick_params,
             "xlim": self.__axes.set_xlim,
             "ylim": self.__axes.set_ylim,
@@ -222,7 +226,7 @@ class ChartFigure(Figure):
             "xdate_format": self._xdate_setter,
         }
 
-        for key in key2setter:
+        for key in sorted(key2setter.keys()):
             if key in axes_data and axes_data[key]:
                 try:
                     kwargs_key = key + "_kwargs"
