@@ -4,6 +4,32 @@ Changelog for pyspread
 Note: This changelog starts at version 0.2.0
 
 
+0.4.1
+-----
+
+Custom axis ticks added to chart dialog
+Grid border drawing fixed
+Current cell focus drawing optimized
+Error message when aborting Macro --> Save removed
+Canceling an export does not any longer yield an error message
+Content of cells that are very thin or small is not rendered any more
+Fix for Cairo memory error on Windows 
+Frozen cells now are shown if activated in View menu
+Bitmaps and SVGs now are translated and rotated
+<b>b</b> now is displayed correctly.
+SVG recognition now reqires xmlns within the first 1000 characters
+Markup made available in the Format menu
+Rotation angle input dialog replaced with sub menu
+First steps help file updated
+Tutorial in pyspread distribution updated so that it matches the Web site
+Heap size increased
+Cells below a merged cell are now emptied
+Merging cells now get a larger cell editor
+0 width grid lines are not drawn any more
+Translation updates
+Template macro for adjustung table layout added
+
+
 0.4
 ---
 
