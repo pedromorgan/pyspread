@@ -212,3 +212,5 @@ def is_svg(code):
 
     if "http://www.w3.org/2000/svg" in code[:1000]:
         return True
+
+    return False
