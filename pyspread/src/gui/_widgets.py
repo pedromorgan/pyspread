@@ -69,7 +69,7 @@ from _events import MainWindowEventMixin
 
 from icons import icons
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 # Maximum tooltip string length
@@ -578,8 +578,8 @@ class FontChoiceCombobox(ImageComboBox):
         font = get_default_font()
         font.SetFaceName(font_string)
         if not is_gtk():
-          # Do not display fonts in font coice box for Windows
-          font.SetFamily(wx.FONTFAMILY_SWISS)
+            # Do not display fonts in font coice box for Windows
+            font.SetFamily(wx.FONTFAMILY_SWISS)
         dc.SetFont(font)
 
         text_width, text_height = dc.GetTextExtent(font_string)

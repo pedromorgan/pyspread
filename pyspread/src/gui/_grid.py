@@ -38,7 +38,7 @@ try:
 except ImportError:
     rsvg = None
 
-from _events import post_command_event, EventMixin
+from _events import post_command_event, EventMixin, GridActionEventMixin
 
 from _grid_table import GridTable
 from _grid_renderer import GridRenderer
@@ -796,7 +796,7 @@ class GridCellEventHandlers(object):
         event.Skip()
 
 
-class GridEventHandlers(object):
+class GridEventHandlers(GridActionEventMixin):
     """Contains grid event handlers"""
 
     def __init__(self, grid):
@@ -1010,6 +1010,17 @@ class GridEventHandlers(object):
                 post_command_event(self.grid, self.grid.ZoomInMsg)
             else:
                 post_command_event(self.grid, self.grid.ZoomOutMsg)
+
+        elif self.main_window.IsFullScreen():
+            if event.WheelRotation > 0:
+                newtable = self.grid.current_table + 1
+            else:
+                newtable = self.grid.current_table - 1
+
+            post_command_event(self.grid, self.GridActionTableSwitchMsg,
+                               newtable=newtable)
+            return
+
         else:
             x, y = self.grid.GetViewStart()
             direction = 1 if event.GetWheelRotation() < 0 else -1
