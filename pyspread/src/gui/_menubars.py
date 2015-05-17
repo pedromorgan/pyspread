@@ -273,6 +273,10 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.ShowResizeGridDialogMsg, _("Resize grid"),
                         _("Resize grid")]]]],
             [wx.Menu, _("&View"), [
+                [item, [self.FullScreenMsg, _("Fullscreen") + "\tF11",
+                        _("Shows grid in fullscreen mode. "
+                          "Press <F11> to leave.")]],
+                ["Separator"],
                 [wx.Menu, _("Toolbars"), [
                     [item, [self.MainToolbarToggleMsg, _("Main toolbar"),
                             _("Shows and hides the main toolbar.")],

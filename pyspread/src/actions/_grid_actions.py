@@ -1162,6 +1162,16 @@ class GridActions(Actions):
         self._zoom_rows(zoom)
         self._zoom_cols(zoom)
 
+        if self.main_window.IsFullScreen():
+            # Do not display labels in fullscreen mode
+            self.main_window.handlers.row_label_size = \
+                self.grid.GetRowLabelSize()
+            self.main_window.handlers.col_label_size = \
+                self.grid.GetColLabelSize()
+
+            self.grid.HideRowLabels()
+            self.grid.HideColLabels()
+
         self.grid.ForceRefresh()
 
         if status:

@@ -281,6 +281,7 @@ class MainWindow(wx.Frame, EventMixin):
         # Main window events
         self.Bind(wx.EVT_MOVE, handlers.OnMove)
         self.Bind(wx.EVT_SIZE, handlers.OnSize)
+        self.Bind(self.EVT_CMD_FULLSCREEN, handlers.OnToggleFullscreen)
 
         # Content changed event, adjusts title bar with star
         self.Bind(self.EVT_CONTENT_CHANGED, handlers.OnContentChanged)
@@ -407,6 +408,28 @@ class MainWindowEventHandlers(EventMixin):
         size = event.GetSize()
 
         config["window_size"] = repr((size.width, size.height))
+
+    def OnToggleFullscreen(self, event):
+        """Fullscreen event handler"""
+
+        is_full_screen = self.main_window.IsFullScreen()
+
+        # Make sure that only the grid is shown in fullscreen mode
+        if is_full_screen:
+            try:
+                self.main_window.grid.SetRowLabelSize(self.row_label_size)
+                self.main_window.grid.SetColLabelSize(self.col_label_size)
+            except AttributeError:
+                pass
+
+        else:
+            self.row_label_size = self.main_window.grid.GetRowLabelSize()
+            self.col_label_size = self.main_window.grid.GetColLabelSize()
+
+            self.main_window.grid.HideRowLabels()
+            self.main_window.grid.HideColLabels()
+
+        self.main_window.ShowFullScreen(not is_full_screen)
 
     def OnContentChanged(self, event):
         """Titlebar star adjustment event handler"""

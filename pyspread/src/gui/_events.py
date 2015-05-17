@@ -63,6 +63,8 @@ class MainWindowEventMixin(object):
 
     TitleMsg, EVT_CMD_TITLE = new_command_event()
 
+    FullScreenMsg, EVT_CMD_FULLSCREEN = new_command_event()
+
     SafeModeEntryMsg, EVT_CMD_SAFE_MODE_ENTRY = new_command_event()
     SafeModeExitMsg, EVT_CMD_SAFE_MODE_EXIT = new_command_event()
 
