@@ -422,7 +422,23 @@ class MainWindowEventHandlers(EventMixin):
             except AttributeError:
                 pass
 
+            # Restore toolbars from before fullscreen mode
+            try:
+                self.main_window._mgr.LoadPerspective(self.aui_windowed)
+            except AttributeError:
+                pass
+
         else:
+            # Save the perspective of the AUI manager
+            self.aui_windowed = self.main_window._mgr.SavePerspective()
+
+            # Hide toolbars
+            for pane in self.main_window._mgr.GetAllPanes():
+                if pane.name != "grid":
+                    pane.Hide()
+
+            self.main_window._mgr.Update()
+
             self.row_label_size = self.main_window.grid.GetRowLabelSize()
             self.col_label_size = self.main_window.grid.GetColLabelSize()
 
