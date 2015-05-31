@@ -273,7 +273,7 @@
     Python expressions are terms
     that Python evaluates to a result object.
     <a href="http://docs.python.org/reference/expressions.html">
-        http://docs.python.org/reference/expressions.html</a> 
+        http://docs.python.org/reference/expressions.html</a>
     gives an overview to the different types of Python
     expressions.
 </p>
@@ -301,7 +301,7 @@
 
 <h2>Module import</h2>
 <p class="one_line_heading">
-    Since the import statement for importing Python modules 
+    Since the import statement for importing Python modules
     is no expression, it cannot be used from within a cell.
     Module import from within a cell can be realized by
     calling the function __import__:<br>
@@ -1274,7 +1274,7 @@
     <li>there is no code in the cell or</li>
     <li>the character " appears in the code or</li>
     <li>
-        the first and last character combination is any of: 
+        the first and last character combination is any of:
         "", '', u', "
     </li>
 </ul>
@@ -1302,7 +1302,7 @@
 <p class="one_line_heading">
     Inserts one row directly above the cursor if no selections are
     made.
-    If selections are present, then the bounding box that covers all 
+    If selections are present, then the bounding box that covers all
     selected cells is calculated, and the number of rows of this
     bounding box is inserted above the bounding box.
 </p>
@@ -1312,7 +1312,7 @@
 <p class="one_line_heading">
     Inserts one column directly left of the cursor if no selections
     are made.
-    If selections are present, then the bounding box that covers all 
+    If selections are present, then the bounding box that covers all
     selected cells is calculated, and the number of columns of this
     bounding box is inserted just left of the the bounding box.
 </p>
@@ -1358,6 +1358,21 @@
 
 <h3>View menu </h3>
 
+<h4>Fullscreen</h4>
+
+<p class="one_line_heading">
+    Toggles fullscreen mode, in which only the grid is visible on the screen.
+    In fullscreen mode, the mouse wheel changes tables as if the mouse were
+    in the table selection widget right to the entry line.
+    &lt;F11&gt; acts as shortcut to the fullscreen mode toggle.
+
+</p>
+
+<p class="one_line_heading">
+    Fullscreen mode has been added so that interactive presentations can be
+    shown with pyspread.
+</p>
+
 <h4>Toolbars</h4>
 
 <p class="one_line_heading">
@@ -1401,7 +1416,7 @@
 <h4>Refresh selected cells</h4>
 
 <p class="one_line_heading">
-    Executes code of cells that are selected and frozen and updates 
+    Executes code of cells that are selected and frozen and updates
     their cell results in the grid. If no cell is selected then the
     current cell is refreshed. The shortcut for Refresh selected cells
     is &lt;F5&gt;.
@@ -1455,7 +1470,7 @@
 <h4>Italics</h4>
 
 <p class="one_line_heading">
-    Italics toggles the current selection's cell font italics 
+    Italics toggles the current selection's cell font italics
     attribute.
     If no cell is selected, then the attribute is toggled for the
     current cell. The shortcut for Italics is &lt;Ctrl&gt; + I.
@@ -1464,7 +1479,7 @@
 <h4>Underline</h4>
 
 <p class="one_line_heading">
-    Underline toggles the current selection's cell font underline 
+    Underline toggles the current selection's cell font underline
     attribute.
     If no cell is selected, then the attribute is toggled for the
     current cell. The shortcut for Underline is &lt;Ctrl&gt; + U.
@@ -1473,7 +1488,7 @@
 <h4>Strikethrough</h4>
 
 <p class="one_line_heading">
-    Strikethrough toggles the current selection's cell font 
+    Strikethrough toggles the current selection's cell font
     strikethrough attribute.
     If no cell is selected, then the attribute is toggled for the
     current cell.
@@ -1507,7 +1522,7 @@
 </p>
 
 <p class="one_line_heading">
-    An overview of pango markup can be found <a 
+    An overview of pango markup can be found <a
     href="https://developer.gnome.org/pango/stable/PangoMarkupFormat.html">here</a>.
     Some convenience functions are:
 </p>
@@ -1846,7 +1861,7 @@
 <p class="one_line_heading">
     Help -&gt; About informs about pyspread's current version, license
     and contributors. The exact layout depends on the oprtation
-    system.    
+    system.
 </p>
 
 <h2>Context menu</h2>
@@ -1967,7 +1982,7 @@
     clicking on the magnifying glass icon in the left corner of the
     textbox. The search always starts at the current cell.
     If the search direction is down (standard setting) then the search
-    advances down through the current column then through the next 
+    advances down through the current column then through the next
     column to the right and so on. When the search reaches the end
     of the table, it continues with the first column of the
     next table. When it reaches the last table then it continues
@@ -2048,13 +2063,13 @@
     on the Web that focus on use cases.
 </p>
 
-<p class="one_line_heading">   
+<p class="one_line_heading">
     Note that regular expression searches can be significantly
     slower than standard searches.
 </p>
 
 <h4>Surrounded by whitespace</h4>
-<p class="one_line_heading">   
+<p class="one_line_heading">
     Toggles the search between standard search (button not activated)
     and surrounded by whitespace search (button activated).
 </p>
@@ -2186,7 +2201,7 @@
 
 <h4>Border width</h4>
 <p class="one_line_heading">
-    Choice box that changes cell border widthes. The section 
+    Choice box that changes cell border widthes. The section
     <a href="#border_choice_box">Border choice box</a>
     explains, which borders are affected.
     There are 11 different border widths.
@@ -2195,7 +2210,7 @@
 
 <h4>Border line color</h4>
 <p class="one_line_heading">
-    Invokes a color choice dialog that changes cell border color. The section 
+    Invokes a color choice dialog that changes cell border color. The section
     <a href="#border_choice_box">Border choice box</a>
     explains, which borders are affected.
     The border color is chosen as an RGB value. The color choice dialog may
@@ -2268,7 +2283,7 @@
 </p>
 
 <p class="one_line_heading">
-    A button can be removed by making the buttoon cell the current cell and 
+    A button can be removed by making the buttoon cell the current cell and
     then pressing on the tool "Button like cell" again.
 </p>
 
@@ -2304,7 +2319,7 @@
 
 <p class="one_line_heading">
     On GTK platforms, the insertion mode toggle button provides a
-    convenient way of referencing cells with the mouse so that 
+    convenient way of referencing cells with the mouse so that
     typing S[X+a,Y+b,Z] in many cases becomes unnecessary.
     Note that on Windows, this functionality is not available.
     Therefore, the toggle button is permanently disabled on Windows.
@@ -2433,10 +2448,10 @@
 
 <h2>Cyclic references</h2>
 <p class="one_line_heading">
-    Cyclic references are possible in pyspread. However, 
+    Cyclic references are possible in pyspread. However,
     recursion depth is limited. Pyspread shows an error when
     the maximum recursion depth is exceeded.
-    It is strongly advisable to only use cyclic references 
+    It is strongly advisable to only use cyclic references
     when either a frozen or a button cell interrupts the cycle.
     Otherwise, cyclic calculations may lock up pyspread.
 </p>
