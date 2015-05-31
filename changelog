@@ -3,6 +3,14 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+0.4.2
+-----
+
+Some changes to improve results on Debian CI test
+Full screen mode added
+Updates to first steps document
+Linux distrubtion logos removed from first steps document
+
 
 0.4.1
 -----
