@@ -442,8 +442,8 @@ class MainWindowEventHandlers(EventMixin):
             self.row_label_size = self.main_window.grid.GetRowLabelSize()
             self.col_label_size = self.main_window.grid.GetColLabelSize()
 
-            self.main_window.grid.HideRowLabels()
-            self.main_window.grid.HideColLabels()
+            self.main_window.grid.SetRowLabelSize(0)
+            self.main_window.grid.SetColLabelSize(0)
 
         self.main_window.ShowFullScreen(not is_full_screen)
 
