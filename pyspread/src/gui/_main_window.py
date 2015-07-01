@@ -776,8 +776,9 @@ class MainWindowEventHandlers(EventMixin):
                 _("Pyspread file") + " (*.pys)|*.pys|" + \
                 _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
                 _("Excel file") + " (*.xls)|*.xls|" + \
+                _("Excel file") + " (*.xlsx)|*.xlsx|" + \
                 _("All files") + " (*.*)|*.*"
-            filetypes = ["pys", "pysu", "xls", "pys"]
+            filetypes = ["pys", "pysu", "xls", "xlsx", "pys"]
 
         message = _("Choose file to open.")
         style = wx.OPEN

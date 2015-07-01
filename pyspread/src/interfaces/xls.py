@@ -689,12 +689,15 @@ class Xls(object):
             border_line_style2width.update(__border_line_style2width)
 
             bottom_color_idx = xf.border.bottom_colour_index
-            if self.workbook.colour_map[bottom_color_idx] is not None:
+
+            if bottom_color_idx in self.workbook.colour_map and \
+               self.workbook.colour_map[bottom_color_idx] is not None:
                 bottom_color = self.idx2colour(bottom_color_idx)
                 attributes["bordercolor_bottom"] = bottom_color.GetRGB()
 
             right_color_idx = xf.border.right_colour_index
-            if self.workbook.colour_map[right_color_idx] is not None:
+            if right_color_idx in self.workbook.colour_map and \
+               self.workbook.colour_map[right_color_idx] is not None:
                 right_color = self.idx2colour(right_color_idx)
                 attributes["bordercolor_right"] = right_color.GetRGB()
 
@@ -717,7 +720,8 @@ class Xls(object):
             if font.italic:
                 attributes["fontstyle"] = wx.ITALIC
 
-            if self.workbook.colour_map[font.colour_index] is not None:
+            if font.colour_index in self.workbook.colour_map and \
+               self.workbook.colour_map[font.colour_index] is not None:
                 attributes["textcolor"] = \
                     self.idx2colour(font.colour_index).GetRGB()
 
@@ -734,7 +738,8 @@ class Xls(object):
             if top_width != 1:
                 attributes_above["borderwidth_bottom"] = top_width
             top_color_idx = xf.border.top_colour_index
-            if self.workbook.colour_map[top_color_idx] is not None:
+            if top_color_idx in self.workbook.colour_map and \
+               self.workbook.colour_map[top_color_idx] is not None:
                 top_color = self.idx2colour(top_color_idx)
                 attributes_above["bordercolor_bottom"] = top_color.GetRGB()
 
@@ -745,7 +750,8 @@ class Xls(object):
             if left_width != 1:
                 attributes_left["borderwidth_right"] = left_width
             left_color_idx = xf.border.left_colour_index
-            if self.workbook.colour_map[left_color_idx] is not None:
+            if left_color_idx in self.workbook.colour_map and \
+               self.workbook.colour_map[left_color_idx] is not None:
                 left_color = self.idx2colour(left_color_idx)
                 attributes_above["bordercolor_right"] = left_color.GetRGB()
 

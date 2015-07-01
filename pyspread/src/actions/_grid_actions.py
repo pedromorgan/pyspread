@@ -105,6 +105,7 @@ class FileActions(Actions):
             "pys": Pys,
             "pysu": Pys,
             "xls": Xls,
+            "xlsx": Xls,
         }
 
     def _is_aborted(self, cycle, statustext, total_elements=None, freq=None):
@@ -332,6 +333,9 @@ class FileActions(Actions):
             type2opener["xls"] = \
                 (xlrd.open_workbook, [filepath], {"formatting_info": True})
 
+            type2opener["xlsx"] = \
+                (xlrd.open_workbook, [filepath], {"formatting_info": False})
+
         # Specify the interface that shall be used
 
         opener, op_args, op_kwargs = type2opener[filetype]
@@ -355,7 +359,7 @@ class FileActions(Actions):
                     interface = Interface(self.grid.code_array, infile)
                     interface.to_code_array()
 
-                except ValueError, err:
+                except (ValueError, xlrd.biffh.XLRDError), err:
                     post_command_event(self.main_window, self.StatusBarMsg,
                                        text=str(err))
 
@@ -378,8 +382,9 @@ class FileActions(Actions):
                 # File sucessfully opened. Approve again to show status.
                 self.approve(filepath)
 
-        except IOError:
-            txt = _("Error opening file {filepath}.").format(filepath=filepath)
+        except IOError, err:
+            txt = _("Error opening file {filepath}:").format(filepath=filepath)
+            txt += " " + str(err)
             post_command_event(self.main_window, self.StatusBarMsg, text=txt)
 
             return False
