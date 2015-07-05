@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 21:38+0200\n"
+"POT-Creation-Date: 2015-07-05 19:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,8 +63,7 @@ msgstr ""
 msgid "Error writing to file {filepath}."
 msgstr ""
 
-#: src/lib/__csv.py:451 src/actions/_grid_actions.py:382
-#: src/actions/_main_window_actions.py:103
+#: src/lib/__csv.py:451 src/actions/_main_window_actions.py:103
 #: src/actions/_main_window_actions.py:734
 #, python-brace-format
 msgid "Error opening file {filepath}."
@@ -928,109 +927,110 @@ msgid "New grid with dimensions {dim} created."
 msgstr ""
 
 #: src/gui/_main_window.py:770 src/gui/_main_window.py:776
-#: src/gui/_main_window.py:867 src/gui/_main_window.py:875
+#: src/gui/_main_window.py:868 src/gui/_main_window.py:876
 msgid "Pyspread file"
 msgstr ""
 
 #: src/gui/_main_window.py:771 src/gui/_main_window.py:777
-#: src/gui/_main_window.py:868 src/gui/_main_window.py:876
+#: src/gui/_main_window.py:869 src/gui/_main_window.py:877
 msgid "Uncompressed pyspread file"
 msgstr ""
 
-#: src/gui/_main_window.py:772 src/gui/_main_window.py:779
-#: src/gui/_main_window.py:870 src/gui/_main_window.py:877
-#: src/gui/_main_window.py:1373 src/gui/_main_window.py:1401
+#: src/gui/_main_window.py:772 src/gui/_main_window.py:780
+#: src/gui/_main_window.py:871 src/gui/_main_window.py:878
+#: src/gui/_main_window.py:1374 src/gui/_main_window.py:1402
 msgid "All files"
 msgstr ""
 
-#: src/gui/_main_window.py:778 src/gui/_main_window.py:869
+#: src/gui/_main_window.py:778 src/gui/_main_window.py:779
+#: src/gui/_main_window.py:870
 msgid "Excel file"
 msgstr ""
 
-#: src/gui/_main_window.py:782
+#: src/gui/_main_window.py:783
 msgid "Choose file to open."
 msgstr ""
 
-#: src/gui/_main_window.py:869
+#: src/gui/_main_window.py:870
 msgid " (experimental)"
 msgstr ""
 
-#: src/gui/_main_window.py:880
+#: src/gui/_main_window.py:881
 msgid "Choose filename for saving."
 msgstr ""
 
-#: src/gui/_main_window.py:895
+#: src/gui/_main_window.py:896
 msgid "Directory present. Save aborted."
 msgstr ""
 
-#: src/gui/_main_window.py:903
+#: src/gui/_main_window.py:904
 #, python-brace-format
 msgid ""
 "The file {filepath} is already present.\n"
 "Overwrite?"
 msgstr ""
 
-#: src/gui/_main_window.py:905
+#: src/gui/_main_window.py:906
 msgid "File collision"
 msgstr ""
 
-#: src/gui/_main_window.py:910
+#: src/gui/_main_window.py:911
 msgid "File present. Save aborted by user."
 msgstr ""
 
-#: src/gui/_main_window.py:938 src/gui/_main_window.py:982
+#: src/gui/_main_window.py:939 src/gui/_main_window.py:983
 msgid "CSV file"
 msgstr ""
 
-#: src/gui/_main_window.py:939
+#: src/gui/_main_window.py:940
 msgid "Tab delimited text file"
 msgstr ""
 
-#: src/gui/_main_window.py:940
+#: src/gui/_main_window.py:941
 msgid "Choose file to import."
 msgstr ""
 
-#: src/gui/_main_window.py:986
+#: src/gui/_main_window.py:987
 msgid "PDF file"
 msgstr ""
 
-#: src/gui/_main_window.py:988 src/gui/_grid.py:415
+#: src/gui/_main_window.py:989 src/gui/_grid.py:415
 msgid "SVG file"
 msgstr ""
 
-#: src/gui/_main_window.py:1024
+#: src/gui/_main_window.py:1025
 msgid "SVG of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:1025
+#: src/gui/_main_window.py:1026
 msgid "EPS of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:1026
+#: src/gui/_main_window.py:1027
 msgid "PS of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:1027
+#: src/gui/_main_window.py:1028
 msgid "PDF of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:1028
+#: src/gui/_main_window.py:1029
 msgid "PNG of current cell"
 msgstr ""
 
-#: src/gui/_main_window.py:1035
+#: src/gui/_main_window.py:1036
 msgid "Choose filename for export."
 msgstr ""
 
-#: src/gui/_main_window.py:1059
+#: src/gui/_main_window.py:1060
 msgid "PDF"
 msgstr ""
 
-#: src/gui/_main_window.py:1060
+#: src/gui/_main_window.py:1061
 msgid "Choose file path for PDF export."
 msgstr ""
 
-#: src/gui/_main_window.py:1080
+#: src/gui/_main_window.py:1081
 msgid ""
 "You are going to approve and trust a file that\n"
 "you have not created yourself.\n"
@@ -1043,31 +1043,31 @@ msgid ""
 "Proceed and sign this file as trusted?"
 msgstr ""
 
-#: src/gui/_main_window.py:1087
+#: src/gui/_main_window.py:1088
 msgid "Security warning"
 msgstr ""
 
-#: src/gui/_main_window.py:1095
+#: src/gui/_main_window.py:1096
 msgid "Safe mode deactivated."
 msgstr ""
 
-#: src/gui/_main_window.py:1102
+#: src/gui/_main_window.py:1103
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
 msgstr ""
 
-#: src/gui/_main_window.py:1104
+#: src/gui/_main_window.py:1105
 msgid "Really delete globals and modules?"
 msgstr ""
 
-#: src/gui/_main_window.py:1111
+#: src/gui/_main_window.py:1112
 msgid "Globals cleared and base modules reloaded."
 msgstr ""
 
-#: src/gui/_main_window.py:1372 src/gui/_main_window.py:1400
+#: src/gui/_main_window.py:1373 src/gui/_main_window.py:1401
 msgid "Macro file"
 msgstr ""
 
-#: src/gui/_main_window.py:1374 src/gui/_main_window.py:1402
+#: src/gui/_main_window.py:1375 src/gui/_main_window.py:1403
 msgid "Choose macro file."
 msgstr ""
 
@@ -2320,107 +2320,112 @@ msgstr ""
 msgid "File version {version} unsupported (not 0.1)."
 msgstr ""
 
-#: src/interfaces/pys.py:334 src/actions/_grid_actions.py:245
+#: src/interfaces/pys.py:334 src/actions/_grid_actions.py:246
 msgid "File format unsupported."
 msgstr ""
 
-#: src/actions/_grid_actions.py:128
+#: src/actions/_grid_actions.py:129
 #, python-brace-format
 msgid "{nele} elements processed. Press <Esc> to abort."
 msgstr ""
 
-#: src/actions/_grid_actions.py:130
+#: src/actions/_grid_actions.py:131
 #, python-brace-format
 msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
 msgstr ""
 
-#: src/actions/_grid_actions.py:216
+#: src/actions/_grid_actions.py:217
 msgid "Valid signature found. File is trusted."
 msgstr ""
 
-#: src/actions/_grid_actions.py:225
+#: src/actions/_grid_actions.py:226
 msgid ""
 "File is not properly signed. Safe mode activated. Select File -> Approve to "
 "leave safe mode."
 msgstr ""
 
-#: src/actions/_grid_actions.py:405
+#: src/actions/_grid_actions.py:386
+#, python-brace-format
+msgid "Error opening file {filepath}:"
+msgstr ""
+
+#: src/actions/_grid_actions.py:410
 msgid "Error signing file. "
 msgstr ""
 
-#: src/actions/_grid_actions.py:421
+#: src/actions/_grid_actions.py:426
 msgid "File saved and signed"
 msgstr ""
 
-#: src/actions/_grid_actions.py:423
+#: src/actions/_grid_actions.py:428
 msgid "File signed"
 msgstr ""
 
-#: src/actions/_grid_actions.py:562
+#: src/actions/_grid_actions.py:567
 msgid "File saved but not signed because it is unapproved."
 msgstr ""
 
-#: src/actions/_grid_actions.py:797
+#: src/actions/_grid_actions.py:802
 #, python-brace-format
 msgid "Key length {length}  not in (2, 3)"
 msgstr ""
 
-#: src/actions/_grid_actions.py:803
+#: src/actions/_grid_actions.py:808
 msgid "Paste aborted."
 msgstr ""
 
-#: src/actions/_grid_actions.py:814
+#: src/actions/_grid_actions.py:819
 msgid "rows and columns"
 msgstr ""
 
-#: src/actions/_grid_actions.py:816
+#: src/actions/_grid_actions.py:821
 msgid "rows"
 msgstr ""
 
-#: src/actions/_grid_actions.py:818
+#: src/actions/_grid_actions.py:823
 msgid "columns"
 msgstr ""
 
-#: src/actions/_grid_actions.py:820
+#: src/actions/_grid_actions.py:825
 msgid "Import cell overflow missing"
 msgstr ""
 
-#: src/actions/_grid_actions.py:823
+#: src/actions/_grid_actions.py:828
 #, python-brace-format
 msgid ""
 "The imported data did not fit into the grid {cause}. It has been truncated. "
 "Use a larger grid for full import."
 msgstr ""
 
-#: src/actions/_grid_actions.py:832
+#: src/actions/_grid_actions.py:837
 msgid "s"
 msgstr ""
 
-#: src/actions/_grid_actions.py:834
+#: src/actions/_grid_actions.py:839
 #, python-brace-format
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
 msgstr ""
 
-#: src/actions/_grid_actions.py:871
+#: src/actions/_grid_actions.py:876
 msgid "Pasting cells... "
 msgstr ""
 
-#: src/actions/_grid_actions.py:1178
+#: src/actions/_grid_actions.py:1183
 #, python-brace-format
 msgid "Zoomed to {0:.2f}."
 msgstr ""
 
-#: src/actions/_grid_actions.py:1497
+#: src/actions/_grid_actions.py:1502
 #, python-brace-format
 msgid "Cell reference copied to clipboard: {access_string}"
 msgstr ""
 
-#: src/actions/_grid_actions.py:1601
+#: src/actions/_grid_actions.py:1606
 #, python-brace-format
 msgid "Replaced {no_cells} cells."
 msgstr ""
 
-#: src/actions/_grid_actions.py:1636
+#: src/actions/_grid_actions.py:1641
 #, python-brace-format
 msgid "Replaced {old} with {new} in cell {key}."
 msgstr ""
