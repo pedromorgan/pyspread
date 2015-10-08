@@ -100,7 +100,7 @@ class CellAttributes(list):
         "bordercolor_right": get_color(config["grid_color"]).GetRGB(),
         "bgcolor": get_color(config["background_color"]).GetRGB(),
         "textfont": get_font_string(config["font"]),
-        "pointsize": 10,
+        "pointsize": 8,
         "fontweight": wx.NORMAL,
         "fontstyle": wx.NORMAL,
         "textcolor": get_color(config["text_color"]).GetRGB(),

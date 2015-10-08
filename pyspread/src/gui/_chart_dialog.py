@@ -66,6 +66,7 @@ Provides
 
 import wx
 import matplotlib
+import matplotlib.pyplot
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 from wx.lib.intctrl import IntCtrl, EVT_INT

@@ -44,8 +44,8 @@ def get_program_path():
     """Returns the path in which pyspread is installed"""
 
     src_folder = os.path.dirname(__file__)
-    program_path = os.sep.join(src_folder.split(os.sep)[:-1]) + os.sep
-
+    program_path = os.sep.join(src_folder.split(os.sep)[:-2]) + os.sep
+    
     return program_path
 
 

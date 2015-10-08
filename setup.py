@@ -19,10 +19,13 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-
+import glob
+import os
 from distutils.core import setup, Command
 import sys
 import subprocess
+import matplotlib
+import py2exe
 
 # Uncomment this to package with setuptools. Then extras_require is usable
 #try:
@@ -30,6 +33,31 @@ import subprocess
 #except ImportError:
 #    pass
 
+
+def find_data_files(source, target, patterns):
+    """Locates the specified data-files and returns the matches
+    in a data_files compatible format.
+
+    source is the root of the source data tree.
+        Use '' or '.' for current directory.
+    target is the root of the target data tree.
+        Use '' or '.' for the distribution directory.
+    patterns is a sequence of glob-patterns for the
+        files you want to copy.
+        
+    """
+    
+    if glob.has_magic(source) or glob.has_magic(target):
+        raise ValueError("Magic not allowed in src, target")
+    ret = {}
+    for pattern in patterns:
+        pattern = os.path.join(source,pattern)
+        for filename in glob.glob(pattern):
+            if os.path.isfile(filename):
+                targetpath = os.path.join(target,os.path.relpath(filename,source))
+                path = os.path.dirname(targetpath)
+                ret.setdefault(path,[]).append(filename)
+    return sorted(ret.items())
 
 class PyTest(Command):
     """Class for running py.test via setup.py"""
@@ -47,9 +75,65 @@ class PyTest(Command):
         raise SystemExit(errno)
 
 
+DATAFILES = matplotlib.get_py2exe_datafiles()
+DATAFILES += find_data_files("pyspread", "", [
+        "COPYING",
+        "examples" + os.sep + "*",
+    ]
+)
+DATAFILES += find_data_files("", "", [
+        "README",
+    ]
+)
+DATAFILES += find_data_files(
+    os.sep.join(["pyspread", "doc", "help"]),
+    os.sep.join(["doc", "help"]), [
+        "*.html",
+        "images" + os.sep + "*",
+    ]
+)
+DATAFILES += find_data_files(
+    os.sep.join(["pyspread", "share", "icons"]),
+    os.sep.join(["share", "icons"]), [
+        "pyspread.*",
+    ]
+)
+DATAFILES += find_data_files(
+    os.sep.join(["pyspread", "share", "icons", "Tango", "24x24"]),
+    os.sep.join(["share", "icons", "Tango", "24x24"]), [
+        "actions" + os.sep + "*",
+        "status" + os.sep + "*",
+        "toggles" + os.sep + "*",
+    ]
+)
+
+
 setup(
     name='pyspread',
     version='1.0',
+    console=[{
+        'script': 'pyspread/pyspread',
+        'icon_resources': [(0, "pyspread/share/icons/pyspread.ico")],
+    }],
+    data_files=DATAFILES,
+    options={
+        "py2exe": {
+            "optimize": 2,
+            "includes": ["matplotlib.backends.backend_tkagg",
+                         "matplotlib.backends",
+                         "matplotlib",
+                         "mpl_toolkits.basemap",
+                         "mpl_toolkits",
+                         "matplotlib.backends.backend_wx",
+                         "matplotlib.pyplot",
+                         "matplotlib.figure",
+                         "pylab",
+                         "numpy",
+                         "numpy.core",
+                         "numpy.compat",
+                         "pytz",],
+        },
+    },
     description='Python spreadsheet',
     long_description='Pyspread is a non-traditional spreadsheet application'
     ' that is based on and written in the programming language Python.',
