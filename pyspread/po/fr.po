@@ -1140,15 +1140,15 @@ msgstr "Secondaire"
 
 #: src/gui/_chart_dialog.py:497
 msgid "Puts ticks inside the axes, outside the axes, or both."
-msgstr "Place des marques à l'intérieur des axes, à l'extérieur des axes ou les deux."
+msgstr "Place des graduations à l'intérieur des axes, à l'extérieur des axes ou les deux."
 
 #: src/gui/_chart_dialog.py:499
 msgid "Distance in points between tick and label."
-msgstr "Distance en points entre la marque et l'étiquette."
+msgstr "Distance en points entre la graduation et sa valeur."
 
 #: src/gui/_chart_dialog.py:501
 msgid "Tick label font size in points."
-msgstr "Taille de la police de l'étiquette de la marque, en points."
+msgstr "Taille de la police de la valeur de la graduation, en points."
 
 #: src/gui/_chart_dialog.py:874 src/gui/_chart_dialog.py:915
 #: src/gui/_chart_dialog.py:984 src/gui/_chart_dialog.py:1252
@@ -1431,7 +1431,7 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:1049
 msgid "Rotates the start of the pie chart by angle degrees counterclockwise from the x-axis."
-msgstr ""
+msgstr "Décale le début du camembert d'un angle en degrés dans le sens horlogique depuis l'axe des X."
 
 #: src/gui/_chart_dialog.py:1051
 msgid "If True then a shadow beneath the pie is drawn"
@@ -1566,39 +1566,39 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:1155
 msgid "Orientations"
-msgstr ""
+msgstr "Orientations"
 
 #: src/gui/_chart_dialog.py:1157
 msgid "Format"
-msgstr ""
+msgstr "Format"
 
 #: src/gui/_chart_dialog.py:1158
 msgid "Unit"
-msgstr ""
+msgstr "Unité"
 
 #: src/gui/_chart_dialog.py:1160
 msgid "Gap"
-msgstr ""
+msgstr "Espace"
 
 #: src/gui/_chart_dialog.py:1161
 msgid "Radius"
-msgstr ""
+msgstr "Rayon"
 
 #: src/gui/_chart_dialog.py:1162
 msgid "Shoulder"
-msgstr ""
+msgstr "Épaulement"
 
 #: src/gui/_chart_dialog.py:1163
 msgid "Offset"
-msgstr ""
+msgstr "Décalage"
 
 #: src/gui/_chart_dialog.py:1164
 msgid "Angle"
-msgstr ""
+msgstr "Angle"
 
 #: src/gui/_chart_dialog.py:1165
 msgid "Edge"
-msgstr ""
+msgstr "Bord"
 
 #: src/gui/_chart_dialog.py:1166
 msgid "Face"
@@ -1606,11 +1606,11 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:1174
 msgid "Diagram"
-msgstr ""
+msgstr "Diagramme"
 
 #: src/gui/_chart_dialog.py:1176
 msgid "Area"
-msgstr ""
+msgstr "Aire"
 
 #: src/gui/_chart_dialog.py:1180
 msgid ""
@@ -1643,15 +1643,15 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:1202
 msgid "Angle of rotation of the diagram [deg]"
-msgstr ""
+msgstr "Angle de rotation du diagramme [ðeg]"
 
 #: src/gui/_chart_dialog.py:1203
 msgid "Space between paths that break in/break away to/from the top or bottom."
-msgstr ""
+msgstr "Espace entre les chemins qui entrent/sortent depuis/vers le haut ou le bas."
 
 #: src/gui/_chart_dialog.py:1205
 msgid "Inner radius of the vertical paths"
-msgstr ""
+msgstr "Rayon interne des chemins verticaux"
 
 #: src/gui/_chart_dialog.py:1206
 msgid "Size of the shoulders of output arrows"
@@ -1713,31 +1713,31 @@ msgstr "Limites"
 
 #: src/gui/_chart_dialog.py:1254 src/gui/_chart_dialog.py:1260
 msgid "Log. scale"
-msgstr ""
+msgstr "Échelle log."
 
 #: src/gui/_chart_dialog.py:1255 src/gui/_chart_dialog.py:1257
 msgid "X-axis ticks"
-msgstr ""
+msgstr "Graduations axe X"
 
 #: src/gui/_chart_dialog.py:1256
 msgid "X-axis labels"
-msgstr ""
+msgstr "Valeurs axe X"
 
 #: src/gui/_chart_dialog.py:1261 src/gui/_chart_dialog.py:1263
 msgid "Y-axis ticks"
-msgstr ""
+msgstr "Graduations axe Y"
 
 #: src/gui/_chart_dialog.py:1262
 msgid "Y-axis labels"
-msgstr ""
+msgstr "Valeurs axe Y"
 
 #: src/gui/_chart_dialog.py:1264
 msgid "X-axis grid"
-msgstr ""
+msgstr "Grille axe X"
 
 #: src/gui/_chart_dialog.py:1265
 msgid "Y-axis grid"
-msgstr ""
+msgstr "Grille axe Y"
 
 #: src/gui/_chart_dialog.py:1266
 msgid "Legend"
@@ -1765,23 +1765,27 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:1283
 msgid "The label for the x axis"
-msgstr ""
+msgstr "Le nom de l'axe X"
 
 #: src/gui/_chart_dialog.py:1284
 msgid ""
 "The data limits for the x axis\n"
 "Format: (xmin, xmax)"
 msgstr ""
+"Les limites des données de l'axe X\n"
+"Format: (xmin, xmax)"
 
 #: src/gui/_chart_dialog.py:1285
 msgid "The label for the y axis"
-msgstr ""
+msgstr "Le nom de l'axe Y"
 
 #: src/gui/_chart_dialog.py:1286
 msgid ""
 "The data limits for the y axis\n"
 "Format: (ymin, ymax)"
 msgstr ""
+"Les limites des données de l'axe Y\n"
+"Format: (xmin, xmax)"
 
 #: src/gui/_chart_dialog.py:1287
 msgid ""
@@ -1791,11 +1795,11 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:1290
 msgid "Custom labels for the x axis."
-msgstr "Étiquette personnelle pour l'axe X."
+msgstr "Valeurs personnelles pour l'axe X."
 
 #: src/gui/_chart_dialog.py:1291
 msgid "Custom labels for the y axis."
-msgstr "Étiquette personnelle pour l'axe Y."
+msgstr "Valeurs personnelles pour l'axe Y."
 
 #: src/gui/_chart_dialog.py:1449 src/gui/_chart_dialog.py:1465
 msgid "+"
@@ -1803,7 +1807,7 @@ msgstr "+"
 
 #: src/gui/_chart_dialog.py:1578 src/gui/_toolbars.py:199
 msgid "Insert chart"
-msgstr ""
+msgstr "Insérer graphique"
 
 #: src/gui/_chart_dialog.py:1580
 msgid "Axes"
@@ -1811,7 +1815,7 @@ msgstr ""
 
 #: src/gui/_gui_interfaces.py:68
 msgid "Currently, only 3D grids are supported."
-msgstr ""
+msgstr "Actuellement, seules des grilles 3D sont supportées."
 
 #: src/gui/_gui_interfaces.py:101
 msgid ""
@@ -1832,6 +1836,10 @@ msgid ""
 "Opening it yielded the error:\n"
 "{error}"
 msgstr ""
+"« {filepath} » ne semble pas être un fichier CSV valable.\n"
+" \n"
+"Lors de l'ouverture, l'erreur suivante a été retournée:\n"
+"{error}"
 
 #: src/gui/_gui_interfaces.py:213 src/actions/_main_window_actions.py:144
 msgid "Error reading CSV file"
@@ -1863,7 +1871,7 @@ msgstr "Sélectionnez le bitmap pour la cellule courante"
 
 #: src/gui/_grid.py:528
 msgid "Weight {weight} unknown"
-msgstr ""
+msgstr "Poids {weight} inconnu"
 
 #: src/gui/_grid.py:550
 msgid "Style {style} unknown"
@@ -1871,7 +1879,7 @@ msgstr "Style {style} inconnu"
 
 #: src/gui/_grid.py:914
 msgid "Cell {key} outside grid shape {shape}"
-msgstr ""
+msgstr "La cellule {key} est en dehors de la forme {shape} de la grille"
 
 #: src/gui/_grid.py:1043
 msgid "'{text}' not found."
@@ -1887,7 +1895,7 @@ msgstr "« {find_string} » pas trouvée."
 
 #: src/gui/_grid.py:1112
 msgid "Replaced '{find_string}' in cell {key} with {replace_string}."
-msgstr ""
+msgstr "« {find_string} » remplacé par {replace_string} dans la cellule {key}."
 
 #: src/gui/_grid.py:1288
 msgid "Grid dimensions changed to {shape}."
@@ -1971,11 +1979,11 @@ msgstr "Lier bitmap"
 
 #: src/gui/_toolbars.py:218
 msgid "Button like cell"
-msgstr ""
+msgstr "Cellule en forme de bouton"
 
 #: src/gui/_toolbars.py:227
 msgid "Button label:"
-msgstr ""
+msgstr "Nom du bouton:"
 
 #: src/gui/_toolbars.py:293
 msgid "Find in code and results"
@@ -2058,6 +2066,8 @@ msgid ""
 "Pyspread is in safe mode.\n"
 "Expressions are not evaluated."
 msgstr ""
+"Pyspread est en mode sûr.\n"
+"Les expressions ne sont pas évaluées."
 
 #: src/gui/_widgets.py:1101
 msgid "For switching tables enter the table number or use the mouse wheel."
