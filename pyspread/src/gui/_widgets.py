@@ -939,10 +939,12 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                     event.Skip()
                     return
 
-                completions = script.complete()
+                completions = script.completions()
                 completes = [completion.complete for completion in completions]
                 complete = common_start(completes)
-                if complete:
+
+                if complete and \
+                   not self.GetSelection()[1] > self.GetSelection()[0]:
                     # There is a non-empty completion
                     insertion_point = self.GetInsertionPoint()
                     self.write(complete)
@@ -950,7 +952,8 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                         self.SetSelection(insertion_point,
                                           insertion_point + len(complete))
 
-                words = [completion.word for completion in completions]
+                print dir(completions[0])
+                words = [completion.name for completion in completions]
 
                 docs = []
                 for completion in completions:
