@@ -952,7 +952,6 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
                         self.SetSelection(insertion_point,
                                           insertion_point + len(complete))
 
-                print dir(completions[0])
                 words = [completion.name for completion in completions]
 
                 docs = []
