@@ -108,7 +108,7 @@ setup(
         ],
     },
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: X11 Applications :: GTK',
         'Environment :: Win32 (MS Windows)',
         'Intended Audience :: End Users/Desktop',

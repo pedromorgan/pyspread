@@ -3,6 +3,15 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+1.0
+---
+
+Full screen mode bug on Windows fixed
+Tanslations to Ukrainian and German updated
+File handling for reading xls files improved
+xlsx files can now be opened (cell content only)
+
+
 0.4.2
 -----
 

@@ -30,6 +30,8 @@ Provides:
 
 """
 
+import os
+
 import wx
 
 from src.sysvars import get_program_path
@@ -106,10 +108,10 @@ class GtkArtProvider(wx.ArtProvider):
 
         _size_str = "x".join(map(str, icon_size))
 
-        theme_path = get_program_path() + "share/icons/"
-        icon_path = theme_path + theme + "/" + _size_str + "/"
-        action_path = icon_path + "actions/"
-        toggle_path = icon_path + "toggles/"
+        theme_path = get_program_path() + "share" + os.sep + "icons" + os.sep
+        icon_path = theme_path + theme + os.sep + _size_str + os.sep
+        action_path = icon_path + "actions" + os.sep
+        toggle_path = icon_path + "toggles" + os.sep
 
         return theme_path, icon_path, action_path, toggle_path
 

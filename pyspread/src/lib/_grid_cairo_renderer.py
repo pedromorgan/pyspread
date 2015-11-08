@@ -502,8 +502,13 @@ class GridCellContentCairoRenderer(object):
                     translate(0, self.height)
                 ctx.new_path()
                 self.convert_path(ctx, path, transform)
-                self._fill_and_stroke(ctx, rgbFace, gc.get_alpha(),
-                                      gc.get_forced_alpha())
+
+                try:
+                    self._fill_and_stroke(ctx, rgbFace, gc.get_alpha(),
+                                          gc.get_forced_alpha())
+                except AttributeError:
+                    # Workaround for some Windiws version of Cairo
+                    self._fill_and_stroke(ctx, rgbFace, gc.get_alpha())
 
             def draw_image(self, gc, x, y, im):
                 # bbox - not currently used
