@@ -1171,7 +1171,7 @@ class AboutDialog(object):
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
                             "Martin Manns", "Andreas Noteng",
-                            "Enrico Nicoletto"]
+                            "Enrico Nicoletto", u"Frédéric Marchal"]
 
         license_file = open(get_program_path() + "/COPYING", "r")
         license_text = license_file.read()
