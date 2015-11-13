@@ -47,6 +47,7 @@ import src.lib.i18n as i18n
 from src.config import config
 from src.sysvars import get_default_font, get_font_list
 from icons import icons
+from _gui_interfaces import ModalDialogInterfaceMixin
 
 import _widgets
 
@@ -54,7 +55,7 @@ import _widgets
 _ = i18n.language.ugettext
 
 
-class ToolbarBase(aui.AuiToolBar, EventMixin):
+class ToolbarBase(aui.AuiToolBar, EventMixin, ModalDialogInterfaceMixin):
     """Base class for toolbars, requires self.toolbardata set in init
 
     Toolbardata has the following structure:
@@ -209,6 +210,8 @@ class WidgetToolbar(ToolbarBase):
 
     def __init__(self, parent, *args, **kwargs):
 
+        self.main_window = parent
+
         ToolbarBase.__init__(self, parent, *args, **kwargs)
 
         self.button_cell_button_id = wx.NewId()
@@ -218,6 +221,14 @@ class WidgetToolbar(ToolbarBase):
                           short_help_string=_("Button like cell"))
         self.Bind(wx.EVT_TOOL, self.OnButtonCell,
                   id=self.button_cell_button_id)
+
+        self.video_cell_button_id = wx.NewId()
+        iconname = "VIDEO_CELL"
+        bmp = icons[iconname]
+        self.AddCheckTool(self.video_cell_button_id, iconname, bmp, bmp,
+                          short_help_string=_("Video cell"))
+
+        self.Bind(wx.EVT_TOOL, self.OnVideoCell, id=self.video_cell_button_id)
 
         self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
 
@@ -244,6 +255,21 @@ class WidgetToolbar(ToolbarBase):
                 post_command_event(self, self.ButtonCellMsg, text=label)
             else:
                 post_command_event(self, self.ButtonCellMsg, text=False)
+
+        event.Skip()
+
+    def OnVideoCell(self, event):
+        """Event handler for video cell toggle button"""
+
+        if self.video_cell_button_id == event.GetId():
+            if event.IsChecked():
+                wildcard = _("Media files") + " (*.*)|*.*"
+                videofile, __ = self.get_filepath_findex_from_user(
+                    wildcard, "Choose video or audio file", wx.OPEN)
+                post_command_event(self, self.VideoCellMsg,
+                                   videofile=videofile)
+            else:
+                post_command_event(self, self.VideoCellMsg, videofile=False)
 
         event.Skip()
 

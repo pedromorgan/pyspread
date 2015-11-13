@@ -136,6 +136,7 @@ class GridCellEventMixin(object):
     Rotation270Msg,  EVT_CMD_ROTATION270 = new_command_event()
     TextRotationMsg, EVT_CMD_TEXTROTATATION = new_command_event()
     ButtonCellMsg, EVT_CMD_BUTTON_CELL = new_command_event()
+    VideoCellMsg, EVT_CMD_VIDEO_CELL = new_command_event()
 
     # Cell edit events
 
