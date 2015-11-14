@@ -37,6 +37,7 @@ from src.sysvars import get_color
 from src.config import config
 import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
+from src.lib.selection import Selection
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -57,6 +58,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         # Cache for cell content
         self.cell_cache = {}
+
+        # Video cell register, contains keys
+        self.video_cells = []
 
         # Zoom of grid
         self.zoom = 1.0
@@ -278,6 +282,13 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         drawn_rect = self._get_drawn_rect(grid, key, rect)
         if drawn_rect is None:
+            return
+
+        # Check if a video should be displayed
+        if grid.code_array(key) == u"Video" and key not in self.video_cells:
+            print 4711
+            # Register video cell
+            self.video_cells.append(key)
             return
 
         cell_cache_key = self._get_draw_cache_key(grid, key, drawn_rect,
