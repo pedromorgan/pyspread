@@ -46,14 +46,28 @@ from src.gui._gui_interfaces import get_key_params_from_user
 _ = i18n.language.ugettext
 
 
+def _eq_keyid(fingerprint1, fingerprint2):
+    """Returns True if keyids for fingerprints match, False otherwise"""
+
+    keyid = _fingerprint2keyid(fingerprint1)
+    pyspread_keyid = _fingerprint2keyid(fingerprint2)
+    return keyid == pyspread_keyid
+
+
 def choose_key(gpg_private_keys):
     """Displays gpg key choice and returns key"""
 
     uid_strings_fp = []
     uid_string_fp2key = {}
 
-    for key in gpg_private_keys:
+    current_key_index = None
+
+    for i, key in enumerate(gpg_private_keys):
         fingerprint = key['fingerprint']
+
+        if _eq_keyid(fingerprint, config["gpg_key_fingerprint"]):
+            current_key_index = i
+
         for uid_string in key['uids']:
             uid_string_fp = '"' + uid_string + ' (' + fingerprint + ')'
             uid_strings_fp.append(uid_string_fp)
@@ -68,6 +82,10 @@ def choose_key(gpg_private_keys):
     childlist = list(dlg.GetChildren())
     childlist[-3].SetLabel(_("Use chosen key"))
     childlist[-2].SetLabel(_("Create new key"))
+
+    if current_key_index is not None:
+        # Set choice to current key
+        dlg.SetSelection(current_key_index)
 
     if dlg.ShowModal() == wx.ID_OK:
         uid_string_fp = dlg.GetStringSelection()
