@@ -46,13 +46,14 @@ from src.gui._gui_interfaces import get_key_params_from_user
 _ = i18n.language.ugettext
 
 
-def choose_key(gpg_private_keys, gpg_private_fingerprints):
+def choose_key(gpg_private_keys):
     """Displays gpg key choice and returns key"""
 
     uid_strings_fp = []
     uid_string_fp2key = {}
 
-    for key, fingerprint in zip(gpg_private_keys, gpg_private_fingerprints):
+    for key in gpg_private_keys:
+        fingerprint = key['fingerprint']
         for uid_string in key['uids']:
             uid_string_fp = '"' + uid_string + ' (' + fingerprint + ')'
             uid_strings_fp.append(uid_string_fp)
@@ -130,13 +131,11 @@ def genkey(key_name=None):
 
     if key_name is None and pyspread_key is None:
         # If no GPG key is set in config, choose one
-        pyspread_key = choose_key(gpg_private_keys, gpg_private_fingerprints)
+        pyspread_key = choose_key(gpg_private_keys)
 
     if pyspread_key:
         # A key has been chosen
-        fingerprint = \
-            gpg_private_fingerprints[gpg_private_keys.index(pyspread_key)]
-        config["gpg_key_fingerprint"] = repr(fingerprint)
+        config["gpg_key_fingerprint"] = repr(pyspread_key['fingerprint'])
 
     else:
         # No key has been chosen --> Create new one
@@ -185,16 +184,34 @@ def genkey(key_name=None):
     return fingerprint
 
 
+def _fingerprint2keyid(fingerprint):
+    """Returns keyid from fingerprint for private keys"""
+
+    gpg = gnupg.GPG()
+    private_keys = gpg.list_keys(True)
+
+    keyid = None
+    for private_key in private_keys:
+        if private_key['fingerprint'] == config["gpg_key_fingerprint"]:
+            keyid = private_key['keyid']
+            break
+
+    return keyid
+
+
 def sign(filename):
     """Returns detached signature for file"""
 
     gpg = gnupg.GPG()
 
-    signfile = open(filename, "rb")
+    with open(filename, "rb") as signfile:
+        keyid = _fingerprint2keyid(config["gpg_key_fingerprint"])
 
-    signed_data = gpg.sign_file(signfile, keyid=config["gpg_key_fingerprint"],
-                                detach=True)
-    signfile.close()
+        if keyid is None:
+            msg = "No private key for fingerprint {}."
+            raise ValueError(msg.format(config["gpg_key_fingerprint"]))
+
+        signed_data = gpg.sign_file(signfile, keyid=keyid, detach=True)
 
     return signed_data
 
@@ -207,4 +224,9 @@ def verify(sigfilename, filefilename=None):
     with open(sigfilename, "rb") as sigfile:
         verified = gpg.verify_file(sigfile, filefilename)
 
-    return verified
+        pyspread_keyid = _fingerprint2keyid(config["gpg_key_fingerprint"])
+
+        if verified.valid and verified.key_id == pyspread_keyid:
+            return True
+
+    return False
