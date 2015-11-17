@@ -49,8 +49,8 @@ _ = i18n.language.ugettext
 def _eq_keyid(fingerprint1, fingerprint2):
     """Returns True if keyids for fingerprints match, False otherwise"""
 
-    keyid = _fingerprint2keyid(fingerprint1)
-    pyspread_keyid = _fingerprint2keyid(fingerprint2)
+    keyid = fingerprint2keyid(fingerprint1)
+    pyspread_keyid = fingerprint2keyid(fingerprint2)
     return keyid == pyspread_keyid
 
 
@@ -202,7 +202,7 @@ def genkey(key_name=None):
     return fingerprint
 
 
-def _fingerprint2keyid(fingerprint):
+def fingerprint2keyid(fingerprint):
     """Returns keyid from fingerprint for private keys"""
 
     gpg = gnupg.GPG()
@@ -223,7 +223,7 @@ def sign(filename):
     gpg = gnupg.GPG()
 
     with open(filename, "rb") as signfile:
-        keyid = _fingerprint2keyid(config["gpg_key_fingerprint"])
+        keyid = fingerprint2keyid(config["gpg_key_fingerprint"])
 
         if keyid is None:
             msg = "No private key for fingerprint {}."
@@ -242,7 +242,7 @@ def verify(sigfilename, filefilename=None):
     with open(sigfilename, "rb") as sigfile:
         verified = gpg.verify_file(sigfile, filefilename)
 
-        pyspread_keyid = _fingerprint2keyid(config["gpg_key_fingerprint"])
+        pyspread_keyid = fingerprint2keyid(config["gpg_key_fingerprint"])
 
         if verified.valid and verified.key_id == pyspread_keyid:
             return True
