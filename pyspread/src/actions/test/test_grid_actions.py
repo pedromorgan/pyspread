@@ -56,77 +56,86 @@ from src.lib.testlib import basic_setup_test, restore_basic_grid
 from src.gui._events import *
 
 try:
-    from src.lib.gpg import genkey
+    from src.lib.gpg import genkey, fingerprint2keyid
+
 except ImportError:
     genkey = None
 
 from src.config import config
 
+from src.lib.testlib import params, pytest_generate_tests
+
+
 class TestFileActions(object):
     """File actions test class"""
+
+    # Filenames
+    # ---------
+
+    # File with valid signature
+    filename_valid_sig = TESTPATH + "test1.pys"
+
+    # File without signature
+    filename_no_sig = TESTPATH + "test2.pys"
+
+    # File with invalid signature
+    filename_invalid_sig = TESTPATH + "test3.pys"
+
+    # File for self.grid size test
+    filename_gridsize = TESTPATH + "test4.pys"
+
+    # Empty file
+    filename_empty = TESTPATH + "test5.pys"
+
+    # File name that cannot be accessed
+    filename_not_permitted = TESTPATH + "test6.pys"
+
+    # File name without file
+    filename_wrong = TESTPATH + "test-1.pys"
+
+    # File for testing save
+    filename_save = TESTPATH + "test_save.pys"
 
     def setup_method(self, method):
 
         # Generate a GPG key if not present
-        if genkey is not None:
+        if fingerprint2keyid(config["gpg_key_fingerprint"]) is None and \
+           genkey is not None:
+            # No GPG key is configured
             self.fingerprint = genkey(key_name="pyspread_test_key")
+        else:
+            # Use preconfigured key
+            self.fingerprint = config["gpg_key_fingerprint"]
 
         self.main_window = MainWindow(None, title="pyspread", S=None)
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-        # Filenames
-        # ---------
-
-        # File with valid signature
-        self.filename_valid_sig = TESTPATH + "test1.pys"
+        # Sign files in order to get valid signatures for current key
         self.grid.actions.sign_file(self.filename_valid_sig)
-
-        # File without signature
-        self.filename_no_sig = TESTPATH + "test2.pys"
-
-        # File with invalid signature
-        self.filename_invalid_sig = TESTPATH + "test3.pys"
-
-        # File for self.grid size test
-        self.filename_gridsize = TESTPATH + "test4.pys"
         self.grid.actions.sign_file(self.filename_gridsize)
-
-        # Empty file
-        self.filename_empty = TESTPATH + "test5.pys"
-
-        # File name that cannot be accessed
-        self.filename_not_permitted = TESTPATH + "test6.pys"
-
-        # File name without file
-        self.filename_wrong = TESTPATH + "test-1.pys"
-
-        # File for testing save
-        self.filename_save = TESTPATH + "test_save.pys"
 
     def teardown_method(self, method):
         if gnupg is not None and \
            self.fingerprint != config["gpg_key_fingerprint"] and \
            self.fingerprint is not None:
             gpg = gnupg.GPG()
-            print repr(self.fingerprint)
             # Secret key must be deleted first
             gpg.delete_keys(self.fingerprint, True)
             gpg.delete_keys(self.fingerprint)
 
+    param_validate_signature = [
+        {'filename': filename_no_sig, 'valid': False},
+        {'filename': filename_valid_sig, 'valid': True},
+        {'filename': filename_invalid_sig, 'valid': False},
+    ]
+
+    @params(param_validate_signature)
     @pytest.mark.skipif(gnupg is None, reason="requires gnupg")
-    def test_validate_signature(self):
+    def test_validate_signature(self, filename, valid):
         """Tests signature validation"""
 
-        # Test missing sig file
-        assert not self.grid.actions.validate_signature(self.filename_no_sig)
-
-        # Test valid sig file
-        assert self.grid.actions.validate_signature(self.filename_valid_sig)
-
-        # Test invalid sig file
-        assert not \
-            self.grid.actions.validate_signature(self.filename_invalid_sig)
+        assert self.grid.actions.validate_signature(filename) == valid
 
     def test_enter_safe_mode(self):
         """Tests safe mode entry"""

@@ -172,14 +172,15 @@ class FileActions(Actions):
         sigfilename = filename + '.sig'
 
         try:
-            dummy = open(sigfilename)
-            dummy.close()
+            with open(sigfilename):
+                pass
+
         except IOError:
             # Signature file does not exist
             return False
 
         # Check if the sig is valid for the sigfile
-        # TODO: Check for whitespace in filenpaths
+        # TODO: Check for whitespace in filepaths
         return verify(sigfilename, filename)
 
     def enter_safe_mode(self):

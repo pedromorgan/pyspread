@@ -48,18 +48,29 @@ from src.lib.testlib import params, pytest_generate_tests
 try:
     import gnupg
     import src.lib.gpg as gpg
-    from src.lib.gpg import genkey
+    from src.lib.gpg import genkey, fingerprint2keyid
 except ImportError:
     gnupg = None
 
 config_fingerprint = config["gpg_key_fingerprint"]
 fingerprint = None
 
+
 def setup_function(function):
     """Creates a GPG key if necessary"""
 
+    if gnupg is None:
+        # gnupg is not installed
+        return
+
     global fingerprint
-    fingerprint = genkey(key_name="pyspread_test_key")
+    if fingerprint2keyid(config["gpg_key_fingerprint"]) is None:
+        # No GPG key is configured
+        fingerprint = genkey(key_name="pyspread_test_key")
+    else:
+        # Use preconfigured key
+        fingerprint = config_fingerprint
+
 
 def teardown_module(module):
     """Deletes previously generated GPG key"""
@@ -75,15 +86,16 @@ def teardown_module(module):
         gpg.delete_keys(fingerprint, True)
         gpg.delete_keys(fingerprint)
 
+
 @pytest.mark.skipif(gnupg is None, reason="requires gnupg")
 def _set_sig(filename, sigfilename):
     """Creates a signature sigfilename for file filename"""
 
     signature = gpg.sign(filename).data
 
-    sigfile = open(sigfilename, "w")
-    sigfile.write(signature)
-    sigfile.close()
+    with open(sigfilename, "w") as sigfile:
+        sigfile.write(signature)
+
 
 @pytest.mark.skipif(gnupg is None, reason="requires gnupg")
 def test_sign():
@@ -106,6 +118,7 @@ param_verify = [
     {'filename': TESTPATH + "test1.pys",
      'sigfilename': TESTPATH + "test1.pys.nonsense", 'valid': 0},
 ]
+
 
 @params(param_verify)
 @pytest.mark.skipif(gnupg is None, reason="requires gnupg")
