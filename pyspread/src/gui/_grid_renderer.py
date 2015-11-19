@@ -41,7 +41,8 @@ from src.lib.selection import Selection
 
 try:
     import src.lib.vlc as vlc
-except ImpotError:
+    from grid_panels import VLCPanel
+except ImportError:
     vlc = None
 
 # Use ugettext instead of getttext to avoid unicode errors
@@ -280,40 +281,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         return bmp
 
-    def _get_video_panel(self, parent):
-        """Returns video panel instance"""
-
-        video_panel = wx.Panel(parent)
-        video_panel.SetBackgroundColour(wx.BLACK)
-
-        # VLC player controls
-        self.Instance = vlc.Instance()
-        self.player = self.Instance.media_player_new()
-        self.Media = self.Instance.media_new(
-            "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4")
-        self.player.set_media(self.Media)
-        self.player.set_xwindow(video_panel.GetHandle())
-        self.player.play()
-        return video_panel
-
-    def _adjust_video_panel(self, grid, video_panel, rect):
-        """Positions and resizes video panel
-
-        Parameters
-        ----------
-        rect: 4-tuple of Integer
-        \tRect area of video panel
-
-        """
-
-        panel_posx = rect[0] + grid.GetRowLabelSize()
-        panel_posy = rect[1] + grid.GetColLabelSize()
-
-        panel_scrolled_pos = grid.CalcScrolledPosition(panel_posx, panel_posy)
-
-        video_panel.SetPosition(panel_scrolled_pos)
-        video_panel.SetClientRect(wx.Rect(*rect))
-
     def Draw(self, grid, attr, dc, rect, row, col, isSelected):
         """Draws the cell border and content using pycairo"""
 
@@ -326,8 +293,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         # Check if a video should be displayed
         if vlc is not None and grid.code_array(key) == u"Video" and \
            key not in self.video_cells:
-            video_panel = self._get_video_panel(grid)
-            self._adjust_video_panel(grid, video_panel, drawn_rect)
+            video_panel = VLCPanel(grid)
+            video_panel.adjust_video_panel(grid, drawn_rect)
             # Register video cell
             self.video_cells[key] = video_panel
             return
@@ -337,7 +304,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         mdc = wx.MemoryDC()
 
-        if cell_cache_key in self.cell_cache:
+        if vlc is not None and \
+           grid.code_array(key) == u"Video" and key in self.video_cells:
+            # Update video position of previously created video panel
+            self.video_cells[key].adjust_video_panel(grid, drawn_rect)
+
+        elif cell_cache_key in self.cell_cache:
             mdc.SelectObject(self.cell_cache[cell_cache_key])
 
         else:
@@ -350,12 +322,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         dc.Blit(drawn_rect.x, drawn_rect.y,
                 drawn_rect.width, drawn_rect.height,
                 mdc, 0, 0, wx.COPY)
-
-        # Update video position
-        if vlc is not None and \
-           grid.code_array(key) == u"Video" and key in self.video_cells:
-            # Previously created video panel
-            self._adjust_video_panel(grid, self.video_cells[key], drawn_rect)
 
         # Draw cursor
         if grid.actions.cursor[:2] == (row, col):
