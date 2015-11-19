@@ -51,7 +51,7 @@ _ = i18n.language.ugettext
 
 
 class BaseGridPanel(wx.Panel):
-    """Basic panel that provides UI functionality for useage in grid"""
+    """Basic panel that provides UI functionality for usage in grid"""
 
     pass
 
@@ -59,12 +59,12 @@ class BaseGridPanel(wx.Panel):
 class VLCPanel(BaseGridPanel):
     """Basic panel that provides UI functionality for useage in grid"""
 
-    def __init__(self, *args, **kwargs):
-        BaseGridPanel.__init__(self, *args, **kwargs)
+    def __init__(self, parent, filepath, *args, **kwargs):
+        BaseGridPanel.__init__(self, parent, *args, **kwargs)
 
-        filepath = "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4"
+        #filepath = "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4"
 
-        self.SetBackgroundColour(wx.BLACK)
+        self.SetBackgroundColour(wx.WHITE)
 
         # VLC player controls
         self.Instance = vlc.Instance()

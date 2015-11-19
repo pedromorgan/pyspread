@@ -290,22 +290,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         if drawn_rect is None:
             return
 
-        # Check if a video should be displayed
-        if vlc is not None and grid.code_array(key) == u"Video" and \
-           key not in self.video_cells:
-            video_panel = VLCPanel(grid)
-            video_panel.adjust_video_panel(grid, drawn_rect)
-            # Register video cell
-            self.video_cells[key] = video_panel
-            return
-
         cell_cache_key = self._get_draw_cache_key(grid, key, drawn_rect,
                                                   isSelected)
 
         mdc = wx.MemoryDC()
 
-        if vlc is not None and \
-           grid.code_array(key) == u"Video" and key in self.video_cells:
+        if vlc is not None and key in self.video_cells:
             # Update video position of previously created video panel
             self.video_cells[key].adjust_video_panel(grid, drawn_rect)
 
@@ -313,8 +303,24 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             mdc.SelectObject(self.cell_cache[cell_cache_key])
 
         else:
-            bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
-                                      grid._view_frozen)
+            code = grid.code_array(key)
+            if vlc is not None and code is not None and code.startswith("VLC"):
+                try:
+                    filepath = code.strip().split("(")[1].split(")")[0]
+                    filepath = filepath.strip().strip('"')
+                    print filepath
+                    # A video is to be displayed
+                    video_panel = VLCPanel(grid, filepath)
+                    video_panel.adjust_video_panel(grid, drawn_rect)
+                    # Register video cell
+                    self.video_cells[key] = video_panel
+                    return
+                except Exception:
+                    bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
+                                              grid._view_frozen)
+            else:
+                bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
+                                          grid._view_frozen)
 
             # Put resulting bmp into cache
             self.cell_cache[cell_cache_key] = bmp
