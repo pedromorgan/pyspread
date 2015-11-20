@@ -480,15 +480,18 @@ class GridCellEventHandlers(object):
     def OnLinkVLCVideo(self, event):
         """VLC video code event handler"""
 
+        key = self.grid.actions.cursor
+
         if event.videofile:
-            key = self.grid.actions.cursor
-
             code = 'VLC("{}")'.format(event.videofile)
-
             self.grid.actions.set_code(key, code)
 
         else:
-            event.Skip()
+            video_panel = self.grid.grid_renderer.video_cells.pop(key)
+            video_panel.player.stop()
+            video_panel.player.release()
+            video_panel.Destroy()
+            self.grid.actions.set_code(key, u"")
 
     def OnInsertChartDialog(self, event):
         """Chart dialog event handler"""
