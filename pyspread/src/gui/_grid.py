@@ -185,6 +185,7 @@ class Grid(wx.grid.Grid, EventMixin):
 
         main_window.Bind(self.EVT_CMD_INSERT_BMP, c_handlers.OnInsertBitmap)
         main_window.Bind(self.EVT_CMD_LINK_BMP, c_handlers.OnLinkBitmap)
+        main_window.Bind(self.EVT_CMD_VIDEO_CELL, c_handlers.OnLinkVLCVideo)
         main_window.Bind(self.EVT_CMD_INSERT_CHART,
                          c_handlers.OnInsertChartDialog)
 
@@ -475,6 +476,19 @@ class GridCellEventHandlers(object):
 
         key = self.grid.actions.cursor
         self.grid.actions.set_code(key, code)
+
+    def OnLinkVLCVideo(self, event):
+        """VLC video code event handler"""
+
+        if event.videofile:
+            key = self.grid.actions.cursor
+
+            code = 'VLC("{}")'.format(event.videofile)
+
+            self.grid.actions.set_code(key, code)
+
+        else:
+            event.Skip()
 
     def OnInsertChartDialog(self, event):
         """Chart dialog event handler"""

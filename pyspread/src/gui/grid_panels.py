@@ -62,15 +62,15 @@ class VLCPanel(BaseGridPanel):
     def __init__(self, parent, filepath, *args, **kwargs):
         BaseGridPanel.__init__(self, parent, *args, **kwargs)
 
-        #filepath = "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4"
+        # filepath = "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4"
 
         self.SetBackgroundColour(wx.WHITE)
 
         # VLC player controls
-        self.Instance = vlc.Instance()
-        self.player = self.Instance.media_player_new()
-        self.Media = self.Instance.media_new(filepath)
-        self.player.set_media(self.Media)
+        self.instance = vlc.Instance()
+        self.player = self.instance.media_player_new()
+        self.media = self.instance.media_new(filepath)
+        self.player.set_media(self.media)
         self.player.set_xwindow(self.GetHandle())
         self.player.play()
 

@@ -304,13 +304,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         else:
             code = grid.code_array(key)
-            if vlc is not None and code is not None and code.startswith("VLC"):
+            if vlc is not None and code is not None and \
+               code.strip().startswith('VLC("') and \
+               code.strip().endswith('")'):
                 try:
-                    filepath = code.strip().split("(")[1].split(")")[0]
-                    filepath = filepath.strip().strip('"')
-                    print filepath
                     # A video is to be displayed
-                    video_panel = VLCPanel(grid, filepath)
+                    video_panel = VLCPanel(grid, code[5:-2])
                     video_panel.adjust_video_panel(grid, drawn_rect)
                     # Register video cell
                     self.video_cells[key] = video_panel
