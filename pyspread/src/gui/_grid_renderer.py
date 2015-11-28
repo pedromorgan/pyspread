@@ -45,6 +45,8 @@ try:
 except ImportError:
     vlc = None
 
+from src.gui._events import post_command_event
+
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
@@ -298,7 +300,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         if vlc is not None and key in self.video_cells and \
            grid.code_array.cell_attributes[key]["panel_cell"]:
             # Update video position of previously created video panel
-            self.video_cells[key].adjust_video_panel(grid, drawn_rect)
+            self.video_cells[key].adjust(grid, drawn_rect)
 
         elif cell_cache_key in self.cell_cache:
             mdc.SelectObject(self.cell_cache[cell_cache_key])
@@ -316,7 +318,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                     assert issubclass(panel_cls, wx.Panel)
 
                     video_panel = panel_cls(grid)
-                    video_panel.adjust_video_panel(grid, drawn_rect)
+                    video_panel.adjust(grid, drawn_rect)
                     # Register video cell
                     self.video_cells[key] = video_panel
 
@@ -325,7 +327,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
                 except Exception, err:
                     # Someting is wrong with the panel to be displayed
-                    print err
+                    post_command_event(grid.main_window, self.StatusBarMsg,
+                                       text=err)
                     bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
                                               grid._view_frozen)
             else:

@@ -118,6 +118,7 @@ class CellAttributes(list):
         "markup": False,
         "button_cell": False,
         "panel_cell": False,
+        "video_volume": None,
     }
 
     # Cache for __getattr__ maps key to tuple of len and attr_dict

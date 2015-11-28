@@ -385,6 +385,25 @@ class Grid(wx.grid.Grid, EventMixin):
         post_command_event(self, self.ToolbarUpdateMsg, key=key,
                            attr=self.code_array.cell_attributes[key])
 
+    def _update_video_volume_cell_attributes(self, key):
+        """Updates the panel cell attrutes of a panel cell"""
+
+        try:
+            video_cell_panel = self.grid_renderer.video_cells[key]
+        except KeyError:
+            return
+
+        old_video_volume = self.code_array.cell_attributes[key]["video_volume"]
+        new_video_volume = video_cell_panel.volume
+
+        if old_video_volume == new_video_volume:
+            return
+
+        selection = Selection([],[],[],[],[key])
+
+        self.actions.set_attr("video_volume", new_video_volume, selection,
+                              mark_unredo=False)
+
     def ForceRefresh(self, *args, **kwargs):
         """Refresh hook"""
 
@@ -394,7 +413,8 @@ class Grid(wx.grid.Grid, EventMixin):
             if video_cell_key[2] == self.current_table:
                 video_cell = self.grid_renderer.video_cells[video_cell_key]
                 rect = self.CellToRect(video_cell_key[0], video_cell_key[1])
-                video_cell.adjust_video_panel(self, rect)
+                video_cell.adjust(self, rect)
+                self._update_video_volume_cell_attributes(video_cell_key)
 
 # End of class Grid
 
@@ -494,9 +514,20 @@ class GridCellEventHandlers(object):
         key = self.grid.actions.cursor
 
         if event.videofile:
+            try:
+                video_volume = \
+                    self.grid.code_array.cell_attributes[key]["video_volume"]
+            except KeyError:
+                video_volume = None
+
             self.grid.actions.set_attr("panel_cell", True, mark_unredo=False)
 
-            code = 'vlcpanel_factory("{}")'.format(event.videofile)
+            if video_volume is not None:
+                code = 'vlcpanel_factory("{}", {})'.format(
+                    event.videofile, video_volume)
+            else:
+                code = 'vlcpanel_factory("{}")'.format(event.videofile)
+
             self.grid.actions.set_code(key, code)
 
         else:

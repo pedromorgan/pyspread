@@ -55,40 +55,7 @@ _ = i18n.language.ugettext
 class BaseGridPanel(wx.Panel):
     """Basic panel that provides UI functionality for usage in grid"""
 
-    pass
-
-
-class VLCPanel(BaseGridPanel):
-    """Basic panel that provides UI functionality for useage in grid"""
-
-    def __init__(self, parent, *args, **kwargs):
-        BaseGridPanel.__init__(self, parent, *args, **kwargs)
-
-        # filepath = "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4"
-
-        self.SetBackgroundColour(wx.WHITE)
-
-        # VLC player controls
-        self.instance = vlc.Instance()
-        self.player = self.instance.media_player_new()
-        self.media = self.instance.media_new(self.filepath)
-        self.player.set_media(self.media)
-        self.player.set_xwindow(self.GetHandle())
-        #self.player.play()
-
-        # Bindings
-        # --------
-
-        # Left click starts and holds the video
-        self.Bind(wx.EVT_LEFT_DOWN, self.OnTogglePlay)
-
-        # Double_click resets the video, i.e. starts playing from the start
-        self.Bind(wx.EVT_LEFT_DCLICK, self.OnResetPlay)
-
-        # The mouse wheel scrolls through the video or adjusts the timer
-        self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
-
-    def adjust_video_panel(self, grid, rect):
+    def adjust(self, grid, rect):
         """Positions and resizes video panel
 
         Parameters
@@ -115,6 +82,46 @@ class VLCPanel(BaseGridPanel):
             self.Hide()
         else:
             self.Show()
+
+
+class VLCPanel(BaseGridPanel):
+    """Basic panel that provides UI functionality for useage in grid"""
+
+    def __init__(self, parent, *args, **kwargs):
+        BaseGridPanel.__init__(self, parent, *args, **kwargs)
+
+        # filepath = "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4"
+
+        self.SetBackgroundColour(wx.WHITE)
+
+        # VLC player controls
+        self.instance = vlc.Instance()
+        self.player = self.instance.media_player_new()
+        self.media = self.instance.media_new(self.filepath)
+        self.player.set_media(self.media)
+        self.player.set_xwindow(self.GetHandle())
+
+        try:
+            self.volume = self.volume
+        except AttributeError:
+            self.volume = self.player.audio_get_volume()
+
+        self.parent = parent
+
+        #self.player.play()
+
+        # Bindings
+        # --------
+
+        # Left click starts and holds the video
+        self.Bind(wx.EVT_LEFT_DOWN, self.OnTogglePlay)
+
+        # Double_click resets the video, i.e. starts playing from the start
+        self.Bind(wx.EVT_LEFT_DCLICK, self.OnResetPlay)
+
+        # The mouse wheel scrolls through the video or adjusts the timer
+        self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
+
 
     # Event handlers
     # --------------
@@ -159,19 +166,22 @@ class VLCPanel(BaseGridPanel):
     def OnAdjustVolume(self, event):
         """Changes video volume"""
 
-        volume = self.player.audio_get_volume()
+        self.volume = self.player.audio_get_volume()
 
         if event.GetWheelRotation() < 0:
-            target_volume = max(0, volume-10)
+            self.volume = max(0, self.volume-10)
         elif event.GetWheelRotation() > 0:
-            target_volume = min(200, volume+10)
+            self.volume = min(200, self.volume+10)
 
-        self.player.audio_set_volume(target_volume)
+        self.player.audio_set_volume(self.volume)
 
-def vlcpanel_factory(filepath):
+
+def vlcpanel_factory(filepath, volume=None):
     """Returns a VLCPanel class"""
 
     vlc_panel_cls = VLCPanel
     VLCPanel.filepath = filepath
+    if volume is not None:
+        VLCPanel.volume = volume
 
     return vlc_panel_cls
