@@ -295,7 +295,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         mdc = wx.MemoryDC()
 
-        if vlc is not None and key in self.video_cells:
+        if vlc is not None and key in self.video_cells and \
+           grid.code_array.cell_attributes[key]["panel_cell"]:
             # Update video position of previously created video panel
             self.video_cells[key].adjust_video_panel(grid, drawn_rect)
 
@@ -305,16 +306,26 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         else:
             code = grid.code_array(key)
             if vlc is not None and code is not None and \
-               code.strip().startswith('VLC("') and \
-               code.strip().endswith('")'):
+               grid.code_array.cell_attributes[key]["panel_cell"]:
                 try:
-                    # A video is to be displayed
-                    video_panel = VLCPanel(grid, code[5:-2])
+                    # A panel is to be displayed
+                    panel_cls = grid.code_array[key]
+
+                    # Assert that we have a subclass of a wxPanel that we
+                    # can instantiate
+                    assert issubclass(panel_cls, wx.Panel)
+
+                    video_panel = panel_cls(grid)
                     video_panel.adjust_video_panel(grid, drawn_rect)
                     # Register video cell
                     self.video_cells[key] = video_panel
+
+                    # Do not draw the bitmap because we have a panel
                     return
-                except Exception:
+
+                except Exception, err:
+                    # Someting is wrong with the panel to be displayed
+                    print err
                     bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
                                               grid._view_frozen)
             else:

@@ -55,6 +55,7 @@ from src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from src.lib.selection import Selection
 
 import src.lib.charts as charts
+from src.gui.grid_panels import vlcpanel_factory
 
 from src.sysvars import get_color, get_font_string
 
@@ -116,6 +117,7 @@ class CellAttributes(list):
         "merge_area": None,
         "markup": False,
         "button_cell": False,
+        "panel_cell": False,
     }
 
     # Cache for __getattr__ maps key to tuple of len and attr_dict
@@ -1156,7 +1158,8 @@ class CodeArray(DataArray):
 
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2], 'bz2': bz2,
                     'base64': base64, 'charts': charts, 'nn': nn,
-                    'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
+                    'R': key[0], 'C': key[1], 'T': key[2], 'S': self,
+                    'vlcpanel_factory': vlcpanel_factory}
         env = self._get_updated_environment(env_dict=env_dict)
 
         _old_code = self(key)
@@ -1272,6 +1275,7 @@ class CodeArray(DataArray):
         """Reloads modules that are available in cells"""
 
         import src.lib.charts as charts
+        from src.gui.grid_panels import vlcpanel_factory
         modules = [charts, bz2, base64, re, ast, sys, wx, numpy, datetime]
 
         for module in modules:
@@ -1286,7 +1290,8 @@ class CodeArray(DataArray):
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'charts', 'sys', 'is_slice_like', '__name__',
                      'copy', 'imap', 'wx', 'ifilter', 'Selection', 'DictGrid',
-                     'numpy', 'CodeArray', 'DataArray', 'datetime']
+                     'numpy', 'CodeArray', 'DataArray', 'datetime',
+                     'vlcpanel_factory']
 
         for key in globals().keys():
             if key not in base_keys:

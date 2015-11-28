@@ -483,7 +483,9 @@ class GridCellEventHandlers(object):
         key = self.grid.actions.cursor
 
         if event.videofile:
-            code = 'VLC("{}")'.format(event.videofile)
+            self.grid.actions.set_attr("panel_cell", True, mark_unredo=False)
+
+            code = 'vlcpanel_factory("{}")'.format(event.videofile)
             self.grid.actions.set_code(key, code)
 
         else:
