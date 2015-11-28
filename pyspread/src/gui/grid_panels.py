@@ -102,11 +102,19 @@ class VLCPanel(BaseGridPanel):
         panel_posy = rect[1] + grid.GetColLabelSize()
 
         panel_scrolled_pos = grid.CalcScrolledPosition(panel_posx, panel_posy)
-
+        # If the scrolled position is inside the grid labels then hide
         self.SetPosition(panel_scrolled_pos)
         self.SetClientRect(wx.Rect(*rect))
 
-        # TODO: Handle videos that are partly visible or that become invisible
+        # Handle videos that are partly visible or that become invisible
+        row_label_size = grid.GetRowLabelSize()
+        col_label_size = grid.GetColLabelSize()
+
+        if panel_scrolled_pos[0] < row_label_size or \
+           panel_scrolled_pos[1] < col_label_size:
+            self.Hide()
+        else:
+            self.Show()
 
     # Event handlers
     # --------------

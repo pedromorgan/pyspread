@@ -385,6 +385,17 @@ class Grid(wx.grid.Grid, EventMixin):
         post_command_event(self, self.ToolbarUpdateMsg, key=key,
                            attr=self.code_array.cell_attributes[key])
 
+    def ForceRefresh(self, *args, **kwargs):
+        """Refresh hook"""
+
+        wx.grid.Grid.ForceRefresh(self, *args, **kwargs)
+
+        for video_cell_key in self.grid_renderer.video_cells:
+            if video_cell_key[2] == self.current_table:
+                video_cell = self.grid_renderer.video_cells[video_cell_key]
+                rect = self.CellToRect(video_cell_key[0], video_cell_key[1])
+                video_cell.adjust_video_panel(self, rect)
+
 # End of class Grid
 
 
@@ -489,10 +500,14 @@ class GridCellEventHandlers(object):
             self.grid.actions.set_code(key, code)
 
         else:
-            video_panel = self.grid.grid_renderer.video_cells.pop(key)
-            video_panel.player.stop()
-            video_panel.player.release()
-            video_panel.Destroy()
+            try:
+                video_panel = self.grid.grid_renderer.video_cells.pop(key)
+                video_panel.player.stop()
+                video_panel.player.release()
+                video_panel.Destroy()
+            except KeyError:
+                pass
+
             self.grid.actions.set_code(key, u"")
 
     def OnInsertChartDialog(self, event):
