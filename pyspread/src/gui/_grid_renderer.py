@@ -38,6 +38,7 @@ from src.config import config
 import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
 from src.lib.selection import Selection
+from _events import post_command_event, EventMixin
 
 try:
     import src.lib.vlc as vlc
@@ -51,7 +52,7 @@ from src.gui._events import post_command_event
 _ = i18n.language.ugettext
 
 
-class GridRenderer(wx.grid.PyGridCellRenderer):
+class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
     """This renderer draws borders and text at specified font, size, color"""
 
     selection_color_tuple = \
@@ -322,13 +323,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                     # Register video cell
                     self.video_cells[key] = video_panel
 
-                    # Do not draw the bitmap because we have a panel
                     return
 
                 except Exception, err:
                     # Someting is wrong with the panel to be displayed
                     post_command_event(grid.main_window, self.StatusBarMsg,
-                                       text=err)
+                                       text=unicode(err))
                     bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
                                               grid._view_frozen)
             else:
