@@ -3,6 +3,15 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+1.0.1
+-----
+
+Jedi 0.9 API change fixed
+French translation added
+Translations updated
+GPG now only accepts the chosen key as valid
+
+
 1.0
 ---
 
