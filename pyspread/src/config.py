@@ -51,6 +51,12 @@ class DefaultConfig(object):
         standardpaths = wx.StandardPaths.Get()
         self.work_path = standardpaths.GetDocumentsDir()
 
+        # Default filetypes
+        # -----------------
+
+        self.default_open_filetype = "'pys'"
+        self.default_save_filetype = "'pys'"
+
         # Window configuration
         # --------------------
 
