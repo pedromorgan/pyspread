@@ -1415,7 +1415,7 @@ class SelectionActions(Actions):
                 for col in xrange(col_slc.start, col_slc.stop, col_slc.step):
                     self.select_cell(row, col, add_to_selected=True)
 
-    def delete_selection(self, selection=None):
+    def delete_selection(self, selection=None, mark_unredo=True):
         """Deletes selection, marks content as changed
 
         If selection is None then the current grid selection is used.
@@ -1425,6 +1425,8 @@ class SelectionActions(Actions):
 
         selection: Selection, defaults to None
         \tSelection that shall be deleted
+        mark_unredo: Boolean, defaults to True
+        \tIf True deletion is marked as separate undo step
 
         """
 
@@ -1442,7 +1444,8 @@ class SelectionActions(Actions):
                 self.grid.actions.delete_cell((row, col, tab),
                                               mark_unredo=False)
 
-        self.grid.code_array.unredo.mark()
+        if mark_unredo:
+            self.grid.code_array.unredo.mark()
 
         self.grid.code_array.result_cache.clear()
 
