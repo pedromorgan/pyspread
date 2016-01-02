@@ -79,11 +79,12 @@ FILETYPE2WILDCARD = {
     "txt": _("Tab delimited text file") + " (*.*)|*.*",
     "pdf": _("PDF file") + " (*.pdf)|*.pdf",
     "svg": _("SVG file") + " (*.svg)|*.svg",
+    "py": _("Macro file") + " (*.py)|*.py",
 }
 
 
 FILETYPE_AVAILABILITY = {
-    "xls": xlrd is not None,
+    "xls": xlrd is not None and xlwt is not None,  # Reading and writing
     "xlsx": xlrd is not None,
     "pdf": cairo is not None,
     "svg": cairo is not None,

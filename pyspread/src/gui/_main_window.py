@@ -930,9 +930,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        f2w = get_filetypes2wildcards(["csv", "txt"])
-        wildcards = f2w.values()
-
+        wildcards = get_filetypes2wildcards(["csv", "txt"]).values()
         wildcard = "|".join(wildcards)
 
         message = _("Choose file to import.")
@@ -1048,8 +1046,7 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
-        f2w = get_filetypes2wildcards(["pdf"])
-        wildcards = f2w.values()
+        wildcards = get_filetypes2wildcards(["pdf"]).values()
 
         if not wildcards:
             return
@@ -1368,9 +1365,10 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Macro file") + " (*.py)|*.py|" + \
-            _("All files") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+
+        wildcard = "|".join(wildcards)
+
         message = _("Choose macro file.")
 
         style = wx.OPEN
@@ -1396,9 +1394,10 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Macro file") + " (*.py)|*.py|" + \
-            _("All files") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+
+        wildcard = "|".join(wildcards)
+
         message = _("Choose macro file.")
 
         style = wx.SAVE

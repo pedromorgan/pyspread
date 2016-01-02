@@ -65,10 +65,9 @@ from src.lib._grid_cairo_renderer import GridCairoRenderer
 
 try:
     import cairo
-    HAS_CAIRO = True
 
 except ImportError:
-    HAS_CAIRO = False
+    cairo = None
 
 # use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -266,7 +265,7 @@ class ExchangeActions(Actions):
 
         """
 
-        if not HAS_CAIRO:
+        if cairo is None:
             return
 
         export_info = \
@@ -327,7 +326,7 @@ class PrintActions(Actions):
     def print_preview(self, print_area, print_data):
         """Launch print preview"""
 
-        if not HAS_CAIRO:
+        if cairo is None:
             return
 
         print_info = \
