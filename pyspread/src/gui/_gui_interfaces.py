@@ -34,6 +34,16 @@ from itertools import islice
 import os
 import types
 
+try:
+    import xlrd
+except ImportError:
+    xlrd = None
+
+try:
+    import xlwt
+except ImportError:
+    xlwt = None
+
 import wx
 import wx.lib.agw.genericmessagedialog as GMD
 
@@ -114,7 +124,79 @@ class ModalDialogInterfaceMixin(object):
         elif save_choice == wx.ID_NO:
             return False
 
-    def get_filepath_findex_from_user(self, wildcard, message, style):
+    def get_file_open_wildcard_list(self):
+        """Returns a tuple of a list of filetypes and a list of wildcards.
+
+        The lists are valid for opening files (not for import).
+        The wildcards have to be concatenates with '|' so that it can be used
+        by wx.FileDialog.
+
+        """
+
+        filetypes = ["pys", "pysu"]
+
+        wildcards = [
+            _("Pyspread file") + " (*.pys)|*.pys",
+            _("Uncompressed pyspread file") + " (*.pysu)|*.pysu",
+        ]
+
+        if xlrd is not None:
+            # Offer xls and xlsx if xlrd is present
+
+            filetypes += ["xls", "xlsx"]
+
+            wildcards += [
+                _("Excel file") + " (*.xls)|*.xls",
+                _("Excel file") + " (*.xlsx)|*.xlsx",
+            ]
+
+        # Finally offer opening a pys file with an unconventional name
+
+        filetypes += ["pys"]
+
+        wildcards += [
+            _("All files") + " (*.*)|*.*",
+        ]
+
+        return filetypes, wildcards
+
+    def get_file_save_wildcard_list(self):
+        """Returns a tuple of a list of filetypes and a list of wildcards.
+
+        The lists are valid for saving files (not for export).
+        The wildcards have to be concatenates with '|' so that it can be used
+        by wx.FileDialog.
+
+        """
+
+        filetypes = ["pys", "pysu"]
+
+        wildcards = [
+            _("Pyspread file") + " (*.pys)|*.pys",
+            _("Uncompressed pyspread file") + " (*.pysu)|*.pysu",
+        ]
+
+        if xlwt is not None:
+            # Offer xls if xlwt is present
+
+            filetypes += ["xls"]
+
+            wildcards += [
+                _("Excel file") + " (*.xls)|*.xls",
+            ]
+
+        # Finally offer opening a pys file with an unconventional name
+
+        filetypes += ["pys"]
+
+        wildcards += [
+            _("All files") + " (*.*)|*.*",
+        ]
+
+        return filetypes, wildcards
+
+    def get_filepath_findex_from_user(self, wildcard, message, style,
+                                      filterindex=0):
         """Opens a file dialog and returns filepath and filterindex
 
         Parameters
@@ -125,12 +207,17 @@ class ModalDialogInterfaceMixin(object):
         \tMessage in the file dialog
         style: Integer
         \tDialog style, e. g. wx.OPEN | wx.CHANGE_DIR
+        filterindex: Integer, defaults to 0
+        \tDefault filterindex that is selected when the dialog is displayed
 
         """
 
         dlg = wx.FileDialog(self.main_window, wildcard=wildcard,
                             message=message, style=style,
                             defaultDir=os.getcwd(), defaultFile="")
+
+        # Set the initial filterindex
+        dlg.SetFilterIndex(filterindex)
 
         filepath = None
         filter_index = None

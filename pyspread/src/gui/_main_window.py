@@ -31,6 +31,7 @@ Provides:
 
 import ast
 import os
+from os.path import splitext
 
 import wx
 import wx.lib.agw.aui as aui
@@ -763,28 +764,22 @@ class MainWindowEventHandlers(EventMixin):
                 post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get filepath from user
-
-        if xlrd is None:
-            # Do not offer xls if xlrd is missing
-            wildcard = \
-                _("Pyspread file") + " (*.pys)|*.pys|" + \
-                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
-                _("All files") + " (*.*)|*.*"
-            filetypes = ["pys", "pysu", "pys"]
-        else:
-            wildcard = \
-                _("Pyspread file") + " (*.pys)|*.pys|" + \
-                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
-                _("Excel file") + " (*.xls)|*.xls|" + \
-                _("Excel file") + " (*.xlsx)|*.xlsx|" + \
-                _("All files") + " (*.*)|*.*"
-            filetypes = ["pys", "pysu", "xls", "xlsx", "pys"]
+        filetypes, wildcards = self.interfaces.get_file_open_wildcard_list()
+        wildcard = "|".join(wildcards)
 
         message = _("Choose file to open.")
         style = wx.OPEN
-        filepath, filterindex = \
-            self.interfaces.get_filepath_findex_from_user(wildcard, message,
-                                                          style)
+
+        default_filetype = config["default_open_filetype"]
+        try:
+            default_filterindex = filetypes.index(default_filetype)
+        except ValueError:
+            # Be graceful if the user has entered an unkown filetype
+            default_filterindex = 0
+
+        get_fp_fidx = self.interfaces.get_filepath_findex_from_user
+        filepath, filterindex = get_fp_fidx(wildcard, message, style,
+                                            filterindex=default_filterindex)
 
         if filepath is None:
             return
@@ -829,16 +824,25 @@ class MainWindowEventHandlers(EventMixin):
             filetype = event.attr["filetype"]
 
         except (KeyError, AttributeError):
-            if self.main_window.filepath is None:
-                filetype = "pys"
-            elif self.main_window.filepath.endswith("pysu"):
-                filetype = "pysu"
-            else:
-                filetype = "pys"
+            filetype = None
 
-        # If there is no filepath then jump to save as
+        filepath = self.main_window.filepath
+        if filepath is None:
+            filetype = config["default_save_filetype"]
 
-        if self.main_window.filepath is None:
+        if filetype is None:
+
+            __filetypes, __ = self.interfaces.get_file_save_wildcard_list()
+
+            # Check if the file extension matches any valid save filetype
+            for __filetype in __filetypes:
+                if splitext(filepath)[-1][1:] == __filetype:
+                    filetype = __filetype
+                    break
+
+        # If there is no filepath or no filetype is found then jump to save as
+
+        if self.main_window.filepath is None or filetype is None:
             post_command_event(self.main_window,
                                self.main_window.SaveAsMsg)
             return
@@ -861,28 +865,22 @@ class MainWindowEventHandlers(EventMixin):
         """File save as event handler"""
 
         # Get filepath from user
-
-        try:
-            import xlwt
-            wildcard = \
-                _("Pyspread file") + " (*.pys)|*.pys|" + \
-                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
-                _("Excel file") + _(" (experimental)") + " (*.xls)|*.xls|" + \
-                _("All files") + " (*.*)|*.*"
-            filetypes = ["pys", "pysu", "xls", "pys"]
-
-        except ImportError:
-            wildcard = \
-                _("Pyspread file") + " (*.pys)|*.pys|" + \
-                _("Uncompressed pyspread file") + " (*.pysu)|*.pysu|" + \
-                _("All files") + " (*.*)|*.*"
-            filetypes = ["pys", "pysu", "pys"]
+        filetypes, wildcards = self.interfaces.get_file_save_wildcard_list()
+        wildcard = "|".join(wildcards)
 
         message = _("Choose filename for saving.")
         style = wx.SAVE
-        filepath, filterindex = \
-            self.interfaces.get_filepath_findex_from_user(wildcard, message,
-                                                          style)
+
+        default_filetype = config["default_save_filetype"]
+        try:
+            default_filterindex = filetypes.index(default_filetype)
+        except ValueError:
+            # Be graceful if the user has entered an unkown filetype
+            default_filterindex = 0
+
+        get_fp_fidx = self.interfaces.get_filepath_findex_from_user
+        filepath, filterindex = get_fp_fidx(wildcard, message, style,
+                                            filterindex=default_filterindex)
 
         if filepath is None:
             return 0

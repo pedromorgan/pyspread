@@ -29,7 +29,7 @@ from ast import literal_eval
 
 import wx
 
-VERSION = "1.0"
+VERSION = "1.0.1"
 
 
 class DefaultConfig(object):
@@ -50,6 +50,12 @@ class DefaultConfig(object):
 
         standardpaths = wx.StandardPaths.Get()
         self.work_path = standardpaths.GetDocumentsDir()
+
+        # Default filetypes
+        # -----------------
+
+        self.default_open_filetype = "'pys'"
+        self.default_save_filetype = "'pys'"
 
         # Window configuration
         # --------------------
