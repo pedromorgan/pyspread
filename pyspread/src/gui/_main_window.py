@@ -42,16 +42,6 @@ except ImportError:
     Figure = None
 
 try:
-    import cairo
-except ImportError:
-    cairo = None
-
-try:
-    import xlrd
-except ImportError:
-    xlrd = None
-
-try:
     from src.lib.gpg import genkey
 except ImportError:
     genkey = None
@@ -60,22 +50,22 @@ import src.lib.i18n as i18n
 from src.config import config
 from src.sysvars import get_python_tutorial_path, is_gtk
 
-from _menubars import MainMenu
-from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
-from _toolbars import WidgetToolbar
-from _widgets import EntryLineToolbarPanel, StatusBar
+from src.gui._menubars import MainMenu
+from src.gui._toolbars import MainToolbar, MacroToolbar, FindToolbar
+from src.gui._toolbars import WidgetToolbar, AttributesToolbar
+from src.gui._widgets import EntryLineToolbarPanel, StatusBar
 
 from src.lib.clipboard import Clipboard
 from src.lib.filetypes import Filetype2Wildcard4Open, Filetype2Wildcard4Import
 from src.lib.filetypes import Filetype2Wildcard4Save, Filetype2Wildcard4Export
 from src.lib.filetypes import Filetype2Wildcard4ExportPDF
 
-from _gui_interfaces import GuiInterfaces
+from src.gui._gui_interfaces import GuiInterfaces
 from src.gui.icons import icons
 
-from _grid import Grid
+from src.gui._grid import Grid
 
-from _events import post_command_event, EventMixin
+from src.gui._events import post_command_event, EventMixin
 
 from src.actions._main_window_actions import AllMainWindowActions
 
