@@ -82,89 +82,32 @@ FILETYPE2WILDCARD = {
 }
 
 
-class Filetype2WildcardBase(OrderedDict):
-    """Filetypes to wildcards base class"""
-
-    def __init__(self, *args, **kwargs):
-        super(Filetype2WildcardBase, self).__init__(*args, **kwargs)
-        for filetype in self._get_filetypes():
-            self[filetype] = FILETYPE2WILDCARD[filetype]
-
-    def _get_filetypes(self):
-        """Not implemented for base class"""
-
-        raise NotImplementedError
+FILETYPE_AVAILABILITY = {
+    "xls": xlrd is not None,
+    "xlsx": xlrd is not None,
+    "pdf": cairo is not None,
+    "svg": cairo is not None,
+}
 
 
-class Filetype2Wildcard4Open(Filetype2WildcardBase):
-    """Ordered mapping of filetypes to wildcards for File->Open"""
+def get_filetypes2wildcards(filetypes):
+    """Returns OrderedDict of filetypes to wildcards
 
-    def _get_filetypes(self):
-        """Return list with relevant filetypes"""
+    The filetypes that are provided in the filetypes parameter are checked for
+    availability. Only available filetypes are inluded in the return ODict.
 
-        # Offer compressed and uncompressed standard pyspread file formats
-        filetypes = ["pys", "pysu"]
+    Parameters
+    ----------
+    filetypes: Iterable of strings
+    \tFiletype list
 
-        if xlrd is not None:
-            # Offer xls and xlsx if xlrd is present
-            filetypes += ["xls", "xlsx"]
+    """
 
-        # Finally offer opening a pys file with an unconventional name
-        filetypes += ["all"]
+    def is_available(filetype):
+        return filetype not in FILETYPE_AVAILABILITY or \
+               FILETYPE_AVAILABILITY[filetype]
 
-        return filetypes
+    available_filetypes = filter(is_available, filetypes)
 
-
-class Filetype2Wildcard4Save(Filetype2WildcardBase):
-    """Ordered mapping of filetypes to wildcards for File->Save"""
-
-    def _get_filetypes(self):
-        """Return list with relevant filetypes"""
-
-        # Offer compressed and uncompressed standard pyspread file formats
-        filetypes = ["pys", "pysu"]
-
-        if xlwt is not None:
-            # Offer xls if xlrd is present
-            filetypes += ["xls"]
-
-        # Finally offer opening a pys file with an unconventional name
-        filetypes += ["all"]
-
-        return filetypes
-
-
-class Filetype2Wildcard4Import(Filetype2WildcardBase):
-    """Ordered mapping of filetypes to wildcards for File->Import"""
-
-    def _get_filetypes(self):
-        """Return list with relevant filetypes"""
-
-        filetypes = ["csv", "txt"]
-        return filetypes
-
-
-class Filetype2Wildcard4Export(Filetype2WildcardBase):
-    """Ordered mapping of filetypes to wildcards for File->Export"""
-
-    def _get_filetypes(self):
-        """Return list with relevant filetypes"""
-
-        filetypes = ["csv"]
-
-        if cairo is not None:
-            filetypes += ["pdf", "svg"]
-
-        return filetypes
-
-
-class Filetype2Wildcard4ExportPDF(Filetype2WildcardBase):
-    """Ordered mapping of filetypes to wildcards for File->Export"""
-
-    def _get_filetypes(self):
-        """Return list with relevant filetypes"""
-
-        if cairo is None:
-            return []
-        else:
-            return ["pdf"]
+    return OrderedDict((ft, FILETYPE2WILDCARD[ft])
+                       for ft in available_filetypes)

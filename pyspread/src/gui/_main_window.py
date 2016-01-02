@@ -56,9 +56,7 @@ from src.gui._toolbars import WidgetToolbar, AttributesToolbar
 from src.gui._widgets import EntryLineToolbarPanel, StatusBar
 
 from src.lib.clipboard import Clipboard
-from src.lib.filetypes import Filetype2Wildcard4Open, Filetype2Wildcard4Import
-from src.lib.filetypes import Filetype2Wildcard4Save, Filetype2Wildcard4Export
-from src.lib.filetypes import Filetype2Wildcard4ExportPDF
+from src.lib.filetypes import get_filetypes2wildcards
 
 from src.gui._gui_interfaces import GuiInterfaces
 from src.gui.icons import icons
@@ -757,7 +755,7 @@ class MainWindowEventHandlers(EventMixin):
                 post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get filepath from user
-        f2w = Filetype2Wildcard4Open()
+        f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "xlsx", "all"])
         filetypes = f2w.keys()
         wildcards = f2w.values()
         wildcard = "|".join(wildcards)
@@ -861,7 +859,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        f2w = Filetype2Wildcard4Save()
+        f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
         filetypes = f2w.keys()
         wildcards = f2w.values()
 
@@ -932,7 +930,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        f2w = Filetype2Wildcard4Import()
+        f2w = get_filetypes2wildcards(["csv", "txt"])
         wildcards = f2w.values()
 
         wildcard = "|".join(wildcards)
@@ -977,7 +975,7 @@ class MainWindowEventHandlers(EventMixin):
 
         selection_bbox = selection.get_bbox()
 
-        f2w = Filetype2Wildcard4Export()
+        f2w = get_filetypes2wildcards(["csv", "pdf", "svg"])
         filters = f2w.keys()
         wildcards = f2w.values()
 
@@ -1050,7 +1048,7 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
-        f2w = Filetype2Wildcard4ExportPDF()
+        f2w = get_filetypes2wildcards(["pdf"])
         wildcards = f2w.values()
 
         if not wildcards:
