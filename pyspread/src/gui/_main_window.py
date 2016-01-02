@@ -66,6 +66,9 @@ from _toolbars import WidgetToolbar
 from _widgets import EntryLineToolbarPanel, StatusBar
 
 from src.lib.clipboard import Clipboard
+from src.lib.filetypes import Filetype2Wildcard4Open, Filetype2Wildcard4Import
+from src.lib.filetypes import Filetype2Wildcard4Save, Filetype2Wildcard4Export
+from src.lib.filetypes import Filetype2Wildcard4ExportPDF
 
 from _gui_interfaces import GuiInterfaces
 from src.gui.icons import icons
@@ -764,7 +767,9 @@ class MainWindowEventHandlers(EventMixin):
                 post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get filepath from user
-        filetypes, wildcards = self.interfaces.get_file_open_wildcard_list()
+        f2w = Filetype2Wildcard4Open()
+        filetypes = f2w.keys()
+        wildcards = f2w.values()
         wildcard = "|".join(wildcards)
 
         message = _("Choose file to open.")
@@ -865,7 +870,11 @@ class MainWindowEventHandlers(EventMixin):
         """File save as event handler"""
 
         # Get filepath from user
-        filetypes, wildcards = self.interfaces.get_file_save_wildcard_list()
+
+        f2w = Filetype2Wildcard4Save()
+        filetypes = f2w.keys()
+        wildcards = f2w.values()
+
         wildcard = "|".join(wildcards)
 
         message = _("Choose filename for saving.")
@@ -933,9 +942,11 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("CSV file") + " (*.*)|*.*|" + \
-            _("Tab delimited text file") + " (*.*)|*.*"
+        f2w = Filetype2Wildcard4Import()
+        wildcards = f2w.values()
+
+        wildcard = "|".join(wildcards)
+
         message = _("Choose file to import.")
         style = wx.OPEN
         filepath, filterindex = \
@@ -967,8 +978,6 @@ class MainWindowEventHandlers(EventMixin):
 
         """
 
-        filters = []
-
         code_array = self.main_window.grid.code_array
         tab = self.main_window.grid.current_table
 
@@ -978,14 +987,11 @@ class MainWindowEventHandlers(EventMixin):
 
         selection_bbox = selection.get_bbox()
 
-        wildcard = _("CSV file") + " (*.*)|*.*"
-        filters.append("csv")
+        f2w = Filetype2Wildcard4Export()
+        filters = f2w.keys()
+        wildcards = f2w.values()
 
-        if cairo is not None:
-            wildcard += "|" + _("PDF file") + " (*.pdf)|*.pdf"
-            filters.append("pdf")
-            wildcard += "|" + _("SVG file") + " (*.svg)|*.svg"
-            filters.append("svg")
+        wildcard = "|".join(wildcards)
 
         if selection_bbox is None:
             # No selection --> Use smallest filled area for bottom right edge
@@ -1054,8 +1060,15 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
+        f2w = Filetype2Wildcard4ExportPDF()
+        wildcards = f2w.values()
+
+        if not wildcards:
+            return
+
+        wildcard = "|".join(wildcards)
+
         # Get filepath from user
-        wildcard = _("PDF") + " (*.pdf)|*.pdf"
         message = _("Choose file path for PDF export.")
 
         style = wx.SAVE
