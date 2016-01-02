@@ -108,7 +108,7 @@ class VLCPanel(BaseGridPanel):
 
         self.parent = parent
 
-        #self.player.play()
+        # self.player.play()
 
         # Bindings
         # --------
@@ -177,7 +177,16 @@ class VLCPanel(BaseGridPanel):
 
 
 def vlcpanel_factory(filepath, volume=None):
-    """Returns a VLCPanel class"""
+    """Returns a VLCPanel class
+
+    Parameters
+    ----------
+    filepath: String
+    \tFile path of video
+    volume: Float, optional
+    \tSound volume
+
+    """
 
     vlc_panel_cls = VLCPanel
     VLCPanel.filepath = filepath

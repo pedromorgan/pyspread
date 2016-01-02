@@ -1293,6 +1293,20 @@ class PreferencesDialog(wx.Dialog):
             "widget_params": {},
             "prepocessor": unicode,
         }),
+        ("default_open_filetype", {
+            "label": _(u"Open filetype"),
+            "tooltip": _(u"Default filetype when opening via File -> Open"),
+            "widget": wx.TextCtrl,
+            "widget_params": {},
+            "prepocessor": str,
+        }),
+        ("default_save_filetype", {
+            "label": _(u"Save filetype"),
+            "tooltip": _(u"Default filetype when saving via File -> Save As"),
+            "widget": wx.TextCtrl,
+            "widget_params": {},
+            "prepocessor": str,
+        }),
     )
 
     def __init__(self, *args, **kwargs):
