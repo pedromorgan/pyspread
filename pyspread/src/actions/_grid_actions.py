@@ -1301,6 +1301,15 @@ class GridActions(Actions):
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
 
+            # Delete video cells
+            video_cells = self.grid.grid_renderer.video_cells
+            for key in video_cells:
+                video_panel = video_cells[key]
+                video_panel.player.stop()
+                video_panel.player.release()
+                video_panel.Destroy()
+            video_cells.clear()
+
             # Change value of entry_line and table choice
             post_command_event(self.main_window, self.TableChangedMsg,
                                table=newtable)
