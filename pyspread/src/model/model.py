@@ -1039,6 +1039,9 @@ class CodeArray(DataArray):
     # Cache for frozen objects
     frozen_cache = {}
 
+    # Custom font storage
+    custom_fonts = {}
+
     def __setitem__(self, key, value, mark_unredo=True):
         """Sets cell code and resets result cache"""
 
