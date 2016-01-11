@@ -507,7 +507,7 @@ class GridCellContentCairoRenderer(object):
                     self._fill_and_stroke(ctx, rgbFace, gc.get_alpha(),
                                           gc.get_forced_alpha())
                 except AttributeError:
-                    # Windows workaround so that matplotlib still works
+                    # Workaround for some Windiws version of Cairo
                     self._fill_and_stroke(ctx, rgbFace, gc.get_alpha())
 
             def draw_image(self, gc, x, y, im):

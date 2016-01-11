@@ -5,10 +5,10 @@
 # Yuri Chornoivan <yurchor@ukr.net>, 2013, 2014, 2015.
 msgid ""
 msgstr ""
-"Project-Id-Version: pyspread 0.4.3\n"
+"Project-Id-Version: pyspread 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-31 20:44+0200\n"
-"PO-Revision-Date: 2015-06-01 19:02+0300\n"
+"POT-Creation-Date: 2015-07-05 19:39+0200\n"
+"PO-Revision-Date: 2015-11-01 11:21+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation-team-uk@lists.sourceforge.net>\n"
 "Language: uk\n"
@@ -58,8 +58,7 @@ msgstr "Файл {filename} успішно імпортовано."
 msgid "Error writing to file {filepath}."
 msgstr "Помилка під час спроби запису до файла {filepath}."
 
-#: src/lib/__csv.py:451 src/actions/_grid_actions.py:382
-#: src/actions/_main_window_actions.py:103
+#: src/lib/__csv.py:451 src/actions/_main_window_actions.py:103
 #: src/actions/_main_window_actions.py:734
 msgid "Error opening file {filepath}."
 msgstr "Помилка під час відкриття файла {filepath}."
@@ -915,42 +914,43 @@ msgid "New grid with dimensions {dim} created."
 msgstr "Створено нову сітку з розмірами {dim}."
 
 #: src/gui/_main_window.py:770 src/gui/_main_window.py:776
-#: src/gui/_main_window.py:867 src/gui/_main_window.py:875
+#: src/gui/_main_window.py:868 src/gui/_main_window.py:876
 msgid "Pyspread file"
 msgstr "файл pyspread"
 
 #: src/gui/_main_window.py:771 src/gui/_main_window.py:777
-#: src/gui/_main_window.py:868 src/gui/_main_window.py:876
+#: src/gui/_main_window.py:869 src/gui/_main_window.py:877
 msgid "Uncompressed pyspread file"
 msgstr "розпакований файл pyspread"
 
-#: src/gui/_main_window.py:772 src/gui/_main_window.py:779
-#: src/gui/_main_window.py:870 src/gui/_main_window.py:877
-#: src/gui/_main_window.py:1373 src/gui/_main_window.py:1401
+#: src/gui/_main_window.py:772 src/gui/_main_window.py:780
+#: src/gui/_main_window.py:871 src/gui/_main_window.py:878
+#: src/gui/_main_window.py:1374 src/gui/_main_window.py:1402
 msgid "All files"
 msgstr "всі файли"
 
-#: src/gui/_main_window.py:778 src/gui/_main_window.py:869
+#: src/gui/_main_window.py:778 src/gui/_main_window.py:779
+#: src/gui/_main_window.py:870
 msgid "Excel file"
 msgstr "файл Excel"
 
-#: src/gui/_main_window.py:782
+#: src/gui/_main_window.py:783
 msgid "Choose file to open."
 msgstr "Виберіть файл для відкриття."
 
-#: src/gui/_main_window.py:869
+#: src/gui/_main_window.py:870
 msgid " (experimental)"
 msgstr " (експериментальна)"
 
-#: src/gui/_main_window.py:880
+#: src/gui/_main_window.py:881
 msgid "Choose filename for saving."
 msgstr "Виберіть назву файла, який слід зберегти."
 
-#: src/gui/_main_window.py:895
+#: src/gui/_main_window.py:896
 msgid "Directory present. Save aborted."
 msgstr "Існує каталог з такою назвою. Збереження перервано."
 
-#: src/gui/_main_window.py:903
+#: src/gui/_main_window.py:904
 msgid ""
 "The file {filepath} is already present.\n"
 "Overwrite?"
@@ -958,67 +958,67 @@ msgstr ""
 "Вже існує файл з назвою {filepath}.\n"
 "Перезаписати його?"
 
-#: src/gui/_main_window.py:905
+#: src/gui/_main_window.py:906
 msgid "File collision"
 msgstr "Назви файлів збігаються"
 
-#: src/gui/_main_window.py:910
+#: src/gui/_main_window.py:911
 msgid "File present. Save aborted by user."
 msgstr "Файл вже існує. Збереження перервано користувачем."
 
-#: src/gui/_main_window.py:938 src/gui/_main_window.py:982
+#: src/gui/_main_window.py:939 src/gui/_main_window.py:983
 msgid "CSV file"
 msgstr "файл CSV"
 
-#: src/gui/_main_window.py:939
+#: src/gui/_main_window.py:940
 msgid "Tab delimited text file"
 msgstr "текстовий файл, розмічений табуляціями"
 
-#: src/gui/_main_window.py:940
+#: src/gui/_main_window.py:941
 msgid "Choose file to import."
 msgstr "Вибір файла для імпортування."
 
-#: src/gui/_main_window.py:986
+#: src/gui/_main_window.py:987
 msgid "PDF file"
 msgstr "файл PDF"
 
-#: src/gui/_main_window.py:988 src/gui/_grid.py:415
+#: src/gui/_main_window.py:989 src/gui/_grid.py:415
 msgid "SVG file"
 msgstr "файл SVG"
 
-#: src/gui/_main_window.py:1024
+#: src/gui/_main_window.py:1025
 msgid "SVG of current cell"
 msgstr "SVG поточної комірки"
 
-#: src/gui/_main_window.py:1025
+#: src/gui/_main_window.py:1026
 msgid "EPS of current cell"
 msgstr "EPS поточної комірки"
 
-#: src/gui/_main_window.py:1026
+#: src/gui/_main_window.py:1027
 msgid "PS of current cell"
 msgstr "PS поточної комірки"
 
-#: src/gui/_main_window.py:1027
+#: src/gui/_main_window.py:1028
 msgid "PDF of current cell"
 msgstr "PDF поточної комірки"
 
-#: src/gui/_main_window.py:1028
+#: src/gui/_main_window.py:1029
 msgid "PNG of current cell"
 msgstr "PNG поточної комірки"
 
-#: src/gui/_main_window.py:1035
+#: src/gui/_main_window.py:1036
 msgid "Choose filename for export."
 msgstr "Виберіть назву файла для експортування."
 
-#: src/gui/_main_window.py:1059
+#: src/gui/_main_window.py:1060
 msgid "PDF"
 msgstr "PDF"
 
-#: src/gui/_main_window.py:1060
+#: src/gui/_main_window.py:1061
 msgid "Choose file path for PDF export."
 msgstr "Виберіть шлях до експортованого файла PDF."
 
-#: src/gui/_main_window.py:1080
+#: src/gui/_main_window.py:1081
 msgid ""
 "You are going to approve and trust a file that\n"
 "you have not created yourself.\n"
@@ -1042,31 +1042,31 @@ msgstr ""
 " \n"
 "Продовжити і підписати цей файл як надійний?"
 
-#: src/gui/_main_window.py:1087
+#: src/gui/_main_window.py:1088
 msgid "Security warning"
 msgstr "Попередження щодо небезпеки"
 
-#: src/gui/_main_window.py:1095
+#: src/gui/_main_window.py:1096
 msgid "Safe mode deactivated."
 msgstr "Безпечний режим вимкнено."
 
-#: src/gui/_main_window.py:1102
+#: src/gui/_main_window.py:1103
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
 msgstr "Вилучення значень загальних змінних і перезавантаження модулів призведе до незворотної втрати поточних даних. Виконати цю дію?"
 
-#: src/gui/_main_window.py:1104
+#: src/gui/_main_window.py:1105
 msgid "Really delete globals and modules?"
 msgstr "Вилучити загальні змінні і перезавантажити модулі?"
 
-#: src/gui/_main_window.py:1111
+#: src/gui/_main_window.py:1112
 msgid "Globals cleared and base modules reloaded."
 msgstr "Значення загальних змінних вилучено, базові модулі перезавантажено."
 
-#: src/gui/_main_window.py:1372 src/gui/_main_window.py:1400
+#: src/gui/_main_window.py:1373 src/gui/_main_window.py:1401
 msgid "Macro file"
 msgstr "файл макросів"
 
-#: src/gui/_main_window.py:1374 src/gui/_main_window.py:1402
+#: src/gui/_main_window.py:1375 src/gui/_main_window.py:1403
 msgid "Choose macro file."
 msgstr "Вибір файла макросів."
 
@@ -2379,95 +2379,99 @@ msgstr "Транспонувати"
 msgid "File version {version} unsupported (not 0.1)."
 msgstr "Підтримки версій файлів {version} не передбачено (номер версії відмінний від 0.1)."
 
-#: src/interfaces/pys.py:334 src/actions/_grid_actions.py:245
+#: src/interfaces/pys.py:334 src/actions/_grid_actions.py:246
 msgid "File format unsupported."
 msgstr "Підтримки цього файлів у цьому форматі не передбачено."
 
-#: src/actions/_grid_actions.py:128
+#: src/actions/_grid_actions.py:129
 msgid "{nele} elements processed. Press <Esc> to abort."
 msgstr "Оброблено {nele} елементів. Натисніть <Esc>, щоб перервати обробку."
 
-#: src/actions/_grid_actions.py:130
+#: src/actions/_grid_actions.py:131
 msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
 msgstr "Оброблено {nele} з {totalele} елементів. Натисніть <Esc>, щоб перервати обробку."
 
-#: src/actions/_grid_actions.py:216
+#: src/actions/_grid_actions.py:217
 msgid "Valid signature found. File is trusted."
 msgstr "Виявлено коректний підпис. Вмісту файла можна довіряти."
 
-#: src/actions/_grid_actions.py:225
+#: src/actions/_grid_actions.py:226
 msgid "File is not properly signed. Safe mode activated. Select File -> Approve to leave safe mode."
 msgstr "Файл підписано неналежним чином. Задіяно безпечний режим. Скористайтеся пунктом меню Файл -> Затвердити, щоб вийти з безпечного режиму."
 
-#: src/actions/_grid_actions.py:405
+#: src/actions/_grid_actions.py:386
+msgid "Error opening file {filepath}:"
+msgstr "Помилка під час відкриття файла {filepath}:"
+
+#: src/actions/_grid_actions.py:410
 msgid "Error signing file. "
 msgstr "Помилка під час підписування файла. "
 
-#: src/actions/_grid_actions.py:421
+#: src/actions/_grid_actions.py:426
 msgid "File saved and signed"
 msgstr "Файл збережено і підписано"
 
-#: src/actions/_grid_actions.py:423
+#: src/actions/_grid_actions.py:428
 msgid "File signed"
 msgstr "Файл підписано"
 
-#: src/actions/_grid_actions.py:562
+#: src/actions/_grid_actions.py:567
 msgid "File saved but not signed because it is unapproved."
 msgstr "Файл збережено, але не підписано, оскільки дані файла не затверджено."
 
-#: src/actions/_grid_actions.py:797
+#: src/actions/_grid_actions.py:802
 msgid "Key length {length}  not in (2, 3)"
 msgstr "Довжина ключа {length} не є числом з набору (2, 3)"
 
-#: src/actions/_grid_actions.py:803
+#: src/actions/_grid_actions.py:808
 msgid "Paste aborted."
 msgstr "Вставлення перервано."
 
-#: src/actions/_grid_actions.py:814
+#: src/actions/_grid_actions.py:819
 msgid "rows and columns"
 msgstr "рядки і стовпчики"
 
-#: src/actions/_grid_actions.py:816
+#: src/actions/_grid_actions.py:821
 msgid "rows"
 msgstr "рядки"
 
-#: src/actions/_grid_actions.py:818
+#: src/actions/_grid_actions.py:823
 msgid "columns"
 msgstr "стовпчики"
 
-#: src/actions/_grid_actions.py:820
+#: src/actions/_grid_actions.py:825
 msgid "Import cell overflow missing"
 msgstr "Переповнення комірок під час імпортування"
 
-#: src/actions/_grid_actions.py:823
+#: src/actions/_grid_actions.py:828
 msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
 msgstr "Імпортовані дані за об’ємом перевищують можливості сітки {cause}. Імпортовано не всі дані. Скористайтеся більшою сіткою, щоб імпортувати всі дані."
 
-#: src/actions/_grid_actions.py:832
+#: src/actions/_grid_actions.py:837
 msgid "s"
 msgstr "с"
 
-#: src/actions/_grid_actions.py:834
+#: src/actions/_grid_actions.py:839
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
 msgstr "{ncells} комірок вставлено до комірки {topleft}"
 
-#: src/actions/_grid_actions.py:871
+#: src/actions/_grid_actions.py:876
 msgid "Pasting cells... "
 msgstr "Вставляємо комірки… "
 
-#: src/actions/_grid_actions.py:1178
+#: src/actions/_grid_actions.py:1183
 msgid "Zoomed to {0:.2f}."
 msgstr "Збільшено до масштабу {0:.2f}."
 
-#: src/actions/_grid_actions.py:1497
+#: src/actions/_grid_actions.py:1502
 msgid "Cell reference copied to clipboard: {access_string}"
 msgstr "Посилання на комірку скопійовано до буфера обміну: {access_string}"
 
-#: src/actions/_grid_actions.py:1601
+#: src/actions/_grid_actions.py:1606
 msgid "Replaced {no_cells} cells."
 msgstr "Виконано заміну у {no_cells} комірках."
 
-#: src/actions/_grid_actions.py:1636
+#: src/actions/_grid_actions.py:1641
 msgid "Replaced {old} with {new} in cell {key}."
 msgstr "Замінено {old} на {new} у комірці {key}."
 

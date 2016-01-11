@@ -172,14 +172,15 @@ class FileActions(Actions):
         sigfilename = filename + '.sig'
 
         try:
-            dummy = open(sigfilename)
-            dummy.close()
+            with open(sigfilename):
+                pass
+
         except IOError:
             # Signature file does not exist
             return False
 
         # Check if the sig is valid for the sigfile
-        # TODO: Check for whitespace in filenpaths
+        # TODO: Check for whitespace in filepaths
         return verify(sigfilename, filename)
 
     def enter_safe_mode(self):
@@ -318,7 +319,7 @@ class FileActions(Actions):
             except:
                 file_ext = None
 
-            if file_ext in ["pys", "pysu"]:
+            if file_ext in ["pys", "pysu", "xls", "xlsx"]:
                 filetype = file_ext
             else:
                 filetype = "pys"
@@ -602,7 +603,7 @@ class FileActions(Actions):
             self._move_tmp_file(tmpfilepath, filepath)
             self._release_save_states()
 
-        elif filetype == "pys":
+        elif filetype == "pys" or filetype == "all":
             self._set_save_states()
             if self._save_pys(tmpfilepath):
                 # Writing was successful
@@ -1414,7 +1415,7 @@ class SelectionActions(Actions):
                 for col in xrange(col_slc.start, col_slc.stop, col_slc.step):
                     self.select_cell(row, col, add_to_selected=True)
 
-    def delete_selection(self, selection=None):
+    def delete_selection(self, selection=None, mark_unredo=True):
         """Deletes selection, marks content as changed
 
         If selection is None then the current grid selection is used.
@@ -1424,6 +1425,8 @@ class SelectionActions(Actions):
 
         selection: Selection, defaults to None
         \tSelection that shall be deleted
+        mark_unredo: Boolean, defaults to True
+        \tIf True deletion is marked as separate undo step
 
         """
 
@@ -1441,7 +1444,8 @@ class SelectionActions(Actions):
                 self.grid.actions.delete_cell((row, col, tab),
                                               mark_unredo=False)
 
-        self.grid.code_array.unredo.mark()
+        if mark_unredo:
+            self.grid.code_array.unredo.mark()
 
         self.grid.code_array.result_cache.clear()
 

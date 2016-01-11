@@ -34,6 +34,16 @@ from itertools import islice
 import os
 import types
 
+try:
+    import xlrd
+except ImportError:
+    xlrd = None
+
+try:
+    import xlwt
+except ImportError:
+    xlwt = None
+
 import wx
 import wx.lib.agw.genericmessagedialog as GMD
 
@@ -114,7 +124,8 @@ class ModalDialogInterfaceMixin(object):
         elif save_choice == wx.ID_NO:
             return False
 
-    def get_filepath_findex_from_user(self, wildcard, message, style):
+    def get_filepath_findex_from_user(self, wildcard, message, style,
+                                      filterindex=0):
         """Opens a file dialog and returns filepath and filterindex
 
         Parameters
@@ -125,12 +136,17 @@ class ModalDialogInterfaceMixin(object):
         \tMessage in the file dialog
         style: Integer
         \tDialog style, e. g. wx.OPEN | wx.CHANGE_DIR
+        filterindex: Integer, defaults to 0
+        \tDefault filterindex that is selected when the dialog is displayed
 
         """
 
         dlg = wx.FileDialog(self.main_window, wildcard=wildcard,
                             message=message, style=style,
                             defaultDir=os.getcwd(), defaultFile="")
+
+        # Set the initial filterindex
+        dlg.SetFilterIndex(filterindex)
 
         filepath = None
         filter_index = None

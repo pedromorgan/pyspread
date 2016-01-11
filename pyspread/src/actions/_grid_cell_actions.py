@@ -350,11 +350,6 @@ class CellActions(Actions):
         selection = Selection([], [], [], [], [cursor[:2]])
         self.set_attr("frozen", not frozen, selection=selection)
 
-    def change_locked_attr(self):
-        """Changes locked state of cell if there is no selection"""
-
-        raise NotImplementedError
-
     def unmerge(self, unmerge_area, tab):
         """Unmerges all cells in unmerge_area"""
 
@@ -374,8 +369,9 @@ class CellActions(Actions):
 
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
 
-        self.delete_selection(selection)
-        self.code_array[(top, left, cursor[2])] = top_left_code
+        self.delete_selection(selection, mark_unredo=False)
+        self.code_array.__setitem__((top, left, cursor[2]), top_left_code,
+                                    mark_unredo=False)
 
         attr = {"merge_area": merge_area, "locked": True}
 
@@ -385,6 +381,8 @@ class CellActions(Actions):
         attr = {"locked": False}
 
         self._set_cell_attr(tl_selection, tab, attr)
+
+        self.grid.code_array.unredo.mark()
 
     def merge_selected_cells(self, selection):
         """Merges or unmerges cells that are in the selection bounding box

@@ -45,7 +45,7 @@ def get_program_path():
 
     src_folder = os.path.dirname(__file__)
     program_path = os.sep.join(src_folder.split(os.sep)[:-2]) + os.sep
-    
+
     return program_path
 
 

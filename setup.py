@@ -110,7 +110,7 @@ DATAFILES += find_data_files(
 
 setup(
     name='pyspread',
-    version='1.0',
+    version='1.0.1',
     console=[{
         'script': 'pyspread/pyspread',
         'icon_resources': [(0, "pyspread/share/icons/pyspread.ico")],
