@@ -104,7 +104,7 @@ class Pys(object):
     def _pys_assert_version(self, line):
         """Asserts pys file version"""
 
-        if float(line.strip()) >= 1.0:
+        if float(line.strip()) > 1.0:
             # Abort if file version not supported
             msg = _("File version {version} unsupported (>1.0).").format(
                 version=line.strip())
