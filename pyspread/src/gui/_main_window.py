@@ -825,7 +825,8 @@ class MainWindowEventHandlers(EventMixin):
 
         if filetype is None:
 
-            __filetypes, __ = self.interfaces.get_file_save_wildcard_list()
+            f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
+            __filetypes = f2w.keys()
 
             # Check if the file extension matches any valid save filetype
             for __filetype in __filetypes:
