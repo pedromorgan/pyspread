@@ -1307,6 +1307,13 @@ class PreferencesDialog(wx.Dialog):
             "widget_params": {},
             "prepocessor": str,
         }),
+        ("font_save_enabled", {
+            "label": _(u"Save font in pys"),
+            "tooltip": _(u"Enable font saving in pys and pysu files."),
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "max": 1, "allow_long": False},
+            "prepocessor": int,
+        }),
     )
 
     def __init__(self, *args, **kwargs):

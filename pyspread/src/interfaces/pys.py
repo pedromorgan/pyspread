@@ -46,6 +46,7 @@ from itertools import imap
 from matplotlib import font_manager
 
 from src.lib.selection import Selection
+from src.config import config
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -71,9 +72,6 @@ class Pys(object):
         self.code_array = code_array
         self.pys_file = pys_file
 
-        # Font families used. Must be deleted after each save operation
-        self.fonts_used = []
-
         self._section2reader = {
             "[Pyspread save file version]\n": self._pys_assert_version,
             "[shape]\n": self._pys2shape,
@@ -82,7 +80,6 @@ class Pys(object):
             "[row_heights]\n": self._pys2row_heights,
             "[col_widths]\n": self._pys2col_widths,
             "[macros]\n": self._pys2macros,
-            "[fonts]\n": self._pys2fonts,
         }
 
         self._section2writer = OrderedDict([
@@ -93,8 +90,15 @@ class Pys(object):
             ("[row_heights]\n", self._row_heights2pys),
             ("[col_widths]\n", self._col_widths2pys),
             ("[macros]\n", self._macros2pys),
-            ("[fonts]\n", self._fonts2pys),
         ])
+
+        # Update sections for font handling if it is activated
+        if config["font_save_enabled"]:
+            # Font families used. Must be deleted after each save operation
+            self.fonts_used = []
+
+            self._section2reader["[fonts]\n"] = self._pys2fonts
+            self._section2writer["[fonts]\n"] = self._fonts2pys
 
     def _split_tidy(self, string, maxsplit=None):
         """Rstrips string for \n and splits string for \t"""
@@ -194,7 +198,7 @@ class Pys(object):
                 attr_dict_list.append(key)
                 attr_dict_list.append(attr_dict[key])
 
-                if key == 'textfont':
+                if config["font_save_enabled"] and key == 'textfont':
                     self.fonts_used.append(attr_dict[key])
 
             line_list = map(repr, sel_list + tab_list + attr_dict_list)
@@ -367,8 +371,9 @@ class Pys(object):
                 # pys_file is not opened via fileio.BZAopen
                 pass
 
-        # Clean up fonts used info
-        self.fonts_used = []
+        if config["font_save_enabled"]:
+            # Clean up fonts used info
+            self.fonts_used = []
 
     def to_code_array(self):
         """Replaces everything in code_array from pys_file"""
