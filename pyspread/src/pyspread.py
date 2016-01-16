@@ -135,12 +135,12 @@ class Commandlineparser(object):
 
         # If one dimension is 0 then the grid has no cells
         if min(options.dimensions) < 1:
-            print _("Cell dimension must be > 0.")
+            print(_("Cell dimension must be > 0."))
             sys.exit()
 
         # No MDI yet, pyspread can be started several times though
         if len(args) > 1:
-            print _("Only one file may be opened at a time.")
+            print(_("Only one file may be opened at a time."))
             sys.exit()
 
         filename = None
@@ -233,7 +233,7 @@ def pyspread(S=None):
 
 if __name__ == "__main__":
     if 'unicode' not in wx.PlatformInfo:
-        print _("You need a unicode build of wxPython to run pyspread.")
+        print(_("You need a unicode build of wxPython to run pyspread."))
 
     else:
         if DEBUG:
