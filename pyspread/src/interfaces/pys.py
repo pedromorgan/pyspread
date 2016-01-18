@@ -42,6 +42,8 @@ import base64
 from collections import OrderedDict
 import src.lib.i18n as i18n
 from itertools import imap
+import os
+import tempfile
 
 from matplotlib import font_manager
 
@@ -72,6 +74,11 @@ class Pys(object):
         self.code_array = code_array
         self.pys_file = pys_file
 
+        if config["font_save_enabled"]:
+            # Clean up fonts used info
+            self.fonts_used = []
+            self.temp_fontdir = tempfile.mkdtemp()
+
         self._section2reader = {
             "[Pyspread save file version]\n": self._pys_assert_version,
             "[shape]\n": self._pys2shape,
@@ -94,9 +101,6 @@ class Pys(object):
 
         # Update sections for font handling if it is activated
         if config["font_save_enabled"]:
-            # Font families used. Must be deleted after each save operation
-            self.fonts_used = []
-
             self._section2reader["[fonts]\n"] = self._pys2fonts
             self._section2writer["[fonts]\n"] = self._fonts2pys
 
@@ -340,6 +344,7 @@ class Pys(object):
 
         font_name, ascii_font_data = self._split_tidy(line)
         font_data = base64.b64decode(ascii_font_data)
+        print font_name
 
         # Get system font names
         system_fonts = font_manager.findSystemFonts()
@@ -353,6 +358,15 @@ class Pys(object):
         # Use the system font if applicable
         if font_name not in system_font_names:
             self.code_array.custom_fonts[font_name] = font_data
+
+        with open(self.temp_fontdir + os.sep + font_name, "wb") as font_file:
+            font_file.write(font_data)
+
+        with tempfile.NamedTemporaryFile() as fontsconf_tmpfile:
+            fontsconf_tmpfile_name = fontsconf_tmpfile.name
+            fontsconf_tmpfile.write(self.temp_fontdir)
+
+        os.environ["FONTCONFIG_FILE"] = fontsconf_tmpfile_name
 
     # Access via model.py data
     # ------------------------
