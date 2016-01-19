@@ -638,6 +638,20 @@ class GridCellContentCairoRenderer(object):
             self.context.translate(rect[2] - 4, rect[3] - 2)
             self.context.rotate(-math.pi)
 
+    def draw_error_underline(self, ptx, text_pixel_extents):
+        """Draws an error underline"""
+
+        # TODO: Make underlines work for multi-line text
+
+        error_underline_box = list(text_pixel_extents[1])
+        error_underline_box[1] = error_underline_box[1] \
+            + error_underline_box[3] - 2
+        error_underline_box[3] = 4
+        self.context.save()
+        self.context.set_source_rgb(1.0, 0.0, 0.0)
+        pangocairo.show_error_underline(ptx, *error_underline_box)
+        self.context.restore()
+
     def draw_text(self, content):
         """Draws text cell content to context"""
 
@@ -691,6 +705,10 @@ class GridCellContentCairoRenderer(object):
 
         # Shift text for vertical alignment
         extents = pango_layout.get_pixel_extents()
+
+        # TODO: make error underline optional only for words that deserve it
+        if True:
+            self.draw_error_underline(ptx, extents)
 
         downshift = 0
 
