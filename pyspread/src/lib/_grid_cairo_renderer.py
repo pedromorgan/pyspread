@@ -53,6 +53,13 @@ try:
 except ImportError:
     pyplot = None
 
+try:
+    import enchant
+    from enchant.tokenize import get_tokenizer, HTMLChunker
+except ImportError:
+    enchant = None
+
+
 import pango
 import pangocairo
 
@@ -638,7 +645,7 @@ class GridCellContentCairoRenderer(object):
             self.context.translate(rect[2] - 4, rect[3] - 2)
             self.context.rotate(-math.pi)
 
-    def draw_error_underline(self, ptx, pango_layout):
+    def _draw_error_underline(self, ptx, pango_layout):
         """Draws an error underline"""
 
         self.context.save()
@@ -661,6 +668,35 @@ class GridCellContentCairoRenderer(object):
             pit.next_char()
 
         self.context.restore()
+
+    def _check_spelling(self, text, lang="en_US"):
+        """Returns a list of slices that have spelling errors
+
+        Parameters
+        ----------
+        text: Unicode or string
+        \tThe text that is checked
+        lang: String, defaults to "en_US"
+        \tName of spell checking dictionary
+
+        """
+
+        d = enchant.Dict(lang)
+        tokenizer = get_tokenizer(lang, chunkers=(HTMLChunker,))
+        word_positions = [word for word in tokenizer(text)]
+
+        word_starts_ends = []
+        for i in enumerate(word_positions):
+            word, start = word_positions[i]
+            try:
+                stop = word_positions[i]
+            except IndexError:
+                stop = None
+
+            if not d.check(word):
+                word_starts_ends.append((start, stop))
+
+        return word_starts_ends
 
     def draw_text(self, content):
         """Draws text cell content to context"""
@@ -718,7 +754,7 @@ class GridCellContentCairoRenderer(object):
 
         # TODO: make error underline optional only for words that deserve it
         if True:
-            self.draw_error_underline(ptx, pango_layout)
+            self._draw_error_underline(ptx, pango_layout)
 
         downshift = 0
 
