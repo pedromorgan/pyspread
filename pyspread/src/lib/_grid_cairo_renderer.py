@@ -645,32 +645,48 @@ class GridCellContentCairoRenderer(object):
             self.context.translate(rect[2] - 4, rect[3] - 2)
             self.context.rotate(-math.pi)
 
-    def _draw_error_underline(self, ptx, pango_layout):
+    def _draw_error_underline(self, ptx, pango_layout, start, stop):
         """Draws an error underline"""
 
         self.context.save()
         self.context.set_source_rgb(1.0, 0.0, 0.0)
 
-        text = pango_layout.get_text()
-
         pit = pango_layout.get_iter()
 
-        for char_no in xrange(len(text)):
+        # Skip characters until start
+        for i in xrange(start):
+            pit.next_char()
+
+        extents_list = []
+
+        for char_no in xrange(start, stop):
             char_extents = pit.get_char_extents()
-            underline_pixel_extents = (
+            underline_pixel_extents = [
                 char_extents[0] / pango.SCALE,
-                (char_extents[1] + char_extents[3] - 2) / pango.SCALE,
+                (char_extents[1] + char_extents[3]) / pango.SCALE - 2,
                 char_extents[2] / pango.SCALE,
                 4,
-            )
-            pangocairo.show_error_underline(ptx, *underline_pixel_extents)
+            ]
+            if extents_list:
+                if extents_list[-1][1] == underline_pixel_extents[1]:
+                    # Same line
+                    extents_list[-1][2] = underline_pixel_extents[0] + \
+                        underline_pixel_extents[2]
+                else:
+                    # Line break
+                    extents_list.append(underline_pixel_extents)
+            else:
+                extents_list.append(underline_pixel_extents)
 
             pit.next_char()
+
+        for extent in extents_list:
+            pangocairo.show_error_underline(ptx, *extent)
 
         self.context.restore()
 
     def _check_spelling(self, text, lang="en_US"):
-        """Returns a list of slices that have spelling errors
+        """Returns a list of start stop tuples that have spelling errors
 
         Parameters
         ----------
@@ -686,12 +702,12 @@ class GridCellContentCairoRenderer(object):
         word_positions = [word for word in tokenizer(text)]
 
         word_starts_ends = []
-        for i in enumerate(word_positions):
+        for i in xrange(len(word_positions)):
             word, start = word_positions[i]
             try:
-                stop = word_positions[i]
+                stop = word_positions[i+1][1]
             except IndexError:
-                stop = None
+                stop = len(text) + 1
 
             if not d.check(word):
                 word_starts_ends.append((start, stop))
@@ -752,9 +768,10 @@ class GridCellContentCairoRenderer(object):
         # Shift text for vertical alignment
         extents = pango_layout.get_pixel_extents()
 
-        # TODO: make error underline optional only for words that deserve it
-        if True:
-            self._draw_error_underline(ptx, pango_layout)
+        text = pango_layout.get_text()
+        lang = config["spell_lang"]
+        for start, stop in self._check_spelling(text, lang=lang):
+            self._draw_error_underline(ptx, pango_layout, start, stop)
 
         downshift = 0
 

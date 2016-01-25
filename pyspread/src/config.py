@@ -51,6 +51,11 @@ class DefaultConfig(object):
         standardpaths = wx.StandardPaths.Get()
         self.work_path = standardpaths.GetDocumentsDir()
 
+        # Spell checking lamguage
+        # -----------------------
+
+        self.spell_lang = "'en_US'"
+
         # Default filetypes
         # -----------------
 
