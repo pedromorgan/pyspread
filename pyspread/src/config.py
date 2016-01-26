@@ -54,6 +54,7 @@ class DefaultConfig(object):
         # Spell checking lamguage
         # -----------------------
 
+        self.check_spelling = "False"
         self.spell_lang = "'en_US'"
 
         # Default filetypes

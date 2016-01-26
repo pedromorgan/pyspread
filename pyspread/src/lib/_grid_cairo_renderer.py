@@ -107,7 +107,7 @@ class GridCairoRenderer(object):
 
     def __init__(self, context, code_array, row_tb, col_rl, tab_fl,
                  width, height, orientation, x_offset=20.5, y_offset=20.5,
-                 view_frozen=False):
+                 view_frozen=False, spell_check=False):
         self.context = context
         self.code_array = code_array
 
@@ -124,6 +124,8 @@ class GridCairoRenderer(object):
         self.orientation = orientation
 
         self.view_frozen = view_frozen
+
+        self.spell_check = spell_check
 
     def get_cell_rect(self, row, col, tab):
         """Returns rectangle of cell on canvas"""
@@ -260,12 +262,14 @@ class GridCellCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, key, rect, view_frozen=False):
+    def __init__(self, context, code_array, key, rect, view_frozen=False,
+                 spell_check=False):
         self.context = context
         self.code_array = code_array
         self.key = key
         self.rect = rect
         self.view_frozen = view_frozen
+        self.spell_check = spell_check
 
     def draw(self):
         """Draws cell to context"""
@@ -281,7 +285,8 @@ class GridCellCairoRenderer(object):
             self.context,
             self.code_array,
             self.key,
-            self.rect)
+            self.rect,
+            self.spell_check)
 
         cell_border_renderer = GridCellBorderCairoRenderer(
             self.context,
@@ -309,11 +314,12 @@ class GridCellContentCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, key, rect):
+    def __init__(self, context, code_array, key, rect, spell_check=False):
         self.context = context
         self.code_array = code_array
         self.key = key
         self.rect = rect
+        self.spell_check = spell_check
 
     def get_cell_content(self):
         """Returns cell content"""
@@ -768,10 +774,12 @@ class GridCellContentCairoRenderer(object):
         # Shift text for vertical alignment
         extents = pango_layout.get_pixel_extents()
 
-        text = pango_layout.get_text()
-        lang = config["spell_lang"]
-        for start, stop in self._check_spelling(text, lang=lang):
-            self._draw_error_underline(ptx, pango_layout, start, stop)
+        # Spell check underline drawing
+        if self.spell_check:
+            text = pango_layout.get_text()
+            lang = config["spell_lang"]
+            for start, stop in self._check_spelling(text, lang=lang):
+                self._draw_error_underline(ptx, pango_layout, start, stop)
 
         downshift = 0
 

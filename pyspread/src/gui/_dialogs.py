@@ -1314,6 +1314,13 @@ class PreferencesDialog(wx.Dialog):
             "widget_params": {"min": 0, "max": 1, "allow_long": False},
             "prepocessor": int,
         }),
+        ("spell_lang", {
+            "label": _(u"Spell checker language"),
+            "tooltip": _(u"The language that is used for the spell checker."),
+            "widget": wx.TextCtrl,
+            "widget_params": {},
+            "prepocessor": str,
+        }),
     )
 
     def __init__(self, *args, **kwargs):
