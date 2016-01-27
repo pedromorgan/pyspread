@@ -73,6 +73,8 @@ class MainWindowEventMixin(object):
 
     CloseMsg, EVT_CMD_CLOSE = new_command_event()
 
+    SpellCheckMsg, EVT_SPELL_CHECK = new_command_event()
+
     FontDialogMsg, EVT_CMD_FONTDIALOG = new_command_event()
     TextColorDialogMsg, EVT_CMD_TEXTCOLORDIALOG = new_command_event()
     BgColorDialogMsg, EVT_CMD_BGCOLORDIALOG = new_command_event()

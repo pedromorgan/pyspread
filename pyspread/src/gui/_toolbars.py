@@ -167,6 +167,8 @@ class MainToolbar(ToolbarBase):
             ["T", self.UndoMsg, "Undo", _("Undo")],
             ["T", self.RedoMsg, "Redo", _("Redo")],
             ["S"],
+            ["O", "CheckSpelling", _("Check spelling")],
+            ["S"],
             ["T", self.FindFocusMsg, "Find", _("Find")],
             ["T", self.ReplaceMsg, "FindReplace", _("Replace")],
             ["S"],
@@ -183,6 +185,40 @@ class MainToolbar(ToolbarBase):
         ]
 
         self.add_tools()
+
+        # Initialize spell checking toggle tool
+        spelltoolid = self.label2id["CheckSpelling"]
+        self.ToggleTool(spelltoolid, config["check_spelling"])
+
+        toggle_id = self.parent.menubar.FindMenuItem(_("View"),
+                                                     _("Check spelling"))
+        if toggle_id != -1:
+            # Check may fail if translation is incomplete
+            toggle_item = self.parent.menubar.FindItemById(toggle_id)
+
+            # Adjust toggle to pane visibility
+            toggle_item.Check(config["check_spelling"])
+
+        # Bindings
+        # --------
+
+        self.Bind(wx.EVT_TOOL, self.OnTool)
+
+    def OnTool(self, event):
+        """Tool event handler"""
+
+        config["check_spelling"] = str(event.IsChecked())
+        toggle_id = self.parent.menubar.FindMenuItem(_("View"),
+                                                     _("Check spelling"))
+        if toggle_id != -1:
+            # Check may fail if translation is incomplete
+            toggle_item = self.parent.menubar.FindItemById(toggle_id)
+            toggle_item.Check(event.IsChecked())
+
+        self.parent.grid.grid_renderer.cell_cache.clear()
+        self.parent.grid.ForceRefresh()
+
+        event.Skip()
 
 # end of class MainToolbar
 

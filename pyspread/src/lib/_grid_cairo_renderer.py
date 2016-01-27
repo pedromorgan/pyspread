@@ -53,6 +53,13 @@ try:
 except ImportError:
     pyplot = None
 
+try:
+    import enchant
+    from enchant.tokenize import get_tokenizer, HTMLChunker
+except ImportError:
+    enchant = None
+
+
 import pango
 import pangocairo
 
@@ -100,7 +107,7 @@ class GridCairoRenderer(object):
 
     def __init__(self, context, code_array, row_tb, col_rl, tab_fl,
                  width, height, orientation, x_offset=20.5, y_offset=20.5,
-                 view_frozen=False):
+                 view_frozen=False, spell_check=False):
         self.context = context
         self.code_array = code_array
 
@@ -117,6 +124,8 @@ class GridCairoRenderer(object):
         self.orientation = orientation
 
         self.view_frozen = view_frozen
+
+        self.spell_check = spell_check
 
     def get_cell_rect(self, row, col, tab):
         """Returns rectangle of cell on canvas"""
@@ -253,12 +262,14 @@ class GridCellCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, key, rect, view_frozen=False):
+    def __init__(self, context, code_array, key, rect, view_frozen=False,
+                 spell_check=False):
         self.context = context
         self.code_array = code_array
         self.key = key
         self.rect = rect
         self.view_frozen = view_frozen
+        self.spell_check = spell_check
 
     def draw(self):
         """Draws cell to context"""
@@ -274,7 +285,8 @@ class GridCellCairoRenderer(object):
             self.context,
             self.code_array,
             self.key,
-            self.rect)
+            self.rect,
+            self.spell_check)
 
         cell_border_renderer = GridCellBorderCairoRenderer(
             self.context,
@@ -302,11 +314,12 @@ class GridCellContentCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, key, rect):
+    def __init__(self, context, code_array, key, rect, spell_check=False):
         self.context = context
         self.code_array = code_array
         self.key = key
         self.rect = rect
+        self.spell_check = spell_check
 
     def get_cell_content(self):
         """Returns cell content"""
@@ -638,6 +651,75 @@ class GridCellContentCairoRenderer(object):
             self.context.translate(rect[2] - 4, rect[3] - 2)
             self.context.rotate(-math.pi)
 
+    def _draw_error_underline(self, ptx, pango_layout, start, stop):
+        """Draws an error underline"""
+
+        self.context.save()
+        self.context.set_source_rgb(1.0, 0.0, 0.0)
+
+        pit = pango_layout.get_iter()
+
+        # Skip characters until start
+        for i in xrange(start):
+            pit.next_char()
+
+        extents_list = []
+
+        for char_no in xrange(start, stop):
+            char_extents = pit.get_char_extents()
+            underline_pixel_extents = [
+                char_extents[0] / pango.SCALE,
+                (char_extents[1] + char_extents[3]) / pango.SCALE - 2,
+                char_extents[2] / pango.SCALE,
+                4,
+            ]
+            if extents_list:
+                if extents_list[-1][1] == underline_pixel_extents[1]:
+                    # Same line
+                    extents_list[-1][2] = underline_pixel_extents[0] + \
+                        underline_pixel_extents[2]
+                else:
+                    # Line break
+                    extents_list.append(underline_pixel_extents)
+            else:
+                extents_list.append(underline_pixel_extents)
+
+            pit.next_char()
+
+        for extent in extents_list:
+            pangocairo.show_error_underline(ptx, *extent)
+
+        self.context.restore()
+
+    def _check_spelling(self, text, lang="en_US"):
+        """Returns a list of start stop tuples that have spelling errors
+
+        Parameters
+        ----------
+        text: Unicode or string
+        \tThe text that is checked
+        lang: String, defaults to "en_US"
+        \tName of spell checking dictionary
+
+        """
+
+        d = enchant.Dict(lang)
+        tokenizer = get_tokenizer(lang, chunkers=(HTMLChunker,))
+        word_positions = [word for word in tokenizer(text)]
+
+        word_starts_ends = []
+        for i in xrange(len(word_positions)):
+            word, start = word_positions[i]
+            try:
+                stop = word_positions[i+1][1]
+            except IndexError:
+                stop = len(text) + 1
+
+            if not d.check(word):
+                word_starts_ends.append((start, stop))
+
+        return word_starts_ends
+
     def draw_text(self, content):
         """Draws text cell content to context"""
 
@@ -691,6 +773,13 @@ class GridCellContentCairoRenderer(object):
 
         # Shift text for vertical alignment
         extents = pango_layout.get_pixel_extents()
+
+        # Spell check underline drawing
+        if self.spell_check:
+            text = pango_layout.get_text()
+            lang = config["spell_lang"]
+            for start, stop in self._check_spelling(text, lang=lang):
+                self._draw_error_underline(ptx, pango_layout, start, stop)
 
         downshift = 0
 

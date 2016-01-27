@@ -29,7 +29,7 @@ from ast import literal_eval
 
 import wx
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 
 class DefaultConfig(object):
@@ -50,6 +50,12 @@ class DefaultConfig(object):
 
         standardpaths = wx.StandardPaths.Get()
         self.work_path = standardpaths.GetDocumentsDir()
+
+        # Spell checking lamguage
+        # -----------------------
+
+        self.check_spelling = "False"
+        self.spell_lang = "'en_US'"
 
         # Default filetypes
         # -----------------
@@ -98,6 +104,7 @@ class DefaultConfig(object):
         # Fonts
 
         self.font = repr(wx.SYS_DEFAULT_GUI_FONT)
+        self.font_save_enabled = "True"
 
         # Default cell font size
 

@@ -1171,7 +1171,8 @@ class AboutDialog(object):
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
                             "Martin Manns", "Andreas Noteng",
-                            "Enrico Nicoletto", u"Frédéric Marchal"]
+                            "Enrico Nicoletto", u"Frédéric Marchal",
+                            "Philipp Thomas"]
 
         license_file = open(get_program_path() + "/COPYING", "r")
         license_text = license_file.read()
@@ -1303,6 +1304,20 @@ class PreferencesDialog(wx.Dialog):
         ("default_save_filetype", {
             "label": _(u"Save filetype"),
             "tooltip": _(u"Default filetype when saving via File -> Save As"),
+            "widget": wx.TextCtrl,
+            "widget_params": {},
+            "prepocessor": str,
+        }),
+        ("font_save_enabled", {
+            "label": _(u"Save font in pys"),
+            "tooltip": _(u"Enable font saving in pys and pysu files."),
+            "widget": wx.lib.intctrl.IntCtrl,
+            "widget_params": {"min": 0, "max": 1, "allow_long": False},
+            "prepocessor": int,
+        }),
+        ("spell_lang", {
+            "label": _(u"Spell checker language"),
+            "tooltip": _(u"The language that is used for the spell checker."),
             "widget": wx.TextCtrl,
             "widget_params": {},
             "prepocessor": str,

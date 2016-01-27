@@ -269,8 +269,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         # Set off cell renderer by 1/2 a pixel to avoid blurry lines
         rect_tuple = \
             -0.5, -0.5, rect.width / zoom + 0.5, rect.height / zoom + 0.5
+        spell_check = config["check_spelling"]
         cell_renderer = GridCellCairoRenderer(context, self.data_array,
-                                              key, rect_tuple, view_frozen)
+                                              key, rect_tuple, view_frozen,
+                                              spell_check=spell_check)
         # Draw cell
         cell_renderer.draw()
 

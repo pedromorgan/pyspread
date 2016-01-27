@@ -285,6 +285,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_SAFE_MODE_EXIT, handlers.OnSafeModeExit)
         self.Bind(wx.EVT_CLOSE, handlers.OnClose)
         self.Bind(self.EVT_CMD_CLOSE, handlers.OnClose)
+        self.Bind(self.EVT_SPELL_CHECK, handlers.OnSpellCheckToggle)
 
         # Preferences events
 
@@ -530,6 +531,18 @@ class MainWindowEventHandlers(EventMixin):
             dummyfile = open(pyspreadrc_path, "w")
             dummyfile.close()
             os.chmod(pyspreadrc_path, 0600)
+
+    def OnSpellCheckToggle(self, event):
+        """Spell checking toggle event handler"""
+
+        spelltoolid = self.main_window.main_toolbar.label2id["CheckSpelling"]
+        self.main_window.main_toolbar.ToggleTool(spelltoolid,
+                                                 not config["check_spelling"])
+
+        config["check_spelling"] = repr(not config["check_spelling"])
+
+        self.main_window.grid.grid_renderer.cell_cache.clear()
+        self.main_window.grid.ForceRefresh()
 
     # Preferences events
 
@@ -825,7 +838,8 @@ class MainWindowEventHandlers(EventMixin):
 
         if filetype is None:
 
-            __filetypes, __ = self.interfaces.get_file_save_wildcard_list()
+            f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
+            __filetypes = f2w.keys()
 
             # Check if the file extension matches any valid save filetype
             for __filetype in __filetypes:
