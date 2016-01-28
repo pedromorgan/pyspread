@@ -202,9 +202,9 @@ class MainToolbar(ToolbarBase):
         # Bindings
         # --------
 
-        self.Bind(wx.EVT_TOOL, self.OnTool)
+        self.Bind(wx.EVT_TOOL, self.OnToggleTool)
 
-    def OnTool(self, event):
+    def OnToggleTool(self, event):
         """Tool event handler"""
 
         config["check_spelling"] = str(event.IsChecked())
