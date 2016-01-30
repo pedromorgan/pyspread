@@ -54,10 +54,9 @@ except ImportError:
     pyplot = None
 
 try:
-    import enchant
-    from enchant.tokenize import get_tokenizer, HTMLChunker
+    from enchant.checker import SpellChecker
 except ImportError:
-    enchant = None
+    SpellChecker = None
 
 
 import pango
@@ -703,20 +702,16 @@ class GridCellContentCairoRenderer(object):
 
         """
 
-        d = enchant.Dict(lang)
-        tokenizer = get_tokenizer(lang, chunkers=(HTMLChunker,))
-        word_positions = [word for word in tokenizer(text)]
+        chkr = SpellChecker(lang)
+
+        chkr.set_text(text)
 
         word_starts_ends = []
-        for i in xrange(len(word_positions)):
-            word, start = word_positions[i]
-            try:
-                stop = word_positions[i+1][1]
-            except IndexError:
-                stop = len(text) + 1
 
-            if not d.check(word):
-                word_starts_ends.append((start, stop))
+        for err in chkr:
+            start = err.wordpos
+            stop = err.wordpos + len(err.word) + 1
+            word_starts_ends.append((start, stop))
 
         return word_starts_ends
 
@@ -788,8 +783,8 @@ class GridCellContentCairoRenderer(object):
         self.context.translate(0, downshift)
 
         # Spell check underline drawing
-        if self.spell_check:
-            text = pango_layout.get_text()
+        if SpellChecker is not None and self.spell_check:
+            text = unicode(pango_layout.get_text())
             lang = config["spell_lang"]
             for start, stop in self._check_spelling(text, lang=lang):
                 self._draw_error_underline(ptx, pango_layout, start, stop-1)
