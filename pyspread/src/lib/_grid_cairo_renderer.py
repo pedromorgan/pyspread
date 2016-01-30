@@ -676,7 +676,7 @@ class GridCellContentCairoRenderer(object):
             if extents_list:
                 if extents_list[-1][1] == underline_pixel_extents[1]:
                     # Same line
-                    extents_list[-1][2] = underline_pixel_extents[0] + \
+                    extents_list[-1][2] = extents_list[-1][2] + \
                         underline_pixel_extents[2]
                 else:
                     # Line break
@@ -774,13 +774,6 @@ class GridCellContentCairoRenderer(object):
         # Shift text for vertical alignment
         extents = pango_layout.get_pixel_extents()
 
-        # Spell check underline drawing
-        if self.spell_check:
-            text = pango_layout.get_text()
-            lang = config["spell_lang"]
-            for start, stop in self._check_spelling(text, lang=lang):
-                self._draw_error_underline(ptx, pango_layout, start, stop)
-
         downshift = 0
 
         if cell_attributes["vertical_align"] == "bottom":
@@ -793,6 +786,13 @@ class GridCellContentCairoRenderer(object):
 
         self._rotate_cell(angle, rect)
         self.context.translate(0, downshift)
+
+        # Spell check underline drawing
+        if self.spell_check:
+            text = pango_layout.get_text()
+            lang = config["spell_lang"]
+            for start, stop in self._check_spelling(text, lang=lang):
+                self._draw_error_underline(ptx, pango_layout, start, stop-1)
 
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)
