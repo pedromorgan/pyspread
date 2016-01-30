@@ -68,6 +68,11 @@ from traceback import print_exception
 from StringIO import StringIO
 from sys import exc_info
 
+try:
+    import enchant
+except ImportError:
+    enchant = None
+
 # use ugettext instead of gettext to avoid unicode errors
 _ = i18n.language.ugettext
 
@@ -1237,92 +1242,110 @@ class CheckBoxCtrl(wx.CheckBox):
 class PreferencesDialog(wx.Dialog):
     """Dialog for changing pyspread's configuration preferences"""
 
-    parameters = (
+    parameters = [
         ("max_unredo", {
             "label": _(u"Max. undo steps"),
             "tooltip": _(u"Maximum number of undo steps"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_rows", {
             "label": _(u"Grid rows"),
             "tooltip": _(u"Number of grid rows when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_columns", {
             "label": _(u"Grid columns"),
             "tooltip": _(u"Number of grid columns when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_tables", {
             "label": _(u"Grid tables"),
             "tooltip": _(u"Number of grid tables when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("max_result_length", {
             "label": _(u"Max. result length"),
             "tooltip": _(u"Maximum length of cell result string"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("timeout", {
             "label": _(u"Timeout"),
             "tooltip": _(u"Maximum time that an evaluation process may take."),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("timer_interval", {
             "label": _(u"Timer interval"),
             "tooltip": _(u"Interval for periodic updating of timed cells."),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 100, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 100, "allow_long": True},
             "prepocessor": int,
         }),
         ("gpg_key_fingerprint", {
             "label": _(u"GPG fingerprint"),
             "tooltip": _(u"Fingerprint of the GPG key for signing files"),
             "widget": wx.TextCtrl,
-            "widget_params": {},
+            "widget_args": [],
+            "widget_kwargs": {},
             "prepocessor": unicode,
         }),
         ("default_open_filetype", {
             "label": _(u"Open filetype"),
             "tooltip": _(u"Default filetype when opening via File -> Open"),
             "widget": wx.TextCtrl,
-            "widget_params": {},
+            "widget_args": [],
+            "widget_kwargs": {},
             "prepocessor": str,
         }),
         ("default_save_filetype", {
             "label": _(u"Save filetype"),
             "tooltip": _(u"Default filetype when saving via File -> Save As"),
             "widget": wx.TextCtrl,
-            "widget_params": {},
+            "widget_args": [],
+            "widget_kwargs": {},
             "prepocessor": str,
         }),
         ("font_save_enabled", {
             "label": _(u"Save font in pys"),
             "tooltip": _(u"Enable font saving in pys and pysu files."),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "max": 1, "allow_long": False},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "max": 1, "allow_long": False},
             "prepocessor": int,
         }),
-        ("spell_lang", {
-            "label": _(u"Spell checker language"),
-            "tooltip": _(u"The language that is used for the spell checker."),
-            "widget": wx.TextCtrl,
-            "widget_params": {},
-            "prepocessor": str,
-        }),
-    )
+    ]
+
+    if enchant is not None:
+        list_dicts = [d[0] for d in enchant.list_dicts()]
+        parameters += [(
+            "spell_lang", {
+                "label": _(u"Spell checker language"),
+                "tooltip":
+                    _(u"The language that is used for the spell checker."),
+                "widget": wx.Choice,
+                "widget_args": [(100, 50)],
+                "widget_kwargs": {"choices": list_dicts},
+                "prepocessor": list_dicts.index,
+            }
+        )]
 
     def __init__(self, *args, **kwargs):
         kwargs["title"] = _(u"Preferences")
@@ -1348,7 +1371,15 @@ class PreferencesDialog(wx.Dialog):
             widget = info["widget"]
             preproc = info["prepocessor"]
 
-            ctrl = widget(self, -1, preproc(value), **info["widget_params"])
+            if widget is wx.Choice:
+                ctrl = widget(self, -1, *info["widget_args"],
+                              **info["widget_kwargs"])
+
+                ctrl.SetSelection(preproc(value))
+            else:
+                ctrl = widget(self, -1, preproc(value), *info["widget_args"],
+                              **info["widget_kwargs"])
+
             ctrl.SetToolTipString(tooltip)
 
             self.textctrls.append(ctrl)

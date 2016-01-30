@@ -99,7 +99,12 @@ class ModalDialogInterfaceMixin(object):
 
         if change_choice == wx.ID_OK:
             for (parameter, _), ctrl in zip(dlg.parameters, dlg.textctrls):
-                preferences[parameter] = repr(ctrl.Value)
+                if isinstance(ctrl, wx.Choice):
+                    value = ctrl.GetStringSelection()
+                    if value:
+                        preferences[parameter] = repr(value)
+                else:
+                    preferences[parameter] = repr(ctrl.Value)
 
         dlg.Destroy()
 
