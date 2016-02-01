@@ -1242,6 +1242,9 @@ class CheckBoxCtrl(wx.CheckBox):
 class PreferencesDialog(wx.Dialog):
     """Dialog for changing pyspread's configuration preferences"""
 
+    open_filetypes = ["pys", "pysu", "xls", "xlsx", "all"]
+    save_filetypes = ["pys", "pysu", "xls", "all"]
+
     parameters = [
         ("max_unredo", {
             "label": _(u"Max. undo steps"),
@@ -1310,18 +1313,18 @@ class PreferencesDialog(wx.Dialog):
         ("default_open_filetype", {
             "label": _(u"Open filetype"),
             "tooltip": _(u"Default filetype when opening via File -> Open"),
-            "widget": wx.TextCtrl,
-            "widget_args": [],
-            "widget_kwargs": {},
-            "prepocessor": str,
+            "widget": wx.Choice,
+            "widget_args": [(100, 50)],
+            "widget_kwargs": {"choices": open_filetypes},
+            "prepocessor": open_filetypes.index,
         }),
         ("default_save_filetype", {
             "label": _(u"Save filetype"),
             "tooltip": _(u"Default filetype when saving via File -> Save As"),
-            "widget": wx.TextCtrl,
-            "widget_args": [],
-            "widget_kwargs": {},
-            "prepocessor": str,
+            "widget": wx.Choice,
+            "widget_args": [(100, 50)],
+            "widget_kwargs": {"choices": save_filetypes},
+            "prepocessor": save_filetypes.index,
         }),
         ("font_save_enabled", {
             "label": _(u"Save font in pys"),
