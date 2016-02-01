@@ -1301,6 +1301,8 @@ class GridActions(Actions):
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
 
+            self.grid.SetToolTip(None)
+
             # Delete video cells
             video_cells = self.grid.grid_renderer.video_cells
             for key in video_cells:

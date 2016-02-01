@@ -899,6 +899,16 @@ class GridEventHandlers(GridActionEventMixin):
     def OnKey(self, event):
         """Handles non-standard shortcut events"""
 
+        def switch_to_next_table():
+            newtable = self.grid.current_table + 1
+            post_command_event(self.grid, self.GridActionTableSwitchMsg,
+                               newtable=newtable)
+
+        def switch_to_previous_table():
+            newtable = self.grid.current_table - 1
+            post_command_event(self.grid, self.GridActionTableSwitchMsg,
+                               newtable=newtable)
+
         grid = self.grid
         actions = grid.actions
 
@@ -927,6 +937,14 @@ class GridEventHandlers(GridActionEventMixin):
             # <Shift> + <Ctrl> + <Space> pressed
             (shift | ctrl, 32): grid.SelectAll,
         }
+
+        if self.main_window.IsFullScreen():
+            # <Arrow up> pressed
+            shortcuts[(0, 315)] = switch_to_previous_table
+            # <Arrow down> pressed
+            shortcuts[(0, 317)] = switch_to_next_table
+            # <Space> pressed
+            shortcuts[(0, 32)] = switch_to_next_table
 
         keycode = event.GetKeyCode()
 
@@ -1083,9 +1101,9 @@ class GridEventHandlers(GridActionEventMixin):
 
         elif self.main_window.IsFullScreen():
             if event.WheelRotation > 0:
-                newtable = self.grid.current_table + 1
-            else:
                 newtable = self.grid.current_table - 1
+            else:
+                newtable = self.grid.current_table + 1
 
             post_command_event(self.grid, self.GridActionTableSwitchMsg,
                                newtable=newtable)
