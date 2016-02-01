@@ -31,6 +31,7 @@ Provides
 """
 
 import wx.grid
+import wx.lib.mixins.gridlabelrenderer as glr
 
 try:
     import rsvg
@@ -41,7 +42,7 @@ except ImportError:
 from _events import post_command_event, EventMixin, GridActionEventMixin
 
 from _grid_table import GridTable
-from _grid_renderer import GridRenderer
+from _grid_renderer import GridRenderer, RowLabelRenderer, ColLabelRenderer
 from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
 from _chart_dialog import ChartDialog
@@ -60,7 +61,7 @@ from src.gui._grid_cell_editor import GridCellEditor
 _ = i18n.language.ugettext
 
 
-class Grid(wx.grid.Grid, EventMixin):
+class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
     """Pyspread's main grid"""
 
     def __init__(self, main_window, *args, **kwargs):
@@ -79,6 +80,7 @@ class Grid(wx.grid.Grid, EventMixin):
             kwargs.pop("dimensions")
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
+        glr.GridWithLabelRenderersMixin.__init__(self)
 
         self.SetDefaultCellBackgroundColour(wx.Colour(255, 255, 255, 255))
 
@@ -101,6 +103,9 @@ class Grid(wx.grid.Grid, EventMixin):
         # Grid renderer draws the grid
         self.grid_renderer = GridRenderer(self.code_array)
         self.SetDefaultRenderer(self.grid_renderer)
+
+        self.SetDefaultRowLabelRenderer(RowLabelRenderer())
+        self.SetDefaultColLabelRenderer(ColLabelRenderer())
 
         # Context menu for quick access of important functions
         self.contextmenu = ContextMenu(parent=self)
@@ -399,7 +404,7 @@ class Grid(wx.grid.Grid, EventMixin):
         if old_video_volume == new_video_volume:
             return
 
-        selection = Selection([],[],[],[],[key])
+        selection = Selection([], [], [], [], [key])
 
         self.actions.set_attr("video_volume", new_video_volume, selection,
                               mark_unredo=False)

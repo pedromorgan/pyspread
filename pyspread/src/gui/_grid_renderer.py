@@ -32,21 +32,19 @@ Provides
 """
 
 import wx.grid
+import wx.lib.mixins.gridlabelrenderer as glr
 
 from src.sysvars import get_color
 from src.config import config
 import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
-from src.lib.selection import Selection
-from _events import post_command_event, EventMixin
+from src.gui._events import post_command_event, EventMixin
 
 try:
     import src.lib.vlc as vlc
     from grid_panels import VLCPanel
 except ImportError:
     vlc = None
-
-from src.gui._events import post_command_event
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -348,4 +346,53 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         if grid.actions.cursor[:2] == (row, col):
             self.update_cursor(dc, grid, row, col)
 
-# end of class Draw
+# end of class GridRenderer
+
+
+class RowLabelRenderer(glr.GridLabelRenderer):
+    """Row label renderer mixin class that highlights the current line"""
+
+    def Draw(self, grid, dc, rect, row):
+
+        if row == grid.actions.cursor[0]:
+            rect.y += 1
+            rect.height -= 1
+            pen_color = get_color(wx.SYS_COLOUR_MENUHILIGHT)
+            pen = wx.Pen(pen_color, 2, wx.SOLID)
+            dc.SetPen(pen)
+        else:
+            dc.SetPen(wx.TRANSPARENT_PEN)
+
+        color = get_color(wx.SYS_COLOUR_MENUBAR)
+        dc.SetBrush(wx.Brush(color))
+        dc.DrawRectangleRect(rect)
+        hAlign, vAlign = grid.GetRowLabelAlignment()
+        text = grid.GetRowLabelValue(row)
+        self.DrawBorder(grid, dc, rect)
+        self.DrawText(grid, dc, rect, text, hAlign, vAlign)
+
+# end of class RowLabelRenderer
+
+
+class ColLabelRenderer(glr.GridLabelRenderer):
+    """Column label renderer mixin class that highlights the current line"""
+
+    def Draw(self, grid, dc, rect, col):
+        if col == grid.actions.cursor[1]:
+            rect.x += 1
+            rect.width -= 1
+            pen_color = get_color(wx.SYS_COLOUR_MENUHILIGHT)
+            pen = wx.Pen(pen_color, 2, wx.SOLID)
+            dc.SetPen(pen)
+        else:
+            dc.SetPen(wx.TRANSPARENT_PEN)
+
+        color = get_color(wx.SYS_COLOUR_MENUBAR)
+        dc.SetBrush(wx.Brush(color))
+        dc.DrawRectangleRect(rect)
+        hAlign, vAlign = grid.GetColLabelAlignment()
+        text = grid.GetColLabelValue(col)
+        self.DrawBorder(grid, dc, rect)
+        self.DrawText(grid, dc, rect, text, hAlign, vAlign)
+
+# end of class ColLabelRenderer
