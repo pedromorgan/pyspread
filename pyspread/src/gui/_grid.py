@@ -150,8 +150,14 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
         self.EnableGridLines(False)
 
         # Standard row and col sizes for zooming
-        self.std_row_size = self.GetRowSize(0)
-        self.std_col_size = self.GetColSize(0)
+        default_cell_attributes = \
+            self.code_array.cell_attributes.default_cell_attributes
+
+        self.std_row_size = default_cell_attributes["row-height"]
+        self.std_col_size = default_cell_attributes["column-width"]
+
+        self.SetDefaultRowSize(self.std_row_size)
+        self.SetDefaultColSize(self.std_col_size)
 
         # Standard row and col label sizes for zooming
         self.col_label_size = self.GetColLabelSize()
@@ -256,6 +262,7 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
         main_window.Bind(self.EVT_CMD_ZOOM_IN, handlers.OnZoomIn)
         main_window.Bind(self.EVT_CMD_ZOOM_OUT, handlers.OnZoomOut)
         main_window.Bind(self.EVT_CMD_ZOOM_STANDARD, handlers.OnZoomStandard)
+        main_window.Bind(self.EVT_CMD_ZOOM_FIT, handlers.OnZoomFit)
 
         # Find events
         main_window.Bind(self.EVT_CMD_FIND, handlers.OnFind)
@@ -1076,6 +1083,13 @@ class GridEventHandlers(GridActionEventMixin):
         """Event handler for resetting grid zoom"""
 
         self.grid.actions.zoom(zoom=1.0)
+
+        event.Skip()
+
+    def OnZoomFit(self, event):
+        """Event handler for zooming the grid to fit the window"""
+
+        self.grid.actions.zoom_fit()
 
         event.Skip()
 

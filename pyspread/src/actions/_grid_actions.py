@@ -1206,6 +1206,79 @@ class GridActions(Actions):
         if target_zoom > config["minimum_zoom"]:
             self.zoom(target_zoom)
 
+    def _get_rows_height(self):
+        """Returns the total height of all grid rows"""
+
+        tab = self.grid.current_table
+        no_rows = self.grid.code_array.shape[0]
+        default_row_height = self.grid.code_array.cell_attributes.\
+                                default_cell_attributes["row-height"]
+
+        non_standard_row_heights = []
+        __row_heights = self.grid.code_array.row_heights
+        for __row, __tab in __row_heights:
+            if __tab == tab:
+                non_standard_row_heights.append(__row_heights[(__row, __tab)])
+
+        rows_height = sum(non_standard_row_heights)
+        rows_height += \
+            (no_rows - len(non_standard_row_heights)) * default_row_height
+
+        return rows_height
+
+    def _get_cols_width(self):
+        """Returns the total width of all grid cols"""
+
+        tab = self.grid.current_table
+        no_cols = self.grid.code_array.shape[1]
+        default_col_width = self.grid.code_array.cell_attributes.\
+                                default_cell_attributes["column-width"]
+
+        non_standard_col_widths = []
+        __col_widths = self.grid.code_array.col_widths
+        for __col, __tab in __col_widths:
+            if __tab == tab:
+                non_standard_col_widths.append(__col_widths[(__col, __tab)])
+
+        cols_width = sum(non_standard_col_widths)
+        cols_width += \
+            (no_cols - len(non_standard_col_widths)) * default_col_width
+
+        return cols_width
+
+    def zoom_fit(self):
+        """Zooms the rid to fit the window.
+
+        Only has an effect if the resulting zoom level is between
+        minimum and maximum zoom level.
+
+        """
+
+        zoom = self.grid.grid_renderer.zoom
+
+        grid_width, grid_height = self.grid.GetSize()
+
+        rows_height = self._get_rows_height() + \
+                      (float(self.grid.GetColLabelSize()) / zoom)
+        cols_width = self._get_cols_width() + \
+                     (float(self.grid.GetRowLabelSize()) / zoom)
+
+        # Check target zoom for rows
+        zoom_height = float(grid_height) / rows_height
+
+        # Check target zoom for columns
+        zoom_width = float(grid_width) / cols_width
+
+        # Use the minimum target zoom from rows and column target zooms
+        target_zoom = min(zoom_height, zoom_width)
+
+        # Zoom only if between min and max
+
+        if config["minimum_zoom"] < target_zoom < config["maximum_zoom"]:
+            self.zoom(target_zoom)
+
+    # Tooltip actions
+
     def on_mouse_over(self, key):
         """Displays cell code of cell key in status bar"""
 

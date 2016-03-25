@@ -201,6 +201,7 @@ class GridEventMixin(object):
     ZoomInMsg, EVT_CMD_ZOOM_IN = new_command_event()
     ZoomOutMsg, EVT_CMD_ZOOM_OUT = new_command_event()
     ZoomStandardMsg, EVT_CMD_ZOOM_STANDARD = new_command_event()
+    ZoomFitMsg, EVT_CMD_ZOOM_FIT = new_command_event()
 
     # Find events
 
