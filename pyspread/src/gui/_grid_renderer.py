@@ -92,6 +92,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
                      pen=wx.BLACK_PEN, brush=wx.BLACK_BRUSH):
         """Draws cursor as Rectangle in lower right corner"""
 
+        # If in full screen mode draw no cursor
+        if grid.main_window.IsFullScreen():
+            return
+
         key = row, col, grid.current_table
         rect = grid.CellToRect(row, col)
         rect = self.get_merged_rect(grid, key, rect)
