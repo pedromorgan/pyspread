@@ -37,7 +37,7 @@ It is split into the following sections
 
 """
 
-import odf.opendocument as opendocument
+from src.lib.ODSReader import ODSReader
 
 import src.lib.i18n as i18n
 
@@ -90,16 +90,15 @@ class Ods(object):
     def _ods2code(self):
         """Updates code in code_array"""
 
-        ods = opendocument.load(self.ods_file)
-        tables = self._get_tables(ods)
+        ods = ODSReader(self.ods_file, clonespannedcolumns=True)
+        tables = ods.SHEETS
         for tab_id, table in enumerate(tables):
-            rows = self._get_rows(table)
-            for row_id, row in enumerate(rows):
-                cells = self._get_cells(row)
-                for col_id, cell in enumerate(cells):
-                    text = unicode(cell)
+            for row_id in xrange(len(table)):
+                for col_id in xrange(len(table[row_id])):
                     key = row_id, col_id, tab_id
-                    self.code_array[key] = '"' + text + '"'
+                    text = unicode(table[row_id][col_id])
+                    self.code_array[key] = text
+
 
     # Access via model.py data
     # ------------------------
