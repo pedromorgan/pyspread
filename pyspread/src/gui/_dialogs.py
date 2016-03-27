@@ -1326,14 +1326,14 @@ class PreferencesDialog(wx.Dialog):
             "widget_kwargs": {"choices": save_filetypes},
             "prepocessor": save_filetypes.index,
         }),
-        ("font_save_enabled", {
-            "label": _(u"Save font in pys"),
-            "tooltip": _(u"Enable font saving in pys and pysu files."),
-            "widget": wx.lib.intctrl.IntCtrl,
-            "widget_args": [],
-            "widget_kwargs": {"min": 0, "max": 1, "allow_long": False},
-            "prepocessor": int,
-        }),
+#        ("font_save_enabled", {
+#            "label": _(u"Save font in pys"),
+#            "tooltip": _(u"Enable font saving in pys and pysu files."),
+#            "widget": wx.lib.intctrl.IntCtrl,
+#            "widget_args": [],
+#            "widget_kwargs": {"min": 0, "max": 1, "allow_long": False},
+#            "prepocessor": int,
+#        }),
     ]
 
     if enchant is not None:

@@ -104,7 +104,7 @@ class DefaultConfig(object):
         # Fonts
 
         self.font = repr(wx.SYS_DEFAULT_GUI_FONT)
-        self.font_save_enabled = "True"
+        self.font_save_enabled = "False"
 
         # Default cell font size
 
