@@ -62,6 +62,11 @@ try:
 except ImportError:
     cairo = None
 
+try:
+    import odf
+except ImportError:
+    odf = None
+
 import src.lib.i18n as i18n
 # use ugettext instead of gettext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -73,6 +78,7 @@ FILETYPE2WILDCARD = {
     "pysu": _("Uncompressed pyspread file") + " (*.pysu)|*.pysu",
     "xls": _("Excel file") + " (*.xls)|*.xls",
     "xlsx": _("Excel file") + " (*.xlsx)|*.xlsx",
+    "ods": _("OpenDocument spreadsheet file") + " (*.ods)|*.ods",
     "all": _("All files") + " (*.*)|*.*",
     # Import and export types
     "csv": _("CSV file") + " (*.*)|*.*",
@@ -88,6 +94,7 @@ FILETYPE_AVAILABILITY = {
     "xlsx": xlrd is not None,
     "pdf": cairo is not None,
     "svg": cairo is not None,
+    "ods": odf is not None
 }
 
 

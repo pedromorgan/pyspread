@@ -768,7 +768,8 @@ class MainWindowEventHandlers(EventMixin):
                 post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get filepath from user
-        f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "xlsx", "all"])
+        f2w = get_filetypes2wildcards(
+            ["pys", "pysu", "xls", "xlsx", "ods", "all"])
         filetypes = f2w.keys()
         wildcards = f2w.values()
         wildcard = "|".join(wildcards)

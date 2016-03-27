@@ -37,6 +37,8 @@ It is split into the following sections
 
 """
 
+import odf.opendocument as opendocument
+
 import src.lib.i18n as i18n
 
 # Use ugettext instead of getttext to avoid unicode errors
@@ -58,6 +60,58 @@ class Ods(object):
 
     """
 
-    def __init__(self, code_array, pys_file):
+    def __init__(self, code_array, ods_file):
         self.code_array = code_array
-        self.pys_file = pys_file
+        self.ods_file = ods_file
+
+    def _get_tables(self, ods):
+        """Returns list of table nodes from ods object"""
+
+        childnodes = ods.spreadsheet.childNodes
+        qname_childnodes = [(s.qname[1], s) for s in childnodes]
+        return [node for name, node in qname_childnodes if name == u"table"]
+
+    def _get_rows(self, table):
+        """Returns rows from table"""
+
+        childnodes = table.childNodes
+        qname_childnodes = [(s.qname[1], s) for s in childnodes]
+        return [node for name, node in qname_childnodes
+                if name == u'table-row']
+
+    def _get_cells(self, row):
+        """Returns rows from row"""
+
+        childnodes = row.childNodes
+        qname_childnodes = [(s.qname[1], s) for s in childnodes]
+        return [node for name, node in qname_childnodes
+                if name == u'table-cell']
+
+    def _ods2code(self):
+        """Updates code in code_array"""
+
+        ods = opendocument.load(self.ods_file)
+        tables = self._get_tables(ods)
+        for tab_id, table in enumerate(tables):
+            rows = self._get_rows(table)
+            for row_id, row in enumerate(rows):
+                cells = self._get_cells(row)
+                for col_id, cell in enumerate(cells):
+                    text = unicode(cell)
+                    key = row_id, col_id, tab_id
+                    self.code_array[key] = '"' + text + '"'
+
+    # Access via model.py data
+    # ------------------------
+
+    def from_code_array(self):
+        """Replaces everything in pys_file from code_array"""
+
+        raise NotImplementedError
+
+
+    def to_code_array(self):
+        """Replaces everything in code_array from pys_file"""
+
+        self._ods2code()
+

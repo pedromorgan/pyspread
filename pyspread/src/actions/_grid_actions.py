@@ -59,6 +59,11 @@ try:
 except ImportError:
     xlwt = None
 
+try:
+    import odf
+except ImportError:
+    odf = None
+
 import wx
 
 from src.config import config
@@ -66,6 +71,7 @@ from src.sysvars import get_default_font, is_gtk
 from src.gui._grid_table import GridTable
 from src.interfaces.pys import Pys
 from src.interfaces.xls import Xls
+from src.interfaces.ods import Ods
 
 try:
     from src.lib.gpg import sign, verify
@@ -106,6 +112,7 @@ class FileActions(Actions):
             "pysu": Pys,
             "xls": Xls,
             "xlsx": Xls,
+            "ods": Ods,
         }
 
     def _is_aborted(self, cycle, statustext, total_elements=None, freq=None):
@@ -319,7 +326,7 @@ class FileActions(Actions):
             except:
                 file_ext = None
 
-            if file_ext in ["pys", "pysu", "xls", "xlsx"]:
+            if file_ext in ["pys", "pysu", "xls", "xlsx", "ods"]:
                 filetype = file_ext
             else:
                 filetype = "pys"
@@ -337,8 +344,10 @@ class FileActions(Actions):
             type2opener["xlsx"] = \
                 (xlrd.open_workbook, [filepath], {"formatting_info": False})
 
-        # Specify the interface that shall be used
+        if odf is not None:
+            type2opener["ods"] = (open, [filepath, "rb"], {})
 
+        # Specify the interface that shall be used
         opener, op_args, op_kwargs = type2opener[filetype]
         Interface = self.type2interface[filetype]
 
