@@ -83,6 +83,7 @@ class MainWindowEventMixin(object):
     TutorialMsg, EVT_CMD_TUTORIAL = new_command_event()
     FaqMsg, EVT_CMD_FAQ = new_command_event()
     PythonTutorialMsg, EVT_CMD_PYTHON_TURORIAL = new_command_event()
+    DependenciesMsg, EVT_CMD_DEPENDENCIES = new_command_event()
     AboutMsg, EVT_CMD_ABOUT = new_command_event()
 
     MacroListMsg, EVT_CMD_MACROLIST = new_command_event()

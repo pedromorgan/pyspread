@@ -91,7 +91,7 @@ class Ods(object):
         """Updates code in code_array"""
 
         ods = ODSReader(self.ods_file, clonespannedcolumns=True)
-        tables = ods.SHEETS
+        tables = ods.sheets
         for tab_id, table in enumerate(tables):
             for row_id in xrange(len(table)):
                 for col_id in xrange(len(table[row_id])):

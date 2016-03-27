@@ -54,6 +54,7 @@ from src.gui._menubars import MainMenu
 from src.gui._toolbars import MainToolbar, MacroToolbar, FindToolbar
 from src.gui._toolbars import WidgetToolbar, AttributesToolbar
 from src.gui._widgets import EntryLineToolbarPanel, StatusBar
+from src.gui._dialogs import DependencyDialog
 
 from src.lib.clipboard import Clipboard
 from src.lib.filetypes import get_filetypes2wildcards
@@ -351,6 +352,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_TUTORIAL, handlers.OnTutorial)
         self.Bind(self.EVT_CMD_FAQ, handlers.OnFaq)
         self.Bind(self.EVT_CMD_PYTHON_TURORIAL, handlers.OnPythonTutorial)
+        self.Bind(self.EVT_CMD_DEPENDENCIES, handlers.OnDependencies)
         self.Bind(self.EVT_CMD_ABOUT, handlers.OnAbout)
 
         self.Bind(self.EVT_CMD_MACROLIST, handlers.OnMacroList)
@@ -1452,10 +1454,15 @@ class MainWindowEventHandlers(EventMixin):
     def OnPythonTutorial(self, event):
         """Python tutorial launch event handler"""
 
-        # Doas not work any more
-
         self.main_window.actions.launch_help("Python tutorial",
                                              get_python_tutorial_path())
+
+    def OnDependencies(self, event):
+        """Display dependency dialog"""
+
+        dlg = DependencyDialog(self.main_window)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnAbout(self, event):
         """About dialog event handler"""

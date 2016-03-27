@@ -55,7 +55,7 @@ import wx.stc as stc
 
 import src.lib.i18n as i18n
 from src.config import config, VERSION
-from src.sysvars import get_program_path
+from src.sysvars import get_program_path, get_dependencies
 from src.gui._widgets import PythonSTC
 from src.gui._events import post_command_event
 from src.gui._events import MainWindowEventMixin, GridEventMixin
@@ -1524,3 +1524,40 @@ class PasteAsDialog(wx.Dialog):
         }
 
     parameters = property(get_parameters)
+
+
+class DependencyDialog(wx.Dialog):
+    """Displays required and instaled versions of deendencies"""
+
+    def __init__(self, parent, *args, **kwargs):
+        kwargs["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        wx.Dialog.__init__(self, parent, *args, **kwargs)
+        self.SetSize((640, -1))
+
+        panel = wx.Panel(self, wx.ID_ANY)
+
+        self.list_ctrl = wx.ListCtrl(panel, size=(-1, -1),
+                         style=wx.LC_REPORT
+                         |wx.BORDER_SUNKEN
+                         )
+        self.list_ctrl.InsertColumn(0, _('Package'), width=125)
+        self.list_ctrl.InsertColumn(1, _('Required version'), width=125)
+        self.list_ctrl.InsertColumn(2, _('Installed version'), width=125)
+        self.list_ctrl.InsertColumn(3, _('Description'), width=250)
+
+        sizer = wx.FlexGridSizer()
+        sizer.AddGrowableRow(0)
+        sizer.AddGrowableCol(0)
+        sizer.Add(self.list_ctrl, 0, wx.ALL|wx.EXPAND, 5)
+        panel.SetSizer(sizer)
+
+        self._populate()
+
+        self.Layout()
+
+    def _populate(self):
+        for d in get_dependencies():
+            item_list = [
+                d["name"], d["min_version"], d["version"], d["description"]
+            ]
+            self.list_ctrl.Append(item_list)

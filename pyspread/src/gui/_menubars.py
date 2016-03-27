@@ -401,6 +401,9 @@ class MainMenu(_filledMenu, EventMixin):
                 [item, [self.FaqMsg, _("&FAQ"),
                         _("Frequently asked questions")]],
                 ["Separator"],
+                [item, [self.DependenciesMsg, _("Dependencies"),
+                        _("Overview of installed dependencies")]],
+                ["Separator"],
                 [item, [self.AboutMsg, _("&About"), _("About pyspread"),
                         wx.ID_ABOUT]]]]
         ]

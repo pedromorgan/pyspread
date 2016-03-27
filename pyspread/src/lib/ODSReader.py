@@ -26,18 +26,25 @@ class GrowingList(list):
         list.__setitem__(self, index, value)
 
 class ODSReader(object):
+    """Loads ODS file"""
 
-    # loads the file
     def __init__(self, file, clonespannedcolumns=None):
         self.clonespannedcolumns = clonespannedcolumns
         self.doc = odf.opendocument.load(file)
-        self.SHEETS = []
+        self.sheets = []
+        self.sheet_names = []
         for sheet in self.doc.spreadsheet.getElementsByType(Table):
             self.readSheet(sheet)
 
     # reads a sheet in the sheet dictionary, storing each sheet as an
     # array (rows) of arrays (columns)
     def readSheet(self, sheet):
+        """Reads a sheet in the sheet dictionary
+
+        Stores each sheet as an array (rows) of arrays (columns)
+
+        """
+
         name = sheet.getAttribute("name")
         rows = sheet.getElementsByType(TableRow)
         arrRows = []
@@ -94,8 +101,11 @@ class ODSReader(object):
             #else:
             #    print ("Empty or commented row (", row_comment, ")")
 
-        self.SHEETS.append(arrRows)
+        self.sheets.append(arrRows)
+        self.sheet_names.append(name)
 
-    # returns a sheet as an array (rows) of arrays (columns)
+
     def getSheet(self, name):
-        return self.SHEETS[name]
+        """Returns first sheet with the name name as array (rows, columns)"""
+
+        return self.sheets[self.sheet_names.index(name)]
