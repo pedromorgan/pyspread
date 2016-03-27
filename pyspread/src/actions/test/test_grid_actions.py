@@ -857,9 +857,6 @@ class TestGridActions(object):
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-    class Event(object):
-        pass
-
     def test_new(self):
         """Tests creation of a new spreadsheets"""
 
@@ -872,6 +869,128 @@ class TestGridActions(object):
             self.grid.actions.new(event)
             new_shape = self.grid.GetTable().data_array.shape
             assert new_shape == dim
+
+    param_zoom_rows = [
+        {'row': 0, 'row_size': 1.0, 'zoom': 1.0, 'res': 1.0},
+        {'row': 2, 'row_size': 1.0, 'zoom': 1.0, 'res': 1.0},
+        {'row': 0, 'row_size': 100.0, 'zoom': 1.0, 'res': 100.0},
+        {'row': 0, 'row_size': 1.0, 'zoom': 2.0, 'res': 2.0},
+        {'row': 0, 'row_size': 100.0, 'zoom': 10.0, 'res': 1000.0},
+    ]
+
+    @params(param_zoom_rows)
+    def test_zoom_rows(self, row, row_size, zoom, res):
+        """Unit test for zoom_rows"""
+
+        self.code_array.row_heights[(row, 0)] = row_size
+        self.grid.actions._zoom_rows(zoom)
+        assert self.grid.GetRowSize(row) == res
+        assert self.grid.GetRowLabelSize() == zoom * self.grid.row_label_size
+
+    param_zoom_cols = [
+        {'col': 0, 'col_size': 1.0, 'zoom': 1.0, 'res': 1.0},
+        {'col': 2, 'col_size': 1.0, 'zoom': 1.0, 'res': 1.0},
+        {'col': 0, 'col_size': 100.0, 'zoom': 1.0, 'res': 100.0},
+        {'col': 0, 'col_size': 1.0, 'zoom': 2.0, 'res': 2.0},
+        {'col': 0, 'col_size': 100.0, 'zoom': 10.0, 'res': 1000.0},
+    ]
+    @params(param_zoom_cols)
+    def test_zoom_cols(self, col, col_size, zoom, res):
+        """Unit test for zoom_cols"""
+
+        self.code_array.col_widths[(col, 0)] = col_size
+        self.grid.actions._zoom_cols(zoom)
+        assert self.grid.GetColSize(col) == res
+        assert self.grid.GetColLabelSize() == zoom * self.grid.col_label_size
+
+    param_zoom = [
+        {'zoom': 1.0},
+        {'zoom': 10.0},
+        {'zoom': 0.1},
+    ]
+
+    @params(param_zoom)
+    def test_zoom_labels(self, zoom):
+        """Unit test for zoom_labels"""
+
+        default_font = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
+
+        self.grid.actions._zoom_labels(zoom)
+        font = self.grid.GetLabelFont()
+        res = int(round(default_font.GetPointSize() * zoom))
+        assert font.GetPointSize() == res
+
+    @params(param_zoom)
+    def test_zoom(self, zoom):
+        """Unit test for zoom"""
+
+        self.grid.actions.zoom(zoom)
+        assert self.grid.grid_renderer.zoom == zoom
+
+    @params(param_zoom)
+    def test_zoom_in(self, zoom):
+        """Unit test for zoom_in"""
+
+        self.grid.actions.zoom(zoom)
+        self.grid.actions.zoom_in()
+
+        target_zoom = zoom * (1 + config["zoom_factor"])
+
+        if target_zoom >= config["maximum_zoom"]:
+            target_zoom = zoom
+
+        assert self.grid.grid_renderer.zoom == target_zoom
+
+    @params(param_zoom)
+    def test_zoom_out(self, zoom):
+        """Unit test for zoom_out"""
+
+        self.grid.actions.zoom(zoom)
+        self.grid.actions.zoom_out()
+
+        target_zoom = zoom * (1 - config["zoom_factor"])
+        if target_zoom <= config["minimum_zoom"]:
+            target_zoom = zoom
+
+        assert self.grid.grid_renderer.zoom == target_zoom
+
+    param_get_rows_height = [
+        {'shape': (3, 3, 3), 'default_height': 15.0,
+         'row': 0, 'row_height': 23.0, 'res': 53.0},
+    ]
+
+    @params(param_get_rows_height)
+    def test_get_rows_height(self, shape, default_height, row, row_height,
+                             res):
+        """Unit test for _get_rows_height"""
+
+        cell_attributes = self.grid.code_array.cell_attributes
+        cell_attributes.default_cell_attributes["row-height"] = default_height
+        self.grid.actions.change_grid_shape(shape)
+        self.grid.actions.set_row_height(row, row_height)
+        rows_height = self.grid.actions._get_rows_height()
+
+        assert res == rows_height
+
+    param_get_cols_width = [
+        {'shape': (3, 3, 3), 'default_width': 15.0,
+         'col': 0, 'col_width': 23.0, 'res': 53.0},
+    ]
+
+    @params(param_get_cols_width)
+    def test_get_cols_width(self, shape, default_width, col, col_width, res):
+        """Unit test for _get_cols_width"""
+
+        cell_attributes = self.grid.code_array.cell_attributes
+        cell_attributes.default_cell_attributes["column-width"] = default_width
+        self.grid.actions.change_grid_shape(shape)
+        self.grid.actions.set_col_width(col, col_width)
+        cols_width = self.grid.actions._get_cols_width()
+
+        assert res == cols_width
+
+    class Event(object):
+        pass
 
     param_switch_to_table = [
         {'tab': 2},
