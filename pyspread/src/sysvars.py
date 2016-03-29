@@ -114,3 +114,142 @@ def get_default_text_extent(text):
     """Returns the text extent for the default font"""
 
     return wx.GetApp().GetTopWindow().GetTextExtent(text)
+
+
+def get_dependencies():
+    """Returns list of dicts which indicate installed dependencies"""
+
+    dependencies = []
+
+    # Numpy
+    dep_attrs = {
+        "name": "numpy",
+        "min_version": "1.1.0",
+        "description": "required",
+    }
+    try:
+        import numpy
+        dep_attrs["version"] = numpy.version.version
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # wxPython
+    dep_attrs = {
+        "name": "wxPython",
+        "min_version": "2.8.10.1",
+        "description": "required",
+    }
+    try:
+        import wx
+        dep_attrs["version"] = wx.version()
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # Matplotlib
+    dep_attrs = {
+        "name": "matplotlib",
+        "min_version": "1.1.1",
+        "description": "required",
+    }
+    try:
+        import matplotlib
+        dep_attrs["version"] = matplotlib._version.get_versions()["version"]
+    except ImportError:
+        dep_attrs["version"] = None
+
+    dependencies.append(dep_attrs)
+
+    # Pycairo
+    dep_attrs = {
+        "name": "pycairo",
+        "min_version": "1.8.8",
+        "description": "required",
+    }
+    try:
+        import cairo
+        dep_attrs["version"] = cairo.version
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # Python GnuPG
+    dep_attrs = {
+        "name": "python-gnupg",
+        "min_version": "0.3.0",
+        "description": "for opening own files without approval",
+    }
+    try:
+        import gnupg
+        dep_attrs["version"] = gnupg.__version__
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # xlrd
+    dep_attrs = {
+        "name": "xlrd",
+        "min_version": "0.9.2",
+        "description": "for loading Excel files",
+    }
+    try:
+        import xlrd
+        dep_attrs["version"] = xlrd.__VERSION__
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # xlwt
+    dep_attrs = {
+        "name": "xlwt",
+        "min_version": "0.7.2",
+        "description": "for saving Excel files",
+    }
+    try:
+        import xlwt
+        dep_attrs["version"] = xlwt.__VERSION__
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # Jedi
+    dep_attrs = {
+        "name": "jedi",
+        "min_version": "0.8.0",
+        "description": "for tab completion and context help in the entry line",
+    }
+    try:
+        import jedi
+        dep_attrs["version"] = jedi.__version__
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # pyrsvg
+    dep_attrs = {
+        "name": "pyrsvg",
+        "min_version": "2.32",
+        "description": "for displaying SVG files in cells",
+    }
+    try:
+        import rsvg
+        dep_attrs["version"] = True
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    # pyenchant
+    dep_attrs = {
+        "name": "pyenchant",
+        "min_version": "1.6.6",
+        "description": "for spell checking",
+    }
+    try:
+        import enchant
+        dep_attrs["version"] = enchant.__version__
+    except ImportError:
+        dep_attrs["version"] = None
+    dependencies.append(dep_attrs)
+
+    return dependencies

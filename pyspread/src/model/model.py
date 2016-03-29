@@ -109,7 +109,7 @@ class CellAttributes(list):
         "strikethrough": False,
         "locked": False,
         "angle": 0.0,
-        "column-width": 150,
+        "column-width": 75,
         "row-height": 26,
         "vertical_align": "top",
         "justification": "left",
