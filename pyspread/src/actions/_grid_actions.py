@@ -71,7 +71,10 @@ from src.sysvars import get_default_font, is_gtk
 from src.gui._grid_table import GridTable
 from src.interfaces.pys import Pys
 from src.interfaces.xls import Xls
-from src.interfaces.ods import Ods
+try:
+    from src.interfaces.ods import Ods
+except ImportError:
+    Ods = None
 
 try:
     from src.lib.gpg import sign, verify
@@ -344,7 +347,7 @@ class FileActions(Actions):
             type2opener["xlsx"] = \
                 (xlrd.open_workbook, [filepath], {"formatting_info": False})
 
-        if odf is not None:
+        if odf is not None and Ods is not None:
             type2opener["ods"] = (open, [filepath, "rb"], {})
 
         # Specify the interface that shall be used
