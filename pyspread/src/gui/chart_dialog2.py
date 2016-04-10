@@ -168,10 +168,10 @@ class TextEditor(wx.Panel):
 class AxesAttributes(object):
     """Provides tooltips and attributes for matplotlib axes attributes"""
 
-    tick_choice_labels = [_("Inside"), _("Outside"), _("Both")]
-    tick_choice_params = ["in", "out", "inout"]
+    axes_tick_choice_labels = [_("Inside"), _("Outside"), _("Both")]
+    axes_tick_choice_params = ["in", "out", "inout"]
 
-    tooltips = {
+    axes_tooltips = {
         "plot_label": _(u"String or anything printable with ‘%s’ conversion"),
         "plot_xdata": _(u"The data np.array for x\n"
                         u"Code must eval to 1D array."),
@@ -358,7 +358,7 @@ class AxesAttributes(object):
                      (_("Padding"), ("xtick_padding", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
                      (_("Location"), ("xtick_location", wx.Choice, [-1],
-                      {"size": (150, 25), "choices": tick_choice_labels}),
+                      {"size": (150, 25), "choices": axes_tick_choice_labels}),
                       []),
                      (_("Secondary"), ("xtick_secondary", wx.CheckBox,
                       [-1, ""], {"style": wx.ALIGN_RIGHT | wx.CHK_3STATE |
@@ -386,7 +386,7 @@ class AxesAttributes(object):
                      (_("Padding"), ("ytick_padding", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
                      (_("Location"), ("ytick_location", wx.Choice, [-1],
-                      {"size": (150, 25), "choices": tick_choice_labels}),
+                      {"size": (150, 25), "choices": axes_tick_choice_labels}),
                       []),
                      (_("Secondary"), ("ytick_secondary", wx.CheckBox,
                       [-1, ""], {"style": wx.ALIGN_RIGHT | wx.CHK_3STATE |
@@ -419,10 +419,10 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
 
         # Add a root node to it
         root = self.AddRoot(_("Chart"))
-        self.add_items(root, self.axes_items)
+        self.add_items(root, self.axes_items, self.axes_tooltips)
         self.ExpandAll()
 
-    def add_items(self, node, items):
+    def add_items(self, node, items, tooltips):
         """Adds items to tree"""
 
         # Create an image list to add icons next to an item
@@ -442,7 +442,7 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
                 self.label2widget[label] = widget
 
                 try:
-                    widget.SetToolTip(wx.ToolTip(self.tooltips[name]))
+                    widget.SetToolTip(wx.ToolTip(tooltips[name]))
                 except KeyError:
                     pass
 
@@ -456,7 +456,7 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
                 self.SetItemImage(child, fldropenidx,
                                   wx.TreeItemIcon_Expanded)
 
-            self.add_items(child, children)
+            self.add_items(child, children, tooltips)
 
 
 class ChartDialog(wx.Frame):
@@ -465,10 +465,41 @@ class ChartDialog(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, -1, _("Insert chart"))
 
-        self.SetSize((-1, 800))
+        self.SetSize((-1, 900))
 
         # Create a CustomTreeCtrl instance
         self.tree = ChartTree(self)
+
+        # Buttons
+        self.button_add = wx.Button(self, wx.ID_ADD)
+        self.button_remove = wx.Button(self, wx.ID_REMOVE)
+        self.button_ok = wx.Button(self, wx.ID_OK)
+        self.button_cancel = wx.Button(self, wx.ID_CANCEL)
+
+        self._layout()
+
+    def _layout(self):
+        """Sizer layout"""
+
+        left_sizer = wx.FlexGridSizer(cols=1)
+        left_button_sizer = wx.FlexGridSizer(cols=5)
+
+        left_sizer.Add(self.tree, 0, wx.EXPAND)
+        left_sizer.Add(left_button_sizer, 0, wx.EXPAND)
+
+        left_button_sizer.Add(self.button_add, 1, wx.EXPAND|wx.ALL, 4)
+        left_button_sizer.Add(self.button_remove, 1, wx.EXPAND|wx.ALL, 4)
+        left_button_sizer.Add(wx.Panel(self,  -1), 1, wx.EXPAND|wx.ALL, 4)
+        left_button_sizer.Add(self.button_ok, 1, wx.EXPAND|wx.ALL, 4)
+        left_button_sizer.Add(self.button_cancel, 1, wx.EXPAND|wx.ALL, 4)
+
+        left_sizer.AddGrowableRow(0)
+        left_sizer.AddGrowableCol(0)
+
+        left_button_sizer.AddGrowableCol(2)
+
+        self.SetSizer(left_sizer)
+        self.Layout()
 
 
 def main():
