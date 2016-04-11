@@ -501,6 +501,9 @@ class FigurePanel(wx.Panel):
 
         self.figure_canvas = self._get_figure_canvas(figure)
 
+        self.figure_canvas.mpl_connect('button_press_event', self.onclick)
+        self.figure_canvas.mpl_connect('pick_event', self.onpick)
+
         self.figure_canvas.SetSize(self.GetSize())
         figure.subplots_adjust()
 
@@ -510,6 +513,13 @@ class FigurePanel(wx.Panel):
         self.Layout()
         self.figure_canvas.draw()
 
+    def onclick(self, event):
+        print 'button={}, x={}, y={}, xdata={}, ydata={}'.format(
+            event.button, event.x, event.y, event.xdata, event.ydata)
+        print 'inaxes={}'.format(event.inaxes)
+
+    def onpick(self, event):
+        print "artist={}, ind={}".format(event.artist, event.ind)
 
 class ChartDialog(wx.Dialog):
     """Chart dialog frontend to matplotlib"""
@@ -527,7 +537,7 @@ class ChartDialog(wx.Dialog):
         # Dummy figure
         figure = Figure(facecolor='white')
         ax = figure.add_subplot(111)
-        ax.plot([(x/10.0)**2 for x in xrange(1000)])
+        ax.plot([(x/10.0)**2 for x in xrange(1000)], picker=5)
         self.figure_panel.update(figure)
 
         # Split Window
@@ -540,8 +550,8 @@ class ChartDialog(wx.Dialog):
         self.button_remove = wx.Button(self, wx.ID_REMOVE)
         self.button_up = wx.Button(self, wx.ID_UP)
         self.button_down = wx.Button(self, wx.ID_DOWN)
-        self.button_ok = wx.Button(self, wx.ID_OK)
         self.button_cancel = wx.Button(self, wx.ID_CANCEL)
+        self.button_ok = wx.Button(self, wx.ID_OK)
 
         self._layout()
 
@@ -559,8 +569,8 @@ class ChartDialog(wx.Dialog):
         left_button_sizer.Add(self.button_up, 1, wx.EXPAND | wx.ALL, 4)
         left_button_sizer.Add(self.button_down, 1, wx.EXPAND | wx.ALL, 4)
         left_button_sizer.Add(wx.Panel(self,  -1), 1, wx.EXPAND | wx.ALL, 4)
-        left_button_sizer.Add(self.button_ok, 1, wx.EXPAND | wx.ALL, 4)
         left_button_sizer.Add(self.button_cancel, 1, wx.EXPAND | wx.ALL, 4)
+        left_button_sizer.Add(self.button_ok, 1, wx.EXPAND | wx.ALL, 4)
 
         left_sizer.AddGrowableRow(0)
         left_sizer.AddGrowableCol(0)
