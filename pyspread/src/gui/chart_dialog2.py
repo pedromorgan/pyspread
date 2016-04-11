@@ -28,6 +28,10 @@ import wx
 import wx.lib.agw.hypertreelist as htl
 import wx.lib.colourselect as csel
 
+
+from matplotlib.pyplot import Figure
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+
 _ = lambda x:x
 
 
@@ -400,12 +404,12 @@ class AxesAttributes(object):
 class ChartTree(htl.HyperTreeList, AxesAttributes):
     """Tree widget for chart attributes"""
 
-    def __init__(self, parent):
+    def __init__(self, parent, *args, **kwargs):
 
         htl.HyperTreeList.__init__(
-            self, parent,
+            self, parent, *args,
             agwStyle=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT |
-            wx.TR_HAS_VARIABLE_ROW_HEIGHT)
+            wx.TR_HAS_VARIABLE_ROW_HEIGHT, **kwargs)
 
         # Mapping of field names to widget instances
         self.label2widget = {}
@@ -459,20 +463,83 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
             self.add_items(child, children, tooltips)
 
 
-class ChartDialog(wx.Frame):
-    """Chart dialog frontend to matplotlib"""
+class FigurePanel(wx.Panel):
+    """Panel that draws a matplotlib figure_canvas"""
 
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, -1, _("Insert chart"))
 
-        self.SetSize((-1, 900))
+        wx.Panel.__init__(self, parent)
+        self.__do_layout()
+
+    def __do_layout(self):
+        self.main_sizer = wx.FlexGridSizer(1, 1, 0, 0)
+
+        self.main_sizer.AddGrowableRow(0)
+        self.main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(self.main_sizer)
+
+        self.Layout()
+
+    def _get_figure_canvas(self, figure):
+        """Returns figure canvas"""
+
+        return FigureCanvasWxAgg(self, -1, figure)
+
+    def update(self, figure):
+        """Updates figure on data change
+
+        Parameters
+        ----------
+        * figure: matplotlib.figure.Figure
+        \tMatplotlib figure object that is displayed in self
+
+        """
+
+        if hasattr(self, "figure_canvas"):
+            self.figure_canvas.Destroy()
+
+        self.figure_canvas = self._get_figure_canvas(figure)
+
+        self.figure_canvas.SetSize(self.GetSize())
+        figure.subplots_adjust()
+
+        self.main_sizer.Add(self.figure_canvas, 1,
+                            wx.EXPAND | wx.FIXED_MINSIZE, 0)
+
+        self.Layout()
+        self.figure_canvas.draw()
+
+
+class ChartDialog(wx.Dialog):
+    """Chart dialog frontend to matplotlib"""
+
+    def __init__(self, parent, *args, **kwargs):
+        wx.Dialog.__init__(self, parent, -1, _("Insert chart"), *args,
+                           size=(900, 700), **kwargs)
+
+        self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_LIVE_UPDATE)
 
         # Create a CustomTreeCtrl instance
-        self.tree = ChartTree(self)
+        self.tree = ChartTree(self.splitter, style=wx.BORDER_SUNKEN)
+        self.figure_panel = FigurePanel(self.splitter)
+
+        # Dummy figure
+        figure = Figure(facecolor='white')
+        ax = figure.add_subplot(111)
+        ax.plot([(x/10.0)**2 for x in xrange(1000)])
+        self.figure_panel.update(figure)
+
+        # Split Window
+        self.splitter.SplitVertically(self.tree, self.figure_panel)
+        self.splitter.SetMinimumPaneSize(10)
+        self.splitter.SetSashPosition(400)
 
         # Buttons
         self.button_add = wx.Button(self, wx.ID_ADD)
         self.button_remove = wx.Button(self, wx.ID_REMOVE)
+        self.button_up = wx.Button(self, wx.ID_UP)
+        self.button_down = wx.Button(self, wx.ID_DOWN)
         self.button_ok = wx.Button(self, wx.ID_OK)
         self.button_cancel = wx.Button(self, wx.ID_CANCEL)
 
@@ -482,21 +549,23 @@ class ChartDialog(wx.Frame):
         """Sizer layout"""
 
         left_sizer = wx.FlexGridSizer(cols=1)
-        left_button_sizer = wx.FlexGridSizer(cols=5)
+        left_button_sizer = wx.FlexGridSizer(cols=7)
 
-        left_sizer.Add(self.tree, 0, wx.EXPAND)
+        left_sizer.Add(self.splitter, 0, wx.EXPAND)
         left_sizer.Add(left_button_sizer, 0, wx.EXPAND)
 
-        left_button_sizer.Add(self.button_add, 1, wx.EXPAND|wx.ALL, 4)
-        left_button_sizer.Add(self.button_remove, 1, wx.EXPAND|wx.ALL, 4)
-        left_button_sizer.Add(wx.Panel(self,  -1), 1, wx.EXPAND|wx.ALL, 4)
-        left_button_sizer.Add(self.button_ok, 1, wx.EXPAND|wx.ALL, 4)
-        left_button_sizer.Add(self.button_cancel, 1, wx.EXPAND|wx.ALL, 4)
+        left_button_sizer.Add(self.button_add, 1, wx.EXPAND | wx.ALL, 4)
+        left_button_sizer.Add(self.button_remove, 1, wx.EXPAND | wx.ALL, 4)
+        left_button_sizer.Add(self.button_up, 1, wx.EXPAND | wx.ALL, 4)
+        left_button_sizer.Add(self.button_down, 1, wx.EXPAND | wx.ALL, 4)
+        left_button_sizer.Add(wx.Panel(self,  -1), 1, wx.EXPAND | wx.ALL, 4)
+        left_button_sizer.Add(self.button_ok, 1, wx.EXPAND | wx.ALL, 4)
+        left_button_sizer.Add(self.button_cancel, 1, wx.EXPAND | wx.ALL, 4)
 
         left_sizer.AddGrowableRow(0)
         left_sizer.AddGrowableCol(0)
 
-        left_button_sizer.AddGrowableCol(2)
+        left_button_sizer.AddGrowableCol(4)
 
         self.SetSizer(left_sizer)
         self.Layout()
@@ -508,9 +577,12 @@ def main():
     app = wx.App(0)
     chart_dialog = ChartDialog(None)
     app.SetTopWindow(chart_dialog)
-    chart_dialog.Show()
-    app.MainLoop()
+    chart_dialog.CenterOnScreen()
+    val = chart_dialog.ShowModal()
 
+    chart_dialog.Destroy()
+
+    return val
 
 if __name__ == "__main__":
     print main()
