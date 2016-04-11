@@ -329,9 +329,9 @@ class AxesAttributes(object):
     }
 
     axes_items = [
-        (_("Axes"), (),
+        (_("Axes"), ("axes",),
          [
-            (_("Figure"), (),
+            (_("Figure"), ("figure",),
              [
                 (_("Title"),
                  ("title", TextEditor, [-1], {"size": (198, 25)}), []),
@@ -339,7 +339,7 @@ class AxesAttributes(object):
                  ("legend", wx.CheckBox, [-1, ""], {"style": wx.ALIGN_RIGHT}),
                  []),
              ]),
-            (_("X-Axis"), (), [
+            (_("X-Axis"), ("xaxis",), [
                 (_("Label"), ("xlabel", TextEditor, [-1], {"size": (198, 25)}),
                  []),
                 (_("Limits"), ("xlim", wx.TextCtrl, [-1],
@@ -356,7 +356,7 @@ class AxesAttributes(object):
                 (_("X-axis grid"),
                  ("xgrid", wx.CheckBox, [-1, ""],
                   {"style": wx.ALIGN_RIGHT}), []),
-                (_("X-axis ticks"), (), [
+                (_("X-axis ticks"), ("xaxis_ticks",), [
                      (_("Size"), ("xtick_size", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
                      (_("Padding"), ("xtick_padding", wx.TextCtrl, [-1],
@@ -369,7 +369,7 @@ class AxesAttributes(object):
                                  wx.CHK_ALLOW_3RD_STATE_FOR_USER}), []),
                  ]),
              ]),
-            (_("Y-Axis"), (), [
+            (_("Y-Axis"), ("yaxis",), [
                 (_("Label"), ("ylabel", TextEditor, [-1],
                  {"size": (198, 25)}), []),
                 (_("Limits"), ("ylim", wx.TextCtrl, [-1],
@@ -384,7 +384,7 @@ class AxesAttributes(object):
                 (_("Y-axis grid"),
                  ("ygrid", wx.CheckBox, [-1, ""],
                   {"style": wx.ALIGN_RIGHT}), []),
-                (_("Y-axis ticks"), (), [
+                (_("Y-axis ticks"), ("yaxis_ticks",), [
                      (_("Size"), ("ytick_size", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
                      (_("Padding"), ("ytick_padding", wx.TextCtrl, [-1],
@@ -412,7 +412,7 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
             wx.TR_HAS_VARIABLE_ROW_HEIGHT, **kwargs)
 
         # Mapping of field names to widget instances
-        self.label2widget = {}
+        self.name2widget = {}
 
         # Create columns
         self.AddColumn("Attributes")
@@ -440,10 +440,9 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
         self.SetImageList(il)
 
         for label, widget_info, children in items:
-            if widget_info:
+            if len(widget_info) == 3:
                 name, widget_cls, args, kwargs = widget_info
                 widget = widget_cls(self, *args, **kwargs)
-                self.label2widget[label] = widget
 
                 try:
                     widget.SetToolTip(wx.ToolTip(tooltips[name]))
@@ -451,11 +450,14 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
                     pass
 
                 child = self.AppendItem(node, label)
+                self.name2widget[name] = child
                 self.SetItemWindow(child, widget, 1)
                 self.SetItemImage(child, fileidx, wx.TreeItemIcon_Normal)
 
             else:
+                name = widget_info[0]
                 child = self.AppendItem(node, label)
+                self.name2widget[name] = child
                 self.SetItemImage(child, fldridx, wx.TreeItemIcon_Normal)
                 self.SetItemImage(child, fldropenidx,
                                   wx.TreeItemIcon_Expanded)
@@ -467,6 +469,8 @@ class FigurePanel(wx.Panel):
     """Panel that draws a matplotlib figure_canvas"""
 
     def __init__(self, parent):
+
+        self.parent = parent
 
         wx.Panel.__init__(self, parent)
         self.__do_layout()
@@ -514,12 +518,23 @@ class FigurePanel(wx.Panel):
         self.figure_canvas.draw()
 
     def onclick(self, event):
+        return
         print 'button={}, x={}, y={}, xdata={}, ydata={}'.format(
             event.button, event.x, event.y, event.xdata, event.ydata)
-        print 'inaxes={}'.format(event.inaxes)
+
+#        if not event.inaxes:
+#            item = self.parent.parent.tree.name2widget
+#            self.parent.parent.tree.SelectItem(item)
 
     def onpick(self, event):
-        print "artist={}, ind={}".format(event.artist, event.ind)
+        """Matplotlib pick event handler"""
+
+        # TODO: Decouple via post event
+        if hasattr(event.artist, "name"):
+            name = event.artist.name
+            item = self.parent.parent.tree.name2widget[name]
+            self.parent.parent.tree.SelectItem(item)
+
 
 class ChartDialog(wx.Dialog):
     """Chart dialog frontend to matplotlib"""
@@ -529,6 +544,7 @@ class ChartDialog(wx.Dialog):
                            size=(900, 700), **kwargs)
 
         self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_LIVE_UPDATE)
+        self.splitter.parent = self
 
         # Create a CustomTreeCtrl instance
         self.tree = ChartTree(self.splitter, style=wx.BORDER_SUNKEN)
@@ -537,7 +553,12 @@ class ChartDialog(wx.Dialog):
         # Dummy figure
         figure = Figure(facecolor='white')
         ax = figure.add_subplot(111)
-        ax.plot([(x/10.0)**2 for x in xrange(1000)], picker=5)
+        ax.xaxis.set_picker(5)
+        ax.xaxis.name = "xaxis"
+        ax.yaxis.set_picker(5)
+        ax.yaxis.name = "yaxis"
+        plt = ax.plot([(x/10.0)**2 for x in xrange(1000)], picker=5)
+        plt[-1].name = "test"
         self.figure_panel.update(figure)
 
         # Split Window
