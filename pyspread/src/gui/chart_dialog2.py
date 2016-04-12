@@ -27,10 +27,15 @@ chart_dialog2
 import wx
 import wx.lib.agw.hypertreelist as htl
 import wx.lib.colourselect as csel
-
+from wx.lib.intctrl import IntCtrl
+from wx.lib.colourselect import ColourSelect
 
 from matplotlib.pyplot import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+
+app = wx.App()
+
+from _widgets import LineStyleComboBox, MarkerStyleComboBox
 
 _ = lambda x:x
 
@@ -172,10 +177,10 @@ class TextEditor(wx.Panel):
 class AxesAttributes(object):
     """Provides tooltips and attributes for matplotlib axes attributes"""
 
-    axes_tick_choice_labels = [_("Inside"), _("Outside"), _("Both")]
-    axes_tick_choice_params = ["in", "out", "inout"]
+    tick_choice_labels = [_("Inside"), _("Outside"), _("Both")]
+    tick_choice_params = ["in", "out", "inout"]
 
-    axes_tooltips = {
+    tooltips = {
         "plot_label": _(u"String or anything printable with ‘%s’ conversion"),
         "plot_xdata": _(u"The data np.array for x\n"
                         u"Code must eval to 1D array."),
@@ -328,69 +333,69 @@ class AxesAttributes(object):
 
     }
 
-    axes_items = [
-        (_("Axes"), ("axes",),
+    items = [
+        (_("axes"), (),
          [
-            (_("Figure"), ("figure",),
+            (_("figure"), (),
              [
-                (_("Title"),
+                (_("title"),
                  ("title", TextEditor, [-1], {"size": (198, 25)}), []),
                 (_("Legend"),
                  ("legend", wx.CheckBox, [-1, ""], {"style": wx.ALIGN_RIGHT}),
                  []),
              ]),
-            (_("X-Axis"), ("xaxis",), [
-                (_("Label"), ("xlabel", TextEditor, [-1], {"size": (198, 25)}),
+            (_("x-axis"), (), [
+                (_("label"), ("xlabel", TextEditor, [-1], {"size": (198, 25)}),
                  []),
-                (_("Limits"), ("xlim", wx.TextCtrl, [-1],
+                (_("limits"), ("xlim", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
-                (_("Date format"), ("xdate_format", wx.TextCtrl, [-1],
+                (_("late format"), ("xdate_format", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
-                (_("X-axis ticks"), ("xticks", wx.TextCtrl, [-1],
+                (_("x-axis ticks"), ("xticks", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
-                (_("X-axis labels"), ("xtick_labels", TextEditor, [-1],
+                (_("x-axis labels"), ("xtick_labels", TextEditor, [-1],
                  {"size": (198, 25)}), []),
                 (_("Log. scale"),
                  ("xscale", wx.CheckBox, [-1, ""],
                   {"style": wx.ALIGN_RIGHT}), []),
-                (_("X-axis grid"),
+                (_("x-axis grid"),
                  ("xgrid", wx.CheckBox, [-1, ""],
                   {"style": wx.ALIGN_RIGHT}), []),
-                (_("X-axis ticks"), ("xaxis_ticks",), [
-                     (_("Size"), ("xtick_size", wx.TextCtrl, [-1],
+                (_("x-axis ticks"), (), [
+                     (_("size"), ("xtick_size", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
-                     (_("Padding"), ("xtick_padding", wx.TextCtrl, [-1],
+                     (_("padding"), ("xtick_padding", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
-                     (_("Location"), ("xtick_location", wx.Choice, [-1],
-                      {"size": (150, 25), "choices": axes_tick_choice_labels}),
+                     (_("location"), ("xtick_location", wx.Choice, [-1],
+                      {"size": (150, 25), "choices": tick_choice_labels}),
                       []),
-                     (_("Secondary"), ("xtick_secondary", wx.CheckBox,
+                     (_("secondary"), ("xtick_secondary", wx.CheckBox,
                       [-1, ""], {"style": wx.ALIGN_RIGHT | wx.CHK_3STATE |
                                  wx.CHK_ALLOW_3RD_STATE_FOR_USER}), []),
                  ]),
              ]),
-            (_("Y-Axis"), ("yaxis",), [
-                (_("Label"), ("ylabel", TextEditor, [-1],
+            (_("y-Axis"), (), [
+                (_("label"), ("ylabel", TextEditor, [-1],
                  {"size": (198, 25)}), []),
-                (_("Limits"), ("ylim", wx.TextCtrl, [-1],
+                (_("limits"), ("ylim", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
-                (_("Y-axis ticks"), ("yticks", wx.TextCtrl, [-1],
+                (_("y-axis ticks"), ("yticks", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
-                (_("Y-axis labels"), ("ytick_labels", TextEditor, [-1],
+                (_("y-axis labels"), ("ytick_labels", TextEditor, [-1],
                  {"size": (198, 25)}), []),
                 (_("Log. scale"),
                  ("yscale", wx.CheckBox, [-1, ""],
                   {"style": wx.ALIGN_RIGHT}), []),
-                (_("Y-axis grid"),
+                (_("y-axis grid"),
                  ("ygrid", wx.CheckBox, [-1, ""],
                   {"style": wx.ALIGN_RIGHT}), []),
-                (_("Y-axis ticks"), ("yaxis_ticks",), [
-                     (_("Size"), ("ytick_size", wx.TextCtrl, [-1],
+                (_("y-axis ticks"), (), [
+                     (_("size"), ("ytick_size", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
-                     (_("Padding"), ("ytick_padding", wx.TextCtrl, [-1],
+                     (_("padding"), ("ytick_padding", wx.TextCtrl, [-1],
                       {"size": (150, 25)}), []),
-                     (_("Location"), ("ytick_location", wx.Choice, [-1],
-                      {"size": (150, 25), "choices": axes_tick_choice_labels}),
+                     (_("location"), ("ytick_location", wx.Choice, [-1],
+                      {"size": (150, 25), "choices": tick_choice_labels}),
                       []),
                      (_("Secondary"), ("ytick_secondary", wx.CheckBox,
                       [-1, ""], {"style": wx.ALIGN_RIGHT | wx.CHK_3STATE |
@@ -401,7 +406,48 @@ class AxesAttributes(object):
     ]
 
 
-class ChartTree(htl.HyperTreeList, AxesAttributes):
+class PlotAttributes(object):
+    """Provides tooltips and attributes for matplotlib plot attributes"""
+
+    tooltips = {
+        "label": _(u"String or anything printable with ‘%s’ conversion"),
+        "xdata": _(u"The data np.array for x\n"
+                   u"Code must eval to 1D array."),
+        "ydata": _(u"The data np.array for y\n"
+                   u"Code must eval to 1D array."),
+        "linewidth": _(u"The line width in points"),
+        "marker": _(u"The line marker"),
+        "markersize": _(u"The marker size in points"),
+    }
+
+    items = [
+        (_("plot"), (), [
+            (_("label"), ("label", TextEditor, [-1], {"size": (198, 25)}), []),
+            (_("x"), ("xdata", TextEditor, [-1], {"size": (198, 25)}), []),
+            (_("y"), ("ydata", TextEditor, [-1], {"size": (198, 25)}), []),
+            (_("style"), ("linestyle", LineStyleComboBox, [-1],
+                          {"size": (150, 25)}), []),
+            (_("line"), (), [
+                (_("width"), ("linewidth", IntCtrl, [-1, 1],
+                              {"size": (198, 25)}), []),
+                (_("color"), ("color", ColourSelect, [-1, "", (0, 0, 0)], {}),
+                 []),
+                (_("style"), ("marker", MarkerStyleComboBox, [-1],
+                              {"size": (198, 25)}), []),
+            ]),
+            (_("marker"), (), [
+                (_("size"), ("markersize", IntCtrl, [-1, 5],
+                             {"size": (198, 25)}), []),
+                (_("face color"), ("markerfacecolor", ColourSelect,
+                                   [-1, "", (0, 0, 0)], {}), []),
+                (_("edge color"), ("markeredgecolor", ColourSelect,
+                                   [-1, "", (0, 0, 0)], {}), []),
+            ]),
+        ])
+    ]
+
+
+class ChartTree(htl.HyperTreeList):
     """Tree widget for chart attributes"""
 
     def __init__(self, parent, *args, **kwargs):
@@ -410,6 +456,12 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
             self, parent, *args,
             agwStyle=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT |
             wx.TR_HAS_VARIABLE_ROW_HEIGHT, **kwargs)
+
+        self.items = {}
+        self._init_items()
+
+        self.tooltips = {}
+        self._init_tooltips()
 
         # Mapping of field names to widget instances
         self.name2widget = {}
@@ -422,9 +474,27 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
         self.SetColumnWidth(1, 200)
 
         # Add a root node to it
-        root = self.AddRoot(_("Chart"))
-        self.add_items(root, self.axes_items, self.axes_tooltips)
-        self.ExpandAll()
+        self.root = self.AddRoot(_("Chart"))
+
+        # Add axes content
+        self.add_chart("axes")
+
+    def _init_items(self):
+        """Initializes self.items"""
+
+        self.items["axes"] = AxesAttributes.items
+        self.items["plot"] = PlotAttributes.items
+
+    def _init_tooltips(self):
+        """Initializes self.tooltips"""
+
+        self.tooltips.update(AxesAttributes.tooltips)
+        self.tooltips.update(PlotAttributes.tooltips)
+
+    def add_chart(self, chart_type):
+        """Adds axes or chart type to tree"""
+
+        self.add_items(self.root, self.items[chart_type], self.tooltips)
 
     def add_items(self, node, items, tooltips):
         """Adds items to tree"""
@@ -440,7 +510,7 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
         self.SetImageList(il)
 
         for label, widget_info, children in items:
-            if len(widget_info) == 3:
+            if widget_info:
                 name, widget_cls, args, kwargs = widget_info
                 widget = widget_cls(self, *args, **kwargs)
 
@@ -455,13 +525,13 @@ class ChartTree(htl.HyperTreeList, AxesAttributes):
                 self.SetItemImage(child, fileidx, wx.TreeItemIcon_Normal)
 
             else:
-                name = widget_info[0]
                 child = self.AppendItem(node, label)
-                self.name2widget[name] = child
+                # self.name2widget[name] = child
                 self.SetItemImage(child, fldridx, wx.TreeItemIcon_Normal)
                 self.SetItemImage(child, fldropenidx,
                                   wx.TreeItemIcon_Expanded)
 
+            self.ExpandAll()
             self.add_items(child, children, tooltips)
 
 
@@ -539,9 +609,13 @@ class FigurePanel(wx.Panel):
 class ChartDialog(wx.Dialog):
     """Chart dialog frontend to matplotlib"""
 
+    chart_types = [
+        "plot"
+    ]
+
     def __init__(self, parent, *args, **kwargs):
         wx.Dialog.__init__(self, parent, -1, _("Insert chart"), *args,
-                           size=(900, 700), **kwargs)
+                           size=(900, 700), style = wx.RESIZE_BORDER, **kwargs)
 
         self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_LIVE_UPDATE)
         self.splitter.parent = self
@@ -569,10 +643,10 @@ class ChartDialog(wx.Dialog):
         # Buttons
         self.button_add = wx.Button(self, wx.ID_ADD)
         self.button_remove = wx.Button(self, wx.ID_REMOVE)
-        self.button_up = wx.Button(self, wx.ID_UP)
-        self.button_down = wx.Button(self, wx.ID_DOWN)
         self.button_cancel = wx.Button(self, wx.ID_CANCEL)
         self.button_ok = wx.Button(self, wx.ID_OK)
+
+        self.button_add.Bind(wx.EVT_BUTTON, self.OnAdd)
 
         self._layout()
 
@@ -580,15 +654,13 @@ class ChartDialog(wx.Dialog):
         """Sizer layout"""
 
         left_sizer = wx.FlexGridSizer(cols=1)
-        left_button_sizer = wx.FlexGridSizer(cols=7)
+        left_button_sizer = wx.FlexGridSizer(cols=5)
 
         left_sizer.Add(self.splitter, 0, wx.EXPAND)
         left_sizer.Add(left_button_sizer, 0, wx.EXPAND)
 
         left_button_sizer.Add(self.button_add, 1, wx.EXPAND | wx.ALL, 4)
         left_button_sizer.Add(self.button_remove, 1, wx.EXPAND | wx.ALL, 4)
-        left_button_sizer.Add(self.button_up, 1, wx.EXPAND | wx.ALL, 4)
-        left_button_sizer.Add(self.button_down, 1, wx.EXPAND | wx.ALL, 4)
         left_button_sizer.Add(wx.Panel(self,  -1), 1, wx.EXPAND | wx.ALL, 4)
         left_button_sizer.Add(self.button_cancel, 1, wx.EXPAND | wx.ALL, 4)
         left_button_sizer.Add(self.button_ok, 1, wx.EXPAND | wx.ALL, 4)
@@ -596,10 +668,30 @@ class ChartDialog(wx.Dialog):
         left_sizer.AddGrowableRow(0)
         left_sizer.AddGrowableCol(0)
 
-        left_button_sizer.AddGrowableCol(4)
+        left_button_sizer.AddGrowableCol(2)
 
         self.SetSizer(left_sizer)
         self.Layout()
+
+    def add_chart(self, chart_type):
+        """Adds chart to figure after current position in the tree"""
+
+        self.tree.add_chart(chart_type)
+
+    # Event handlers
+
+    def OnAdd(self, event):
+        """Add button event handler"""
+
+        dlg = wx.SingleChoiceDialog(self, _('Add chart to figure'),
+                                    _('Select chart type'),
+                                    self.chart_types,
+                                    wx.CHOICEDLG_STYLE)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            self.add_chart(dlg.GetStringSelection())
+
+        dlg.Destroy()
 
 
 def main():
