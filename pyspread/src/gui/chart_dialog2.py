@@ -36,6 +36,8 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 app = wx.App()
 
 from _widgets import LineStyleComboBox, MarkerStyleComboBox
+from src.lib.parsers import color2code, code2color, parse_dict_strings
+import src.lib.charts as charts
 
 _ = lambda x:x
 
@@ -133,6 +135,103 @@ class TextEditor(wx.Panel):
         self.colorselect.SetToolTip(wx.ToolTip(_("Text color")))
 
         self.Layout()
+
+    def get_code(self):
+        """Returns code representation of value of widget"""
+
+        return self.textctrl.GetValue()
+
+    def get_kwargs(self):
+        """Return kwargs dict for text"""
+
+        kwargs = {}
+
+        if self.font_face:
+            kwargs["fontname"] = repr(self.font_face)
+        if self.font_size:
+            kwargs["fontsize"] = repr(self.font_size)
+        if self.font_style in self.style_wx2mpl:
+            kwargs["fontstyle"] = repr(self.style_wx2mpl[self.font_style])
+        if self.font_weight in self.weight_wx2mpl:
+            kwargs["fontweight"] = repr(self.weight_wx2mpl[self.font_weight])
+
+        kwargs["color"] = color2code(self.colorselect.GetValue())
+
+        code = ", ".join(repr(key) + ": " + kwargs[key] for key in kwargs)
+
+        code = "{" + code + "}"
+
+        return code
+
+    def set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of widget value
+
+        """
+
+        self.textctrl.SetValue(code)
+
+    def set_kwargs(self, code):
+        """Sets widget from kwargs string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of kwargs value
+
+        """
+
+        kwargs = {}
+
+        kwarglist = list(parse_dict_strings(code[1:-1]))
+
+        for kwarg, val in zip(kwarglist[::2], kwarglist[1::2]):
+            kwargs[unquote_string(kwarg)] = val
+
+        for key in kwargs:
+            if key == "color":
+                color = code2color(kwargs[key])
+                self.colorselect.SetOwnForegroundColour(color)
+
+            elif key == "fontname":
+                self.font_face = unquote_string(kwargs[key])
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+                self.chosen_font.SetFaceName(self.font_face)
+
+            elif key == "fontsize":
+                if kwargs[key]:
+                    self.font_size = int(kwargs[key])
+                else:
+                    self.font_size = get_default_font().GetPointSize()
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetPointSize(self.font_size)
+
+            elif key == "fontstyle":
+                self.font_style = \
+                    self.style_mpl2wx[unquote_string(kwargs[key])]
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetStyle(self.font_style)
+
+            elif key == "fontweight":
+                self.font_weight = \
+                    self.weight_mpl2wx[unquote_string(kwargs[key])]
+
+                if self.chosen_font is None:
+                    self.chosen_font = get_default_font()
+
+                self.chosen_font.SetWeight(self.font_weight)
 
     # Handlers
 
@@ -374,7 +473,7 @@ class AxesAttributes(object):
                                  wx.CHK_ALLOW_3RD_STATE_FOR_USER}), []),
                  ]),
              ]),
-            (_("y-Axis"), (), [
+            (_("y-axis"), (), [
                 (_("label"), ("ylabel", TextEditor, [-1],
                  {"size": (198, 25)}), []),
                 (_("limits"), ("ylim", wx.TextCtrl, [-1],
@@ -457,14 +556,13 @@ class ChartTree(htl.HyperTreeList):
             agwStyle=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT |
             wx.TR_HAS_VARIABLE_ROW_HEIGHT, **kwargs)
 
+        self.parent = parent
+
         self.items = {}
         self._init_items()
 
         self.tooltips = {}
         self._init_tooltips()
-
-        # Mapping of field names to widget instances
-        self.name2widget = {}
 
         # Create columns
         self.AddColumn("Attributes")
@@ -514,25 +612,261 @@ class ChartTree(htl.HyperTreeList):
                 name, widget_cls, args, kwargs = widget_info
                 widget = widget_cls(self, *args, **kwargs)
 
+                widget.Bind(wx.EVT_TEXT, self.OnText)
+
                 try:
                     widget.SetToolTip(wx.ToolTip(tooltips[name]))
                 except KeyError:
                     pass
 
                 child = self.AppendItem(node, label)
-                self.name2widget[name] = child
+
+                widget.object_type = "axes"
+                widget.treeitem = child
+                widget.name = name
+
                 self.SetItemWindow(child, widget, 1)
                 self.SetItemImage(child, fileidx, wx.TreeItemIcon_Normal)
 
             else:
                 child = self.AppendItem(node, label)
-                # self.name2widget[name] = child
+
                 self.SetItemImage(child, fldridx, wx.TreeItemIcon_Normal)
                 self.SetItemImage(child, fldropenidx,
                                   wx.TreeItemIcon_Expanded)
 
             self.ExpandAll()
             self.add_items(child, children, tooltips)
+
+    def walk_items(self, item):
+        """Generator that walks items depth first"""
+
+        yield item
+
+        for child in item.GetChildren():
+            for gc in self.walk_items(child):
+                yield gc
+
+    def get_figure(self, code):
+        """Returns figure from executing code in grid
+
+        Returns an empty matplotlib figure if code does not eval to a
+        matplotlib figure instance.
+
+        Parameters
+        ----------
+        code: Unicode
+        \tUnicode string which contains Python code that should yield a figure
+
+        """
+
+        # Caching for fast response if there are no changes
+        if code == self.figure_code_old and self.figure_cache:
+            return self.figure_cache
+
+        self.figure_code_old = code
+
+        # key is the current cursor cell of the grid
+        key = self.grid.actions.cursor
+        cell_result = self.grid.code_array._eval_cell(key, code)
+
+        # If cell_result is matplotlib figure
+        if isinstance(cell_result, Figure):
+            # Return it
+            self.figure_cache = cell_result
+            return cell_result
+
+        else:
+            # Otherwise return empty figure
+            self.figure_cache = charts.ChartFigure()
+
+        return self.figure_cache
+
+    # Tuple keys have to be put in parentheses
+    tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
+                  "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
+                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z",
+                  "hatches", "flows", "orientations", "labels"]
+
+    # String keys need to be put in "
+    string_keys = ["type", "linestyle", "marker", "shadow", "vert", "xgrid",
+                   "ygrid", "notch", "sym", "normed", "cumulative",
+                   "xdate_format", "xycoords", "textcoords", "linestyles",
+                   "contour_labels", "contour_fill", "format", "unit"]
+
+    # Keys, which have to be None if empty
+    empty_none_keys = ["colors", "color"]
+
+    def set_code(self, code):
+        """Update widgets from code"""
+
+        # Get attributes from code
+
+        attributes = []
+        strip = lambda s: s.strip('u').strip("'").strip('"')
+        for attr_dict in parse_dict_strings(unicode(code).strip()[19:-1]):
+            attrs = list(strip(s) for s in parse_dict_strings(attr_dict[1:-1]))
+            attributes.append(dict(zip(attrs[::2], attrs[1::2])))
+
+        if not attributes:
+            return
+
+        # Set widgets from attributes
+        # ---------------------------
+
+        # Figure attributes
+        figure_attributes = attributes[0]
+
+        for key, widget in self.figure_attributes_panel:
+            try:
+                obj = figure_attributes[key]
+                kwargs_key = key + "_kwargs"
+                if kwargs_key in figure_attributes:
+                    widget.set_kwargs(figure_attributes[kwargs_key])
+
+            except KeyError:
+                obj = ""
+
+            widget.code = charts.object2code(key, obj)
+
+        # Series attributes
+        self.all_series_panel.update(attributes[1:])
+
+    def get_parents(self, item):
+        """Returns list of parents including item starting with item"""
+
+        if item == self.root:
+            return []
+
+        parent = item.GetParent()
+
+        return self.get_parents(parent) + [parent]
+
+    def get_code(self):
+        """Returns code that generates figure from widgets"""
+
+        attr_dict = {}
+
+        for item in self.walk_items(self.root):
+
+            keylist = [parent.GetText() for parent in self.get_parents(item)]
+            keylist += [item.GetText()]
+            key = tuple(keylist)
+
+            value = None
+            window = self.GetItemWindow(item, 1)
+            if window:
+                try:
+                    value = window.GetText()
+                except AttributeError:
+                    try:
+                        value = window.GetValue()
+                    except AttributeError:
+                        try:
+                            value = [window.get_code(), window.get_kwargs()]
+                        except AttributeError:
+                            pass
+
+            if key and value:
+                attr_dict[key] = value
+        print attr_dict
+
+#        def dict2str(attr_dict):
+#            """Returns string with dict content with values as code
+#
+#            Code means that string identifiers are removed
+#
+#            """
+#
+#            result = u"{"
+#
+#            for key in attr_dict:
+#                code = attr_dict[key]
+#
+#                if key in self.string_keys:
+#                    code = repr(code)
+#
+#                elif code and key in self.tuple_keys and \
+#                     not (code[0] in ["[", "("] and code[-1] in ["]", ")"]):
+#
+#                    code = "(" + code + ")"
+#
+#                elif key in ["xscale", "yscale"]:
+#                    if code:
+#                        code = '"log"'
+#                    else:
+#                        code = '"linear"'
+#
+#                elif key in ["legend"]:
+#                    if code:
+#                        code = '1'
+#                    else:
+#                        code = '0'
+#
+#                elif key in ["xtick_params"]:
+#                    code = '"x"'
+#
+#                elif key in ["ytick_params"]:
+#                    code = '"y"'
+#
+#                if not code:
+#                    if key in self.empty_none_keys:
+#                        code = "None"
+#                    else:
+#                        code = 'u""'
+#
+#                result += repr(key) + ": " + code + ", "
+#
+#            result = result[:-2] + u"}"
+#
+#            return result
+#
+#        # cls_name inludes full class name incl. charts
+#        cls_name = "charts." + charts.ChartFigure.__name__
+#
+#        attr_dicts = []
+#
+#        # Figure attributes
+#        attr_dict = {}
+#        # figure_attributes is a dict key2code
+#        for key, widget in self.figure_attributes_panel:
+#            if key == "type":
+#                attr_dict[key] = widget
+#            else:
+#                attr_dict[key] = widget.code
+#                try:
+#                    attr_dict[key+"_kwargs"] = widget.get_kwargs()
+#                except AttributeError:
+#                    pass
+#
+#        attr_dicts.append(attr_dict)
+#
+#        # Series_attributes is a list of dicts key2code
+#        for series_panel in self.all_series_panel:
+#            attr_dict = {}
+#            for key, widget in series_panel:
+#                if key == "type":
+#                    attr_dict[key] = widget
+#                else:
+#                    attr_dict[key] = widget.code
+#
+#            attr_dicts.append(attr_dict)
+#
+#        code = cls_name + "("
+#
+#        for attr_dict in attr_dicts:
+#            code += dict2str(attr_dict) + ", "
+#
+#        code = code[:-2] + ")"
+
+#        return code
+
+    # Handlers
+
+    def OnText(self, event):
+        print self.get_code()
+
+        self.parent.parent.figure_panel.update(self.parent.parent.figure)
 
 
 class FigurePanel(wx.Panel):
@@ -593,7 +927,6 @@ class FigurePanel(wx.Panel):
             event.button, event.x, event.y, event.xdata, event.ydata)
 
 #        if not event.inaxes:
-#            item = self.parent.parent.tree.name2widget
 #            self.parent.parent.tree.SelectItem(item)
 
     def onpick(self, event):
@@ -602,8 +935,8 @@ class FigurePanel(wx.Panel):
         # TODO: Decouple via post event
         if hasattr(event.artist, "name"):
             name = event.artist.name
-            item = self.parent.parent.tree.name2widget[name]
-            self.parent.parent.tree.SelectItem(item)
+            #item = self.parent.parent.tree.name2widget[name]
+            #self.parent.parent.tree.SelectItem(item)
 
 
 class ChartDialog(wx.Dialog):
@@ -615,7 +948,7 @@ class ChartDialog(wx.Dialog):
 
     def __init__(self, parent, *args, **kwargs):
         wx.Dialog.__init__(self, parent, -1, _("Insert chart"), *args,
-                           size=(900, 700), style = wx.RESIZE_BORDER, **kwargs)
+                           size=(900, 700), style=wx.RESIZE_BORDER, **kwargs)
 
         self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_LIVE_UPDATE)
         self.splitter.parent = self
@@ -625,15 +958,15 @@ class ChartDialog(wx.Dialog):
         self.figure_panel = FigurePanel(self.splitter)
 
         # Dummy figure
-        figure = Figure(facecolor='white')
-        ax = figure.add_subplot(111)
+        self.figure = Figure(facecolor='white')
+        ax = self.figure.add_subplot(111)
         ax.xaxis.set_picker(5)
         ax.xaxis.name = "xaxis"
         ax.yaxis.set_picker(5)
         ax.yaxis.name = "yaxis"
         plt = ax.plot([(x/10.0)**2 for x in xrange(1000)], picker=5)
         plt[-1].name = "test"
-        self.figure_panel.update(figure)
+        self.figure_panel.update(self.figure)
 
         # Split Window
         self.splitter.SplitVertically(self.tree, self.figure_panel)
