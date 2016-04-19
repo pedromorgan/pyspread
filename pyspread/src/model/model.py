@@ -175,6 +175,10 @@ class CellAttributes(list):
 
         row, col, tab = key
 
+        # TODO: FIX THIS PART. Merging is BROKEN
+        # The problem is that we have to make overlapping merges impossible.
+        # Therefore, a merge must start from one cell and NOT a selection.
+
         merging_cell = None
 
         def is_in_merge_area(row, col, merge_area):
