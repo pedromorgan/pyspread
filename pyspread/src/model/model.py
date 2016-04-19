@@ -187,6 +187,8 @@ class CellAttributes(list):
         for selection, table, attr_dict in self:
             try:
                 merge_area = attr_dict["merge_area"]
+                if merge_area is None:
+                    merging_cell = None
                 if table == tab and merge_area is not None:
                     # We have a merge area in the cell's table
                     if is_in_merge_area(row, col, merge_area):
