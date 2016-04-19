@@ -768,8 +768,7 @@ class GridCellEventHandlers(object):
         # Is the cell merged then go to merging cell
         cell_attributes = self.grid.code_array.cell_attributes
         merging_cell = cell_attributes.get_merging_cell(key)
-        if merging_cell is not None and merging_cell != key and \
-           cell_attributes[key]["locked"]:
+        if merging_cell is not None and merging_cell != key:
             post_command_event(self.grid, self.grid.GotoCellMsg,
                                key=merging_cell)
             return
