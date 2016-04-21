@@ -178,25 +178,11 @@ class CellAttributes(list):
 
         row, col, tab = key
 
-        merging_cell = None
+        # Is cell merged
+        merge_area = self[key]["merge_area"]
 
-        def is_in_merge_area(row, col, merge_area):
-            top, left, bottom, right = merge_area
-            return top <= row <= bottom and left <= col <= right
-
-        for selection, table, attr_dict in self:
-            try:
-                merge_area = attr_dict["merge_area"]
-                if merge_area is None:
-                    merging_cell = None
-                if table == tab and merge_area is not None:
-                    # We have a merge area in the cell's table
-                    if is_in_merge_area(row, col, merge_area):
-                        merging_cell = merge_area[0], merge_area[1], tab
-            except KeyError:
-                pass
-
-        return merging_cell
+        if merge_area:
+            return merge_area[0], merge_area[1], tab
 
     # Allow getting and setting elements in list
     get_item = list.__getitem__
