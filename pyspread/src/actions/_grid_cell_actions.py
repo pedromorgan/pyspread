@@ -369,6 +369,18 @@ class CellActions(Actions):
 
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
 
+        # Check if the merge area overlaps another merge area
+
+        error_msg = _("Overlapping merge area at {} prevents merge.")
+
+        for row in xrange(top, bottom + 1):
+            for col in xrange(left, right + 1):
+                key = row, col, tab
+                if self.code_array.cell_attributes[key]["merge_area"]:
+                    post_command_event(self.main_window, self.StatusBarMsg,
+                                       text=error_msg.format(str(key)))
+                    return
+
         self.delete_selection(selection, mark_unredo=False)
         self.code_array.__setitem__((top, left, cursor[2]), top_left_code,
                                     mark_unredo=False)
@@ -409,10 +421,10 @@ class CellActions(Actions):
         cell_attributes = self.grid.code_array.cell_attributes
         tl_merge_area = cell_attributes[(bb_top, bb_left, tab)]["merge_area"]
 
-        if tl_merge_area is None:
-            self.merge(merge_area, tab)
-        else:
+        if tl_merge_area is not None and tl_merge_area[:2] == merge_area[:2]:
             self.unmerge(tl_merge_area, tab)
+        else:
+            self.merge(merge_area, tab)
 
     attr_toggle_values = {
         "fontweight": [wx.NORMAL, wx.BOLD],
