@@ -42,16 +42,6 @@ except ImportError:
     Figure = None
 
 try:
-    import cairo
-except ImportError:
-    cairo = None
-
-try:
-    import xlrd
-except ImportError:
-    xlrd = None
-
-try:
     from src.lib.gpg import genkey
 except ImportError:
     genkey = None
@@ -60,19 +50,20 @@ import src.lib.i18n as i18n
 from src.config import config
 from src.sysvars import get_python_tutorial_path, is_gtk
 
-from _menubars import MainMenu
-from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
-from _toolbars import WidgetToolbar
-from _widgets import EntryLineToolbarPanel, StatusBar
+from src.gui._menubars import MainMenu
+from src.gui._toolbars import MainToolbar, MacroToolbar, FindToolbar
+from src.gui._toolbars import WidgetToolbar, AttributesToolbar
+from src.gui._widgets import EntryLineToolbarPanel, StatusBar
 
 from src.lib.clipboard import Clipboard
+from src.lib.filetypes import get_filetypes2wildcards
 
-from _gui_interfaces import GuiInterfaces
+from src.gui._gui_interfaces import GuiInterfaces
 from src.gui.icons import icons
 
-from _grid import Grid
+from src.gui._grid import Grid
 
-from _events import post_command_event, EventMixin
+from src.gui._events import post_command_event, EventMixin
 
 from src.actions._main_window_actions import AllMainWindowActions
 
@@ -764,7 +755,9 @@ class MainWindowEventHandlers(EventMixin):
                 post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get filepath from user
-        filetypes, wildcards = self.interfaces.get_file_open_wildcard_list()
+        f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "xlsx", "all"])
+        filetypes = f2w.keys()
+        wildcards = f2w.values()
         wildcard = "|".join(wildcards)
 
         message = _("Choose file to open.")
@@ -832,7 +825,8 @@ class MainWindowEventHandlers(EventMixin):
 
         if filetype is None:
 
-            __filetypes, __ = self.interfaces.get_file_save_wildcard_list()
+            f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
+            __filetypes = f2w.keys()
 
             # Check if the file extension matches any valid save filetype
             for __filetype in __filetypes:
@@ -865,7 +859,11 @@ class MainWindowEventHandlers(EventMixin):
         """File save as event handler"""
 
         # Get filepath from user
-        filetypes, wildcards = self.interfaces.get_file_save_wildcard_list()
+
+        f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
+        filetypes = f2w.keys()
+        wildcards = f2w.values()
+
         wildcard = "|".join(wildcards)
 
         message = _("Choose filename for saving.")
@@ -933,9 +931,9 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("CSV file") + " (*.*)|*.*|" + \
-            _("Tab delimited text file") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["csv", "txt"]).values()
+        wildcard = "|".join(wildcards)
+
         message = _("Choose file to import.")
         style = wx.OPEN
         filepath, filterindex = \
@@ -967,8 +965,6 @@ class MainWindowEventHandlers(EventMixin):
 
         """
 
-        filters = []
-
         code_array = self.main_window.grid.code_array
         tab = self.main_window.grid.current_table
 
@@ -978,14 +974,11 @@ class MainWindowEventHandlers(EventMixin):
 
         selection_bbox = selection.get_bbox()
 
-        wildcard = _("CSV file") + " (*.*)|*.*"
-        filters.append("csv")
+        f2w = get_filetypes2wildcards(["csv", "pdf", "svg"])
+        filters = f2w.keys()
+        wildcards = f2w.values()
 
-        if cairo is not None:
-            wildcard += "|" + _("PDF file") + " (*.pdf)|*.pdf"
-            filters.append("pdf")
-            wildcard += "|" + _("SVG file") + " (*.svg)|*.svg"
-            filters.append("svg")
+        wildcard = "|".join(wildcards)
 
         if selection_bbox is None:
             # No selection --> Use smallest filled area for bottom right edge
@@ -1054,8 +1047,14 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
+        wildcards = get_filetypes2wildcards(["pdf"]).values()
+
+        if not wildcards:
+            return
+
+        wildcard = "|".join(wildcards)
+
         # Get filepath from user
-        wildcard = _("PDF") + " (*.pdf)|*.pdf"
         message = _("Choose file path for PDF export.")
 
         style = wx.SAVE
@@ -1367,9 +1366,10 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Macro file") + " (*.py)|*.py|" + \
-            _("All files") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+
+        wildcard = "|".join(wildcards)
+
         message = _("Choose macro file.")
 
         style = wx.OPEN
@@ -1395,9 +1395,10 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Macro file") + " (*.py)|*.py|" + \
-            _("All files") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+
+        wildcard = "|".join(wildcards)
+
         message = _("Choose macro file.")
 
         style = wx.SAVE

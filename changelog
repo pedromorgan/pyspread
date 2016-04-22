@@ -3,6 +3,13 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+1.0.2
+-----
+
+Save function bug fixed
+Accepts now pys files up to v1.0
+
+
 1.0.1
 -----
 
@@ -10,6 +17,9 @@ Jedi 0.9 API change fixed
 French translation added
 Translations updated
 GPG now only accepts the chosen key as valid
+When an unsaveable xlsx file is opened, now a Save As dialog opens
+The default file type can now be adjusted in the .pyspreadrc file
+Undoing a merge operation now correctly restores data from the merged cells
 
 
 1.0

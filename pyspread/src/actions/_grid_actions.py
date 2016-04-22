@@ -319,7 +319,7 @@ class FileActions(Actions):
             except:
                 file_ext = None
 
-            if file_ext in ["pys", "pysu"]:
+            if file_ext in ["pys", "pysu", "xls", "xlsx"]:
                 filetype = file_ext
             else:
                 filetype = "pys"
@@ -603,7 +603,7 @@ class FileActions(Actions):
             self._move_tmp_file(tmpfilepath, filepath)
             self._release_save_states()
 
-        elif filetype == "pys":
+        elif filetype == "pys" or filetype == "all":
             self._set_save_states()
             if self._save_pys(tmpfilepath):
                 # Writing was successful
