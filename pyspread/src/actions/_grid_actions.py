@@ -1301,6 +1301,17 @@ class GridActions(Actions):
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
 
+            cell_editor = self.grid.GetCellEditor(self.grid.GetGridCursorRow(),
+                                                  self.grid.GetGridCursorCol())
+
+            try:
+                cell_editor.Reset()
+            except AttributeError:
+                # No cell editor open
+                pass
+
+            self.grid.HideCellEditControl()
+
             # Change value of entry_line and table choice
             post_command_event(self.main_window, self.TableChangedMsg,
                                table=newtable)
