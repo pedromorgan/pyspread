@@ -30,6 +30,7 @@ System environment access
 
 import os
 
+import pangocairo
 import wx
 
 
@@ -75,7 +76,9 @@ def get_python_tutorial_path():
 def get_dpi():
     """Returns screen dpi resolution"""
 
-    pxmm_2_dpi = lambda (pixels, length_mm): pixels * 25.6 / length_mm
+    def pxmm_2_dpi(pixels, length_mm):
+        return pixels * 25.6 / length_mm
+
     return map(pxmm_2_dpi, zip(wx.GetDisplaySize(), wx.GetDisplaySizeMM()))
 
 
@@ -102,9 +105,8 @@ def get_font_string(name):
 def get_font_list():
     """Returns a sorted list of all system font names"""
 
-    font_enum = wx.FontEnumerator()
-    font_enum.EnumerateFacenames(wx.FONTENCODING_SYSTEM)
-    font_list = font_enum.GetFacenames()
+    font_map = pangocairo.cairo_font_map_get_default()
+    font_list = [f.get_name() for f in font_map.list_families()]
     font_list.sort()
 
     return font_list

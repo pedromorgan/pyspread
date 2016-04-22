@@ -55,6 +55,11 @@ import wx.grid
 import wx.combo
 import wx.stc as stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
+import wx.lib.wxcairo
+
+import cairo
+import pango
+import pangocairo
 
 import src.lib.i18n as i18n
 from src.lib.parsers import common_start
@@ -570,24 +575,29 @@ class FontChoiceCombobox(ImageComboBox):
         if item == wx.NOT_FOUND:
             return
 
-        __rect = wx.Rect(*rect)  # make a copy
-        __rect.Deflate(3, 5)
+        default_font_size = get_default_font().GetPointSize()
 
-        font_string = self.GetString(item)
+        context = wx.lib.wxcairo.ContextFromDC(dc)
 
-        font = get_default_font()
-        font.SetFaceName(font_string)
-        if not is_gtk():
-            # Do not display fonts in font coice box for Windows
-            font.SetFamily(wx.FONTFAMILY_SWISS)
-        dc.SetFont(font)
+        pangocairo_context = pangocairo.CairoContext(context)
+        pangocairo_context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
 
-        text_width, text_height = dc.GetTextExtent(font_string)
-        text_x = __rect.x
-        text_y = __rect.y + int((__rect.height - text_height) / 2.0)
+        layout = pangocairo_context.create_layout()
+        fontname = self.GetString(item)
+        font = pango.FontDescription("{} {}".format(fontname,
+                                                    default_font_size))
+        layout.set_font_description(font)
 
-        # Draw the example text in the combobox
-        dc.DrawText(font_string, text_x, text_y)
+        layout.set_text(fontname)
+        context.set_source_rgb(0, 0, 0)
+
+        height = layout.get_pixel_extents()[1][3]
+
+        y_adjust = int((rect.height - height) / 2.0)
+        context.translate(rect.x + 3, rect.y + y_adjust)
+
+        pangocairo_context.update_layout(layout)
+        pangocairo_context.show_layout(layout)
 
 # end of class FontChoiceCombobox
 
