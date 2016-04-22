@@ -579,6 +579,9 @@ class FontChoiceCombobox(ImageComboBox):
 
         context = wx.lib.wxcairo.ContextFromDC(dc)
 
+        context.rectangle(*rect)
+        context.clip()
+
         pangocairo_context = pangocairo.CairoContext(context)
         pangocairo_context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
 
