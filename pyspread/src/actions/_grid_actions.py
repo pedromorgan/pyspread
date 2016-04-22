@@ -1386,7 +1386,6 @@ class GridActions(Actions):
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
 
-<<<<<<< HEAD
             self.grid.SetToolTip(None)
 
             # Delete video cells
@@ -1397,7 +1396,8 @@ class GridActions(Actions):
                 video_panel.player.release()
                 video_panel.Destroy()
             video_cells.clear()
-=======
+
+            # Hide cell editor
             cell_editor = self.grid.GetCellEditor(self.grid.GetGridCursorRow(),
                                                   self.grid.GetGridCursorCol())
 
@@ -1408,7 +1408,6 @@ class GridActions(Actions):
                 pass
 
             self.grid.HideCellEditControl()
->>>>>>> 679dde44e4627585719389de18bc76f37eae8251
 
             # Change value of entry_line and table choice
             post_command_event(self.main_window, self.TableChangedMsg,
