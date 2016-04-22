@@ -883,9 +883,6 @@ class DataArray(object):
 
         # Now re-insert moved keys
 
-        for key in new_keys:
-            self.__setitem__(key, new_keys[key], mark_unredo=False)
-
         for key in del_keys:
             if key not in new_keys and self(key) is not None:
                 self.pop(key, mark_unredo=False)
@@ -894,6 +891,9 @@ class DataArray(object):
                             mark_unredo=False)
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis,
                                      tab=tab, mark_unredo=False)
+
+        for key in new_keys:
+            self.__setitem__(key, new_keys[key], mark_unredo=False)
 
         self.unredo.mark()
 
