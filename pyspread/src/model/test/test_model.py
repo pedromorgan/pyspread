@@ -112,12 +112,13 @@ class TestCellAttributes(object):
     def test_get_merging_cell(self):
         """Test get_merging_cell"""
 
-        selection_1 = Selection([], [], [], [], [(2, 2)])
-        selection_2 = Selection([], [], [], [], [(3, 2)])
+        selection_1 = Selection([(2, 2)], [(5, 5)], [], [], [])
+        selection_2 = Selection([(3, 2)], [(9, 9)], [], [], [])
+        selection_3 = Selection([(2, 2)], [(9, 9)], [], [], [])
 
         self.cell_attr.append((selection_1, 0, {"merge_area": (2, 2, 5, 5)}))
         self.cell_attr.append((selection_2, 0, {"merge_area": (3, 2, 9, 9)}))
-        self.cell_attr.append((selection_1, 1, {"merge_area": (2, 2, 9, 9)}))
+        self.cell_attr.append((selection_3, 1, {"merge_area": (2, 2, 9, 9)}))
 
         # Cell 1. 1, 0 is not merged
         assert self.cell_attr.get_merging_cell((1, 1, 0)) is None
