@@ -580,11 +580,11 @@ class GridCellContentCairoRenderer(object):
         wx2pango_weights = {
             wx.FONTWEIGHT_BOLD: pango.WEIGHT_BOLD,
             wx.FONTWEIGHT_LIGHT: pango.WEIGHT_LIGHT,
-            wx.FONTWEIGHT_NORMAL: pango.WEIGHT_NORMAL,
+            wx.FONTWEIGHT_NORMAL: None,  # Do not set a weight by default
         }
 
         wx2pango_styles = {
-            wx.FONTSTYLE_NORMAL: pango.STYLE_NORMAL,
+            wx.FONTSTYLE_NORMAL: None,  # Do not set a style by default
             wx.FONTSTYLE_SLANT: pango.STYLE_OBLIQUE,
             wx.FONTSTYLE_ITALIC: pango.STYLE_ITALIC,
         }
@@ -611,11 +611,13 @@ class GridCellContentCairoRenderer(object):
 
         # Weight
         weight = wx2pango_weights[fontweight]
-        attrs.insert(pango.AttrWeight(weight, 0, MAX_RESULT_LENGTH))
+        if weight is not None:
+            attrs.insert(pango.AttrWeight(weight, 0, MAX_RESULT_LENGTH))
 
         # Style
         style = wx2pango_styles[fontstyle]
-        attrs.insert(pango.AttrStyle(style, 0, MAX_RESULT_LENGTH))
+        if style is not None:
+            attrs.insert(pango.AttrStyle(style, 0, MAX_RESULT_LENGTH))
 
         # Strikethrough
         attrs.insert(pango.AttrStrikethrough(strikethrough, 0,
