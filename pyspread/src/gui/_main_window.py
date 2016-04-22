@@ -560,6 +560,9 @@ class MainWindowEventHandlers(EventMixin):
                 else:
                     config[key] = ast.literal_eval(preferences[key])
 
+        self.main_window.grid.grid_renderer.cell_cache.clear()
+        self.main_window.grid.ForceRefresh()
+
     def OnNewGpgKey(self, event):
         """New GPG key event handler.
 
