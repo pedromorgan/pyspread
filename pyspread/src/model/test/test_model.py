@@ -276,24 +276,76 @@ class TestDataArray(object):
         for key in val:
             assert self.data_array.cell_attributes[target][key] == val[key]
 
-    def test_insert(self):
+    param_test_insert = [
+        {
+            "data": {(2, 3, 0): "42"},
+            "inspoint": 1, "notoins": 1, "axis": 0, "tab": None,
+            "res": {(2, 3, 0): None, (3, 3, 0): "42"},
+         },
+        {
+            "data": {(0, 0, 0): "0", (0, 0, 2): "2"},
+            "inspoint": 1, "notoins": 1, "axis": 2, "tab": None,
+            "res": {(0, 0, 3): "2", (0, 0, 4): None},
+         },
+    ]
+
+    @params(param_test_insert)
+    def test_insert(self, data, inspoint, notoins, axis, tab, res):
         """Unit test for insert operation"""
 
-        self.data_array[2, 3, 0] = 42
-        self.data_array.insert(1, 1, 0)
+        self.data_array.dict_grid.update(data)
+        self.data_array.insert(inspoint, notoins, axis, tab)
 
-        assert self.data_array[2, 3, 0] is None
+        for key in res:
+            assert self.data_array[key] == res[key]
 
-        assert self.data_array[3, 3, 0] == 42
+    param_test_delete = [
+        {
+            "data": {(2, 3, 4): "42"},
+            "delpoint": 1, "notodel": 1, "axis": 0, "tab": None,
+            "res": {(1, 3, 4): "42"},
+         },
+        {
+            "data": {(0, 0, 0): "1"},
+            "delpoint": 0, "notodel": 1, "axis": 0, "tab": 0,
+            "res": {(0, 0, 0): None},
+         },
+        {
+            "data": {(0, 0, 1): "1"},
+            "delpoint": 0, "notodel": 1, "axis": 2, "tab": None,
+            "res": {(0, 0, 0): "1"},
+         },
+        {
+            "data": {(3, 3, 2): "3"},
+            "delpoint": 0, "notodel": 2, "axis": 2, "tab": None,
+            "res": {(3, 3, 0): "3"},
+         },
+        {
+            "data": {(4, 2, 1): "3"},
+            "delpoint": 2, "notodel": 1, "axis": 1, "tab": 1,
+            "res": {(4, 2, 1): None},
+         },
+        {
+            "data": {(10, 0, 0): "1"},
+            "delpoint": 0, "notodel": 10, "axis": 0, "tab": 0,
+            "res": {(0, 0, 0): "1"},
+         },
+    ]
 
-    def test_delete(self):
+    @params(param_test_delete)
+    def test_delete(self, data, delpoint, notodel, axis, tab, res):
         """Tests delete operation"""
 
-        self.data_array[2, 3, 4] = "42"
-        self.data_array.delete(1, 1, 0)
+        self.data_array.dict_grid.update(data)
+        self.data_array.delete(delpoint, notodel, axis, tab)
 
-        assert self.data_array[2, 3, 4] is None
-        assert self.data_array[1, 3, 4] == "42"
+        for key in res:
+            assert self.data_array[key] == res[key]
+
+    def test_delete_error(self):
+        """Tests delete operation error"""
+
+        self.data_array[2, 3, 4] = "42"
 
         try:
             self.data_array.delete(1, 1000, 0)
