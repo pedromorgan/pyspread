@@ -781,10 +781,12 @@ class DataArray(object):
         \tPont on axis, before which insertion takes place
         no_to_insert: Integer >= 0
         \tNumber of rows/cols/tabs that shall be inserted
-        axis: Integer in range(3)
-        \tSpecifies number of dimension, i.e. 0 == row, 1 == col, ...
+        axis: Integer in range(2)
+        \tSpecifies number of dimension, i.e. 0 == row, 1 == col
 
         """
+
+        assert axis in range(2)
 
         if "merge_area" not in attrs or attrs["merge_area"] is None:
             return
@@ -797,9 +799,8 @@ class DataArray(object):
 
         # Adjust merge area if it is beyond the grid shape
         rows, cols, tabs = self.shape
-        print self.shape
 
-        if __bottom >= rows or __right >= cols:
+        if __top < 0 or __bottom >= rows or __left < 0 or __right >= cols:
             attrs["merge_area"] = None
         else:
             attrs["merge_area"] = __top, __left, __bottom, __right

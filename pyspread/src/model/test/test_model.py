@@ -248,6 +248,78 @@ class TestDataArray(object):
         self.data_array._set_cell_attributes(cell_attributes)
         assert self.data_array.cell_attributes == cell_attributes
 
+    param_adjust_merge_area = [
+        {'attrs': {},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {}
+         },
+        {'attrs': {'merge_area': None},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 5, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 3, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': (3, 2, 4, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 10, 'axis': 0,
+         'res_attrs': {'merge_area': (12, 2, 13, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 2, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 4, 4)}
+         },
+        {'attrs': {'merge_area': (992, 2, 993, 4)},
+         'insertion_point': 5, 'no_to_insert': 10, 'axis': 0,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -1, 'axis': 0,
+         'res_attrs': {'merge_area': (1, 2, 2, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 5, 'no_to_insert': -1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 3, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 2, 'no_to_insert': -1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 2, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -2, 'axis': 0,
+         'res_attrs': {'merge_area': (0, 2, 1, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -3, 'axis': 0,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 1,
+         'res_attrs': {'merge_area': (2, 3, 3, 5)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 200, 'axis': 1,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -2, 'axis': 1,
+         'res_attrs': {'merge_area': (2, 0, 3, 2)}
+         },
+    ]
+
+    @params(param_adjust_merge_area)
+    def test_adjust_merge_area(self, attrs, insertion_point, no_to_insert,
+                               axis, res_attrs):
+        """Unit test for _adjust_merge_area"""
+
+        self.data_array._adjust_merge_area(attrs, insertion_point,
+                                           no_to_insert, axis)
+        assert attrs == res_attrs
+
     param_adjust_cell_attributes = [
         {'inspoint': 0, 'noins': 5, 'axis': 0,
          'src': (4, 3, 0), 'target': (9, 3, 0)},
