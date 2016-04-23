@@ -773,64 +773,114 @@ class DataArray(object):
         if mark_unredo:
             self.unredo.mark()
 
+    def _adjust_merge_area(self, attrs, insertion_point, no_to_insert, axis):
+        """Returns an updated merge area
+
+        Parameters
+        ----------
+        attrs: Dict
+        \tCell attribute dictionary that shall be adjusted
+        insertion_point: Integer
+        \tPont on axis, before which insertion takes place
+        no_to_insert: Integer >= 0
+        \tNumber of rows/cols/tabs that shall be inserted
+        axis: Integer in range(2)
+        \tSpecifies number of dimension, i.e. 0 == row, 1 == col
+
+        """
+
+        assert axis in range(2)
+
+        if "merge_area" not in attrs or attrs["merge_area"] is None:
+            return
+
+        top, left, bottom, right = attrs["merge_area"]
+        selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+        selection.insert(insertion_point, no_to_insert, axis)
+        __top, __left = selection.block_tl[0]
+        __bottom, __right = selection.block_br[0]
+
+        # Adjust merge area if it is beyond the grid shape
+        rows, cols, tabs = self.shape
+
+        if __top < 0 or __bottom >= rows or __left < 0 or __right >= cols:
+            attrs["merge_area"] = None
+        else:
+            attrs["merge_area"] = __top, __left, __bottom, __right
+
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis,
                                 tab=None, cell_attrs=None, mark_unredo=True):
-        """Adjusts cell attributes on insertion/deletion"""
+        """Adjusts cell attributes on insertion/deletion
 
-        if mark_unredo:
-            self.unredo.mark()
+        Parameters
+        ----------
+        insertion_point: Integer
+        \tPont on axis, before which insertion takes place
+        no_to_insert: Integer >= 0
+        \tNumber of rows/cols/tabs that shall be inserted
+        axis: Integer in range(3)
+        \tSpecifies number of dimension, i.e. 0 == row, 1 == col, ...
+        tab: Integer, defaults to None
+        \tIf given then insertion is limited to this tab for axis < 2
+        cell_attrs: List, defaults to []
+        \tIf not empty then the given cell attributes replace the existing ones
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
 
+        """
+
+        def replace_cell_attributes_table(index, new_table):
+            ca = list(self.cell_attributes.get_item(index))
+            ca[1] = new_table
+            self.cell_attributes.set_item(index, tuple(ca))
+
+        if axis not in range(3):
+            raise ValueError("Axis must be in [0, 1, 2]")
+
+        assert tab is None or tab >= 0
+
+        if cell_attrs is None:
+            cell_attrs = []
+
+        # Store existing cell attributes for creating undo operation
         old_cell_attrs = self.cell_attributes[:]
 
-        if axis < 2:
-            # Adjust selections
-
-            if cell_attrs is None:
-                cell_attrs = []
-
-                for key in self.cell_attributes:
-                    selection, table, value = key
-                    if tab is None or tab == table:
-                        new_sel = copy(selection)
-                        new_val = copy(value)
-                        new_sel.insert(insertion_point, no_to_insert, axis)
-                        # Update merge area if present
-                        if "merge_area" in value and \
-                           value["merge_area"] is not None:
-                            top, left, bottom, right = value["merge_area"]
-                            ma_sel = Selection([(top, left)],
-                                               [(bottom, right)], [], [], [])
-                            ma_sel.insert(insertion_point, no_to_insert, axis)
-                            __top, __left = ma_sel.block_tl[0]
-                            __bottom, __right = ma_sel.block_br[0]
-
-                            new_val["merge_area"] = \
-                                __top, __left, __bottom, __right
-
-                        cell_attrs.append((new_sel, table, new_val))
-
+        if cell_attrs:
             self.cell_attributes[:] = cell_attrs
 
-            self.cell_attributes._attr_cache.clear()
+        elif axis < 2:
+            # Adjust selections on given table
+
+            for selection, table, attrs in self.cell_attributes:
+                if tab is None or tab == table:
+                    selection.insert(insertion_point, no_to_insert, axis)
+                    # Update merge area if present
+                    self._adjust_merge_area(attrs, insertion_point,
+                                            no_to_insert, axis)
 
         elif axis == 2:
             # Adjust tabs
-            new_tabs = []
-            for selection, old_tab, value in self.cell_attributes:
-                if old_tab > insertion_point and \
-                   (tab is None or tab == old_tab):
-                    new_tabs.append((selection, old_tab + no_to_insert, value))
-                else:
-                    new_tabs.append(None)
 
-            for i, sel_tab_val in enumerate(new_tabs):
-                if sel_tab_val is not None:
-                    self.dict_grid.cell_attributes.set_item(i, sel_tab_val)
+            pop_indices = []
 
-            self.cell_attributes._attr_cache.clear()
+            for i, cell_attribute in enumerate(self.cell_attributes):
+                selection, table, value = cell_attribute
 
-        else:
-            raise ValueError("Axis must be in [0, 1, 2]")
+                if no_to_insert < 0 and insertion_point <= table:
+                    if insertion_point > table + no_to_insert:
+                        # Delete later
+                        pop_indices.append(i)
+                    else:
+                        replace_cell_attributes_table(i, table + no_to_insert)
+
+                elif insertion_point < table:
+                    # Insert
+                    replace_cell_attributes_table(i, table + no_to_insert)
+
+            for i in pop_indices[::-1]:
+                self.cell_attributes.pop(i)
+
+        self.cell_attributes._attr_cache.clear()
 
         undo_operation = (self._adjust_cell_attributes,
                           [insertion_point, -no_to_insert, axis, tab,
@@ -890,7 +940,7 @@ class DataArray(object):
         self._adjust_rowcol(insertion_point, no_to_insert, axis, tab=tab,
                             mark_unredo=False)
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis,
-                                     tab=tab, mark_unredo=False)
+                                     tab, mark_unredo=False)
 
         for key in new_keys:
             self.__setitem__(key, new_keys[key], mark_unredo=False)
@@ -900,7 +950,7 @@ class DataArray(object):
     def delete(self, deletion_point, no_to_delete, axis, tab=None):
         """Deletes no_to_delete rows/cols/... starting with deletion_point
 
-        Axis specifies number of dimension, i.e. 0 == row, 1 == col, ...
+        Axis specifies number of dimension, i.e. 0 == row, 1 == col, 2 == tab
 
         """
 
@@ -947,7 +997,7 @@ class DataArray(object):
         self._adjust_rowcol(deletion_point, -no_to_delete, axis, tab=tab,
                             mark_unredo=False)
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
-                                     tab=tab, mark_unredo=False)
+                                     tab, mark_unredo=False)
 
         self.unredo.mark()
 
