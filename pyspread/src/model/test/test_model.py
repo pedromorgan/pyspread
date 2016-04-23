@@ -261,6 +261,8 @@ class TestDataArray(object):
          'src': (4, 3, 1), 'target': (4, 8, 1)},
         {'inspoint': 0, 'noins': -1, 'axis': 2,
          'src': (4, 3, 1), 'target': None},
+        {'inspoint': 0, 'noins': -1, 'axis': 2,
+         'src': (4, 3, 2), 'target': (4, 3, 1)},
     ]
 
     @params(param_adjust_cell_attributes)
