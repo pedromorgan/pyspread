@@ -259,6 +259,8 @@ class TestDataArray(object):
          'src': (4, 3, 0), 'target': (4, 8, 0)},
         {'inspoint': 1, 'noins': 5, 'axis': 1,
          'src': (4, 3, 1), 'target': (4, 8, 1)},
+        {'inspoint': 0, 'noins': -1, 'axis': 2,
+         'src': (4, 3, 1), 'target': None},
     ]
 
     @params(param_adjust_cell_attributes)
@@ -273,8 +275,15 @@ class TestDataArray(object):
         self.data_array._set_cell_attributes(attrs)
         self.data_array._adjust_cell_attributes(inspoint, noins, axis)
 
-        for key in val:
-            assert self.data_array.cell_attributes[target][key] == val[key]
+        if target is None:
+            for key in val:
+                # Should be at default value
+                cell_attributes = self.data_array.cell_attributes
+                default_ca = cell_attributes.default_cell_attributes[key]
+                assert cell_attributes[src][key] == default_ca
+        else:
+            for key in val:
+                assert self.data_array.cell_attributes[target][key] == val[key]
 
     param_test_insert = [
         {
