@@ -27,6 +27,8 @@ Helper functions for unit tests
 
 """
 
+import copy
+
 import wx
 
 # Standard grid values for initial filling
@@ -89,3 +91,17 @@ def pytest_generate_tests(metafunc):
 
     for funcargs in getattr(metafunc.function, 'funcarglist', ()):
         metafunc.addcall(funcargs=funcargs)
+
+
+#def unredotest(function):
+#    """Tests if the model is identical after an uno and a redo"""
+#
+#    def wrapper(self, *args, **kwargs):
+#        function(self, *args, **kwargs)
+#        model = copy(self)
+#        self.undo()
+#        self.redo()
+#        new_model = self
+#        assert model == new_model
+#
+#    return wrapper
