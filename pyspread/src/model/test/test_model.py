@@ -29,6 +29,7 @@ Unit tests for model.py
 """
 
 import ast
+from copy import deepcopy
 import fractions  ## Yes, it is required
 import math  ## Yes, it is required
 import os
@@ -45,7 +46,7 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
-from src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import params, pytest_generate_tests, unredotest_model
 
 from src.model.model import KeyValueStore, CellAttributes, DictGrid
 from src.model.model import DataArray, CodeArray
@@ -176,6 +177,7 @@ class TestDataArray(object):
 
         assert sorted(self.data_array.keys()) == [(1, 2, 3), (1, 2, 4)]
 
+    @unredotest_model
     def test_pop(self):
         """Unit test for pop"""
 
@@ -186,13 +188,16 @@ class TestDataArray(object):
 
         assert sorted(self.data_array.keys()) == [(1, 2, 4)]
 
-    def test_shape(self):
-        """Unit test for _get_shape and _set_shape"""
+    def test_get_shape(self):
+        """Unit test for _get_shape"""
 
         assert self.data_array.shape == (100, 100, 100)
 
-        self.data_array.shape = (10000, 100, 100)
+    @unredotest_model
+    def test_set_shape(self):
+        """Unit test for _set_shape"""
 
+        self.data_array.shape = (10000, 100, 100)
         assert self.data_array.shape == (10000, 100, 100)
 
     param_get_last_filled_cell = [
@@ -457,10 +462,27 @@ class TestCodeArray(object):
 
         self.code_array = CodeArray((100, 10, 3))
 
+    param_test_setitem = [
+        {"data": {(2, 3, 2): "42"},
+         "items": {(1, 3, 2): "42"},
+         "res_data": {(1, 3, 2): "42", (2, 3, 2): "42"},
+         },
+    ]
+
+    @params(param_test_setitem)
+    def test_setitem(self, data, items, res_data):
+        """Unit test for __setitem__"""
+
+        self.code_array.dict_grid.update(data)
+        for key in items:
+            self.code_array[key] = items[key]
+        for key in res_data:
+            assert res_data[key] == self.code_array(key)
+
     def test_slicing(self):
         """Unit test for __getitem__ and __setitem__"""
 
-        #Test for item getting, slicing, basic evaluation correctness
+        # Test for item getting, slicing, basic evaluation correctness
 
         shape = self.code_array.shape
         x_list = [0, shape[0]-1]
@@ -495,10 +517,9 @@ class TestCodeArray(object):
                 filled_grid[1, 0, 0] = "math = __import__('math')"
                 filled_grid[1, 0, 0]
                 filled_grid[j, 3, 0] = funcname + ' (' + str(i) + ')'
-                #res = eval(funcname + "(" + "i" + ")")
 
                 assert filled_grid[j, 3, 0] == eval(funcname + "(" + "i" + ")")
-        #Test X, Y, Z
+        # Test X, Y, Z
         for i in xrange(10):
             self.code_array[i, 0, 0] = str(i)
         assert [self.code_array((i, 0, 0)) for i in xrange(10)] == \
@@ -512,9 +533,6 @@ class TestCodeArray(object):
         filled_grid[1, 0, 0] = "sum(S[0,0,0])"
 
         assert filled_grid[1, 0, 0] == sum(numpy.arange(0, 10, 0.1))
-
-        ##filled_grid[0, 0, 0] = "S[5:10, 1, 0]"
-        ##assert filled_grid[0, 0, 0].tolist() == range(7, 12)
 
     def test_make_nested_list(self):
         """Unit test for _make_nested_list"""

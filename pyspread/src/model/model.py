@@ -265,6 +265,17 @@ class DataArray(object):
         # Safe mode
         self.safe_mode = False
 
+    def __eq__(self, other):
+        if not hasattr(other, "dict_grid") or \
+           not hasattr(other, "cell_attributes"):
+            return NotImplemented
+
+        return self.dict_grid == other.dict_grid and \
+            self.cell_attributes == other.cell_attributes
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     # Data is the central content interface for loading / saving data.
     # It shall be used for loading and saving from and to pys and other files.
     # It shall be used for loading and saving macros.

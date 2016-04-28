@@ -27,7 +27,7 @@ Helper functions for unit tests
 
 """
 
-import copy
+from copy import deepcopy
 
 import wx
 
@@ -93,15 +93,29 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs=funcargs)
 
 
-#def unredotest(function):
-#    """Tests if the model is identical after an uno and a redo"""
-#
-#    def wrapper(self, *args, **kwargs):
-#        function(self, *args, **kwargs)
-#        model = copy(self)
-#        self.undo()
-#        self.redo()
-#        new_model = self
-#        assert model == new_model
-#
-#    return wrapper
+def unredo_test(grid):
+    """Tests if the model is identical after an undo and a redo"""
+
+    code_array = deepcopy(grid.code_array)
+    grid.actions.undo()
+    grid.actions.redo()
+    assert code_array.dict_grid == grid.code_array.dict_grid
+    assert code_array == grid.code_array
+
+
+def unredotest_model(function):
+    """Tests if the model is identical after an undo and a redo
+
+    The wrapped function's self must be the code_array or the data_array.
+    This function should be used nfor unit tests from within model.py
+
+    """
+
+    def wrapper(self, *args, **kwargs):
+        function(self, *args, **kwargs)
+        code_array = deepcopy(self.data_array)
+        self.data_array.unredo.undo()
+        self.data_array.unredo.redo()
+        assert code_array == self.data_array
+
+    return wrapper

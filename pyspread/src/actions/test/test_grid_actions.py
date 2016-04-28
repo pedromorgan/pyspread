@@ -50,7 +50,7 @@ sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 from src.gui._main_window import MainWindow
 from src.lib.selection import Selection
 
-from src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import params, pytest_generate_tests, unredo_test
 from src.lib.testlib import basic_setup_test, restore_basic_grid
 
 from src.gui._events import *
@@ -398,6 +398,9 @@ class TestTableRowActionsMixins(object):
         row_heights = self.grid.code_array.row_heights
         assert row_heights[row, tab] == height
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
+
     param_insert_rows = [
         {'row': -1, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'row': -1, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': None},
@@ -415,6 +418,9 @@ class TestTableRowActionsMixins(object):
 
         basic_setup_test(self.grid, self.grid.actions.insert_rows, test_key,
                          test_val, row, no_rows=no_rows)
+
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
 
     param_delete_rows = [
         {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
@@ -435,6 +441,8 @@ class TestTableRowActionsMixins(object):
         basic_setup_test(self.grid, self.grid.actions.delete_rows, test_key,
                          test_val, row, no_rows=no_rows)
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
 
 class TestTableColumnActionsMixin(object):
     """Unit test class for TableColumnActionsMixin"""
@@ -457,6 +465,9 @@ class TestTableColumnActionsMixin(object):
         self.grid.actions.set_col_width(col, width)
         col_widths = self.grid.code_array.col_widths
         assert col_widths[col, tab] == width
+
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
 
     param_set_col_width_selection = [
         {'cursorCol': 1, 'tab': 0, 'width': 7,
@@ -558,6 +569,9 @@ class TestTableColumnActionsMixin(object):
         basic_setup_test(self.grid, self.grid.actions.insert_cols, test_key,
                          test_val, col, no_cols=no_cols)
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
+
     param_delete_cols = [
         {'col': -1, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'col': -1, 'no_cols': 1, 'test_key': (0, 2, 0), 'test_val': None},
@@ -577,6 +591,8 @@ class TestTableColumnActionsMixin(object):
         basic_setup_test(self.grid, self.grid.actions.delete_cols, test_key,
                          test_val, col, no_cols=no_cols)
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
 
 class TestTableTabActionsMixin(object):
     """Unit test class for TableTabActionsMixin"""
@@ -602,6 +618,9 @@ class TestTableTabActionsMixin(object):
         basic_setup_test(self.grid, self.grid.actions.insert_tabs, test_key,
                          test_val, tab, no_tabs=no_tabs)
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
+
     param_delete_tabs = [
         {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'tab': 0, 'no_tabs': 1, 'test_key': (0, 2, 0), 'test_val': None},
@@ -618,6 +637,8 @@ class TestTableTabActionsMixin(object):
         basic_setup_test(self.grid, self.grid.actions.delete_tabs, test_key,
                          test_val, tab, no_tabs=no_tabs)
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
 
 class TestTableActions(object):
     """Unit test class for TableActions"""
@@ -667,6 +688,9 @@ class TestTableActions(object):
         basic_setup_test(self.grid, self.grid.actions.paste, test_key,
                          test_val, tl_cell, data)
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
+
     param_change_grid_shape = [
         {'shape': (1, 1, 1)},
         {'shape': (2, 1, 3)},
@@ -688,6 +712,9 @@ class TestTableActions(object):
 
         br_key = tuple(dim - 1 for dim in shape)
         assert self.grid.code_array(br_key) is None
+
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
 
     param_replace_cells = [
         {'key': (0, 0, 0), 'sorted_row_idxs': [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -731,6 +758,9 @@ class TestTableActions(object):
 
         assert self.grid.code_array(res_key) == res
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
+
     param_sort_ascending = [
         {'key': (0, 0, 0), 'selection': Selection([], [], [], [], []),
          'res_key': (0, 0, 0), 'res': "1"},
@@ -771,6 +801,9 @@ class TestTableActions(object):
         try:
             self.grid.actions.sort_ascending(key)
             assert self.grid.code_array(res_key) == res
+
+            # Test equality of code_array after undo and subsequent redo
+            unredo_test(self.grid)
 
         except TypeError:
             assert res == 'fail'
@@ -815,6 +848,9 @@ class TestTableActions(object):
         try:
             self.grid.actions.sort_descending(key)
             assert self.grid.code_array(res_key) == res
+
+            # Test equality of code_array after undo and subsequent redo
+            unredo_test(self.grid)
 
         except TypeError:
             assert res == 'fail'
@@ -1045,6 +1081,9 @@ class TestSelectionActions(object):
         # Make sure that the result cache is empty
         assert not self.grid.code_array.result_cache
 
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
+
     def test_quote_selection(self):
         """Tests for quote_selection"""
 
@@ -1058,6 +1097,9 @@ class TestSelectionActions(object):
 
         assert self.grid.code_array((1, 0, 0)) == 'u"Q1"'
         assert self.grid.code_array((2, 0, 0)) == 'u"NQ1"'
+
+        # Test equality of code_array after undo and subsequent redo
+        unredo_test(self.grid)
 
 
 class TestFindActions(object):
