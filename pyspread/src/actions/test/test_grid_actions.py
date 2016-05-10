@@ -444,6 +444,7 @@ class TestTableRowActionsMixins(object):
         # Test equality of code_array after undo and subsequent redo
         unredo_test(self.grid)
 
+
 class TestTableColumnActionsMixin(object):
     """Unit test class for TableColumnActionsMixin"""
 
@@ -594,6 +595,7 @@ class TestTableColumnActionsMixin(object):
         # Test equality of code_array after undo and subsequent redo
         unredo_test(self.grid)
 
+
 class TestTableTabActionsMixin(object):
     """Unit test class for TableTabActionsMixin"""
 
@@ -640,6 +642,7 @@ class TestTableTabActionsMixin(object):
         # Test equality of code_array after undo and subsequent redo
         unredo_test(self.grid)
 
+
 class TestTableActions(object):
     """Unit test class for TableActions"""
 
@@ -652,6 +655,8 @@ class TestTableActions(object):
         {'tl_cell': (0, 0, 0), 'data': [["78"]],
          'test_key': (0, 0, 0), 'test_val': "78"},
         {'tl_cell': (40, 0, 0), 'data': [[None]],
+         'test_key': (40, 0, 0), 'test_val': None},
+        {'tl_cell': (40, 0, 0), 'data': [[""]],
          'test_key': (40, 0, 0), 'test_val': None},
         {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
          'test_key': (0, 0, 0), 'test_val': "1"},
@@ -930,6 +935,7 @@ class TestGridActions(object):
         {'col': 0, 'col_size': 1.0, 'zoom': 2.0, 'res': 2.0},
         {'col': 0, 'col_size': 100.0, 'zoom': 10.0, 'res': 1000.0},
     ]
+
     @params(param_zoom_cols)
     def test_zoom_cols(self, col, col_size, zoom, res):
         """Unit test for zoom_cols"""

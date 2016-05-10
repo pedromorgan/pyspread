@@ -658,7 +658,7 @@ class DataArray(object):
             else:
                 # Value is empty --> delete cell
                 try:
-                    self.dict_grid.pop(key)
+                    self.pop(key)
 
                 except (KeyError, TypeError):
                     pass
