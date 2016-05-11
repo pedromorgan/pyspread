@@ -1,25 +1,26 @@
 # Brazilian Portuguese translation for pyspread
-# Copyright (C) 2013 Free Software Foundation, Inc.
+# Copyright (C) 2016 Free Software Foundation, Inc.
 # This file is distributed under the same license as the pyspread package.
 # Enrico Nicoletto <liverig@gmail.com>, 2013, 2014.
-#
+# Rafael Fontenelle <rffontenelle@gmail.com>, 2016.
 msgid ""
 msgstr ""
-"Project-Id-Version: pyspread-0.3.0\n"
+"Project-Id-Version: pyspread-1.0.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-01-15 21:24+0100\n"
-"PO-Revision-Date: 2014-07-14 10:36-0300\n"
-"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
+"PO-Revision-Date: 2016-05-10 11:28-0200\n"
+"Last-Translator: Rafael Fontenelle <rffontenelle@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <ldpbr-translation@lists.sourceforge.net>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.5\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
 
 #: src/gui/_main_window.py:131
 msgid "Welcome to pyspread."
-msgstr "Seja bem vindo(a) ao pyspread."
+msgstr "Bem-vindo(a) ao pyspread."
 
 #: src/gui/_main_window.py:188 src/gui/_main_window.py:217
 #: src/gui/_menubars.py:281
@@ -43,10 +44,8 @@ msgstr "Barra de ferramentas de pesquisa"
 
 #: src/gui/_main_window.py:193 src/gui/_main_window.py:234
 #: src/gui/_menubars.py:287
-#, fuzzy
-#| msgid "Find toolbar"
 msgid "Widget toolbar"
-msgstr "Barra de ferramentas de pesquisa"
+msgstr "Barra de ferramentas de widget"
 
 #: src/gui/_main_window.py:194 src/gui/_main_window.py:238
 #: src/gui/_menubars.py:297
@@ -63,11 +62,11 @@ msgstr "Grade principal"
 
 #: src/gui/_main_window.py:558
 msgid "Python gnupg not found. No key selected."
-msgstr ""
+msgstr "Python gnupg não localizado. Nenhuma chave selecionada."
 
 #: src/gui/_main_window.py:559
 msgid "Key selection failed."
-msgstr ""
+msgstr "Seleção da chave falhou."
 
 #: src/gui/_main_window.py:721
 msgid "New grid with dimensions {dim} created."
@@ -106,44 +105,32 @@ msgid "Choose file to import."
 msgstr "Escolha o arquivo para importar."
 
 #: src/gui/_main_window.py:1016
-#, fuzzy
-#| msgid "Select bitmap for current cell"
 msgid "SVG of current cell"
-msgstr "Selecione o bitmap para a célula atual"
+msgstr "SVG da célula atual"
 
 #: src/gui/_main_window.py:1017
-#, fuzzy
-#| msgid "Select bitmap for current cell"
 msgid "EPS of current cell"
-msgstr "Selecione o bitmap para a célula atual"
+msgstr "EPS da célula atual"
 
 #: src/gui/_main_window.py:1018
-#, fuzzy
-#| msgid "Select bitmap for current cell"
 msgid "PS of current cell"
-msgstr "Selecione o bitmap para a célula atual"
+msgstr "PS da célula atual"
 
 #: src/gui/_main_window.py:1019
-#, fuzzy
-#| msgid "Select bitmap for current cell"
 msgid "PDF of current cell"
-msgstr "Selecione o bitmap para a célula atual"
+msgstr "PDF da célula atual"
 
 #: src/gui/_main_window.py:1020
-#, fuzzy
-#| msgid "Go to cell"
 msgid "PNG of current cell"
-msgstr "Vai para célula"
+msgstr "PNG da célula atual"
 
 #: src/gui/_main_window.py:1027
 msgid "Choose filename for export."
 msgstr "Escolha o nome de arquivo para exportar."
 
 #: src/gui/_main_window.py:1058
-#, fuzzy
-#| msgid "Choose filename for export."
 msgid "Choose file path for PDF export."
-msgstr "Escolha o nome de arquivo para exportar."
+msgstr "Escolha o caminho de arquivo para exportar para PDF."
 
 #: src/gui/_main_window.py:1078
 msgid ""
@@ -261,7 +248,7 @@ msgstr "Cabeçalho presente"
 
 #: src/gui/_dialogs.py:208
 msgid "Analyze the CSV file and treat the first row as strings if it appears to be a series of column headers."
-msgstr "Analiza o arquivo CSV e trata a primeira linha como strings se esta parece ser uma série de cabeçalhos de coluna."
+msgstr "Analisa o arquivo CSV e trata a primeira linha como strings se esta parece ser uma série de cabeçalhos de coluna."
 
 #: src/gui/_dialogs.py:210
 msgid "Skip initial space"
@@ -378,7 +365,7 @@ msgid ""
 msgstr ""
 "pyspread {version}\n"
 "Direitos autorais Martin Manns\n"
-"Tradução brasileira: Enrico Nicoletto"
+"Tradução brasileira: Enrico Nicoletto e Rafael Fontenelle"
 
 #: src/gui/_dialogs.py:1241
 msgid "Max. undo steps"
@@ -438,7 +425,7 @@ msgstr "Intervalo para atualização periódica de células cronometradas."
 
 #: src/gui/_dialogs.py:1290
 msgid "GPG fingerprint"
-msgstr ""
+msgstr "Impressão digital GPG"
 
 #: src/gui/_dialogs.py:1291
 msgid "Fingerprint of the GPG key for signing files"
@@ -623,14 +610,12 @@ msgid "Change preferences of pyspread"
 msgstr "Altera as preferências do pyspread"
 
 #: src/gui/_menubars.py:214
-#, fuzzy
-#| msgid "New GPG key"
 msgid "Switch GPG key..."
-msgstr "Nova chave GPG"
+msgstr "Alternar chave GPG..."
 
 #: src/gui/_menubars.py:215
 msgid "Create or choose a GPG key pair for signing and verifying pyspread files"
-msgstr ""
+msgstr "Cria ou escolhe um par de chaves GPG para assinatura ou verificação de arquivos pyspread"
 
 #: src/gui/_menubars.py:218
 msgid "&Quit"
@@ -665,8 +650,6 @@ msgid "Copy the input strings of the cells to clipboard"
 msgstr "Copia as strings de entrada das células para a área de transferência"
 
 #: src/gui/_menubars.py:232
-#, fuzzy
-#| msgid "Copy &Results"
 msgid "Copy &results"
 msgstr "Copiar &resultados"
 
@@ -756,11 +739,11 @@ msgstr "&Visão"
 
 #: src/gui/_menubars.py:276
 msgid "Fullscreen"
-msgstr ""
+msgstr "Tela cheia"
 
 #: src/gui/_menubars.py:277
 msgid "Shows grid in fullscreen mode. Press <F11> to leave."
-msgstr ""
+msgstr "Mostra grade no modo tela cheia. Pressione <F11> para sair."
 
 #: src/gui/_menubars.py:280
 msgid "Toolbars"
@@ -768,29 +751,27 @@ msgstr "Barras de ferramentas"
 
 #: src/gui/_menubars.py:282
 msgid "Shows and hides the main toolbar."
-msgstr "Mostra/oculta a barra de ferramentas principal"
+msgstr "Mostra/oculta a barra de ferramentas principal."
 
 #: src/gui/_menubars.py:285
 msgid "Shows and hides the macro toolbar."
-msgstr "Mostra/oculta a barra de ferramentas de macros"
+msgstr "Mostra/oculta a barra de ferramentas de macros."
 
 #: src/gui/_menubars.py:288
-#, fuzzy
-#| msgid "Shows and hides the find toolbar."
 msgid "Shows and hides the widget toolbar."
-msgstr "Mostra/oculta a barra de ferramentas de pesquisa"
+msgstr "Mostra/oculta a barra de ferramentas de widgets."
 
 #: src/gui/_menubars.py:292
 msgid "Shows and hides the format toolbar."
-msgstr "Mostra/oculta a barra de ferramentas de formatação"
+msgstr "Mostra/oculta a barra de ferramentas de formatação."
 
 #: src/gui/_menubars.py:295
 msgid "Shows and hides the find toolbar."
-msgstr "Mostra/oculta a barra de ferramentas de pesquisa"
+msgstr "Mostra/oculta a barra de ferramentas de pesquisa."
 
 #: src/gui/_menubars.py:298
 msgid "Shows and hides the entry line."
-msgstr "Mostra/oculta a linha de entrada"
+msgstr "Mostra/oculta a linha de entrada."
 
 #: src/gui/_menubars.py:301
 msgid "Go to cell"
@@ -909,14 +890,12 @@ msgid "Launch color dialog to specify background color."
 msgstr "Executa o diálogo de cores para especificar cor de plano de fundo."
 
 #: src/gui/_menubars.py:342 src/gui/_toolbars.py:511
-#, fuzzy
-#| msgid "Marker"
 msgid "Markup"
-msgstr "Marcador"
+msgstr "Marcação"
 
 #: src/gui/_menubars.py:343
 msgid "Show cell result as Pango markup"
-msgstr ""
+msgstr "Mostra o resultado da célula como uma marcação Pango"
 
 #: src/gui/_menubars.py:345 src/gui/_toolbars.py:538
 msgid "Justification"
@@ -952,43 +931,35 @@ msgstr "Rotação"
 
 #: src/gui/_menubars.py:358
 msgid "0°"
-msgstr ""
+msgstr "0°"
 
 #: src/gui/_menubars.py:358
-#, fuzzy
-#| msgid "Set text rotation."
 msgid "Set text rotation to 0°"
-msgstr "Definir rotação de texto."
+msgstr "Define rotação de texto para 0°"
 
 #: src/gui/_menubars.py:360
 msgid "90°"
-msgstr ""
+msgstr "90°"
 
 #: src/gui/_menubars.py:360
-#, fuzzy
-#| msgid "Set text rotation."
 msgid "Set text rotation to 90°"
-msgstr "Definir rotação de texto."
+msgstr "Define rotação de texto para 90°"
 
 #: src/gui/_menubars.py:362
 msgid "180°"
-msgstr ""
+msgstr "180°"
 
 #: src/gui/_menubars.py:362
-#, fuzzy
-#| msgid "Set text rotation."
 msgid "Set text rotation to 180°"
-msgstr "Definir rotação de texto."
+msgstr "Define rotação de texto para 180°"
 
 #: src/gui/_menubars.py:364
 msgid "270°"
-msgstr ""
+msgstr "270°"
 
 #: src/gui/_menubars.py:364
-#, fuzzy
-#| msgid "Set text rotation."
 msgid "Set text rotation to 270°"
-msgstr "Definir rotação de texto."
+msgstr "Define rotação de texto para 270°"
 
 #: src/gui/_menubars.py:367
 msgid "Frozen"
@@ -996,7 +967,7 @@ msgstr "Congelada"
 
 #: src/gui/_menubars.py:368
 msgid "Toggles frozen state of cell. "
-msgstr "Alterna o estado congelado da célula."
+msgstr "Alterna o estado congelado da célula. "
 
 #: src/gui/_menubars.py:369
 msgid "Frozen cells are updated only when F5 is pressed."
@@ -1016,7 +987,7 @@ msgstr "Mesclar células"
 
 #: src/gui/_menubars.py:374
 msgid "Merges / unmerges selected cells. "
-msgstr "Mesclar / não mesclar células selecionadas."
+msgstr "Mesclar / não mesclar células selecionadas. "
 
 #: src/gui/_menubars.py:376
 msgid "&Macro"
@@ -1115,10 +1086,8 @@ msgid "Save"
 msgstr "Salvar"
 
 #: src/gui/_toolbars.py:164
-#, fuzzy
-#| msgid "&Export"
 msgid "Export PDF"
-msgstr "&Exportar"
+msgstr "Exportar para PDF"
 
 #: src/gui/_toolbars.py:166
 msgid "Undo"
@@ -1145,8 +1114,6 @@ msgid "Copy"
 msgstr "Copiar"
 
 #: src/gui/_toolbars.py:174
-#, fuzzy
-#| msgid "Copy Results"
 msgid "Copy results"
 msgstr "Copiar resultados"
 
@@ -1180,11 +1147,11 @@ msgstr "Inserir gráfico"
 
 #: src/gui/_toolbars.py:218
 msgid "Button like cell"
-msgstr ""
+msgstr "Botão como célula"
 
 #: src/gui/_toolbars.py:227
 msgid "Button label:"
-msgstr ""
+msgstr "Rótulo de botão:"
 
 #: src/gui/_toolbars.py:293
 msgid "Find in code and results"
@@ -1256,17 +1223,15 @@ msgstr "Cor do texto"
 
 #: src/gui/_grid.py:413
 msgid "Bitmap file"
-msgstr ""
+msgstr "Arquivo bitmap"
 
 #: src/gui/_grid.py:415 src/lib/filetypes.py:81
 msgid "SVG file"
 msgstr "Arquivo SVG"
 
 #: src/gui/_grid.py:417
-#, fuzzy
-#| msgid "Select bitmap for current cell"
 msgid "Select image for current cell"
-msgstr "Selecione o bitmap para a célula atual"
+msgstr "Selecione a imagem para a célula atual"
 
 #: src/gui/_grid.py:460
 msgid "Select bitmap for current cell"
@@ -1314,15 +1279,15 @@ msgstr "Falha na ordenação: {}"
 
 #: src/gui/_cairo_export_dialog.py:80
 msgid "Layout"
-msgstr ""
+msgstr "Layout"
 
 #: src/gui/_cairo_export_dialog.py:81
 msgid "Portrait"
-msgstr ""
+msgstr "Retrato"
 
 #: src/gui/_cairo_export_dialog.py:81
 msgid "Landscape"
-msgstr ""
+msgstr "Paisagem"
 
 #: src/gui/_cairo_export_dialog.py:84 src/gui/_chart_dialog.py:878
 #: src/gui/_chart_dialog.py:1096
@@ -1330,48 +1295,36 @@ msgid "Width"
 msgstr "Espessura"
 
 #: src/gui/_cairo_export_dialog.py:87
-#, fuzzy
-#| msgid "Right"
 msgid "Height"
-msgstr "Direita"
+msgstr "Altura"
 
 #: src/gui/_cairo_export_dialog.py:92
 msgid "Page"
-msgstr ""
+msgstr "Página"
 
 #: src/gui/_cairo_export_dialog.py:97
 msgid "Top row"
-msgstr ""
+msgstr "Linha do topo"
 
 #: src/gui/_cairo_export_dialog.py:99
-#, fuzzy
-#| msgid "Bottom"
 msgid "Bottom row"
-msgstr "Inferior"
+msgstr "Linha inferior"
 
 #: src/gui/_cairo_export_dialog.py:101
-#, fuzzy
-#| msgid "Delete columns"
 msgid "Left column"
-msgstr "Excluir colunas"
+msgstr "Coluna esquerda"
 
 #: src/gui/_cairo_export_dialog.py:104
-#, fuzzy
-#| msgid "Grid columns"
 msgid "Right column"
-msgstr "Colunas da grade"
+msgstr "Coluna da direita"
 
 #: src/gui/_cairo_export_dialog.py:106
-#, fuzzy
-#| msgid "First &Steps"
 msgid "First table"
-msgstr "Primeiros pas&sos"
+msgstr "Primeiro tabela"
 
 #: src/gui/_cairo_export_dialog.py:108
-#, fuzzy
-#| msgid "Insert &table"
 msgid "Last table"
-msgstr "Inserir &tabela"
+msgstr "Última tabela"
 
 #: src/gui/_cairo_export_dialog.py:110
 msgid "Grid"
@@ -1379,57 +1332,55 @@ msgstr "Grade"
 
 #: src/gui/_cairo_export_dialog.py:128
 msgid "{filetype}{export} options"
-msgstr ""
+msgstr "{filepath}{export} opções"
 
 #: src/gui/_cairo_export_dialog.py:142
 msgid "Choose portrait or landscape page layout"
-msgstr ""
+msgstr "Escolha layout de página em retrato ou paisagem"
 
 #: src/gui/_cairo_export_dialog.py:144 src/gui/_cairo_export_dialog.py:146
-#, fuzzy
-#| msgid "The line width in points"
 msgid "Page width in inches"
-msgstr "Espessura da linha em pontos"
+msgstr "Largura da página em polegadas"
 
 #: src/gui/_cairo_export_dialog.py:149 src/gui/_cairo_export_dialog.py:151
 msgid "Page height in inches"
-msgstr ""
+msgstr "Altura da página em polegadas"
 
 #: src/gui/_cairo_export_dialog.py:155
 msgid "Choose from predefined page layouts"
-msgstr ""
+msgstr "Escolha a partir dos layouts de página predefinidos"
 
 #: src/gui/_cairo_export_dialog.py:158 src/gui/_cairo_export_dialog.py:159
 msgid "Top row to be exported"
-msgstr ""
+msgstr "Linha do topo a ser exportada"
 
 #: src/gui/_cairo_export_dialog.py:161 src/gui/_cairo_export_dialog.py:163
 msgid "Bottom row to be exported"
-msgstr ""
+msgstr "Linha inferior a ser exportada"
 
 #: src/gui/_cairo_export_dialog.py:166
 msgid "Leftmost column to be exported"
-msgstr ""
+msgstr "Coluna mais da esquerda a ser exportada"
 
 #: src/gui/_cairo_export_dialog.py:168
 msgid "Left column to be exported"
-msgstr ""
+msgstr "Coluna da esquerda a ser exportada"
 
 #: src/gui/_cairo_export_dialog.py:171
 msgid "Rightmost column to be exported"
-msgstr ""
+msgstr "Coluna mais da direita a ser exportada"
 
 #: src/gui/_cairo_export_dialog.py:173
 msgid "Right column to be exported"
-msgstr ""
+msgstr "Coluna da direita a ser exportada"
 
 #: src/gui/_cairo_export_dialog.py:175 src/gui/_cairo_export_dialog.py:177
 msgid "First table to be exported"
-msgstr ""
+msgstr "Primeira tabela a ser exportada"
 
 #: src/gui/_cairo_export_dialog.py:179 src/gui/_cairo_export_dialog.py:181
 msgid "Last table to be exported"
-msgstr ""
+msgstr "Última tabela a ser exportada"
 
 #: src/gui/_chart_dialog.py:439
 msgid "Inside"
@@ -1517,7 +1468,7 @@ msgstr "Marcador"
 #: src/gui/_chart_dialog.py:1001
 #, python-format
 msgid "String or anything printable with ‘%s’ conversion"
-msgstr "String ou qualquer coisa que seja exibida com conversão ‘%s’ "
+msgstr "String ou qualquer coisa que seja exibida com conversão ‘%s’"
 
 #: src/gui/_chart_dialog.py:898
 msgid ""
@@ -1573,7 +1524,7 @@ msgstr "Barra"
 
 #: src/gui/_chart_dialog.py:934
 msgid "The x coordinates of the left sides of the bars"
-msgstr "As coordenadas X das porções esquerdas das barras"
+msgstr "As coordenadas x das porções esquerdas das barras"
 
 #: src/gui/_chart_dialog.py:935
 msgid "The heights of the bars"
@@ -1585,7 +1536,7 @@ msgstr "As espessuras de barras"
 
 #: src/gui/_chart_dialog.py:937
 msgid "The y coordinates of the bottom edges of the bars"
-msgstr "As coordenadas Y das porções inferiores das barras"
+msgstr "As coordenadas y das porções inferiores das barras"
 
 #: src/gui/_chart_dialog.py:948 src/gui/_chart_dialog.py:985
 #: src/gui/_chart_dialog.py:1021 src/gui/_chart_dialog.py:1481
@@ -1712,10 +1663,10 @@ msgstr "Ângulo de início"
 msgid "Shadow"
 msgstr "Sombra"
 
-# Em referência ao Gráfico de Pizza -- Enrico
+# O 'Gráfico de setores' também conhecido vulgarmente como 'gráfico de pizza'
 #: src/gui/_chart_dialog.py:1033
 msgid "Pie"
-msgstr "Gráfico de Pizza"
+msgstr "Gráfico de setores"
 
 #: src/gui/_chart_dialog.py:1037
 msgid ""
@@ -1811,7 +1762,7 @@ msgstr "Alfa"
 
 #: src/gui/_chart_dialog.py:1097
 msgid "Contour labels"
-msgstr "Rótulos de contorno "
+msgstr "Rótulos de contorno"
 
 #: src/gui/_chart_dialog.py:1098
 msgid "Font size"
@@ -2099,20 +2050,16 @@ msgid "X-axis ticks"
 msgstr "Escalas do eixo-X"
 
 #: src/gui/_chart_dialog.py:1256
-#, fuzzy
-#| msgid "X-axis ticks"
 msgid "X-axis labels"
-msgstr "Escalas do eixo-X"
+msgstr "Rótulo do eixo-X"
 
 #: src/gui/_chart_dialog.py:1261 src/gui/_chart_dialog.py:1263
 msgid "Y-axis ticks"
 msgstr "Escalas do eixo-Y"
 
 #: src/gui/_chart_dialog.py:1262
-#, fuzzy
-#| msgid "Y-axis ticks"
 msgid "Y-axis labels"
-msgstr "Escalas do eixo-Y"
+msgstr "Rótulos do eixo-Y"
 
 #: src/gui/_chart_dialog.py:1264
 msgid "X-axis grid"
@@ -2148,7 +2095,7 @@ msgstr "O título da imagem"
 
 #: src/gui/_chart_dialog.py:1283
 msgid "The label for the x axis"
-msgstr "O rótulo para o eixo X"
+msgstr "O rótulo para o eixo x"
 
 #: src/gui/_chart_dialog.py:1284
 msgid ""
@@ -2160,7 +2107,7 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:1285
 msgid "The label for the y axis"
-msgstr "O rótulo para o eixo Y"
+msgstr "O rótulo para o eixo y"
 
 #: src/gui/_chart_dialog.py:1286
 msgid ""
@@ -2179,16 +2126,12 @@ msgstr ""
 "Digite uma string, sem aspas, no formato strftime().\n"
 
 #: src/gui/_chart_dialog.py:1290
-#, fuzzy
-#| msgid "The label for the x axis"
 msgid "Custom labels for the x axis."
-msgstr "O rótulo para o eixo X"
+msgstr "Rótulos aleatórios para o eixo x."
 
 #: src/gui/_chart_dialog.py:1291
-#, fuzzy
-#| msgid "The label for the y axis"
 msgid "Custom labels for the y axis."
-msgstr "O rótulo para o eixo Y"
+msgstr "Rótulos aleatórios para o eixo y."
 
 #: src/gui/_chart_dialog.py:1449 src/gui/_chart_dialog.py:1465
 msgid "+"
@@ -2296,20 +2239,13 @@ msgstr "Nova chave GPG"
 
 #: src/lib/gpg.py:182
 msgid "After confirming this dialog, a new GPG key "
-msgstr "Após confirmar este diálogo uma nova chave GPG"
+msgstr "Após confirmar este diálogo uma nova chave GPG "
 
 #: src/lib/gpg.py:183
 msgid "'{key}' will be generated."
 msgstr "'{key}' será gerada."
 
 #: src/lib/gpg.py:184
-#, fuzzy
-#| msgid ""
-#| " \n"
-#| " \n"
-#| "This may take some time.\n"
-#| "Please wait.\n"
-#| " \n"
 msgid ""
 " \n"
 " \n"
@@ -2319,8 +2255,7 @@ msgstr ""
 " \n"
 " \n"
 "Isto pode levar algum tempo.\n"
-"Por gentileza, aguarde.\n"
-" \n"
+"Por gentileza, aguarde."
 
 #: src/lib/filetypes.py:72
 msgid "Pyspread file"
@@ -2420,14 +2355,12 @@ msgid "File format unsupported."
 msgstr "Formato de arquivo não suportado."
 
 #: src/actions/_grid_actions.py:387
-#, fuzzy
-#| msgid "Error opening file {filepath}."
 msgid "Error opening file {filepath}:"
-msgstr "Erro ao abrir arquivo {filepath}."
+msgstr "Erro ao abrir arquivo {filepath}:"
 
 #: src/actions/_grid_actions.py:411
 msgid "Error signing file. "
-msgstr "Erro ao assinar arquivo."
+msgstr "Erro ao assinar arquivo. "
 
 #: src/actions/_grid_actions.py:427
 msgid "File saved and signed"
@@ -2475,7 +2408,7 @@ msgstr "s"
 
 #: src/actions/_grid_actions.py:840
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
-msgstr "{ncells} celula{plural} colada{plural} na célula {topleft}"
+msgstr "{ncells} célula{plural} colada{plural} na célula {topleft}"
 
 #: src/actions/_grid_actions.py:877
 msgid "Pasting cells... "
@@ -2539,10 +2472,8 @@ msgid "Freezing selections is not supported."
 msgstr "Não há suporte a congelamento de seleção."
 
 #: src/interfaces/pys.py:109
-#, fuzzy
-#| msgid "File version {version} unsupported (not 0.1)."
 msgid "File version {version} unsupported (>1.0)."
-msgstr "Não há suporte à versão de arquivo {version} (não é 0.1)."
+msgstr "Não há suporte à versão de arquivo {version} (>1.0)."
 
 #: src/pyspread.py:98
 msgid "usage: %prog [options] [filename]"
@@ -2558,10 +2489,8 @@ msgid "Dimensions of empty grid (works only without filename) rows, cols, tables
 msgstr "Dimensões de linhas, colunas e tabelas da grade vazia (funciona apenas sem nome de arquivo) [padrão: %default]"
 
 #: src/pyspread.py:120
-#, fuzzy
-#| msgid "Fingerprint of the GPG key for signing files"
 msgid "Lets the user create or choose a new GPG key for signing pys files."
-msgstr "Impressão digital da chave GPG para assinar arquivos"
+msgstr "Permite que o usuário crie ou escolha uma nova chave GPG para assinatura de arquivos pys."
 
 #: src/pyspread.py:138
 msgid "Cell dimension must be > 0."
