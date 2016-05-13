@@ -172,6 +172,11 @@ class Selection(object):
 
         return Selection(block_tl, block_br, rows, cols, cells)
 
+    def __and__(self, other):
+        """Returns intersection selection of self and other"""
+
+        raise NotImplementedError
+
     def insert(self, point, number, axis):
         """Inserts number of rows/cols/tabs into selection at point on axis
         Parameters
