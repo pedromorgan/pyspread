@@ -1309,6 +1309,12 @@ class GridActions(Actions):
             return result[:-1]
 
         row, col, tab = key
+	
+        # If the cell is a button cell or a frozen cell then do nothing
+        cell_attributes = self.grid.code_array.cell_attributes
+        if cell_attributes[key]["button_cell"] or \
+           cell_attributes[key]["frozen"]:
+            return
 
         if (row, col) != self.prev_rowcol and row >= 0 and col >= 0:
             self.prev_rowcol[:] = [row, col]
