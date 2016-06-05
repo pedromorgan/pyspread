@@ -1635,8 +1635,9 @@ class SelectionActions(Actions):
         
         row, col, tab = self.grid.actions.cursor
         
-        new_cell_attributes = []
+        # Cell attributes
         
+        new_cell_attributes = []        
         selection = self.get_selection()
         if not selection:
             # Current cell is chisen for selection
