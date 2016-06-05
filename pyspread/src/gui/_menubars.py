@@ -328,9 +328,9 @@ class MainMenu(_filledMenu, EventMixin):
                           "crosshatch.")],
                  wx.ITEM_CHECK]]],
             [wx.Menu, _("F&ormat"), [
-                [item, [self.CopyFormatMsg, _("Copy format"),
+                [item, [self.CopyFormatMsg, _("Copy format") + "\tAlt+Ctrl+C",
                         _("Copy format of selection to the clipboard")]],
-                [item, [self.PasteFormatMsg, _("Paste format"),
+                [item, [self.PasteFormatMsg, _("Paste format") + "\tAlt+Ctrl+V",
                         _("Paste format of selection to the clipboard")]],
                 ["Separator"],
                 [item, [self.FontDialogMsg, _("Font..."),
