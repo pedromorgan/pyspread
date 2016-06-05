@@ -3,6 +3,16 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+1.0.3
+-----
+
+GUI translations updated
+Unmerging of cells fixed
+Font default style fixed for fonts that are originally bold
+When a table is switched, the cell editor now is closed and all changes in an open cell editor are forgotten
+Merge areas that are shifted beyond a sheet boundary via insert rows / columns are now deleted
+
+
 1.0.2
 -----
 
