@@ -175,7 +175,75 @@ class Selection(object):
     def __and__(self, other):
         """Returns intersection selection of self and other"""
 
-        raise NotImplementedError
+        block_tl = []
+        block_br = []
+        rows = []
+        cols = []
+        cells = []
+
+        # Blocks
+        # Check cells in block: If all are in other, add block else add cells
+
+        for block in zip(self.block_tl, self.block_br):
+            if block[0] in other.block_tl and block[1] in other.block_br:
+                block_tl.append(block[0])
+                block_br.append(block[1])
+            else:
+                block_cells = []
+                for row in xrange(block[0][0], block[1][0] + 1):
+                    for col in xrange(block[0][1], block[1][1] + 1):
+                       cell = row, col
+                       if cell in other:
+                           block_cells.append(cell)
+
+                if len(block_cells) == (block[1][0] + 1 - block[0][0]) * \
+                                       (block[1][1] + 1 - block[0][1]):
+                    block_tl.append(block[0])
+                    block_br.append(block[1])
+                else:
+                    cells.extend(block_cells)
+
+        # Rows
+        # If a row/col is selected in self and other then add it.
+        # Otherwise, add all cells in the respective row/col that are in other.
+        
+        for row in self.rows:
+            if row in other.rows:
+                rows.append(row)
+            else:
+                for block in zip(other.block_tl, other.block_br):
+                    if block[0][0] <= row <= block[1][0]:
+                        block_tl.append((row, block[0][1]))
+                        block_br.append((row, block[1][1]))
+                        
+                for cell in other.cells:
+                    if cell[0] == row and cell not in cells:
+                        cells.append(cell)
+
+        # Columns
+        
+        for col in self.cols:
+            if col in other.cols:
+                cols.append(col)
+            else:
+                for block in zip(other.block_tl, other.block_br):
+                    if block[0][1] <= col <= block[1][1]:
+                        block_tl.append((block[0][0], col))
+                        block_br.append((block[1][0], col))
+
+                for cell in other.cells:
+                    if cell[1] == col and cell not in cells:
+                        cells.append(cell)
+
+        # Cells
+
+        for cell in self.cells:
+            if cell in other and cell not in cells:
+                cells.append(cell)
+
+        cells = list(set(cells))
+
+	return Selection(block_tl, block_br, rows, cols, cells)
 
     def insert(self, point, number, axis):
         """Inserts number of rows/cols/tabs into selection at point on axis

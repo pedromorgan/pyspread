@@ -203,20 +203,25 @@ class TestSelection(object):
          'res': Selection([(0, 0)], [(1000, 200)], [], [], [])},
         {'s1': Selection([(0, 0)], [(1000, 200)], [], [], []),
          's2': Selection([(1, 2)], [(10, 20)], [], [], []),
-         'res': Selection([(1, 2)], [(10, 20)], [], [], [])},
+         'res': [(1, 2), (10, 20)]},
         {'s1': Selection([(0, 0)], [(1000, 200)], [], [], []),
          's2': Selection([], [], [(2)], [], []),
-         'res': Selection([(2, 0)], [(3, 200)], [], [], [])},
+         'res': [(2, 3), (2, 0), (2, 200)]},
         {'s1': Selection([(0, 0)], [(1000, 200)], [], [], []),
          's2': Selection([], [], [], [(5)], []),
-         'res': Selection([(0, 5)], [(1000, 5)], [], [], [])},
+         'res': [(0, 5), (1000, 5)]},
     ]
 
     @params(param_test_and)
     def test_and(self, s1, s2, res):
         """Unit test for __and__"""
 
-        assert s1 & s2 == res
+        s1_and_s2 = s1 & s2
+        if type(res) is type([]):
+            for cell in res:
+                assert cell in s1_and_s2
+        else:
+            assert s1_and_s2 == res
 
     param_test_insert = [
         {'sel': Selection([], [], [2], [], []),
