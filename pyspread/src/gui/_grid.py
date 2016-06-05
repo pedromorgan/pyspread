@@ -30,6 +30,9 @@ Provides
 
 """
 
+import ast
+import types
+
 import wx.grid
 import wx.lib.mixins.gridlabelrenderer as glr
 
@@ -201,6 +204,9 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
                          c_handlers.OnInsertChartDialog)
 
         # Cell attribute events
+        
+        main_window.Bind(self.EVT_CMD_COPY_FORMAT, c_handlers.OnCopyFormat)
+        main_window.Bind(self.EVT_CMD_PASTE_FORMAT, c_handlers.OnPasteFormat)        
 
         main_window.Bind(self.EVT_CMD_FONT, c_handlers.OnCellFont)
         main_window.Bind(self.EVT_CMD_FONTSIZE, c_handlers.OnCellFontSize)
@@ -572,6 +578,38 @@ class GridCellEventHandlers(object):
 
     # Cell attribute events
 
+    def OnCopyFormat(self, event):
+        """Copy format event handler"""
+        
+        new_cell_attributes = []
+
+        cell_attributes = self.grid.code_array.cell_attributes        
+        for selection, tab, attr in cell_attributes:
+            new_selection = self.grid.selection & selection
+            new_cell_attributes.append((new_selection.parameters, tab, attr))
+
+        self.grid.main_window.clipboard.set_clipboard(repr(new_cell_attributes))
+
+    def OnPasteFormat(self, event):
+        """Paste format event handler"""
+        
+        row, col, tab = self.grid.actions.cursor
+
+        cell_attributes = self.grid.code_array.cell_attributes
+
+        string_data = self.grid.main_window.clipboard.get_clipboard()
+        data = ast.literal_eval(string_data)
+        
+        assert isinstance(data, types.ListType)
+        
+        new_cell_attributes = [(Selection(*d[0]), tab, d[2]) for d in data]
+        
+        for new_cell_attribute in new_cell_attributes:
+            cell_attributes.undoable_append(new_cell_attribute)
+
+        self.grid.ForceRefresh()
+        self.grid.update_attribute_toolbar()
+        
     def OnCellFont(self, event):
         """Cell font event handler"""
 

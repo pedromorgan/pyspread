@@ -75,6 +75,9 @@ class MainWindowEventMixin(object):
 
     SpellCheckMsg, EVT_SPELL_CHECK = new_command_event()
 
+    CopyFormatMsg, EVT_CMD_COPY_FORMAT = new_command_event()
+    PasteFormatMsg, EVT_CMD_PASTE_FORMAT = new_command_event()
+
     FontDialogMsg, EVT_CMD_FONTDIALOG = new_command_event()
     TextColorDialogMsg, EVT_CMD_TEXTCOLORDIALOG = new_command_event()
     BgColorDialogMsg, EVT_CMD_BGCOLORDIALOG = new_command_event()

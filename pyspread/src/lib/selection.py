@@ -59,18 +59,12 @@ class Selection(object):
     def __nonzero__(self):
         """Returns True iif any attribute is non-empty"""
 
-        return any((self.block_tl,
-                    self.block_br,
-                    self.rows,
-                    self.cols,
-                    self.cells))
+        return any(self.parameters)
 
     def __repr__(self):
         """String output for printing selection"""
 
-        params = self.block_tl, self.block_br, self.rows, self.cols, self.cells
-
-        return "Selection" + repr(params)
+        return "Selection" + repr(self.parameters)
 
     def __eq__(self, other):
         """Returns True if self and other selection are equal
@@ -245,6 +239,18 @@ class Selection(object):
 
 	return Selection(block_tl, block_br, rows, cols, cells)
 
+    # Parameter access
+
+    @property    
+    def parameters(self):
+        """Returns tuple of selection parameters of self
+        
+        (self.block_tl, self.block_br, self.rows, self.cols, self.cells)
+        
+        """
+        
+        return self.block_tl, self.block_br, self.rows, self.cols, self.cells
+        
     def insert(self, point, number, axis):
         """Inserts number of rows/cols/tabs into selection at point on axis
         Parameters

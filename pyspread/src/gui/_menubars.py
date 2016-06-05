@@ -328,6 +328,11 @@ class MainMenu(_filledMenu, EventMixin):
                           "crosshatch.")],
                  wx.ITEM_CHECK]]],
             [wx.Menu, _("F&ormat"), [
+                [item, [self.CopyFormatMsg, _("Copy format"),
+                        _("Copy format of selection to the clipboard")]],
+                [item, [self.PasteFormatMsg, _("Paste format"),
+                        _("Paste format of selection to the clipboard")]],
+                ["Separator"],
                 [item, [self.FontDialogMsg, _("Font..."),
                         _("Launch font dialog.")]],
                 [item, [self.FontBoldMsg, _("Bold") + "\tCtrl+B",
