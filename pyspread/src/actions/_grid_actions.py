@@ -45,9 +45,12 @@ Provides:
 
 """
 
+
+import ast
 import itertools
 import src.lib.i18n as i18n
 import shutil
+import types
 
 try:
     import xlrd
@@ -1623,6 +1626,63 @@ class SelectionActions(Actions):
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
+    def copy_format(self):
+        """Copies the format of the selected cells to the Clipboard
+        
+        Cells are shifted so that the top left bbox corner is at 0,0
+        
+        """
+        
+        row, col, tab = self.grid.actions.cursor
+        
+        new_cell_attributes = []
+        
+        selection = self.get_selection()
+        if not selection:
+            # Current cell is chisen for selection
+            selection = Selection([], [], [], [], [(row, col)])
+
+        # Format content is shifted so that the top left corner is 0,0
+        top, left = [tl if tl is not None else 0
+                     for tl in selection.get_bbox()[0]]
+
+        cell_attributes = self.grid.code_array.cell_attributes        
+        for __selection, tab, attr in cell_attributes:
+            new_selection = selection & __selection
+            new_shifted_selection = new_selection.shifted(-top, -left)
+            new_cell_attributes.append(
+                (new_shifted_selection.parameters, tab, attr))
+
+        self.grid.main_window.clipboard.set_clipboard(repr(new_cell_attributes))
+
+    def paste_format(self):
+        """Pastes cell formats
+        
+        Pasting starts at cursor or at top left bbox corner
+        
+        """
+
+        row, col, tab = self.grid.actions.cursor
+        
+        selection = self.get_selection()
+        if selection:
+            # Use selection rather than cursor for top left cell if present
+            row, col = [tl if tl is not None else 0
+                        for tl in selection.get_bbox()[0]]
+            
+        cell_attributes = self.grid.code_array.cell_attributes
+
+        string_data = self.grid.main_window.clipboard.get_clipboard()
+        data = ast.literal_eval(string_data)
+        
+        assert isinstance(data, types.ListType)
+        
+        for ca_ele in data:
+            base_selection = Selection(*ca_ele[0])
+            shifted_selection = base_selection.shifted(row, col)
+            new_cell_attribute = shifted_selection, tab, ca_ele[2]
+            cell_attributes.undoable_append(new_cell_attribute)
+            
 
 class FindActions(Actions):
     """Actions for finding inside the grid"""
