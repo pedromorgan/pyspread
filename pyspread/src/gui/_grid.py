@@ -587,6 +587,7 @@ class GridCellEventHandlers(object):
         
         self.grid.ForceRefresh()
         self.grid.update_attribute_toolbar()
+        self.grid.actions.zoom()
         
     def OnCellFont(self, event):
         """Cell font event handler"""

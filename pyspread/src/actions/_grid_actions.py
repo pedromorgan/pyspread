@@ -1634,27 +1634,48 @@ class SelectionActions(Actions):
         """
         
         row, col, tab = self.grid.actions.cursor
+        code_array = self.grid.code_array
         
         # Cell attributes
         
         new_cell_attributes = []        
         selection = self.get_selection()
         if not selection:
-            # Current cell is chisen for selection
+            # Current cell is chosen for selection
             selection = Selection([], [], [], [], [(row, col)])
 
         # Format content is shifted so that the top left corner is 0,0
-        top, left = [tl if tl is not None else 0
-                     for tl in selection.get_bbox()[0]]
-
-        cell_attributes = self.grid.code_array.cell_attributes        
+        ((top, left), (bottom, right)) = \
+            selection.get_grid_bbox(self.grid.code_array.shape)
+            
+        cell_attributes = code_array.cell_attributes        
         for __selection, tab, attr in cell_attributes:
             new_selection = selection & __selection
             new_shifted_selection = new_selection.shifted(-top, -left)
             new_cell_attributes.append(
                 (new_shifted_selection.parameters, tab, attr))
 
-        self.grid.main_window.clipboard.set_clipboard(repr(new_cell_attributes))
+        # Rows
+        
+        shifted_new_row_heights = {}
+        for row, table in code_array.row_heights:
+            if tab == table and top <= row <= bottom:
+                shifted_new_row_heights[row-top, table] = \
+                    code_array.row_heights[row, table]
+                
+        # Columns
+        
+        shifted_new_col_widths = {}
+        for col, table in code_array.col_widths:
+            if tab == table and left <= col <= right:
+                shifted_new_col_widths[col-left, table] = \
+                    code_array.col_widths[col, table]
+
+        attr_string = repr((new_cell_attributes,
+                            shifted_new_row_heights,
+                            shifted_new_col_widths))
+
+        self.grid.main_window.clipboard.set_clipboard(attr_string)
 
     def paste_format(self):
         """Pastes cell formats
@@ -1674,16 +1695,32 @@ class SelectionActions(Actions):
         cell_attributes = self.grid.code_array.cell_attributes
 
         string_data = self.grid.main_window.clipboard.get_clipboard()
-        data = ast.literal_eval(string_data)
+        ca, rh, cw = ast.literal_eval(string_data)
         
-        assert isinstance(data, types.ListType)
+        assert isinstance(ca, types.ListType)
+        assert isinstance(rh, types.DictType)
+        assert isinstance(cw, types.DictType)
         
-        for ca_ele in data:
+        # Cell attributes
+        
+        for ca_ele in ca:
             base_selection = Selection(*ca_ele[0])
             shifted_selection = base_selection.shifted(row, col)
             new_cell_attribute = shifted_selection, tab, ca_ele[2]
             cell_attributes.undoable_append(new_cell_attribute)
             
+        # Row heights
+        row_heights = self.grid.code_array.row_heights
+        for __row, __tab in rh:
+            if __tab == tab:
+                row_heights[__row+row, __tab] = rh[__row,__tab]
+                
+        # Column widths
+        col_widths = self.grid.code_array.col_widths
+        for __col, __tab in cw:
+            if __tab == tab:
+                row_heights[__col+col, __tab] = cw[(__col,__tab)]
+
 
 class FindActions(Actions):
     """Actions for finding inside the grid"""
