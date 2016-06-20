@@ -129,7 +129,7 @@ class ChartFigure(Figure):
     """Chart figure class with drawing method"""
 
     plot_type_fixed_attrs = {
-        "plot": ["ydata"],
+        "plot": ["xdata", "ydata"],
         "bar": ["left", "height"],
         "boxplot": ["x"],
         "hist": ["x"],
@@ -267,7 +267,7 @@ class ChartFigure(Figure):
             if x_str in series and \
                len(series[x_str]) != len(series[y_str]):
                 # Wrong length --> ignore xdata
-                series.pop(x_str)
+                series[x_str] = range(len(series[y_str]))
             else:
                 # Solve the problem that the series data may contain utf-8 data
                 series_list = list(series[x_str])
