@@ -186,9 +186,9 @@ class Selection(object):
                 block_cells = []
                 for row in xrange(block[0][0], block[1][0] + 1):
                     for col in xrange(block[0][1], block[1][1] + 1):
-                       cell = row, col
-                       if cell in other:
-                           block_cells.append(cell)
+                        cell = row, col
+                        if cell in other:
+                            block_cells.append(cell)
 
                 if len(block_cells) == (block[1][0] + 1 - block[0][0]) * \
                                        (block[1][1] + 1 - block[0][1]):
@@ -237,7 +237,7 @@ class Selection(object):
 
         cells = list(set(cells))
 
-	return Selection(block_tl, block_br, rows, cols, cells)
+        return Selection(block_tl, block_br, rows, cols, cells)
 
     # Parameter access
 

@@ -1227,7 +1227,7 @@ class GridActions(Actions):
         tab = self.grid.current_table
         no_rows = self.grid.code_array.shape[0]
         default_row_height = self.grid.code_array.cell_attributes.\
-                                default_cell_attributes["row-height"]
+            default_cell_attributes["row-height"]
 
         non_standard_row_heights = []
         __row_heights = self.grid.code_array.row_heights
@@ -1247,7 +1247,7 @@ class GridActions(Actions):
         tab = self.grid.current_table
         no_cols = self.grid.code_array.shape[1]
         default_col_width = self.grid.code_array.cell_attributes.\
-                                default_cell_attributes["column-width"]
+            default_cell_attributes["column-width"]
 
         non_standard_col_widths = []
         __col_widths = self.grid.code_array.col_widths
@@ -1274,9 +1274,9 @@ class GridActions(Actions):
         grid_width, grid_height = self.grid.GetSize()
 
         rows_height = self._get_rows_height() + \
-                      (float(self.grid.GetColLabelSize()) / zoom)
+            (float(self.grid.GetColLabelSize()) / zoom)
         cols_width = self._get_cols_width() + \
-                     (float(self.grid.GetRowLabelSize()) / zoom)
+            (float(self.grid.GetRowLabelSize()) / zoom)
 
         # Check target zoom for rows
         zoom_height = float(grid_height) / rows_height
@@ -1723,14 +1723,12 @@ class SelectionActions(Actions):
         # Row heights
         row_heights = self.grid.code_array.row_heights
         for __row, __tab in rh:
-            if __tab == tab:
-                row_heights[__row+row, __tab] = rh[__row,__tab]
+            row_heights[__row+row, tab] = rh[__row, __tab]
 
         # Column widths
         col_widths = self.grid.code_array.col_widths
         for __col, __tab in cw:
-            if __tab == tab:
-                col_widths[__col+col, __tab] = cw[(__col,__tab)]
+            col_widths[__col+col, __tab] = cw[(__col, __tab)]
 
 
 class FindActions(Actions):
