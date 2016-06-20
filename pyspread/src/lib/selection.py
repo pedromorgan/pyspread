@@ -200,7 +200,7 @@ class Selection(object):
         # Rows
         # If a row/col is selected in self and other then add it.
         # Otherwise, add all cells in the respective row/col that are in other.
-        
+
         for row in self.rows:
             if row in other.rows:
                 rows.append(row)
@@ -209,13 +209,13 @@ class Selection(object):
                     if block[0][0] <= row <= block[1][0]:
                         block_tl.append((row, block[0][1]))
                         block_br.append((row, block[1][1]))
-                        
+
                 for cell in other.cells:
                     if cell[0] == row and cell not in cells:
                         cells.append(cell)
 
         # Columns
-        
+
         for col in self.cols:
             if col in other.cols:
                 cols.append(col)
@@ -241,16 +241,16 @@ class Selection(object):
 
     # Parameter access
 
-    @property    
+    @property
     def parameters(self):
         """Returns tuple of selection parameters of self
-        
+
         (self.block_tl, self.block_br, self.rows, self.cols, self.cells)
-        
+
         """
-        
+
         return self.block_tl, self.block_br, self.rows, self.cols, self.cells
-        
+
     def insert(self, point, number, axis):
         """Inserts number of rows/cols/tabs into selection at point on axis
         Parameters

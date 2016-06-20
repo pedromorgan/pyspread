@@ -1312,7 +1312,7 @@ class GridActions(Actions):
             return result[:-1]
 
         row, col, tab = key
-	
+
         # If the cell is a button cell or a frozen cell then do nothing
         cell_attributes = self.grid.code_array.cell_attributes
         if cell_attributes[key]["button_cell"] or \
@@ -1628,17 +1628,17 @@ class SelectionActions(Actions):
 
     def copy_format(self):
         """Copies the format of the selected cells to the Clipboard
-        
+
         Cells are shifted so that the top left bbox corner is at 0,0
-        
+
         """
-        
+
         row, col, tab = self.grid.actions.cursor
         code_array = self.grid.code_array
-        
+
         # Cell attributes
-        
-        new_cell_attributes = []        
+
+        new_cell_attributes = []
         selection = self.get_selection()
         if not selection:
             # Current cell is chosen for selection
@@ -1647,8 +1647,8 @@ class SelectionActions(Actions):
         # Format content is shifted so that the top left corner is 0,0
         ((top, left), (bottom, right)) = \
             selection.get_grid_bbox(self.grid.code_array.shape)
-            
-        cell_attributes = code_array.cell_attributes        
+
+        cell_attributes = code_array.cell_attributes
         for __selection, tab, attr in cell_attributes:
             new_selection = selection & __selection
             new_shifted_selection = new_selection.shifted(-top, -left)
@@ -1656,15 +1656,15 @@ class SelectionActions(Actions):
                 (new_shifted_selection.parameters, tab, attr))
 
         # Rows
-        
+
         shifted_new_row_heights = {}
         for row, table in code_array.row_heights:
             if tab == table and top <= row <= bottom:
                 shifted_new_row_heights[row-top, table] = \
                     code_array.row_heights[row, table]
-                
+
         # Columns
-        
+
         shifted_new_col_widths = {}
         for col, table in code_array.col_widths:
             if tab == table and left <= col <= right:
@@ -1679,47 +1679,58 @@ class SelectionActions(Actions):
 
     def paste_format(self):
         """Pastes cell formats
-        
+
         Pasting starts at cursor or at top left bbox corner
-        
+
         """
 
+        def shifted_merge_area(merge_area, rows, cols):
+            """Shifts merge area by rows and cols"""
+
+            top, left, bottom, right = merge_area
+            return top + rows, left + cols, bottom + rows, right + cols
+
         row, col, tab = self.grid.actions.cursor
-        
+
         selection = self.get_selection()
         if selection:
             # Use selection rather than cursor for top left cell if present
             row, col = [tl if tl is not None else 0
                         for tl in selection.get_bbox()[0]]
-            
+
         cell_attributes = self.grid.code_array.cell_attributes
 
         string_data = self.grid.main_window.clipboard.get_clipboard()
         ca, rh, cw = ast.literal_eval(string_data)
-        
+
         assert isinstance(ca, types.ListType)
         assert isinstance(rh, types.DictType)
         assert isinstance(cw, types.DictType)
-        
+
         # Cell attributes
-        
+
         for ca_ele in ca:
             base_selection = Selection(*ca_ele[0])
             shifted_selection = base_selection.shifted(row, col)
-            new_cell_attribute = shifted_selection, tab, ca_ele[2]
+            attrs = ca_ele[2]
+            if "merge_area" in attrs and attrs["merge_area"]:
+                attrs["merge_area"] = shifted_merge_area(attrs["merge_area"],
+                                                         row, col)
+
+            new_cell_attribute = shifted_selection, tab, attrs
             cell_attributes.undoable_append(new_cell_attribute)
-            
+
         # Row heights
         row_heights = self.grid.code_array.row_heights
         for __row, __tab in rh:
             if __tab == tab:
                 row_heights[__row+row, __tab] = rh[__row,__tab]
-                
+
         # Column widths
         col_widths = self.grid.code_array.col_widths
         for __col, __tab in cw:
             if __tab == tab:
-                row_heights[__col+col, __tab] = cw[(__col,__tab)]
+                col_widths[__col+col, __tab] = cw[(__col,__tab)]
 
 
 class FindActions(Actions):

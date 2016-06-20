@@ -201,9 +201,9 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
                          c_handlers.OnInsertChartDialog)
 
         # Cell attribute events
-        
+
         main_window.Bind(self.EVT_CMD_COPY_FORMAT, c_handlers.OnCopyFormat)
-        main_window.Bind(self.EVT_CMD_PASTE_FORMAT, c_handlers.OnPasteFormat)        
+        main_window.Bind(self.EVT_CMD_PASTE_FORMAT, c_handlers.OnPasteFormat)
 
         main_window.Bind(self.EVT_CMD_FONT, c_handlers.OnCellFont)
         main_window.Bind(self.EVT_CMD_FONTSIZE, c_handlers.OnCellFontSize)
@@ -459,7 +459,7 @@ class GridCellEventHandlers(object):
 
         wildcard = _("Bitmap file") + " (*)|*"
         if rsvg is not None:
-            wildcard += "|"+ _("SVG file") + " (*.svg)|*.svg"
+            wildcard += "|" + _("SVG file") + " (*.svg)|*.svg"
 
         message = _("Select image for current cell")
         style = wx.OPEN | wx.CHANGE_DIR
@@ -577,18 +577,18 @@ class GridCellEventHandlers(object):
 
     def OnCopyFormat(self, event):
         """Copy format event handler"""
-        
+
         self.grid.actions.copy_format()
 
     def OnPasteFormat(self, event):
         """Paste format event handler"""
-        
+
         self.grid.actions.paste_format()
-        
+
         self.grid.ForceRefresh()
         self.grid.update_attribute_toolbar()
         self.grid.actions.zoom()
-        
+
     def OnCellFont(self, event):
         """Cell font event handler"""
 
