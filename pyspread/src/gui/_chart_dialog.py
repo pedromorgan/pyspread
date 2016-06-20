@@ -70,6 +70,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 from wx.lib.intctrl import IntCtrl, EVT_INT
 import wx.lib.agw.flatnotebook as fnb
+import wx.lib.agw.floatspin as floatspin
 
 from _widgets import LineStyleComboBox, MarkerStyleComboBox
 from _widgets import CoordinatesComboBox
@@ -175,6 +176,50 @@ class IntegerEditor(IntCtrl, ChartDialogEventMixin):
     # Handlers
 
     def OnInt(self, event):
+        """Check event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
+
+
+class FloatEditor(floatspin.FloatSpin, ChartDialogEventMixin):
+    """Editor widget for integer values"""
+
+    def __init__(self, *args, **kwargs):
+        floatspin.FloatSpin.__init__(self, *args, **kwargs)
+        self.SetDigits(2)
+        self.SetIncrement(0.01)
+        self.SetRange(0.0, 1.0)
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+        self.Bind(floatspin.EVT_FLOATSPIN, self.OnFloatSpin)
+
+    def _get_code(self):
+        """Returns string representation of Integer"""
+
+        return unicode(self.GetValue())
+
+    def _set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of integer value
+
+        """
+
+        self.SetValue(float(code))
+
+    # Properties
+
+    code = property(_get_code, _set_code)
+
+    # Handlers
+
+    def OnFloatSpin(self, event):
         """Check event handler"""
 
         post_command_event(self, self.DrawChartMsg)
@@ -881,6 +926,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         "markersize": (_("Size"), IntegerEditor, "5"),
         "markerfacecolor": (_("Face color"), ColorEditor, "(0, 0, 0)"),
         "markeredgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
+        "alpha": (_("Alpha"), FloatEditor, "0.24"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -890,7 +936,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         (_("Data"), ["label", "xdata", "ydata"]),
         (_("Line"), ["linestyle", "linewidth", "color"]),
         (_("Marker"), ["marker", "markersize", "markerfacecolor",
-                       "markeredgecolor"]),
+                       "markeredgecolor", "alpha"]),
     ]
 
     tooltips = {
@@ -902,6 +948,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         "linewidth": _(u"The line width in points"),
         "marker": _(u"The line marker"),
         "markersize": _(u"The marker size in points"),
+        "alpha": _("Transparency of the plot"),
     }
 
 
