@@ -1626,6 +1626,12 @@ class SelectionActions(Actions):
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
+    def _shifted_merge_area(self, merge_area, rows, cols):
+        """Shifts merge area by rows and cols"""
+
+        top, left, bottom, right = merge_area
+        return top + rows, left + cols, bottom + rows, right + cols
+
     def copy_format(self):
         """Copies the format of the selected cells to the Clipboard
 
@@ -1649,11 +1655,16 @@ class SelectionActions(Actions):
             selection.get_grid_bbox(self.grid.code_array.shape)
 
         cell_attributes = code_array.cell_attributes
-        for __selection, tab, attr in cell_attributes:
-            new_selection = selection & __selection
-            new_shifted_selection = new_selection.shifted(-top, -left)
-            new_cell_attributes.append(
-                (new_shifted_selection.parameters, tab, attr))
+        for __selection, table, attrs in cell_attributes:
+            if tab == table:
+                new_selection = selection & __selection
+                new_shifted_selection = new_selection.shifted(-top, -left)
+                if "merge_area" in attrs and attrs["merge_area"]:
+                    attrs["merge_area"] = \
+                        self._shifted_merge_area(attrs["merge_area"],
+                                                 -top, -left)
+                new_cell_attributes.append(
+                    (new_shifted_selection.parameters, table, attrs))
 
         # Rows
 
@@ -1671,9 +1682,13 @@ class SelectionActions(Actions):
                 shifted_new_col_widths[col-left, table] = \
                     code_array.col_widths[col, table]
 
-        attr_string = repr((new_cell_attributes,
-                            shifted_new_row_heights,
-                            shifted_new_col_widths))
+        format_data = {
+            "cell_attributes": new_cell_attributes,
+            "row_heights": shifted_new_row_heights,
+            "col_widths": shifted_new_col_widths,
+        }
+
+        attr_string = repr(format_data)
 
         self.grid.main_window.clipboard.set_clipboard(attr_string)
 
@@ -1683,12 +1698,6 @@ class SelectionActions(Actions):
         Pasting starts at cursor or at top left bbox corner
 
         """
-
-        def shifted_merge_area(merge_area, rows, cols):
-            """Shifts merge area by rows and cols"""
-
-            top, left, bottom, right = merge_area
-            return top + rows, left + cols, bottom + rows, right + cols
 
         row, col, tab = self.grid.actions.cursor
 
@@ -1701,7 +1710,11 @@ class SelectionActions(Actions):
         cell_attributes = self.grid.code_array.cell_attributes
 
         string_data = self.grid.main_window.clipboard.get_clipboard()
-        ca, rh, cw = ast.literal_eval(string_data)
+        format_data = ast.literal_eval(string_data)
+
+        ca = format_data["cell_attributes"]
+        rh = format_data["row_heights"]
+        cw = format_data["col_widths"]
 
         assert isinstance(ca, types.ListType)
         assert isinstance(rh, types.DictType)
@@ -1714,8 +1727,8 @@ class SelectionActions(Actions):
             shifted_selection = base_selection.shifted(row, col)
             attrs = ca_ele[2]
             if "merge_area" in attrs and attrs["merge_area"]:
-                attrs["merge_area"] = shifted_merge_area(attrs["merge_area"],
-                                                         row, col)
+                attrs["merge_area"] = \
+                    self._shifted_merge_area(attrs["merge_area"], row, col)
 
             new_cell_attribute = shifted_selection, tab, attrs
             cell_attributes.undoable_append(new_cell_attribute)
@@ -1728,7 +1741,7 @@ class SelectionActions(Actions):
         # Column widths
         col_widths = self.grid.code_array.col_widths
         for __col, __tab in cw:
-            col_widths[__col+col, __tab] = cw[(__col, __tab)]
+            col_widths[__col+col, tab] = cw[(__col, __tab)]
 
 
 class FindActions(Actions):
