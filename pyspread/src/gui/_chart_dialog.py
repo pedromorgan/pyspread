@@ -926,7 +926,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         "markersize": (_("Size"), IntegerEditor, "5"),
         "markerfacecolor": (_("Face color"), ColorEditor, "(0, 0, 0)"),
         "markeredgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
-        "alpha": (_("Alpha"), FloatEditor, "0.24"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -948,7 +948,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         "linewidth": _(u"The line width in points"),
         "marker": _(u"The line marker"),
         "markersize": _(u"The marker size in points"),
-        "alpha": _("Transparency of the plot"),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -966,6 +966,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
         "bottom": (_("Bar bottoms"), StringEditor, ""),
         "color": (_("Bar color"), ColorEditor, "(0, 0, 0)"),
         "edgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -973,7 +974,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
 
     boxes = [
         (_("Data"), ["label", "left", "height", "width", "bottom"]),
-        (_("Bar"), ["color", "edgecolor"]),
+        (_("Bar"), ["color", "edgecolor", "alpha"]),
     ]
 
     tooltips = {
@@ -982,6 +983,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
         "height": _(u"The heights of the bars"),
         "width": _(u"The widths of the bars"),
         "bottom": _(u"The y coordinates of the bottom edges of the bars"),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -1034,6 +1036,7 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
         "normed": (_("Normed"), BoolEditor, False),
         "cumulative": (_("Cumulative"), BoolEditor, False),
         "color": (_("Color"), ColorEditor, "(0, 0, 1)"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -1041,7 +1044,7 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
 
     boxes = [
         (_("Data"), ["label", "x"]),
-        (_("Histogram"), ["bins", "normed", "cumulative", "color"]),
+        (_("Histogram"), ["bins", "normed", "cumulative", "color", "alpha"]),
     ]
 
     tooltips = {
@@ -1055,6 +1058,7 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
                     u"to form a probability density, i.e., n/(len(x)*dbin)."),
         "cumulative": _(u"If True then each bin gives the counts in that bin"
                         u"\nplus all bins for smaller values."),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -1109,13 +1113,14 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
         "s": (_("Text"), StringEditor, ""),
         "xy": (_("Point"), StringEditor, ""),
         "xycoords": (_("Coordinates"), CoordinatesEditor, "data"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Annotation"), ["s", "xy", "xycoords"]),
+        (_("Annotation"), ["s", "xy", "xycoords", "alpha"]),
     ]
 
     tooltips = {
@@ -1124,6 +1129,7 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
         "xycoords": _(u"String that indicates the coordinates of xy"),
         "xytext": _(u"Location of annotation text"),
         "textcoords": _(u"String that indicates the coordinates of xytext."),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -1138,7 +1144,7 @@ class ContourAttributesPanel(SeriesAttributesPanelBase):
         "Y": (_("Y"), StringEditor, ""),
         "Z": (_("Z"), StringEditor, ""),
         "colors": (_("Colors"), StringEditor, ""),
-        "alpha": (_("Alpha"), StringEditor, "1.0"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
         "linestyles": (_("Style"), LineStyleEditor, '-'),
         "linewidths": (_("Width"), IntegerEditor, "1"),
         "contour_labels": (_("Contour labels"), BoolEditor, True),
@@ -1211,6 +1217,7 @@ class SankeyAttributesPanel(SeriesAttributesPanelBase):
         "head_angle": (_("Angle"), IntegerEditor, "100"),
         "edgecolor": (_("Edge"), ColorEditor, "(0, 0, 1)"),
         "facecolor": (_("Face"), ColorEditor, "(0, 0, 1)"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -1219,7 +1226,7 @@ class SankeyAttributesPanel(SeriesAttributesPanelBase):
     boxes = [
         (_("Data"), ["flows", "orientations", "labels", "format", "unit"]),
         (_("Diagram"), ["rotation", "gap", "radius", "shoulder", "offset",
-                        "head_angle"]),
+                        "head_angle", "alpha"]),
         (_("Area"), ["edgecolor", "facecolor"]),
     ]
 
@@ -1256,6 +1263,7 @@ class SankeyAttributesPanel(SeriesAttributesPanelBase):
                         u"of the tails) [deg]"),
         "edgecolor": _(u"Edge color of Sankey diagram"),
         "facecolor": _(u"Face color of Sankey diagram"),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
