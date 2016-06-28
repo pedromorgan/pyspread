@@ -305,7 +305,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         if vlc is not None and key in self.video_cells and \
            grid.code_array.cell_attributes[key]["panel_cell"]:
             # Update video position of previously created video panel
-            self.video_cells[key].adjust(grid, drawn_rect)
+            self.video_cells[key].SetClientRect(drawn_rect)
 
         elif cell_cache_key in self.cell_cache:
             mdc.SelectObject(self.cell_cache[cell_cache_key])
@@ -323,7 +323,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
                     assert issubclass(panel_cls, wx.Panel)
 
                     video_panel = panel_cls(grid)
-                    video_panel.adjust(grid, drawn_rect)
+                    video_panel.SetClientRect(drawn_rect)
                     # Register video cell
                     self.video_cells[key] = video_panel
 

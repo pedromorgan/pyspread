@@ -52,43 +52,11 @@ except ImportError:
 _ = i18n.language.ugettext
 
 
-class BaseGridPanel(wx.Panel):
-    """Basic panel that provides UI functionality for usage in grid"""
-
-    def adjust(self, grid, rect):
-        """Positions and resizes video panel
-
-        Parameters
-        ----------
-        rect: 4-tuple of Integer
-        \tRect area of video panel
-
-        """
-
-        panel_posx = rect[0] + grid.GetRowLabelSize()
-        panel_posy = rect[1] + grid.GetColLabelSize()
-
-        panel_scrolled_pos = grid.CalcScrolledPosition(panel_posx, panel_posy)
-        # If the scrolled position is inside the grid labels then hide
-        self.SetPosition(panel_scrolled_pos)
-        self.SetClientRect(wx.Rect(*rect))
-
-        # Handle videos that are partly visible or that become invisible
-        row_label_size = grid.GetRowLabelSize()
-        col_label_size = grid.GetColLabelSize()
-
-        if panel_scrolled_pos[0] < row_label_size or \
-           panel_scrolled_pos[1] < col_label_size:
-            self.Hide()
-        else:
-            self.Show()
-
-
-class VLCPanel(BaseGridPanel):
+class VLCPanel(wx.Panel):
     """Basic panel that provides UI functionality for useage in grid"""
 
     def __init__(self, parent, *args, **kwargs):
-        BaseGridPanel.__init__(self, parent, *args, **kwargs)
+        wx.Panel.__init__(self, parent, *args, **kwargs)
 
         # filepath = "/home/mn/tmp/pyspread_video/pyspread_podcast_1.mp4"
 
@@ -106,7 +74,7 @@ class VLCPanel(BaseGridPanel):
         except AttributeError:
             self.volume = self.player.audio_get_volume()
 
-        self.parent = parent
+        self.grid = self.parent = parent
 
         # self.player.play()
 
@@ -122,6 +90,34 @@ class VLCPanel(BaseGridPanel):
         # The mouse wheel scrolls through the video or adjusts the timer
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
 
+    def SetClientRect(self, rect):
+        """Positions and resizes video panel
+
+        Parameters
+        ----------
+        rect: 4-tuple of Integer
+        \tRect area of video panel
+
+        """
+
+        panel_posx = rect[0] + self.grid.GetRowLabelSize()
+        panel_posy = rect[1] + self.grid.GetColLabelSize()
+
+        panel_scrolled_pos = self.grid.CalcScrolledPosition(panel_posx,
+                                                            panel_posy)
+        # If the scrolled position is inside the grid labels then hide
+        self.SetPosition(panel_scrolled_pos)
+        wx.Panel.SetClientRect(self, wx.Rect(0, 0, rect[2], rect[3]))
+
+        # Handle videos that are partly visible or that become invisible
+        row_label_size = self.grid.GetRowLabelSize()
+        col_label_size = self.grid.GetColLabelSize()
+
+        if panel_scrolled_pos[0] < row_label_size or \
+           panel_scrolled_pos[1] < col_label_size:
+            self.Hide()
+        else:
+            self.Show()
 
     # Event handlers
     # --------------

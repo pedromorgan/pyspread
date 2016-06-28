@@ -428,7 +428,10 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
             if video_cell_key[2] == self.current_table:
                 video_cell = self.grid_renderer.video_cells[video_cell_key]
                 rect = self.CellToRect(video_cell_key[0], video_cell_key[1])
-                video_cell.adjust(self, rect)
+                drawn_rect = self.grid_renderer._get_drawn_rect(self,
+                                                                video_cell_key,
+                                                                rect)
+                video_cell.SetClientRect(drawn_rect)
                 self._update_video_volume_cell_attributes(video_cell_key)
 
 # End of class Grid
