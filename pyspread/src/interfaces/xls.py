@@ -798,6 +798,22 @@ class Xls(object):
             except KeyError:
                 pass
 
+    def pys_width2xls_width(self, pys_width):
+        """Returns xls width from given pyspread width"""
+
+        width_0 = get_default_text_extent("0")[0]
+        # Scale relative to 12 point font instead of 10 point
+        width_0_char = pys_width * 1.2 / width_0
+        return int(width_0_char * 256.0)
+
+    def xls_width2pys_width(self, xls_width):
+        """Returns pyspread width from given xls width"""
+
+        width_0 = get_default_text_extent("0")[0]
+        width_0_char = xls_width / 256.0
+        # Scale relative to 10 point font instead of 12 point
+        return width_0_char * width_0 / 1.2
+
     def _col_widths2xls(self, worksheets):
         """Writes col_widths to xls file
 
@@ -811,24 +827,18 @@ class Xls(object):
 
         for col, tab in dict_grid.col_widths:
             if col < xls_max_cols and tab < xls_max_tabs:
-                width_0 = get_default_text_extent("0")[0]
-                width_pixels = dict_grid.col_widths[(col, tab)]
-                width_0_char = width_pixels * 1.2 / width_0
-
-                worksheets[tab].col(col).width_mismatch = True
-                worksheets[tab].col(col).width = int(width_0_char * 256.0)
+                pys_width = dict_grid.col_widths[(col, tab)]
+                xls_width = self.pys_width2xls_width(pys_width)
+                worksheets[tab].col(col).width = xls_width
 
     def _xls2col_widths(self, worksheet, tab):
         """Updates col_widths in code_array"""
 
         for col in xrange(worksheet.ncols):
             try:
-                width_0_char = worksheet.colinfo_map[col].width / 256.0
-                width_0 = get_default_text_extent("0")[0]
-                # Scale relative to 10 point font instead of 12 point
-                width_pixels = width_0_char * width_0 / 1.2
-
-                self.code_array.col_widths[col, tab] = width_pixels
+                xls_width = worksheet.colinfo_map[col].width
+                pys_width = self.xls_width2pys_width(xls_width)
+                self.code_array.col_widths[col, tab] = pys_width
 
             except KeyError:
                 pass

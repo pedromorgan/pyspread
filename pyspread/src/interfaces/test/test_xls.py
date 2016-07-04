@@ -435,17 +435,41 @@ class TestXls(object):
         res = self.code_array.dict_grid.row_heights[(row, tab)]
         assert int(res) == height
 
+    param_pys_width2xls_width = [
+        {'pys_width': 0},
+        {'pys_width': 1},
+        {'pys_width': 1.1},
+        {'pys_width': 3},
+        {'pys_width': 1141.1},
+        {'pys_width': 0.0},
+    ]
+
+    @params(param_pys_width2xls_width)
+    def test_pys_width2xls_width(self, pys_width):
+        """Unit test for pys_width2xls_width and xls_width2pys_width
+
+        Roundtrip test
+
+        """
+
+        wb = xlwt.Workbook()
+        xls_out = Xls(self.code_array, wb)
+        xls_width = xls_out.pys_width2xls_width(pys_width)
+        roundtrip_width = xls_out.xls_width2pys_width(xls_width)
+
+        assert round(pys_width) == round(roundtrip_width)
+
     param_col_widths2xls = [
-        {'col': 0, 'tab': 0, 'width': 0.1, 'points': 3},
-        {'col': 0, 'tab': 0, 'width': 0.0, 'points': 0},
-        {'col': 10, 'tab': 0, 'width': 1.0, 'points': 38},
-        {'col': 10, 'tab': 10, 'width': 1.0, 'points': 38},
-        {'col': 10, 'tab': 10, 'width': 100.0, 'points': 3840},
+        {'col': 0, 'tab': 0, 'width': 0.1},
+        {'col': 0, 'tab': 0, 'width': 0.0},
+        {'col': 10, 'tab': 0, 'width': 1.0},
+        {'col': 10, 'tab': 10, 'width': 1.0},
+        {'col': 10, 'tab': 10, 'width': 100.0},
     ]
 
     @params(param_col_widths2xls)
     @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
-    def test_col_widths2xls(self, col, tab, width, points):
+    def test_col_widths2xls(self, col, tab, width):
         """Test _col_widths2xls method"""
 
         self.code_array.shape = (1000, 100, 30)
@@ -458,17 +482,19 @@ class TestXls(object):
         self.write_xls_out(xls_out, wb, "_col_widths2xls", worksheets)
         workbook = self.read_xls_out()
 
+        points = xls_out.pys_width2xls_width(width)
+
         worksheets = workbook.sheets()
         worksheet = worksheets[tab]
         assert worksheet.colinfo_map[col].width == points
 
     param_xls2col_widths = [
-        {'col': 4, 'tab': 0, 'width': 130.339},
-        {'col': 6, 'tab': 0, 'width': 104.661},
+        {'col': 4, 'tab': 0},
+        {'col': 6, 'tab': 0},
     ]
 
     @params(param_xls2col_widths)
-    def test_xls2col_widths(self, col, tab, width):
+    def test_xls2col_widths(self, col, tab):
         """Test _xls2col_widths method"""
 
         worksheet_names = self.xls_in.workbook.sheet_names()
@@ -477,7 +503,9 @@ class TestXls(object):
 
         self.xls_in._xls2col_widths(worksheet, tab)
         res = self.code_array.dict_grid.col_widths[(col, tab)]
-        assert round(res, 3) == width
+        xls_width = worksheet.colinfo_map[col].width
+        pys_width = self.xls_in.xls_width2pys_width(xls_width)
+        assert round(res, 3) == round(pys_width, 3)
 
     @pytest.mark.skipif(xlwt is None, reason="requires xlwt")
     def test_from_code_array(self):
