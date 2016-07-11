@@ -1645,16 +1645,50 @@
     </a>
 </p>
 <p class="one_line_heading">
+    The chart dialog is designed as a fast to use graphical front-end for
+    common matplotlib properties. Attributes correspond to matplotlib function
+    properties. Each property is described in tooltips.
     The chart dialog consists of three parts (from left to right):
     The Axes panel, the Series panel and a Chart preview panel.
+</p>
+<p class="one_line_heading">
+    <u>Axes panel</u>
+</p>
+<p class="one_line_heading">
     The Axes panel allows changing X and Y axes attributes. Other axes types
     such as Z axis in 3D charts are not supported by the chart dialog.
+    The axes panel is structured into three sections: Axes, X-Axis and Y-Axis.
+</p>
+<p class="one_line_heading">
+    In the first box, overall figure attributes can be set, which is title
+    text, the title text font and color and id a legend is drawn. The text
+    entry field for the title text accepts Python expressions, i.e. if you want
+    a specific string to be displayed as the title, you have to quote the text.
+    However, if you want a cetrain global variable of cell content to be
+    displayed then you can enter the object name. Functions and operators are
+    also allowed as long as they return a string or unicode like object.
+    Note that this applies for all fields of the chart dialog unless otherwise
+    specified.
+</p>
+<p class="one_line_heading">
+    In the second box, X-axis atrtibutes are specified. The X-axis label is
+    provided again as a Python expression. Font and color can be specified.
+    Next, X-axis scaling can be set to linear (no check) or logarithmic (check)
+    and the X-axis grid can be turned on and off. If the X-axis shall display a
+    date instead of values then the date format field should be filled with
+    a strftime format string.
+</p>
+<p class="one_line_heading">
+    <u>Series panel</u>
 </p>
 <p class="one_line_heading">
     The Series panel allows adding one or more series to the axes. In order to
     add a new series, click on the + tab at the bottom of the panel. A series
     is deleted with the x right of the tabs. You can switch between series by
     clicking on the respective tabs.
+</p>
+<p class="one_line_heading">
+    <u>Figure panel</u>
 </p>
 <p class="one_line_heading">
     The figure panel is automatically updated whenever content of the chart
