@@ -1671,12 +1671,27 @@
     specified.
 </p>
 <p class="one_line_heading">
-    In the second box, X-axis atrtibutes are specified. The X-axis label is
+    In the second box, X-axis attributes are specified. The X-axis label is
     provided again as a Python expression. Font and color can be specified.
     Next, X-axis scaling can be set to linear (no check) or logarithmic (check)
     and the X-axis grid can be turned on and off. If the X-axis shall display a
     date instead of values then the date format field should be filled with
-    a strftime format string.
+    a strftime format string. Details about the format string are given in the
+    tooltip. The ticks field accepts a list or a tuple of numbers or floats.
+    At these locations, axis ticks are set when specified. If left empty, axis
+    ticks are set automatically. The label field lets the user specify
+    arbitrary text as label at a tick. Font and color of the labels can be
+    specified here. The secondary ticks option allows ticks to be displayed
+    on the opposide side of the chart, i.e. on the top as at the bottom.
+    The outside, inside, both choice specifies, where the ticks are situated at
+    the axis. Padding allows setting the distance between label text and axis.
+    Size lets the user specify text size if no explicit labels are given in the
+    labels field.
+</p>
+<p class="one_line_heading">
+    In the third box, Y-axis attributes are specified. Attributes match those
+    of the X-axis both in content and format with the exception of the date
+    format field, which is not available for the Y-axis.
 </p>
 <p class="one_line_heading">
     <u>Series panel</u>
