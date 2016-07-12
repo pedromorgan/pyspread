@@ -40,6 +40,7 @@ import datetime
 import i18n
 import warnings
 import types
+from collections import OrderedDict
 
 import wx
 
@@ -190,9 +191,11 @@ class ChartFigure(Figure):
         if xdate_format:
             # We have to validate xdate_format. If wrong then bail out.
             try:
+                self.autofmt_xdate()
                 datetime.date(2000, 1, 1).strftime(xdate_format)
 
             except ValueError:
+                self.autofmt_xdate()
                 return
 
             self.__axes.xaxis_date()
@@ -207,26 +210,28 @@ class ChartFigure(Figure):
 
         self.__axes.clear()
 
-        key2setter = {
-            "title": self.__axes.set_title,
-            "xlabel": self.__axes.set_xlabel,
-            "ylabel": self.__axes.set_ylabel,
-            "xscale": self.__axes.set_xscale,
-            "yscale": self.__axes.set_yscale,
-            "xticks": self.__axes.set_xticks,
-            "xtick_labels": self.__axes.set_xticklabels,
-            "xtick_params": self.__axes.tick_params,
-            "yticks": self.__axes.set_yticks,
-            "ytick_labels": self.__axes.set_yticklabels,
-            "ytick_params": self.__axes.tick_params,
-            "xlim": self.__axes.set_xlim,
-            "ylim": self.__axes.set_ylim,
-            "xgrid": self.__axes.xaxis.grid,
-            "ygrid": self.__axes.yaxis.grid,
-            "xdate_format": self._xdate_setter,
-        }
+        key_setter = [
+            ("title", self.__axes.set_title),
+            ("xlabel", self.__axes.set_xlabel),
+            ("ylabel", self.__axes.set_ylabel),
+            ("xscale", self.__axes.set_xscale),
+            ("yscale", self.__axes.set_yscale),
+            ("xticks", self.__axes.set_xticks),
+            ("xtick_labels", self.__axes.set_xticklabels),
+            ("xtick_params", self.__axes.tick_params),
+            ("yticks", self.__axes.set_yticks),
+            ("ytick_labels", self.__axes.set_yticklabels),
+            ("ytick_params", self.__axes.tick_params),
+            ("xlim", self.__axes.set_xlim),
+            ("ylim", self.__axes.set_ylim),
+            ("xgrid", self.__axes.xaxis.grid),
+            ("ygrid", self.__axes.yaxis.grid),
+            ("xdate_format", self._xdate_setter),
+        ]
 
-        for key in sorted(key2setter.keys()):
+        key2setter = OrderedDict(key_setter)
+
+        for key in key2setter:
             if key in axes_data and axes_data[key]:
                 try:
                     kwargs_key = key + "_kwargs"
