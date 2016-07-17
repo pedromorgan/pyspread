@@ -48,6 +48,8 @@ Provides:
 
 import ast
 import itertools
+import os
+import os.path
 import src.lib.i18n as i18n
 import shutil
 import types
@@ -397,6 +399,10 @@ class FileActions(Actions):
 
                 # File sucessfully opened. Approve again to show status.
                 self.approve(filepath)
+
+                # Change current directory to file directory
+                filedir = os.path.dirname(filepath)
+                os.chdir(filedir)
 
         except IOError, err:
             txt = _("Error opening file {filepath}:").format(filepath=filepath)
