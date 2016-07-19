@@ -614,6 +614,10 @@ class FileActions(Actions):
         except KeyError:
             filetype = "pys"
 
+        # If saving is already in progress abort
+        if self.saving:
+            return
+
         # Use ntmpfile to make sure that old save file does not get lost
         # on abort save
         tmpfilepath = filepath + "~"
