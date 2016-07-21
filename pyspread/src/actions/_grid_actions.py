@@ -52,6 +52,7 @@ import os
 import os.path
 import src.lib.i18n as i18n
 import shutil
+import tempfile
 import types
 
 try:
@@ -618,9 +619,10 @@ class FileActions(Actions):
         if self.saving:
             return
 
-        # Use ntmpfile to make sure that old save file does not get lost
+        # Use tmpfile to make sure that old save file does not get lost
         # on abort save
-        tmpfilepath = filepath + "~"
+
+        __, tmpfilepath = tempfile.mkstemp()
 
         if filetype == "xls":
             self._set_save_states()
@@ -645,8 +647,14 @@ class FileActions(Actions):
             self._release_save_states()
 
         else:
+            os.remove(tmpfilepath)
             msg = "Filetype {filetype} unknown.".format(filetype=filetype)
             raise ValueError(msg)
+
+        try:
+            os.remove(tmpfilepath)
+        except OSError:
+            pass
 
 
 class TableRowActionsMixin(Actions):
