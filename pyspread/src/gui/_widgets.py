@@ -1210,6 +1210,7 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         # Prevent lost IntCtrl changes
         if self.switching:
+            time.sleep(0.1)
             return
 
         value = self.GetValue()
@@ -1218,9 +1219,9 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         if current_time < self.last_change_s + 0.01:
             return
 
-        if event.GetWheelRotation() > 0:
+        if event.GetWheelRotation() >= event.GetWheelDelta():
             self.SetValue(min(value+1, self.no_tabs-1))
-        else:
+        elif event.GetWheelRotation() <= -event.GetWheelDelta():
             self.SetValue(max(value-1, 0))
 
     def OnShapeChange(self, event):
