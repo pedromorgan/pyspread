@@ -514,6 +514,7 @@ class Xls(object):
 
         row, col, tab = key
         dict_grid = self.code_array.dict_grid
+        dict_grid.cell_attributes._update_table_cache()
 
         pys_style = dict_grid.cell_attributes[key]
         pys_style_above = dict_grid.cell_attributes[row - 1, col, tab]

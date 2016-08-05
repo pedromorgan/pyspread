@@ -537,3 +537,4 @@ class CellActions(Actions):
                         refreshed_keys.append(key)
 
         cell_attributes._attr_cache.clear()
+        cell_attributes._table_cache.clear()

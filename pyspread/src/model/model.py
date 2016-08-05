@@ -124,6 +124,7 @@ class CellAttributes(list):
     # Cache for __getattr__ maps key to tuple of len and attr_dict
 
     _attr_cache = {}
+    _table_cache = {}
 
     def undoable_append(self, value, mark_unredo=True):
         """Appends item to list and provides undo and redo functionality"""
@@ -139,6 +140,8 @@ class CellAttributes(list):
         self.append(value)
         self._attr_cache.clear()
 
+        sel, tab, val = value
+
     def __getitem__(self, key):
         """Returns attribute dict for a single key"""
 
@@ -151,18 +154,47 @@ class CellAttributes(list):
             if cache_len == len(self):
                 return cache_dict
 
+        # Update table cache if it is outdated (e.g. when creating a new grid)
+        if len(self) != self._len_table_cache():
+            self._update_table_cache()
+
         row, col, tab = key
 
         result_dict = copy(self.default_cell_attributes)
 
-        for selection, table, attr_dict in self:
-            if tab == table and (row, col) in selection:
-                result_dict.update(attr_dict)
+        try:
+            for selection, attr_dict in self._table_cache[tab]:
+                if (row, col) in selection:
+                    result_dict.update(attr_dict)
+        except KeyError:
+            pass
 
         # Upddate cache with current length and dict
         self._attr_cache[key] = (len(self), result_dict)
 
         return result_dict
+
+    def _len_table_cache(self):
+        """Returns the length of the table cache"""
+
+        length = 0
+
+        for table in self._table_cache:
+            length += len(self._table_cache[table])
+
+        return length
+
+    def _update_table_cache(self):
+        """Clears and updates the table cache to be in sync with self"""
+
+        self._table_cache.clear()
+        for sel, tab, val in self:
+            try:
+                self._table_cache[tab].append((sel, val))
+            except KeyError:
+                self._table_cache[tab] = [(sel, val)]
+
+        assert len(self) == self._len_table_cache()
 
     def get_merging_cell(self, key):
         """Returns key of cell that merges the cell key
@@ -892,6 +924,7 @@ class DataArray(object):
                 self.cell_attributes.pop(i)
 
         self.cell_attributes._attr_cache.clear()
+        self.cell_attributes._update_table_cache()
 
         undo_operation = (self._adjust_cell_attributes,
                           [insertion_point, -no_to_insert, axis, tab,
