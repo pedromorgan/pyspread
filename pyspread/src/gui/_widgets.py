@@ -37,6 +37,7 @@ Provides:
  10. EntryLine: The line for entering cell code
  11. StatusBar: Main window statusbar
  12. TableChoiceIntCtrl: IntCtrl for choosing the current grid table
+ 13. TableChoiceListCtrl: Virtual ListCtrl for choosing the current grid table
 
 """
 
@@ -1242,3 +1243,44 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         event.Skip()
 
 # end of class TableChoiceIntCtrl
+
+
+class TableChoiceListCtrl(wx.ListCtrl, GridEventMixin, GridActionEventMixin):
+    """Virtual ListCtrl for choosing the current grid table"""
+
+    def __init__(self, parent, grid):
+        style = wx.LC_REPORT | wx.LC_VIRTUAL | wx.LC_NO_HEADER
+        wx.ListCtrl.__init__(self, parent, -1, style=style)
+
+        self.parent = parent
+        self.grid = grid
+
+        self.InsertColumn(0, 'Tables')
+
+        shape = grid.code_array.shape
+        self.SetItemCount(shape[2])
+
+        self.parent.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
+
+    def OnGetItemText(self, item, col):
+        return str(item)
+
+    def OnItemSelected(self, event):
+        """Item selection event handler"""
+
+        value = event.m_itemIndex
+
+        self.switching = True
+        post_command_event(self, self.GridActionTableSwitchMsg, newtable=value)
+        self.switching = False
+
+        event.Skip()
+
+    def OnResizeGrid(self, event):
+        """Event handler for grid resizing"""
+
+        shape = min(event.shape[2], 2**30)
+        self.SetItemCount(shape)
+
+# end of class TableChoiceListCtrl

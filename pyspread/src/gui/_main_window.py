@@ -54,6 +54,7 @@ from src.gui._menubars import MainMenu
 from src.gui._toolbars import MainToolbar, MacroToolbar, FindToolbar
 from src.gui._toolbars import WidgetToolbar, AttributesToolbar
 from src.gui._widgets import EntryLineToolbarPanel, StatusBar
+from src.gui._widgets import TableChoiceListCtrl
 from src.gui._dialogs import DependencyDialog
 
 from src.lib.clipboard import Clipboard
@@ -144,6 +145,9 @@ class MainWindow(wx.Frame, EventMixin):
 
         # Main grid
         self.grid = Grid(self, -1, S=S, dimensions=dimensions)
+
+        # TableChoiceListCtrl
+        self.table_choice_list_ctrl = TableChoiceListCtrl(self, self.grid)
 
         # Clipboard
         self.clipboard = Clipboard()
@@ -245,6 +249,10 @@ class MainWindow(wx.Frame, EventMixin):
 
         if window_layout:
             self._mgr.LoadPerspective(window_layout)
+
+        self._mgr.AddPane(self.table_choice_list_ctrl, aui.AuiPaneInfo().
+                          Name("table_choice_list_ctrl").Caption(_("Table")).
+                          CenterPane().Left().BestSize(50, 300))
 
         # Add the main grid
         self._mgr.AddPane(self.grid, aui.AuiPaneInfo().
