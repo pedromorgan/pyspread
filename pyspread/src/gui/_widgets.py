@@ -57,7 +57,7 @@ import wx.combo
 import wx.stc as stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
 import wx.lib.wxcairo
-
+from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 import cairo
 import pango
 import pangocairo
@@ -1245,7 +1245,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 # end of class TableChoiceIntCtrl
 
 
-class TableChoiceListCtrl(wx.ListCtrl, GridEventMixin, GridActionEventMixin):
+class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
+                          GridActionEventMixin):
     """Virtual ListCtrl for choosing the current grid table"""
 
     def __init__(self, parent, grid):
@@ -1260,8 +1261,11 @@ class TableChoiceListCtrl(wx.ListCtrl, GridEventMixin, GridActionEventMixin):
         shape = grid.code_array.shape
         self.SetItemCount(shape[2])
 
+        self.setResizeColumn(0)
+
         self.parent.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
+        self.Bind(wx.EVT_SIZE, self.OnSize)
 
     def OnGetItemText(self, item, col):
         return str(item)
@@ -1282,5 +1286,12 @@ class TableChoiceListCtrl(wx.ListCtrl, GridEventMixin, GridActionEventMixin):
 
         shape = min(event.shape[2], 2**30)
         self.SetItemCount(shape)
+        event.Skip()
+
+    def OnSize(self, event):
+        """Event handler for size change"""
+
+        self.resizeColumn(0)
+        event.Skip()
 
 # end of class TableChoiceListCtrl
