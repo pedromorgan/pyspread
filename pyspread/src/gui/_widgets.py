@@ -1249,11 +1249,12 @@ class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
                           GridActionEventMixin):
     """Virtual ListCtrl for choosing the current grid table"""
 
-    def __init__(self, parent, grid):
-        style = wx.LC_REPORT | wx.LC_VIRTUAL | wx.LC_NO_HEADER
-        wx.ListCtrl.__init__(self, parent, -1, style=style)
+    def __init__(self, main_window, grid):
+        style = wx.LC_REPORT | wx.LC_VIRTUAL | wx.LC_NO_HEADER | \
+                wx.LC_SINGLE_SEL
+        wx.ListCtrl.__init__(self, main_window, -1, style=style)
 
-        self.parent = parent
+        self.main_window = main_window
         self.grid = grid
 
         self.InsertColumn(0, 'Tables')
@@ -1262,10 +1263,30 @@ class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
         self.SetItemCount(shape[2])
 
         self.setResizeColumn(0)
+        self.Select(0)
 
-        self.parent.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
+        self.main_window.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
         self.Bind(wx.EVT_SIZE, self.OnSize)
+        self.main_window.Bind(self.EVT_CMD_TABLE_CHANGED, self.OnTableChanged)
+
+        # Drag & Drop events
+#==============================================================================
+#         self.Bind(wx.EVT_LIST_BEGIN_DRAG, self.OnDrag)
+#         self.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
+#         self.Bind(wx.EVT_LEFT_DOWN, self.OnMouseDown)
+#         self.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeaveWindow)
+#         self.Bind(wx.EVT_ENTER_WINDOW, self.OnEnterWindow)
+#         self.Bind(wx.EVT_LIST_INSERT_ITEM, self.OnInsert)
+#         self.Bind(wx.EVT_LIST_DELETE_ITEM, self.OnDelete)
+#==============================================================================
+
+        # Drag & Drop Variables
+        self.IsInControl = True
+        self.startIndex = -1
+        self.dropIndex = -1
+        self.IsDrag = False
+        self.dragIndex = -1
 
     def OnGetItemText(self, item, col):
         return str(item)
@@ -1274,6 +1295,7 @@ class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
         """Item selection event handler"""
 
         value = event.m_itemIndex
+        self.startIndex = value
 
         self.switching = True
         post_command_event(self, self.GridActionTableSwitchMsg, newtable=value)
@@ -1292,6 +1314,103 @@ class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
         """Event handler for size change"""
 
         self.resizeColumn(0)
+        event.Skip()
+
+    def OnTableChanged(self, event):
+        """Table changed event handler"""
+
+        if hasattr(event, 'table'):
+            self.Select(event.table)
+            self.EnsureVisible(event.table)
+
+        event.Skip()
+
+    # Drag & Drop event handlers
+
+    def OnLeaveWindow(self, event):
+        self.IsInControl = False
+        self.IsDrag = False
+        event.Skip()
+
+    def OnEnterWindow(self, event):
+        self.IsInControl = True
+        event.Skip()
+
+    def OnDrag(self, event):
+        self.IsDrag = True
+        self.dragIndex = event.m_itemIndex
+        event.Skip()
+
+    def OnMouseUp(self, event):
+        """Generate a dropIndex.
+
+        Process: check self.IsInControl, check self.IsDrag, HitTest,
+                 compare HitTest value
+        The mouse can end up in 5 different places:
+        Outside the Control
+        On itself
+        Above its starting point and on another item
+        Below its starting point and on another item
+        Below its starting point and not on another item
+
+        """
+
+        if not self.IsInControl:  # 1. Outside the control : Do Nothing
+            self.IsDrag = False
+        elif self.IsDrag:
+            if not self.IsDrag:
+                # In control and is a drag event : Determine Location
+                self.hitIndex = self.HitTest(event.GetPosition())
+                self.dropIndex = self.hitIndex[0]
+                # Drop index indicates where the drop location is;
+                # what index number
+
+                # Determine dropIndex and its validity
+
+                # 2. On itself or below control : Do Nothing
+                if not (self.dropIndex == self.startIndex or
+                        self.dropIndex == -1):
+                    # Now that dropIndex has been established do 3 things
+                    # 1. gather item data
+                    # 2. delete item in list
+                    # 3. insert item & it's data into the list at the new index
+                    print self.startIndex, self.dropIndex
+
+                    # dropList is a list of field values from the list control
+                    dropList = []
+
+                    thisItem = self.GetItem(self.startIndex)
+                    for x in xrange(self.GetColumnCount()):
+                        dropList.append(
+                            self.GetItem(self.startIndex, x).GetText())
+                    thisItem.SetId(self.dropIndex)
+                    self.DeleteItem(self.startIndex)
+                    self.InsertItem(thisItem)
+                    for x in range(self.GetColumnCount()):
+                        self.SetStringItem(self.dropIndex, x, dropList[x])
+            # If in control but not a drag event : Do Nothing
+
+        self.IsDrag = False
+        event.Skip()
+
+    def OnMouseDown(self, event):
+        self.IsInControl = True
+        event.Skip()
+
+    def OnInsert(self, event):
+        # Sequencing on a drop event is:
+        # wx.EVT_LIST_ITEM_SELECTED
+        # wx.EVT_LIST_BEGIN_DRAG
+        # wx.EVT_LEFT_UP
+        # wx.EVT_LIST_ITEM_SELECTED (at the new index)
+        # wx.EVT_LIST_INSERT_ITEM
+        # --------------------------------
+        # this call to onStripe catches any addition to the list; drag or not
+
+        self.dragIndex = -1
+        event.Skip()
+
+    def OnDelete(self, event):
         event.Skip()
 
 # end of class TableChoiceListCtrl

@@ -103,6 +103,7 @@ class MainWindowEventMixin(object):
         new_command_event()
     FindToolbarToggleMsg, EVT_CMD_FIND_TOOLBAR_TOGGLE = new_command_event()
     EntryLineToggleMsg, EVT_CMD_ENTRYLINE_TOGGLE = new_command_event()
+    TableListToggleMsg, EVT_CMD_TABLELIST_TOGGLE = new_command_event()
     TableChoiceToggleMsg, EVT_CMD_TABLECHOICE_TOGGLE = new_command_event()
 
     ToolbarUpdateMsg, EVT_CMD_TOOLBAR_UPDATE = new_command_event()

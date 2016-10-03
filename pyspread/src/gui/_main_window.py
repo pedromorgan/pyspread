@@ -147,7 +147,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.grid = Grid(self, -1, S=S, dimensions=dimensions)
 
         # TableChoiceListCtrl
-        self.table_choice_list_ctrl = TableChoiceListCtrl(self, self.grid)
+        self.table_list_panel = TableChoiceListCtrl(self, self.grid)
 
         # Clipboard
         self.clipboard = Clipboard()
@@ -197,6 +197,7 @@ class MainWindow(wx.Frame, EventMixin):
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
             (self.widget_toolbar, "widget_toolbar", _("Widget toolbar")),
             (self.entry_line_panel, "entry_line_panel", _("Entry line")),
+            (self.table_list_panel, "table_list_panel", _("Table list")),
         ]
 
         for toolbar, pane_name, toggle_label in toggles:
@@ -211,6 +212,7 @@ class MainWindow(wx.Frame, EventMixin):
 
                 # Adjust toggle to pane visibility
                 toggle_item.Check(pane.IsShown())
+                print pane.IsShown()
 
     def _do_layout(self):
         """Adds widgets to the aui manager and controls the layout"""
@@ -244,15 +246,15 @@ class MainWindow(wx.Frame, EventMixin):
                           Gripper(False).CenterPane().Top().Row(2).
                           BestSize(400, 30).PaneBorder(False))
 
+        self._mgr.AddPane(self.table_list_panel, aui.AuiPaneInfo().
+                          Name("table_list_panel").Caption(_("Table")).
+                          CenterPane().Left().BestSize(50, 300))
+
         # Load perspective from config
         window_layout = config["window_layout"]
 
         if window_layout:
             self._mgr.LoadPerspective(window_layout)
-
-        self._mgr.AddPane(self.table_choice_list_ctrl, aui.AuiPaneInfo().
-                          Name("table_choice_list_ctrl").Caption(_("Table")).
-                          CenterPane().Left().BestSize(50, 300))
 
         # Add the main grid
         self._mgr.AddPane(self.grid, aui.AuiPaneInfo().
@@ -315,6 +317,8 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnFindToolbarToggle)
         self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
+        self.Bind(self.EVT_CMD_TABLELIST_TOGGLE,
+                  handlers.OnTableListToggle)
         self.Bind(aui.EVT_AUI_PANE_CLOSE, handlers.OnPaneClose)
 
         # File events
@@ -668,6 +672,16 @@ class MainWindowEventHandlers(EventMixin):
             self.main_window._mgr.GetPane("entry_line_panel")
 
         self._toggle_pane(entry_line_panel_info)
+
+        event.Skip()
+
+    def OnTableListToggle(self, event):
+        """Table list toggle event handler"""
+
+        table_list_panel_info = \
+            self.main_window._mgr.GetPane("table_list_panel")
+
+        self._toggle_pane(table_list_panel_info)
 
         event.Skip()
 
