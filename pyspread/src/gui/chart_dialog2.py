@@ -448,7 +448,7 @@ class AxesAttributes(object):
                  []),
                 (_("limits"), ("xlim", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
-                (_("late format"), ("xdate_format", wx.TextCtrl, [-1],
+                (_("date format"), ("xdate_format", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
                 (_("x-axis ticks"), ("xticks", wx.TextCtrl, [-1],
                  {"size": (150, 25)}), []),
