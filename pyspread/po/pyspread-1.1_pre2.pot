@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-22 12:25+0200\n"
+"POT-Creation-Date: 2016-10-23 11:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1601,7 +1601,7 @@ msgid "limits"
 msgstr ""
 
 #: src/gui/chart_dialog2.py:451
-msgid "late format"
+msgid "date format"
 msgstr ""
 
 #: src/gui/chart_dialog2.py:453 src/gui/chart_dialog2.py:463
