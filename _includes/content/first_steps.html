@@ -1617,6 +1617,7 @@
     parses any code starting with charts.ChartFigure and
     figures out, which choice had been made last time. This
     may very well fail if you changed the cell code manually.
+    For further reference, the <a href="http://matplotlib.org/api/pyplot_api.html">matplotlib Web site</a> is recommended.
 </p>
 <p class="one_line_heading">
     Note that pyspread cells display all types of matplotlib figures.
@@ -1728,10 +1729,16 @@
     each point are specified in an iterable.
 </p>
 <p class="one_line_heading">
-   In the Line box, ...
+    In the Line box, the line style chosen from solid, dashed, dash-dotted and
+    frozen. Its width can be specified in points (integer values only) as well
+    as its color. 
 </p>
 <p class="one_line_heading">
-   In the Marker box, ...
+    In the Marker box, the marker style for the actual data points may be 
+    chosen from a range of 22 styles. The maerker size can be specified (integer
+    values only) as well as its face and egde colors. The marker alpha value is
+    set with a floating point value, where 1.0 is solid and 0.0 is fully 
+    transparent.
 </p>
 <p class="one_line_heading">
     <a href="images/screenshot-chartdialog-plot.png">
@@ -1758,7 +1765,9 @@
     number or an iterable.
 </p>
 <p class="one_line_heading">
-   In the Bar box, ...
+    In the Bar box, the bar fill and edge color can be chosen. Furthermore, an
+    alpha value can be specified with a floating point value, where 1.0 is solid
+    and 0.0 is fully transparent.
 </p>
 <p class="one_line_heading">
     Note that while bar charts may be morte difficult to use than plot charts,
@@ -1779,10 +1788,21 @@
     Histogram boxes are displayed.
 </p>
 <p class="one_line_heading">
-   In the Data box, ...
+    In the Data box, a data label can be
+    specified that appears in the legend if it is activated.
+    The data series that has to be provided is an iterable of numerical values.
+    Categorical values are <b>not</b> supported here because this is not 
+    supported by matplotlib. Value tuples are also not supported.
 </p>
 <p class="one_line_heading">
-   In the Histogram box, ...
+    In the Histogram box, the number of bin can be specified as an integer
+    value. If Normed is checked then the integral of the histogram will sum to
+    1. If stacked is also True, the sum of the histograms is normalized to 1.
+    If culumative is checked then then a histogram is computed where each bin
+    gives the counts in that bin plus all bins for smaller values. The last bin
+    gives the total number of datapoints. Furthermore, the histogram bar color 
+    can be set. The alpha value can be specified with a floating point value, 
+    where 1.0 is solid and 0.0 is fully transparent.
 </p>
 <p class="one_line_heading">
     <a href="images/screenshot-chartdialog-hist.png">
@@ -1798,10 +1818,15 @@
     Box plot boxes are displayed.
 </p>
 <p class="one_line_heading">
-   In the Data box, ...
+    In the Data box, a sequence of numerical values or a sequence of sequences
+    can be provided. In the latter case, multiple boxplots are combined in
+    one diagram. 
 </p>
 <p class="one_line_heading">
-   In the Box plot box, ...
+    In the Box plot box, the box width can be specified as a floatig point
+    value. If vertical is checked then the boxplots are frawn vertical
+    else horizontal. Flier symbols may be chosen from 22 choices. If notch is
+    checked then the main box shows a notch at the median value.
 </p>
 <p class="one_line_heading">
     <a href="images/screenshot-chartdialog-boxplot.png">
@@ -1817,7 +1842,7 @@
     Pie boxes are displayed.
 </p>
 <p class="one_line_heading">
-   In the Data box, ...
+   In the Data box, a sequence of numerical values can be provided.
 </p>
 <p class="one_line_heading">
    In the Pie box, ...
