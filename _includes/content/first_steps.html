@@ -2318,8 +2318,11 @@
     The resulting code may look like this:
     <pre>
         sum([S[key] for key in 
+    <\pre><pre>
 		[(r, c, 0) for r in xrange(1, 5) 
+    <\pre><pre>
 			for c in xrange(5, 7)] + 
+    <\pre><pre>
             [(9, 7, 0)] + [(11, 7, 0)] if S[key] is not None])
     </pre>
 </p>
