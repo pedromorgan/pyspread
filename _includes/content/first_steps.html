@@ -2317,7 +2317,10 @@
     Then you press the insertion toggle button again.
     The resulting code may look like this:
     <pre>
-        sum([S[key] for key in [(r, c, 0) for r in xrange(1, 5) for c in xrange(5, 7)] + [(9, 7, 0)] + [(11, 7, 0)] if S[key] is not None])
+        sum([S[key] for key in 
+		[(r, c, 0) for r in xrange(1, 5) 
+			for c in xrange(5, 7)] + 
+            [(9, 7, 0)] + [(11, 7, 0)] if S[key] is not None])
     </pre>
 </p>
 <h2>Table selector</h2>
