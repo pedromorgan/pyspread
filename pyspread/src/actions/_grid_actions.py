@@ -1415,6 +1415,9 @@ class GridActions(Actions):
 
             self.grid.SetToolTip(None)
 
+            # Delete renderer cache
+            self.grid.grid_renderer.cell_cache.clear()
+
             # Delete video cells
             video_cells = self.grid.grid_renderer.video_cells
             for key in video_cells:
