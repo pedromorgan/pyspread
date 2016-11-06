@@ -1664,7 +1664,7 @@
     text, the title text font and color and id a legend is drawn. The text
     entry field for the title text accepts Python expressions, i.e. if you want
     a specific string to be displayed as the title, you have to quote the text.
-    However, if you want a cetrain global variable of cell content to be
+    However, if you want a certain global variable of cell content to be
     displayed then you can enter the object name. Functions and operators are
     also allowed as long as they return a string or unicode like object.
     Note that this applies for all fields of the chart dialog unless otherwise
@@ -1673,9 +1673,10 @@
 <p class="one_line_heading">
     In the second box, X-axis attributes are specified. The X-axis label is
     provided again as a Python expression. Font and color can be specified.
-    Next, X-axis scaling can be set to linear (no check) or logarithmic (check)
+    Next, X-axis scaling can be set to linear (no check) or logarithmic (check),
     and the X-axis grid can be turned on and off. If the X-axis shall display a
-    date instead of values then the date format field should be filled with
+    date instead of values and if a datetime.date object is provided as input 
+    for the x-axis values then the date format field should be filled with
     a strftime format string. Details about the format string are given in the
     tooltip. The ticks field accepts a list or a tuple of numbers or floats.
     At these locations, axis ticks are set when specified. If left empty, axis
@@ -1713,7 +1714,10 @@
     pyspread-users@gna.org</a>.
 </p>
 <p class="one_line_heading">
-    When the plot series type is selected then on the right panel, Data, Line
+    <i>Plot chart</i>
+</p>
+<p class="one_line_heading">
+    When the plot chart type is selected then on the right panel, Data, Line
     and Marker boxes are displayed. In the Data box, a data label can be
     specified that appears in the legend if it is activated. The X field is
     optional. It has to be an iterable of the same length of Y and allows
@@ -1721,7 +1725,70 @@
     each point are specified in an iterable.
 </p>
 <p class="one_line_heading">
-    <i>Figure panel</i>
+    <a href="images/screenshot-chartdialog-plot.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-plot_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Bar chart</i>
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-bar.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-bar_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Histogram</i>
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-hist.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-hist_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Boxplot</i>
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-plot.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-plot_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-plot.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-plot_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Pie chart</i>
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-boxplot.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-boxplot_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Chart annotation</i>
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-annotation.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-annotation_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Sankey diagram</i>
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-sankey.png">
+            <img alt="Chart dialog" src="images/screenshot-chartdialog-sankey_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
 </p>
 <p class="one_line_heading">
     The figure panel is automatically updated whenever content of the chart
