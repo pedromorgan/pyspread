@@ -53,190 +53,8 @@
 </p>
 
 
-<h1>Installation</h1>
-
-
-<h2>Dependencies</h2>
-
-<p class="one_line_heading">
-    Pyspread works on Linux and other GTK platforms as well as on Windows.
-    While there have been reports that pyspread can be used on OS X as well,
-    OS X is currently unsupported.
-    <br>
-    Pyspread requires the following software to be installed:
-</p>
-
-<ul class="one_line_heading">
-  <li> <a href="http://www.python.org/">Python</a>
-    (&gt;=2.7, &lt;3.0) </li>
-  <li> <a href="http://www.numpy.org/">numpy</a>
-    (&gt;=1.1.0) </li>
-  <li> <a href="http://www.wxpython.org/">wxPython</a>
-    (&gt;=2.8.10.1, Unicode version required) </li>
-  <li> <a href="http://matplotlib.org/">matplotlib</a>
-    (&gt;=1.1.1)</li>
-  <li> <a href="http://cairographics.org/pycairo/">pycairo</a>
-    (&gt;=1.8.8)</li>
-</ul>
-
-<p class="one_line_heading">
-  The following optional dependencies improve user experience:
-</p>
-
-<ul class="one_line_heading">
-  <li> <a href="http://code.google.com/p/python-gnupg/">python-gnupg</a>
-    (&gt;=0.3.0, for opening own files without approval) <br>
-  </li>
-  <li> <a href="http://www.python-excel.org/">xlrd</a>
-    (&gt;=0.9.2, for loading Excel files)</li>
-  <li><a href="http://www.python-excel.org/">xlwt</a>
-    (&gt;=0.9.2, for saving Excel files)</li>
-  <li><a href="http://jedi.jedidjah.ch">jedi</a>
-    (&gt;=0.8.0, for tab completion and context help in the
-    entry line)</li>
-  <li> <a href="http://cairographics.org/pyrsvg/">pyrsvg</a>
-    (&gt;=2.32, for displaying SVG files in cells)</li>
-  <li><a href="http://matplotlib.org/basemap/">basemap</a>
-    (&gt;=1.0.7, for the weather example pys file)<br>
-  </li>
-</ul>
-
-
-<h2>Source</h2>
-
-<p class="one_line_heading">
-
-  These instructions are for installing the source tarball
-  <br>
-  <a href="https://pypi.python.org/packages/source/p/pyspread/pyspread-0.4.tar.gz#md5=6188e2c4c2ed9c58add7f26b70b7e05d">pyspread v0.4</a>
-  (<a href="https://manns.github.io/pyspread/releases/pyspread-0.4.tar.gz.sig">gpg sig</a>).
-  <br> <br>
-  Installation:
-  <br>
-  <ol class="one_line_heading">
-    <li>
-      Ensure that <span style="text-decoration: underline;">all</span>
-      dependencies are installed.
-      <br> <br>
-    </li>
-    <li>
-      Unpack the tarball
-      <br> <br>
-    </li>
-    <li>
-      cd to the extraction directory
-      <br> <br>
-    </li>
-    <li>
-      Type in
-      <br>
-      <tt>python setup.py install</tt>
-    </li>
-  </ol>
-</p>
-
-
-<h2>Linux</h2>
-
-<p class="one_line_heading">
-
-  The following distributions provide pyspread as a package
-  (latest release linked):
-  <br>
-
-</p>
-
-<table class="one_line_heading" style=" text-align: left;"
-       border="0" cellpadding="4" cellspacing="7">
-  <tbody>
-    <tr>
-      <td style="text-align: left;">Arch</td>
-      <td><a
-          href="https://aur.archlinux.org/packages/pyspread/">pyspread v0.4.1</a><br>
-      </td>
-    </tr>
-    <tr>
-      <td style="text-align: left;">Debian</td>
-      <td><a
-          href="https://packages.debian.org/de/sid/pyspread">pyspread v0.4.3</a></td>
-    </tr>
-    <tr>
-      <td style=" text-align: left;">Mageia</td>
-      <td><a href="http://rpm.pbone.net/index.php3/stat/4/idpl/27539765/dir/mageia_cauldron/com/pyspread-0.3.3-3.mga5.x86_64.rpm.html">pyspread v0.3.3</a></td>
-    </tr>
-    <tr>
-      <td style="text-align: left;">Slackware</td>
-      <td><a
-          href="http://slackbuilds.org/repository/14.1/office/pyspread/">pyspread v0.4.3</a></td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Ubuntu</td>
-      <td style="vertical-align: top;"><a
-          href="http://packages.ubuntu.com/wily/python/pyspread">pyspread v0.4.3</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<p class="one_line_heading">
-
-  For these distributions, the easiest way is to install
-  pyspread from the repositories. The source distribution can
-  also be used e.g. if the packaged version is outdated.
-
-</p>
-
-
-<h2>Windows</h2>
-
-<p class="one_line_heading">
-
-  For Windows, please follow these instructions. In order to make Windows
-  installation easier, links point to sites where both 32 bit and to 64 bit versions are provided.<br>
-  <ol class="one_line_heading">
-    <li>Download and install Python, numpy and matplotlib.
-      You can find 32bit and 64bit packages of WinPython <a
-        href="http://winpython.sourceforge.net/">here</a>.
-      Make sure to get the Python2 version.
-      If WinPython is used then the WinPython control panel is recommended for all installations.<br> <br>
-    </li>
-    <li>Download and install Cairo and pycairo. Working binaries are available <a
-        href="http://www.lfd.uci.edu/%7Egohlke/pythonlibs/">here</a>. Note that Cairo has to be installed by manually copying it. Make sure to read the installation instructions.<br>
-      <br>
-    </li>
-    <li>Download and install <a
-        href="http://www.wxpython.org/download.php#stable">wxPython 2.8.x</a>.<br>
-      <br>
-    </li>
-    <li>Download and install gnupg (<a
-        href="http://www.gpg4win.org/">Gpg4win</a> supports
-      32&amp;64bit)<br>
-      <br>
-    </li>
-    <li>Download and install <a
-        href="http://pythonhosted.org/python-gnupg/#download">python-gnupg</a>.<br>
-      <br>
-      For&nbsp; <span style="font-weight: bold;">32 bit
-        systems</span>, an exe installer
-      (python-gnupg-0.3.4.win32.exe) is provided on the linked
-      page.<br>
-      <br>
-      For <span style="font-weight: bold;">64 bit systems</span>,
-      the python-gnupg tarball (python-gnupg-0.3.4.tar.gz) has
-      to be extracted (e.g. with 7zip) and installed as
-      follows:<br>
-      <br>
-    </li>
-    <li>Download and install the source distribution of pyspread<br>
-      <br>
-    </li>
-    <li>Start pyspread by double-clicking on the file
-      pyspread.bat in the extraction directory</li>
-  </ol>
-
-</p>
-
-
 <h1>Basic concepts</h1>
+
 
 <h2>Python code as cell language</h2>
 
@@ -275,7 +93,8 @@
     <code>import math</code>
 </p>
 <p class="one_line_heading">
-    are <strong>not</strong> valid.
+    are <strong>not</strong> valid in cells. However, in the macro editor,
+    these statements are possible. Module imports should take place there.
 </p>
 
 <h2>Module import</h2>
@@ -322,7 +141,7 @@
 </p>
 <p class="one_line_heading">
     is <strong style="font-weight: bold;">not</strong> valid in a
-    pyspread cell.
+    pyspread cell. Note that pyspread does also not support +=, -= etc.
 </p>
 <p class="one_line_heading">
     Evaluation order
@@ -354,7 +173,11 @@
         matplotlib figure objects that are displayed as images
     </li>
     <li>
-        Valid SVG figure strings.
+        Valid SVG figure strings are rendered in the cell (static bitmap).
+    </li>
+    <li>
+        VLCPanel (Vlc video panel) objects (pyspread 1.1 or newer) launch a
+        VLC video player instance inside the cell.
     </li>
 </ul>
 
@@ -580,9 +403,9 @@
 </p>
 
 <p class="one_line_heading">
-    Loading and saving Excel files is not feature complete.
-    Data will be lost when saving a document
-    as an xls file and loading it again.
+    Loading and saving Excel and Open document format files is not feature
+    complete. Data will be lost when saving a document
+    as an xls or an ods file and loading it again.
 </p>
 
 
@@ -654,7 +477,7 @@
 </p>
 
 <p class="one_line_heading">
-    Whenever a spreadsheet is changed then an asterisk "*" is
+    Whenever a spreadsheet is changed then  an askerisk "*" is
     displayed in front of the title bar text.
 </p>
 
@@ -739,7 +562,7 @@
     signature is created in an additional file with the suffix
     .pys.sig. The signature is a PGP signature. When pyspread
     is started the first time for a user, a pgp key pair is
-    created for the user pyspread_&lt;user-id&gt;. This key
+    crreated for the user pyspread_&lt;user-id&gt;. This key
     pair is used for signing pyspread save files. A correct
     signature file lets pyspread open a file without going
     into safe mode. Note that the save file is <span
@@ -847,7 +670,7 @@
 
 <p class="one_line_heading">
     When exporting a spreadsheet to a pdf or svg file then a
-    dialog opens, in which page orientation and size as well as
+    dailog opens, in which page orientation and size as well as
     the grid section to be exported can be chosen.
     If more than one table is chosen for a pdf file then a multiple
     page file is exported. For svg files only the last table
@@ -978,7 +801,7 @@
     Print prints the spreadsheet. First, a dialog similar to print preview
     is opened, in which the spreadsheet extents (rows, columns and tables)
     can be selected. After pressing o.k., a operation system specific
-    print dialog is opened. This dialog provided an option to start printing.
+    print dialog is opened. This dialog provied an option to start printing.
 </p>
 
 <h4>Preferences...</h4>
@@ -991,29 +814,29 @@
         <b>Max. undo steps</b>:
         The maximum number of elementary steps
         that can be undone via Edit -&gt; Undo.
-        Note that pressing one button may result in multiple
+        Note that pressing one butoon may result in multiple
         elementary steps.
     </li>
     <li>
         <b>Grid rows</b>:
         Initial number of grid rows when pyspread is started
-        without parameters.
+        without paramaters.
     </li>
     <li>
         <b>Grid columns</b>:
         Initial number of grid columns when pyspread is started
-        without parameters.
+        without paramaters.
     </li>
     <li>
         <b>Grid tables</b>:
         Initial number of grid tables when pyspread is started
-        without parameters.
+        without paramaters.
     </li>
     <li>
         <b>Max. result length</b>:
         If a results is displayed as a string (and not as e.g. a
         bitmap) then the string is truncated to the value given
-        here. The string length considered is the number of
+        here. The string length consideerd is the number of
         Unicode characters.
     </li>
     <li>
@@ -1216,7 +1039,7 @@
     and regular expressions, which can be toggled in the
     search toolbar. Similarly upper and lower case sensitivity
     can be toggled via the search toolbar. More details are
-    given in the Find toolbar section.
+    giveen in the Find toolbar section.
 </p>
 
 <h4>Replace</h4>
@@ -1293,7 +1116,7 @@
     are made.
     If selections are present, then the bounding box that covers all
     selected cells is calculated, and the number of columns of this
-    bounding box is inserted just left of the bounding box.
+    bounding box is inserted just left of the the bounding box.
 </p>
 
 <h4>Insert table</h4>
@@ -1362,7 +1185,7 @@
 <h4>Entry line</h4>
 
 <p class="one_line_heading">
-    Switches the entry line on and off.
+    Swiches the entry line on and off.
 </p>
 
 <h4>Go to cell</h4>
@@ -1617,14 +1440,14 @@
 <h4>Rotation</h4>
 
 <p class="one_line_heading">
-    Opens a sub-menu, in which cell rotation can be chosen from
-    0, 90, 180 and 270 degree. The chosen rotation is applied
+    Opens a sub-menu, in which cell rotatation can be chosen from
+    0, 90, 180 and 270 degree. The chosen rotatation is applied
     to all cells in the current selection. If no cell is selected,
     then it is applied to the current cell.
 </p>
 
 <p class="one_line_heading">
-    Besides text output, rotation also applied to bitmap and
+    Besides text output, rotatation also applied to bitmap and
     vector graphics that are displayed in the cell. Matplotlib
     charts are an exception: They ignore cell rotation.
 </p>
@@ -1677,7 +1500,7 @@
 
 <p class="one_line_heading">
     Merge cells merge all cells that are in the bounding box of the
-    current selection. If there is no selection the current
+    current selection. If there is no selection the the current
     cell will be merged (with itself) or unmerged if already merged.
     Merged cells act as one. Output is shown for the top left cell,
     which stays intact upon a merge.
@@ -1738,7 +1561,7 @@
 
 <p class="one_line_heading">
     Since macros may be harmful, loading macros makes the pys
-    file unapproved, i.e. before any further calculations are done,
+    file unapproved, i.e. before any further calcluations are done,
     the file has to be approved again via File -&gt; Approve file.
 </p>
 
@@ -1794,10 +1617,16 @@
     parses any code starting with charts.ChartFigure and
     figures out, which choice had been made last time. This
     may very well fail if you changed the cell code manually.
+    For further reference, the <a href="http://matplotlib.org/api/pyplot_api.html">matplotlib Web site</a> is recommended.
 </p>
 <p class="one_line_heading">
-    In version 0.4, six chart
-    types are supported: Plots, i.e. line charts, bar charts,
+    Note that pyspread cells display all types of matplotlib figures.
+    The chart dialog just provides a convenient user to create and edit common
+    chart types.
+</p>
+<p class="one_line_heading">
+    Since version 0.4, six chart types are supported by the chart dialog:
+    Plots, i.e. line charts, bar charts,
     histograms, box plots, pie charts and annotations. Note
     that pie charts cannot be combined with other chart type
     yet. Please suggest other chart types that you find usable
@@ -1809,6 +1638,306 @@
     not yet an interface dialog for equations. A macro that
     depicts LaTeX equations in a cell is provided in the
     examples directory.
+</p>
+<p class="one_line_heading">
+    <a href="images/chart_dialog.png">
+            <img alt="Chart dialog" src="images/chart_dialog_preview.png"
+                 style="border: 0px solid ; width: 200px; height: 156px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    The chart dialog is designed as a fast to use graphical front-end for
+    common matplotlib properties. Attributes correspond to matplotlib function
+    properties. Each property is described in tooltips.
+    The chart dialog consists of three parts (from left to right):
+    The Axes panel, the Series panel and a Chart preview panel.
+</p>
+<p class="one_line_heading">
+    <i>Axes panel</i>
+</p>
+<p class="one_line_heading">
+    The Axes panel allows changing X and Y axes attributes. Other axes types
+    such as Z axis in 3D charts are not supported by the chart dialog.
+    The axes panel is structured into three sections: Axes, X-Axis and Y-Axis.
+</p>
+<p class="one_line_heading">
+    In the first box, overall figure attributes can be set, which is title
+    text, the title text font and color and id a legend is drawn. The text
+    entry field for the title text accepts Python expressions, i.e. if you want
+    a specific string to be displayed as the title, you have to quote the text.
+    However, if you want a certain global variable of cell content to be
+    displayed then you can enter the object name. Functions and operators are
+    also allowed as long as they return a string or unicode like object.
+    Note that this applies for all fields of the chart dialog unless otherwise
+    specified.
+</p>
+<p class="one_line_heading">
+    In the second box, X-axis attributes are specified. The X-axis label is
+    provided again as a Python expression. Font and color can be specified.
+    Next, X-axis scaling can be set to linear (no check) or logarithmic (check),
+    and the X-axis grid can be turned on and off. If the X-axis shall display a
+    date instead of values and if a datetime.date object is provided as input 
+    for the x-axis values then the date format field should be filled with
+    a strftime format string. Details about the format string are given in the
+    tooltip. The ticks field accepts a list or a tuple of numbers or floats.
+    At these locations, axis ticks are set when specified. If left empty, axis
+    ticks are set automatically. The label field lets the user specify
+    arbitrary text as label at a tick. Font and color of the labels can be
+    specified here. The secondary ticks option allows ticks to be displayed
+    on the opposide side of the chart, i.e. on the top as at the bottom.
+    The outside, inside, both choice specifies, where the ticks are situated at
+    the axis. Padding allows setting the distance between label text and axis.
+    Size lets the user specify text size if no explicit labels are given in the
+    labels field.
+</p>
+<p class="one_line_heading">
+    In the third box, Y-axis attributes are specified. Attributes match those
+    of the X-axis both in content and format with the exception of the date
+    format field, which is not available for the Y-axis.
+</p>
+<p class="one_line_heading">
+    <i>Series panel</i>
+</p>
+<p class="one_line_heading">
+    The Series panel allows adding one or more series to the axes. In order to
+    add a new series, click on the + tab at the bottom of the panel. A series
+    is deleted with the x right of the tabs. You can switch between series by
+    clicking on the respective tabs.
+</p>
+<p class="one_line_heading">
+    Each data series can be of a specific type that is chosen from the list
+    that is on the left side of the Series panel. In version 1.0.3 there are
+    eight series types: plot, bar, hist, boxplot, pie, annotate, contour and
+    Sankey. Note that the series type names correspond to the respective
+    matplotlib names. Other types of matplotlib series are not supported in
+    the chart dialog. If such a need arises please post an e-mail to the
+    mailing list <a href="mailto:pyspread-users@gna.org">
+    pyspread-users@gna.org</a>.
+</p>
+<p class="one_line_heading">
+    <i>Plot chart</i>
+</p>
+<p class="one_line_heading">
+    When the plot chart type is selected then on the right panel, Data, Line
+    and Marker boxes are displayed.
+</p>
+<p class="one_line_heading">
+    In the Data box, a data label can be
+    specified that appears in the legend if it is activated. The X field is
+    optional. It has to be an iterable of the same length of Y and allows
+    specifying the X values of each data point. In the Y field, Y values of
+    each point are specified in an iterable.
+</p>
+<p class="one_line_heading">
+    In the Line box, the line style chosen from solid, dashed, dash-dotted and
+    frozen. Its width can be specified in points (integer values only) as well
+    as its color. 
+</p>
+<p class="one_line_heading">
+    In the Marker box, the marker style for the actual data points may be 
+    chosen from a range of 22 styles. The maerker size can be specified (integer
+    values only) as well as its face and egde colors. The marker alpha value is
+    set with a floating point value, where 1.0 is solid and 0.0 is fully 
+    transparent.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-plot.png">
+            <img alt="Chart dialog with plot chart" src="images/screenshot-chartdialog-plot_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 117px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Bar chart</i>
+</p>
+<p class="one_line_heading">
+    When the bar chart type is selected then on the right panel, Data and
+    Bar boxes are displayed.
+</p>
+<p class="one_line_heading">
+    In the Data box, a data label can be
+    specified that appears in the legend if it is activated. The left 
+    positions field is mandatory. It expects an iterable of left bar values
+    that is as long as the bar heights iterable that defines the upper limits
+    of the bars (not the bar lengths). The bar widths field expects either a 
+    number that applies to all bars or an iterable so that specific bars may 
+    have different widths.  The bar bottoms field is optional and defines the 
+    lower limit of the bars. Similarly to the widths field, it allows entering a
+    number or an iterable.
+</p>
+<p class="one_line_heading">
+    In the Bar box, the bar fill and edge color can be chosen. Furthermore, an
+    alpha value can be specified with a floating point value, where 1.0 is solid
+    and 0.0 is fully transparent.
+</p>
+<p class="one_line_heading">
+    Note that while bar charts may be morte difficult to use than plot charts,
+    they can be used in order to plot arbitrary rectangles, which makes them 
+    also applicable for example to plot simple top down views on room layouts.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-bar.png">
+            <img alt="Chart dialog with bar chart" src="images/screenshot-chartdialog-bar_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 117px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Histogram</i>
+</p>
+<p class="one_line_heading">
+    When the histogram chart type is selected then on the right panel, Data and
+    Histogram boxes are displayed.
+</p>
+<p class="one_line_heading">
+    In the Data box, a data label can be
+    specified that appears in the legend if it is activated.
+    The data series that has to be provided is an iterable of numerical values.
+    Categorical values are <b>not</b> supported here because this is not 
+    supported by matplotlib. Value tuples are also not supported.
+</p>
+<p class="one_line_heading">
+    In the Histogram box, the number of bin can be specified as an integer
+    value. If Normed is checked then the integral of the histogram will sum to
+    1. If stacked is also True, the sum of the histograms is normalized to 1.
+    If culumative is checked then then a histogram is computed where each bin
+    gives the counts in that bin plus all bins for smaller values. The last bin
+    gives the total number of datapoints. Furthermore, the histogram bar color 
+    can be set. The alpha value can be specified with a floating point value, 
+    where 1.0 is solid and 0.0 is fully transparent.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-hist.png">
+            <img alt="Chart dialog with histogram" src="images/screenshot-chartdialog-hist_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 117px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Boxplot</i>
+</p>
+<p class="one_line_heading">
+    When the boxplot chart type is selected then on the right panel, Data and
+    Box plot boxes are displayed.
+</p>
+<p class="one_line_heading">
+    In the Data box, a sequence of numerical values or a sequence of sequences
+    can be provided. In the latter case, multiple boxplots are combined in
+    one diagram. 
+</p>
+<p class="one_line_heading">
+    In the Box plot box, the box width can be specified as a floatig point
+    value. If vertical is checked then the boxplots are frawn vertical
+    else horizontal. Flier symbols may be chosen from 22 choices. If notch is
+    checked then the main box shows a notch at the median value.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-boxplot.png">
+            <img alt="Chart dialog with boxplot" src="images/screenshot-chartdialog-boxplot_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 115px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Pie chart</i>
+</p>
+<p class="one_line_heading">
+    When the pie chart type is selected then on the right panel, Data and
+    Pie boxes are displayed.
+</p>
+<p class="one_line_heading">
+   In the Data box, a sequence of numerical values can be provided.
+</p>
+<p class="one_line_heading">
+   In the Pie box, labels for the wedges can be specified as a sequence of objects (e.g. strings). Wedge colors are provided in the Colors text box as sequence of strings, where colors can be the strings "b" (black) "g" (green) "r" (red) "c" (cyan) "m" (magenta) "y" (yellow) "k" (black) "w" (white), a floating point number between 0.0 and 1.0 for gray values or an htm hex string such as "#a36271". The pie chart can be rotated with the angle value, which may be a positive or negative integer. The checkbox shadow enables or disables a shadow behind the pie chart.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-piechart.png">
+            <img alt="Chart dialog with pie chart" src="images/screenshot-chartdialog-piechart_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 115px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Chart annotation</i>
+</p>
+<p class="one_line_heading">
+    When the annotation chart type is selected then on the right panel, an Annotation box is displayed.
+    There, a text can be entered as a string along with a 2-tuple of coordinates. In a choice box, information, what these coordinates refer to, is given. Annotations mostly make sense as an additional figure layer.
+</p>
+<p class="one_line_heading">
+   In the Annotation box, ...
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-annotation.png">
+            <img alt="Chart dialog with chart annotation" src="images/screenshot-chartdialog-annotation_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 115px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Countour chart</i>
+</p>
+<p class="one_line_heading">
+    When the contour chart type is selected then on the right panel, Data and
+    Lines, Areas and Labels boxes are displayed.
+</p>
+<p class="one_line_heading">
+   In the Data box, x and y values form a mesh for which z values are specified. Note that z must be a one-time nested list. For optimizing performance, the numpy helper functions meshgrid may be used as z may also be a 2D numpy array.
+</p>
+<p class="one_line_heading">
+   In the Lines box, the style, width, color and alpha value of the contour separating line may be specified. The line wdth must be an Integer value. The colors are provided in the Colors text box as sequence of strings, where colors can be the strings "b" (black) "g" (green) "r" (red) "c" (cyan) "m" (magenta) "y" (yellow) "k" (black) "w" (white), a floating point number between 0.0 and 1.0 for gray values or an htm hex string such as "#a36271".
+   Note that the colors are also used for the filling of the contour. Therefore, two overlaying contour plots may be combined in order to get e.g. black contour lines for a coloured contour.
+</p>
+<p class="one_line_heading">
+   In the Areas box, filling of the contour can be turned on and off and hatch types can be specified that is overlaid with the filling. The hatch types can be given in a sequence of hatch strings. A hatch string can be one of: <br>
+   /   - diagonal hatching<br>
+   \   - back diagonal<br>
+   |   - vertical<br>"
+   -   - horizontal<br>
+   +   - crossed<br>
+   x   - crossed diagonal<br>
+   o   - small circle<br>
+   O   - large circle<br>
+   .   - dots<br>
+   *   - stars<br>
+   Letters can be combined, in which case all the specified hatchings are done. If same letter repeats, 
+   it increases the density of hatching of that pattern. 
+   Note that when the color is white then the mesh type is displayed as black on white. 
+</p>
+<p class="one_line_heading">
+   In the Labels box, contour labels can be turned on and off, and the font size can be spezified as an Integer.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-contour.png">
+            <img alt="Chart dialog with contour chart" src="images/screenshot-chartdialog-contour_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 115px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    <i>Sankey diagram</i>
+</p>
+<p class="one_line_heading">
+    When the Sankey chart type is selected then on the right panel, Data and
+    Diagram and Area boxes are displayed.
+</p>
+<p class="one_line_heading">
+    In the Data box, flows and orientations can be specified as sequences of numbers. Flows have positive numbers
+    for inputs and negative numbers for outputs. The absolute value of the number specifies the arrow width.
+    Orientations may have the values are 1 (from/to the top), 0 (from/to the left or right), or -1 (from/to the bottom). If orientations == 0, inputs will break in from the left and outputs will break away to the right.
+    Labels may be specified as a sequence of strings - either one string for all arrows or one per arrow. Each label is followed by the value and the unit. Values are formatted using a Python formatting string
+</p>
+<p class="one_line_heading">
+   In the Diagram box, rotatation, gap, radius, shoulder, offset and angle can be specified, which control the 
+   layout of the Sankey diagram.
+</p>
+<p class="one_line_heading">
+   In the Area box, the color of the diagram edge and the diagram filling can be set.
+</p>
+<p class="one_line_heading">
+    <a href="images/screenshot-chartdialog-sankey.png">
+            <img alt="Chart dialog with Senkey diagram" src="images/screenshot-chartdialog-sankey_thumb.png"
+                 style="border: 0px solid ; width: 200px; height: 115px;">
+    </a>
+</p>
+<p class="one_line_heading">
+    The figure panel is automatically updated whenever content of the chart
+    dialog is changed. Should it show no chart then something is wrong with
+    the input so that later in the grid, no chart is shown as well.
 </p>
 
 <h3>Help menu</h3>
@@ -1822,7 +1951,7 @@
 </p>
 
 <h4>Tutorial</h4>
-
+b
 <p class="one_line_heading">
     Help -&gt; Python tutorial displays the official Python tutorial
     from the Internet.
@@ -1840,7 +1969,7 @@
 
 <p class="one_line_heading">
     Help -&gt; About informs about pyspread's current version, license
-    and contributors. The exact layout depends on the operating
+    and contributors. The exact layout depends on the oprtation
     system.
 </p>
 
@@ -2030,7 +2159,7 @@
 
 <p class="one_line_heading">
     If the search is standard then the searched string is queried via Python's
-    __contains__ method, i.e. as in "search_string in searched_string". This is
+    __contains__ method, i.e. as in "search_string in seaarched_string". This is
     the standard behavior.
 </p>
 
@@ -2061,7 +2190,7 @@
 
 <p class="one_line_heading">
     If the search is a surrounded by whitespace search then the substring
-    inside the searched string has to be preceded and succeeded by a
+    inside the searched string has to be preceeded and succeeded by a
     whitespace character. Otherwise, the substring does not count as
     occurrence.
 </p>
@@ -2181,7 +2310,7 @@
 
 <h4>Border width</h4>
 <p class="one_line_heading">
-    Choice box that changes cell border widths. The section
+    Choice box that changes cell border widthes. The section
     <a href="#border_choice_box">Border choice box</a>
     explains, which borders are affected.
     There are 11 different border widths.
@@ -2227,7 +2356,7 @@
 </p>
 
 <p class="one_line_heading">
-    While it is possible to create overlapping merged cells this is not recommended.
+    While it is posssible to create overöapping merged cells this is not recommended.
     It may result in loosing content of cells and will result in drawing errors.
 </p>
 
@@ -2263,7 +2392,7 @@
 </p>
 
 <p class="one_line_heading">
-    A button can be removed by making the button cell the current cell and
+    A button can be removed by making the buttoon cell the current cell and
     then pressing on the tool "Button like cell" again.
 </p>
 
@@ -2307,11 +2436,11 @@
 
 <p class="one_line_heading">
     When activating the insertion mode toggle button, make sure that
-    the cursor in the entry line is at a position at which you want
+    the cursor in the entry line is at a possition at which you want
     to insert a cell reference. When the button is activated, the
     entry line and the grid editors are disabled, so that no cell
     code may be changed manually. Now, select all cells that you want
-    to reference. Selections may be chosen by dragging a selection
+    to reference. Selections may be chossen by dragging a selection
     on the grid as well as with &lt;Ctrl&gt; + &lt;Left click&gt; on
     cells. Each time that a selection is chosen, i.e. the left button
     is clicked without pressing &lt;Ctrl&gt;, a string that references
@@ -2332,7 +2461,15 @@
     Then you press the insertion toggle button again.
     The resulting code may look like this:
     <pre>
-        sum([S[key] for key in [(r, c, 0) for r in xrange(1, 5) for c in xrange(5, 7)] + [(9, 7, 0)] + [(11, 7, 0)] if S[key] is not None])
+        sum([S[key] for key in 
+    </pre><pre>
+		[(r, c, 0) for r in xrange(1, 5) 
+    </pre><pre>
+			for c in xrange(5, 7)] + 
+    </pre><pre>
+            [(9, 7, 0)] + 
+    </pre><pre>
+            [(11, 7, 0)] if S[key] is not None])
     </pre>
 </p>
 <h2>Table selector</h2>
@@ -2480,7 +2617,7 @@
 <h2>Memory consumption for sheets with many matplotlib charts</h2>
 <p class="one_line_heading">
     If there are hundreds of charts in a spreadsheet then
-    pyspread can consume considerable amounts of memory.
+    pyspread can consume considerable amountss of memory.
     This is most obvious when printing or when creating PDF files.
     Be warned that 100 line charts in a spreadsheet may require
     10 GB of RAM.
@@ -2497,5 +2634,5 @@
     Martin Manns (mmanns &lt; at &gt; gmx &lt; dot &gt; net)
   </a>
   <br> <br>
-  Last changed: 8. September 2015</span>
+  Last changed: 27. December 2016</span>
 </p>
