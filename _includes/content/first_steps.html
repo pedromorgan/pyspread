@@ -1858,6 +1858,7 @@
 </p>
 <p class="one_line_heading">
     When the annotation chart type is selected then on the right panel, an Annotation box is displayed.
+    There, a text can be entered as a string along with a 2-tuple of coordinates. In a choice box, information, what these coordinates refer to, is given. Annotations mostly make sense as an additional figure layer.
 </p>
 <p class="one_line_heading">
    In the Annotation box, ...
@@ -1876,16 +1877,30 @@
     Lines, Areas and Labels boxes are displayed.
 </p>
 <p class="one_line_heading">
-   In the Data box, ...
+   In the Data box, x and y values form a mesh for which z values are specified. Note that z must be a one-time nested list. For optimizing performance, the numpy helper functions meshgrid may be used as z may also be a 2D numpy array.
 </p>
 <p class="one_line_heading">
-   In the Lines box, ...
+   In the Lines box, the style, width, color and alpha value of the contour separating line may be specified. The line wdth must be an Integer value. The colors are provided in the Colors text box as sequence of strings, where colors can be the strings "b" (black) "g" (green) "r" (red) "c" (cyan) "m" (magenta) "y" (yellow) "k" (black) "w" (white), a floating point number between 0.0 and 1.0 for gray values or an htm hex string such as "#a36271".
+   Note that the colors are also used for the filling of the contour. Therefore, two overlaying contour plots may be combined in order to get e.g. black contour lines for a coloured contour.
 </p>
 <p class="one_line_heading">
-   In the Areas box, ...
+   In the Areas box, filling of the contour can be turned on and off and hatch types can be specified that is overlaid with the filling. The hatch types can be given in a sequence of hatch strings. A hatch string can be one of: <br>
+   /   - diagonal hatching<br>
+   \   - back diagonal<br>
+   |   - vertical<br>"
+   -   - horizontal<br>
+   +   - crossed<br>
+   x   - crossed diagonal<br>
+   o   - small circle<br>
+   O   - large circle<br>
+   .   - dots<br>
+   *   - stars<br>
+   Letters can be combined, in which case all the specified hatchings are done. If same letter repeats, 
+   it increases the density of hatching of that pattern. 
+   Note that when the color is white then the mesh type is displayed as black on white. 
 </p>
 <p class="one_line_heading">
-   In the Labels box, ...
+   In the Labels box, contour labels can be turned on and off, and the font size can be spezified as an Integer.
 </p>
 <p class="one_line_heading">
     <a href="images/screenshot-chartdialog-contour.png">
@@ -1901,13 +1916,17 @@
     Diagram and Area boxes are displayed.
 </p>
 <p class="one_line_heading">
-    In the Data box, ...
+    In the Data box, flows and orientations can be specified as sequences of numbers. Flows have positive numbers
+    for inputs and negative numbers for outputs. The absolute value of the number specifies the arrow width.
+    Orientations may have the values are 1 (from/to the top), 0 (from/to the left or right), or -1 (from/to the bottom). If orientations == 0, inputs will break in from the left and outputs will break away to the right.
+    Labels may be specified as a sequence of strings - either one string for all arrows or one per arrow. Each label is followed by the value and the unit. Values are formatted using a Python formatting string
 </p>
 <p class="one_line_heading">
-   In the Diagram box, ...
+   In the Diagram box, rotatation, gap, radius, shoulder, offset and angle can be specified, which control the 
+   layout of the Sankey diagram.
 </p>
 <p class="one_line_heading">
-   In the Area box, ...
+   In the Area box, the color of the diagram edge and the diagram filling can be set.
 </p>
 <p class="one_line_heading">
     <a href="images/screenshot-chartdialog-sankey.png">
@@ -1932,7 +1951,7 @@
 </p>
 
 <h4>Tutorial</h4>
-
+b
 <p class="one_line_heading">
     Help -&gt; Python tutorial displays the official Python tutorial
     from the Internet.
