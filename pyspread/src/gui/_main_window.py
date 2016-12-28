@@ -212,7 +212,6 @@ class MainWindow(wx.Frame, EventMixin):
 
                 # Adjust toggle to pane visibility
                 toggle_item.Check(pane.IsShown())
-                print pane.IsShown()
 
     def _do_layout(self):
         """Adds widgets to the aui manager and controls the layout"""

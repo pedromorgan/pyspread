@@ -344,7 +344,6 @@ class Pys(object):
 
         font_name, ascii_font_data = self._split_tidy(line)
         font_data = base64.b64decode(ascii_font_data)
-        print font_name
 
         # Get system font names
         system_fonts = font_manager.findSystemFonts()
