@@ -456,6 +456,7 @@
     <li>Entry line</li>
     <li>Insertion mode toggle button (enabled on *nix only)</li>
     <li>Table selector</li>
+    <li>Table list</li>
     <li>Grid</li>
     <li>Status bar</li>
 </ul>
@@ -524,6 +525,12 @@
     Python module xlrd is installed.
     Cell content and cell attributes are retrieved.
     However, functions and macros are neither loaded nor converted.
+</p>
+
+<p class="one_line_heading">
+    Starting with v1.1, Opendocument format ods files can be opened via File -&gt; Open if the
+    Python module odfpy is installed. In v1.1, only cell content is imported.
+    Neither cell formats nor functions nor macros are loaded nor converted.
 </p>
 
 <p class="one_line_heading">
@@ -663,7 +670,7 @@
 <p class="one_line_heading">
     <a href="images/screenshot_csv_export.png">
         <img alt="CSV file export dialog"
-             src="images/screenshot_csv_export.png"
+             src="images/screenshot_csv_export_preview.png"
              style="border: 0px solid ; width: 200px; height: 208px;">
     </a>
 </p>
@@ -680,7 +687,7 @@
 <p class="one_line_heading">
     <a href="images/screenshot_pdf_export.png">
         <img alt="CSV file export dialog"
-             src="images/screenshot_pdf_export.png"
+             src="images/screenshot_pdf_export_preview.png"
              style="border: 0px solid ; width: 200px; height: 130px;">
     </a>
 </p>
@@ -745,7 +752,7 @@
 <p class="one_line_heading">
     <a href="images/screenshot_approve_dialog.png">
         <img alt="CSV file export dialog"
-             src="images/screenshot_approve_dialog.png"
+             src="images/screenshot_approve_dialog_preview.png"
              style="border: 0px solid ; width: 200px; height: 130px;">
     </a>
 </p>
@@ -778,7 +785,7 @@
 <p class="one_line_heading">
     <a href="images/screenshot_print_preview_1.png">
         <img alt="Print extent choice"
-             src="images/screenshot_print_preview_1.png"
+             src="images/screenshot_print_preview_1_preview.png"
              style="border: 0px solid ; width: 200px; height: 130px;">
     </a>
 </p>
@@ -790,7 +797,7 @@
 <p class="one_line_heading">
     <a href="images/screenshot_print_preview_2.png">
         <img alt="Print extent choice"
-             src="images/screenshot_print_preview_2.png"
+             src="images/screenshot_print_preview_2_preview.png"
              style="border: 0px solid ; width: 200px; height: 130px;">
     </a>
 </p>
@@ -857,18 +864,37 @@
         Too small values may lock up pyspread.
     </li>
     <li>
-        <b>GPG key id</b>:
+        <b>GPG fingerprint</b>:
         If a GPG key has been selected then its id is displayed
         here. Entering a new, valid id of an existing key that
         is <i>not</i> password protected changes the GPG key
         similarly to File -&gt; Switch GPG key...
+    </li>
+    <li>
+        <b>Open filetype</b>:
+        The default filetype that shall be opened with File -&gt; Open.
+        This should be adapted when using pyspread collaboratively via
+        git, where pysu files are preferrable.
+    </li>
+    <li>
+        <b>Save filetype</b>:
+        The default filetype that shall be saved with File -&gt; Save or File -&gt; Save As.
+        This should be adapted when using pyspread collaboratively via
+        git, where pysu files are preferrable.
+    </li>
+    <li>
+        <b>Spell checker language</b>:
+        Available since v1.1 if pyenchant is installed.
+        The spellchecking language may be chosen, here. All installed language options are presented
+        in the choice box. If a language that you need is misssing, please install it globally for pyenchant
+        (e.g. via your operating system repository).
     </li>
 </ul>
 
 <p class="one_line_heading">
     <a href="images/screenshot_preferences_dialog.png">
         <img alt="Preferences dialog"
-             src="images/screenshot_preferences_dialog.png"
+             src="images/screenshot_preferences_dialog_preview.png"
              style="border: 0px solid ; width: 200px; height: 208px;">
     </a>
 </p>
@@ -1188,6 +1214,17 @@
     Swiches the entry line on and off.
 </p>
 
+<h4>Table list</h4>
+
+<p class="one_line_heading">
+    Swiches the table list on the left side of the grid on and off.
+    The table list was introduced in v1.1 in order to improve usability
+    when using mice with poor wheels that jump over tables.
+    Note that switching on the table list limits the maximum number of
+    tables that pyspread supports to a few million tables depending on
+    the platform.
+</p>
+
 <h4>Go to cell</h4>
 
 <p class="one_line_heading">
@@ -1195,6 +1232,15 @@
     row, column and table. After pressing o.k., the specified cell
     becomes the current cell, and it is put into view on the grid.
     This involves switching to another grid table if necessary.
+</p>
+
+<h4>Check spelling</h4>
+
+<p class="one_line_heading">
+    Activates the spell checker for pyspread >=1.1 if pyenchant is
+    installed. All cells with text results are checked in the currently
+    active language that may be altered in the File &gt; Preferences
+    dialog. Words that are unknown are marked with a red curly underline. 
 </p>
 
 <h4>Zoom in</h4>
@@ -1213,6 +1259,16 @@
 
 <p class="one_line_heading">
     Reset the grid zoom level to 100%.
+</p>
+
+<h4>Zoom to fit</h4>
+
+<p class="one_line_heading">
+    New in v1.1. Zooms the grid so that it fits into the screen.
+    This also works in fullscreen mode with the &lt;F6&gt; shortcut key.
+    Note that if the grid is too large, which is the case for standard
+    grids on normal screens, nothing happens. For screen presentations,
+    minimize the grid size.
 </p>
 
 <h4>Refresh selected cells</h4>
@@ -1245,6 +1301,20 @@
 </p>
 
 <h3>Format menu</h3>
+
+<h4>Copy format</h4>
+
+<p class="one_line_heading">
+    New in v1.1. Copies only the format of the selected cells.
+    Copying formats has been separated from copying content 
+    in order to prevent unwanted behavior.
+</p>
+
+<h4>Paste format</h4>
+
+<p class="one_line_heading">
+    New in v1.1. Pastes copied cell formats.
+</p>
 
 <h4>Font...</h4>
 
@@ -1633,15 +1703,8 @@
     by posting at <a href="mailto:pyspread-users@gna.org">pyspread-users@gna.org</a>.
 </p>
 <p class="one_line_heading">
-    Matplotlib figures can also
-    be used to display LaTeX equations. However, pyspread has
-    not yet an interface dialog for equations. A macro that
-    depicts LaTeX equations in a cell is provided in the
-    examples directory.
-</p>
-<p class="one_line_heading">
-    <a href="images/chart_dialog.png">
-            <img alt="Chart dialog" src="images/chart_dialog_preview.png"
+    <a href="images/screenshot_chartdialog.png">
+            <img alt="Chart dialog" src="images/screenshot_chartdialog_preview.png"
                  style="border: 0px solid ; width: 200px; height: 156px;">
     </a>
 </p>
@@ -1951,7 +2014,7 @@
 </p>
 
 <h4>Tutorial</h4>
-b
+
 <p class="one_line_heading">
     Help -&gt; Python tutorial displays the official Python tutorial
     from the Internet.
@@ -2396,6 +2459,18 @@ b
     then pressing on the tool "Button like cell" again.
 </p>
 
+<h4>Video cell</h4>
+<p class="one_line_heading">
+    New in v1.1. Requires vlc-dev.
+    Opens a dialog, in which a video file can be chosen.
+    This video file is then played back with a vlc instance in the
+    current cell. The video is always linked and not included in the
+    pys file upon save. Playback can be started and stopped with the
+    left mouse button. Sound volume can be adjusted with the mouse wheel.
+    Multiple videos can be played back in parallel. Note that video
+    playback is considered experimental.
+</p>
+
 <h2>Entry line</h2>
 <p class="one_line_heading">
     Code is entered into the grid cells via the entry line.
@@ -2619,7 +2694,7 @@ b
     If there are hundreds of charts in a spreadsheet then
     pyspread can consume considerable amountss of memory.
     This is most obvious when printing or when creating PDF files.
-    Be warned that 100 line charts in a spreadsheet may require
+    Be warned that 100 line charts in one spreadsheet table may require
     10 GB of RAM.
 </p>
 
