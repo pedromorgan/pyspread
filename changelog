@@ -6,6 +6,8 @@ Note: This changelog starts at version 0.2.0
 1.1
 ---
 
+Default UI language changed from system default to English (en)
+UI language can now be chosen from preferences dialog
 Video support in cells (requires libvlc)
 Default open and save filetypes can noww be set in preferences dialog
 Spell checking functionality added (requires pyenchant)
