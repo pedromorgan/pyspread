@@ -55,7 +55,8 @@ import wx.stc as stc
 
 import src.lib.i18n as i18n
 from src.config import config, VERSION
-from src.sysvars import get_program_path, get_dependencies
+from src.sysvars import get_program_path, get_mo_languages
+from src.sysvars import get_dependencies
 from src.gui._widgets import PythonSTC
 from src.gui._events import post_command_event
 from src.gui._events import MainWindowEventMixin, GridEventMixin
@@ -1334,6 +1335,16 @@ class PreferencesDialog(wx.Dialog):
 #            "widget_kwargs": {"min": 0, "max": 1, "allow_long": False},
 #            "prepocessor": int,
 #        }),
+        ("ui_language", {
+            "label": _(u"UI language"),
+            "tooltip": _(u"User interface language. Choose 'system' for " + \
+                         u"the system default language. Restart pyspread " + \
+                         u"to activate."),
+            "widget": wx.Choice,
+            "widget_args": [(100, 50)],
+            "widget_kwargs": {"choices": get_mo_languages()},
+            "prepocessor": get_mo_languages().index,
+        }),
     ]
 
     if enchant is not None:

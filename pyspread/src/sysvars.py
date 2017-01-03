@@ -72,6 +72,10 @@ def get_python_tutorial_path():
 
 # System settings
 
+def get_mo_languages():
+   """Returns list of languages, of which mo files are present"""
+
+   return ["system"] + sorted(os.listdir(get_program_path() + "locale/"))
 
 def get_dpi():
     """Returns screen dpi resolution"""

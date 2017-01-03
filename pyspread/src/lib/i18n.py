@@ -33,6 +33,8 @@ import sys
 
 import wx
 
+from config import config
+
 #  Translation files are located in
 #  @LOCALE_DIR@/@LANGUAGE@/LC_MESSAGES/@APP_NAME@.mo
 APP_NAME = "pyspread"
@@ -44,16 +46,19 @@ LOCALE_DIR = os.path.join(APP_DIR, 'locale')
 
 # Choose the language
 # -------------------
-# A list is provided,gettext uses the first translation available in the list
-DEFAULT_LANGUAGES = ['en_US']
 
-langid = wx.LANGUAGE_DEFAULT
-wxlocale = wx.Locale(langid)
-languages = [wxlocale.GetCanonicalName()]
+# A list is provided,gettext uses the first translation available in the list
+
+if config['ui_language'] == 'system':
+
+    langid = wx.LANGUAGE_DEFAULT
+    wxlocale = wx.Locale(langid)
+    languages = [wxlocale.GetCanonicalName()]
+
+else:
+    languages = [config['ui_language']]
 
 # Languages and locations of translations are in env + default locale
-
-#languages += DEFAULT_LANGUAGES
 
 mo_location = LOCALE_DIR
 
