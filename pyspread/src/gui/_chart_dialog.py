@@ -1723,7 +1723,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
                   "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
-                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z",
+                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z", "s",
                   "hatches", "flows", "orientations", "labels"]
 
     # String keys need to be put in "

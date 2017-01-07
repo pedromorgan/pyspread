@@ -43,6 +43,7 @@ from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.parsers import get_font_from_data, get_pen_from_data, common_start
 from src.lib.parsers import color_pack2rgb, color_rgb2pack, is_svg
+from src.lib.parsers import unquote_string, parse_dict_strings
 
 param_font = [
     {"fontdata": "Courier New 13", "face": "Courier New", "size": 13},
@@ -120,6 +121,32 @@ def test_color_rgb2pack(rgb, res):
     assert color_rgb2pack(*rgb) == res
 
 
+param_unquote_string = [
+    {"code": "'a'", "res": "a"},
+]
+
+
+@params(param_unquote_string)
+def test_unquote_string(code, res):
+    """Unit test for unquote_string"""
+
+    assert unquote_string(code) == res
+
+
+param_parse_dict_strings = [
+    {"code": "'s': 'Test'", "res": ["'s'", "'Test'"]},
+    {"code": "'s': r'$\alpha > \beta$'",
+     "res": ["'s'", "r'$\alpha > \beta$'"]},
+]
+
+
+@params(param_parse_dict_strings)
+def test_param_parse_dict_strings(code, res):
+    """Unit test for parse_dict_strings"""
+
+    assert list(parse_dict_strings(code)) == res
+
+
 param_common_start = [
     {"strings": [], "res": ""},
     {"strings": ["", ""], "res": ""},
@@ -130,7 +157,6 @@ param_common_start = [
     {"strings": ["1", "tl"], "res": ""},
     {"strings": ["split", "splitlines"], "res": "split"},
 ]
-
 
 @params(param_common_start)
 def test_common_start(strings, res):
