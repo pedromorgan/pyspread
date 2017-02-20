@@ -57,8 +57,7 @@ from ._dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from ._dialogs import PreferencesDialog, GPGParamsDialog, PasteAsDialog
 from src.gui._cairo_export_dialog import CairoExportDialog
 
-# use ugettext instead of gettext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class ModalDialogInterfaceMixin(object):

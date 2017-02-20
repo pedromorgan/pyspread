@@ -56,8 +56,7 @@ from ._gui_interfaces import ModalDialogInterfaceMixin
 
 from . import _widgets
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class ToolbarBase(aui.AuiToolBar, EventMixin, ModalDialogInterfaceMixin):

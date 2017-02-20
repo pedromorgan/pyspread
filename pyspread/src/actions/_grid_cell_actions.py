@@ -31,8 +31,7 @@ from src.lib._string_helpers import quote
 from src.actions._main_window_actions import Actions
 from src.gui._events import post_command_event
 
-# use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 """

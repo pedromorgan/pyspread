@@ -44,8 +44,7 @@ from src.lib.ODSReader import ODSReader
 
 import src.lib.i18n as i18n
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 class Ods(object):
     """Interface between code_array and ods file

@@ -49,9 +49,7 @@ __ = wx.App(False)  # Windows Hack
 from sysvars import get_program_path
 from lib import i18n
 
-
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 sys.setrecursionlimit(65535)
 sys.path.insert(0, get_program_path())

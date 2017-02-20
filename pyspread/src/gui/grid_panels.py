@@ -51,7 +51,7 @@ try:
 except ImportError:
     vlc = None
 
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class VLCPanel(wx.Panel):

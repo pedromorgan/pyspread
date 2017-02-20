@@ -50,8 +50,7 @@ try:
 except ImportError:
     vlc = None
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):

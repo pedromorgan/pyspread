@@ -32,9 +32,11 @@ from builtins import zip
 
 import os
 
-import pangocairo
-import wx
+import gi
+gi.require_version('PangoCairo', '1.0')
 
+from gi.repository import PangoCairo
+import wx
 
 # OS
 def is_gtk():
@@ -112,7 +114,7 @@ def get_font_string(name):
 def get_font_list():
     """Returns a sorted list of all system font names"""
 
-    font_map = pangocairo.cairo_font_map_get_default()
+    font_map = PangoCairo.cairo_font_map_get_default()
     font_list = [f.get_name() for f in font_map.list_families()]
     font_list.sort()
 

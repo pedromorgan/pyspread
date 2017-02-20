@@ -81,8 +81,7 @@ try:
 except ImportError:
     enchant = None
 
-# use ugettext instead of gettext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class IntValidator(wx.PyValidator):

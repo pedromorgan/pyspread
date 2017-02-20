@@ -45,8 +45,7 @@ import wx
 from src.gui._events import post_command_event
 from src.sysvars import is_gtk
 
-#use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class AOpenMixin(object):

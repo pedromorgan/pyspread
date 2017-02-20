@@ -62,8 +62,7 @@ from src.sysvars import get_dpi, get_default_text_extent, get_color
 from src.config import config
 
 
-#use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class Xls(object):

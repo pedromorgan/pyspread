@@ -85,8 +85,7 @@ from ._events import MainWindowEventMixin
 
 from .icons import icons
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 # Maximum tooltip string length
 MAX_TOOLTIP_LENGTH = 1000

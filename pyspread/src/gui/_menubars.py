@@ -39,8 +39,7 @@ from ._events import post_command_event, EventMixin
 
 import src.lib.i18n as i18n
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class _filledMenu(wx.Menu):

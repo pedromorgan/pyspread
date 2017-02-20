@@ -53,8 +53,7 @@ from matplotlib import font_manager
 from src.lib.selection import Selection
 from src.config import config
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 class Pys(object):

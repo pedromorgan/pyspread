@@ -87,8 +87,7 @@ from src.lib.parsers import unquote_string
 from .icons import icons
 from sysvars import get_default_font, get_color
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 # --------------

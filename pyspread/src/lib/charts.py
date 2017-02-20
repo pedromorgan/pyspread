@@ -56,8 +56,7 @@ from matplotlib.sankey import Sankey
 from matplotlib import dates
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-# Use ugettext instead of getttext to avoid unicode errors
-_ = i18n.language.ugettext
+_ = i18n.language.gettext
 
 
 def object2code(key, code):
