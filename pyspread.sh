@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Calls pyspread from top level folder of extracted tarball
+#export PYTHONPATH=$PYTHONPATH:/home/mn/prog/Phoenix
 
+# Calls pyspread from top level folder of extracted tarball
 export PYTHONPATH=$PYTHONPATH:./pyspread
-./pyspread/pyspread $@
+python ./pyspread/pyspread $@

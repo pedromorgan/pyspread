@@ -30,6 +30,7 @@ Provides
 2) Background: Background drawing
 
 """
+from __future__ import absolute_import
 
 import wx.grid
 import wx.lib.mixins.gridlabelrenderer as glr
@@ -42,7 +43,7 @@ from src.gui._events import post_command_event, EventMixin
 
 try:
     import src.lib.vlc as vlc
-    from grid_panels import VLCPanel
+    from .grid_panels import VLCPanel
 except ImportError:
     vlc = None
 
@@ -329,7 +330,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
 
                     return
 
-                except Exception, err:
+                except Exception as err:
                     # Someting is wrong with the panel to be displayed
                     post_command_event(grid.main_window, self.StatusBarMsg,
                                        text=unicode(err))

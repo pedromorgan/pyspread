@@ -29,6 +29,7 @@ Provides
  2. MainWindowEventHandlers: Event handlers for Grid
 
 """
+from __future__ import absolute_import
 
 import wx.grid
 import wx.lib.mixins.gridlabelrenderer as glr
@@ -39,13 +40,13 @@ try:
 except ImportError:
     rsvg = None
 
-from _events import post_command_event, EventMixin, GridActionEventMixin
+from ._events import post_command_event, EventMixin, GridActionEventMixin
 
-from _grid_table import GridTable
-from _grid_renderer import GridRenderer, RowLabelRenderer, ColLabelRenderer
-from _gui_interfaces import GuiInterfaces
-from _menubars import ContextMenu
-from _chart_dialog import ChartDialog
+from ._grid_table import GridTable
+from ._grid_renderer import GridRenderer, RowLabelRenderer, ColLabelRenderer
+from ._gui_interfaces import GuiInterfaces
+from ._menubars import ContextMenu
+from ._chart_dialog import ChartDialog
 
 import src.lib.i18n as i18n
 from src.sysvars import is_gtk
@@ -1512,7 +1513,7 @@ class GridEventHandlers(GridActionEventMixin):
             self.grid.actions.sort_ascending(self.grid.actions.cursor)
             statustext = _(u"Sorting complete.")
 
-        except Exception, err:
+        except Exception as err:
             statustext = _(u"Sorting failed: {}").format(err)
 
         post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
@@ -1525,7 +1526,7 @@ class GridEventHandlers(GridActionEventMixin):
             self.grid.actions.sort_descending(self.grid.actions.cursor)
             statustext = _(u"Sorting complete.")
 
-        except Exception, err:
+        except Exception as err:
             statustext = _(u"Sorting failed: {}").format(err)
 
         post_command_event(self.grid.main_window, self.grid.StatusBarMsg,

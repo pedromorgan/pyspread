@@ -27,6 +27,7 @@ test_xrect
 Unit tests for xrect.py
 
 """
+from __future__ import print_function
 
 from math import sin, cos, pi
 import os
@@ -142,7 +143,7 @@ class TestRotoOriginRect(object):
         bbox_calculated = bbox_x_min, bbox_x_max, bbox_y_min, bbox_y_max
 
         for b1, b2 in zip(bbox_from_method, bbox_calculated):
-            print b1, b2
+            print(b1, b2)
             assert abs(b1 - b2) < 1.0E-10
 
     param_comb_rotoorigin_collide = [

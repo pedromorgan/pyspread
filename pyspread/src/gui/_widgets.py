@@ -40,6 +40,8 @@ Provides:
  13. TableChoiceListCtrl: Virtual ListCtrl for choosing the current grid table
 
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 import __builtin__
 import keyword
@@ -69,11 +71,11 @@ from src.lib._string_helpers import quote
 from src.config import config
 from src.sysvars import get_default_font, is_gtk, get_color
 
-from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
-from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
-from _events import MainWindowEventMixin
+from ._events import post_command_event, EntryLineEventMixin, GridCellEventMixin
+from ._events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
+from ._events import MainWindowEventMixin
 
-from icons import icons
+from .icons import icons
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -1374,7 +1376,7 @@ class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
                     # 1. gather item data
                     # 2. delete item in list
                     # 3. insert item & it's data into the list at the new index
-                    print self.startIndex, self.dropIndex
+                    print(self.startIndex, self.dropIndex)
 
                     # dropList is a list of field values from the list control
                     dropList = []

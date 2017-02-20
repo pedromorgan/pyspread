@@ -27,6 +27,7 @@ test_self.main_window_actions.py
 Unit tests for _self.main_window_actions.py
 
 """
+from __future__ import print_function
 
 import csv
 import os
@@ -162,7 +163,7 @@ class TestTxtGenerator(object):
         has_value_error = False
 
         try:
-            print [list(ele) for ele in txt_gen]
+            print([list(ele) for ele in txt_gen])
 
         except ValueError:
             has_value_error = True

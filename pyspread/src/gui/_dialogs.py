@@ -182,47 +182,47 @@ class CsvParameterWidgets(object):
     """
 
     csv_params = [
-        ["encodings", types.TupleType, _("Encoding"),
+        ["encodings", tuple, _("Encoding"),
          _("CSV file encoding.")],
-        ["dialects", types.TupleType, _("Dialect"),
+        ["dialects", tuple, _("Dialect"),
          _("To make it easier to specify the format of input and output "
            "records, specific formatting parameters are grouped together "
            "into dialects.\n'excel': Defines the usual properties of an "
            "Excel-generated CSV file.\n'sniffer': Deduces the format of a "
            "CSV file\n'excel-tab': Defines the usual "
            "properties of an Excel-generated TAB-delimited file.")],
-        ["delimiter", types.StringType, _("Delimiter"),
+        ["delimiter", bytes, _("Delimiter"),
          _("A one-character string used to separate fields.")],
-        ["doublequote", types.BooleanType, _("Doublequote"),
+        ["doublequote", bool, _("Doublequote"),
          _("Controls how instances of quotechar appearing inside a "
            "field should be themselves be quoted. When True, the character "
            "is doubled. When False, the escapechar is used as a prefix to "
            "the quotechar.")],
-        ["escapechar", types.StringType, _("Escape character"),
+        ["escapechar", bytes, _("Escape character"),
          _("A one-character string used by "
            "the writer to escape the delimiter if quoting is set to "
            "QUOTE_NONE and the quotechar if doublequote is False. On "
            "reading, the escapechar removes any special meaning from the "
            "following character.")],
-        ["quotechar", types.StringType, _("Quote character"),
+        ["quotechar", bytes, _("Quote character"),
          _("A one-character string used to quote fields containing special "
            "characters, such as the delimiter or quotechar, or which "
            "contain new-line characters.")],
-        ["quoting", types.IntType, _("Quoting style"),
+        ["quoting", int, _("Quoting style"),
          _("Controls when quotes should be recognised.")],
-        ["self.has_header", types.BooleanType, _("Header present"),
+        ["self.has_header", bool, _("Header present"),
          _("Analyze the CSV file and treat the first row as strings if it "
            "appears to be a series of column headers.")],
-        ["skipinitialspace", types.BooleanType, _("Skip initial space"),
+        ["skipinitialspace", bool, _("Skip initial space"),
          _("When True, whitespace immediately following the delimiter is "
            "ignored.")],
     ]
 
     type2widget = {
-        types.StringType: wx.TextCtrl,
-        types.BooleanType: wx.CheckBox,
-        types.TupleType: wx.Choice,
-        types.IntType: wx.Choice,
+        bytes: wx.TextCtrl,
+        bool: wx.CheckBox,
+        tuple: wx.Choice,
+        int: wx.Choice,
     }
 
     standard_encodings = (
@@ -301,9 +301,9 @@ class CsvParameterWidgets(object):
                 widget.SetSelection(0)
 
             # Bind event handler to widget
-            if ptype is types.StringType or ptype is types.UnicodeType:
+            if ptype is bytes or ptype is str:
                 event_type = wx.EVT_TEXT
-            elif ptype is types.BooleanType:
+            elif ptype is bool:
                 event_type = wx.EVT_CHECKBOX
             else:
                 event_type = wx.EVT_CHOICE
@@ -357,8 +357,8 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if ptype is types.TupleType:
-                ptype = types.ObjectType
+            if ptype is tuple:
+                ptype = object
 
             digest = Digest(acceptable_types=[ptype])
 
@@ -419,9 +419,9 @@ class CsvParameterWidgets(object):
 
             widget = self._widget_from_p(pname, ptype)
 
-            if ptype is types.StringType or ptype is types.UnicodeType:
+            if ptype is bytes or ptype is str:
                 parameters[pname] = str(widget.GetValue())
-            elif ptype is types.BooleanType:
+            elif ptype is bool:
                 parameters[pname] = widget.GetValue()
             elif pname == 'quoting':
                 choice = self.choices['quoting'][widget.GetSelection()]
@@ -434,7 +434,7 @@ class CsvParameterWidgets(object):
         try:
             csv.register_dialect('user', **parameters)
 
-        except TypeError, err:
+        except TypeError as err:
             msg = _("The dialect is invalid. \n "
                     "\nError message:\n{msg}").format(msg=err)
             dlg = wx.MessageDialog(self.parent, msg, style=wx.ID_CANCEL)
@@ -451,12 +451,12 @@ class CSVPreviewGrid(wx.grid.Grid):
     shape = [10, 10]
 
     digest_types = {
-        'String': types.StringType,
-        'Unicode': types.UnicodeType,
-        'Integer': types.IntType,
-        'Float': types.FloatType,
-        'Boolean': types.BooleanType,
-        'Object': types.ObjectType,
+        'String': bytes,
+        'Unicode': str,
+        'Integer': int,
+        'Float': float,
+        'Boolean': bool,
+        'Object': object,
     }
 
     # Only add date and time if dateutil is installed
@@ -564,7 +564,7 @@ class CSVPreviewGrid(wx.grid.Grid):
             try:
                 self.dtypes.append(self.digest_types[key])
             except KeyError:
-                self.dtypes.append(types.NoneType)
+                self.dtypes.append(type(None))
 
         topleft = (has_header + 1, 0)
 

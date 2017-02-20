@@ -178,7 +178,7 @@ class ExchangeActions(Actions):
         try:
             csv_interface.write(data)
 
-        except IOError, err:
+        except IOError as err:
             msg = _("The file {filepath} could not be fully written\n \n"
                     "Error message:\n{msg}")
             msg = msg.format(filepath=filepath, msg=err)
@@ -207,7 +207,7 @@ class ExchangeActions(Actions):
             outfile = open(filepath, "wb")
             outfile.write(data)
 
-        except IOError, err:
+        except IOError as err:
             msg = _("The file {filepath} could not be fully written\n \n"
                     "Error message:\n{msg}")
             msg = msg.format(filepath=filepath, msg=err)
@@ -658,16 +658,16 @@ class ClipboardActions(Actions):
                 obj = [map(ast.literal_eval, line.split("\t"))
                        for line in data.split("\n")]
 
-            except Exception, err:
+            except Exception as err:
                 # This must just be text.
                 try:
                     obj = [line.split('\t') for line in data.split('\n')]
-                except Exception, err:
+                except Exception as err:
                     # Now I really have no idea
                     error_msg(err)
                     return
 
-        except ValueError, err:
+        except ValueError as err:
             error_msg(err)
             return
 

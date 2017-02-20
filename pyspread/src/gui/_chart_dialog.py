@@ -31,6 +31,7 @@ Provides
 * ChartDialog: Chart dialog class
 
 """
+from __future__ import absolute_import
 
 # Architecture
 # ------------
@@ -72,14 +73,14 @@ from wx.lib.intctrl import IntCtrl, EVT_INT
 import wx.lib.agw.flatnotebook as fnb
 import wx.lib.agw.floatspin as floatspin
 
-from _widgets import LineStyleComboBox, MarkerStyleComboBox
-from _widgets import CoordinatesComboBox
-from _events import post_command_event, ChartDialogEventMixin
+from ._widgets import LineStyleComboBox, MarkerStyleComboBox
+from ._widgets import CoordinatesComboBox
+from ._events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
 from src.lib.parsers import color2code, code2color, parse_dict_strings
 from src.lib.parsers import unquote_string
-from icons import icons
+from .icons import icons
 from sysvars import get_default_font, get_color
 
 # Use ugettext instead of getttext to avoid unicode errors

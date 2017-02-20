@@ -80,7 +80,8 @@ def get_mo_languages():
 def get_dpi():
     """Returns screen dpi resolution"""
 
-    def pxmm_2_dpi((pixels, length_mm)):
+    def pxmm_2_dpi(xxx_todo_changeme):
+        (pixels, length_mm) = xxx_todo_changeme
         return pixels * 25.6 / length_mm
 
     return map(pxmm_2_dpi, zip(wx.GetDisplaySize(), wx.GetDisplaySizeMM()))

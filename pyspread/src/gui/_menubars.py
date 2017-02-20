@@ -31,10 +31,11 @@ Provides:
   2. MainMenu: Main menu of pyspread
 
 """
+from __future__ import absolute_import
 
 import wx
 
-from _events import post_command_event, EventMixin
+from ._events import post_command_event, EventMixin
 
 import src.lib.i18n as i18n
 

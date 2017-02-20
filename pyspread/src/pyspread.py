@@ -36,6 +36,8 @@ Provides
 * MainApplication: Initial command line operations and application launch
 
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 import sys
 import optparse
@@ -44,7 +46,7 @@ import wx
 __ = wx.App(False)  # Windows Hack
 
 from sysvars import get_program_path
-import lib.i18n as i18n
+from lib import i18n
 
 
 # Use ugettext instead of getttext to avoid unicode errors

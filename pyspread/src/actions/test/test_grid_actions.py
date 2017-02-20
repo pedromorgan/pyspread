@@ -172,15 +172,15 @@ class TestFileActions(object):
 
         # Test if safe_mode is correctly set for io-error sig
 
-        os.chmod(self.filename_not_permitted, 0200)
-        os.chmod(self.filename_not_permitted + ".sig", 0200)
+        os.chmod(self.filename_not_permitted, 0o200)
+        os.chmod(self.filename_not_permitted + ".sig", 0o200)
 
         self.grid.actions.approve(self.filename_not_permitted)
 
         assert self.grid.GetTable().data_array.safe_mode
 
-        os.chmod(self.filename_not_permitted, 0644)
-        os.chmod(self.filename_not_permitted + ".sig", 0644)
+        os.chmod(self.filename_not_permitted, 0o644)
+        os.chmod(self.filename_not_permitted + ".sig", 0o644)
 
     def test_clear_globals_reload_modules(self):
         """Tests clear_globals_reload_modules"""
@@ -267,11 +267,11 @@ class TestFileActions(object):
         assert not self.grid.actions.open(event)
 
         # Test unaccessible file
-        os.chmod(self.filename_not_permitted, 0200)
+        os.chmod(self.filename_not_permitted, 0o200)
         event.attr["filepath"] = self.filename_not_permitted
         assert not self.grid.actions.open(event)
 
-        os.chmod(self.filename_not_permitted, 0644)
+        os.chmod(self.filename_not_permitted, 0o644)
 
         # Test empty file
         event.attr["filepath"] = self.filename_empty
@@ -332,13 +332,13 @@ class TestFileActions(object):
 
         # Test io error
 
-        os.chmod(self.filename_save, 0200)
+        os.chmod(self.filename_save, 0o200)
         try:
             self.grid.actions.save(event)
             raise IOError("No error raised even though target not writable")
         except IOError:
             pass
-        os.chmod(self.filename_save, 0644)
+        os.chmod(self.filename_save, 0o644)
 
         # Test invalid file name
 

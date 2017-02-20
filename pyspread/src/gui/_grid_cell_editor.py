@@ -28,11 +28,12 @@ Provides
  1. GridCellEditor -- Editor displayed when user dobule clicks to edit
     a cell in the grid
 """
+from __future__ import absolute_import
 
 import wx
 import string
 
-from _events import post_command_event
+from ._events import post_command_event
 from src.gui._widgets import GridEventMixin
 from src.lib._string_helpers import quote
 

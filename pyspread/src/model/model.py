@@ -33,6 +33,7 @@ Layer 1: DictGrid
 Layer 0: KeyValueStore
 
 """
+from __future__ import absolute_import
 
 import ast
 import base64
@@ -59,7 +60,7 @@ from src.gui.grid_panels import vlcpanel_factory
 
 from src.sysvars import get_color, get_font_string
 
-from unredo import UnRedo
+from .unredo import UnRedo
 
 
 class KeyValueStore(dict):
@@ -1272,14 +1273,14 @@ class CodeArray(DataArray):
             module = ast.parse(code)
             assignment_target_end = self._get_assignment_target_end(module)
 
-        except ValueError, err:
+        except ValueError as err:
             assignment_target_error = ValueError(err)
 
-        except AttributeError, err:
+        except AttributeError as err:
             # Attribute Error includes RunTimeError
             assignment_target_error = AttributeError(err)
 
-        except Exception, err:
+        except Exception as err:
             assignment_target_error = Exception(err)
 
         if assignment_target_error is None and assignment_target_end != -1:
@@ -1312,14 +1313,14 @@ class CodeArray(DataArray):
             try:
                 result = eval(expression, env, {})
 
-            except AttributeError, err:
+            except AttributeError as err:
                 # Attribute Error includes RunTimeError
                 result = AttributeError(err)
 
-            except RuntimeError, err:
+            except RuntimeError as err:
                 result = RuntimeError(err)
 
-            except Exception, err:
+            except Exception as err:
                 result = Exception(err)
 
             finally:

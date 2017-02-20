@@ -1,4 +1,5 @@
-print "Detected windows, creating rsvg."
+from __future__ import print_function
+print("Detected windows, creating rsvg.")
 #some workarounds for windows
 
 from ctypes import *

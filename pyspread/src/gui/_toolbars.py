@@ -35,21 +35,22 @@ Provides:
   6. AttributesToolbar: Toolbar for editing cell attributes
 
 """
+from __future__ import absolute_import
 
 import wx
 import wx.lib.colourselect as csel
 import wx.lib.agw.aui as aui
 
-from _events import post_command_event, EventMixin
+from ._events import post_command_event, EventMixin
 
 import src.lib.i18n as i18n
 
 from src.config import config
 from src.sysvars import get_default_font, get_font_list
-from icons import icons
-from _gui_interfaces import ModalDialogInterfaceMixin
+from .icons import icons
+from ._gui_interfaces import ModalDialogInterfaceMixin
 
-import _widgets
+from . import _widgets
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext

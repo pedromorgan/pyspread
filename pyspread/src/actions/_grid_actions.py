@@ -378,7 +378,7 @@ class FileActions(Actions):
                     interface = Interface(self.grid.code_array, infile)
                     interface.to_code_array()
 
-                except (ValueError, xlrd.biffh.XLRDError), err:
+                except (ValueError, xlrd.biffh.XLRDError) as err:
                     post_command_event(self.main_window, self.StatusBarMsg,
                                        text=str(err))
 
@@ -405,7 +405,7 @@ class FileActions(Actions):
                 filedir = os.path.dirname(filepath)
                 os.chdir(filedir)
 
-        except IOError, err:
+        except IOError as err:
             txt = _("Error opening file {filepath}:").format(filepath=filepath)
             txt += " " + str(err)
             post_command_event(self.main_window, self.StatusBarMsg, text=txt)
@@ -495,7 +495,7 @@ class FileActions(Actions):
         try:
             shutil.move(tmpfilepath, filepath)
 
-        except OSError, err:
+        except OSError as err:
             # No tmp file present
             post_command_event(self.main_window, self.StatusBarMsg, text=err)
 
@@ -519,7 +519,7 @@ class FileActions(Actions):
         try:
             workbook.save(filepath)
 
-        except IOError, err:
+        except IOError as err:
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
                                    text=err)
@@ -544,7 +544,7 @@ class FileActions(Actions):
                 interface = Pys(self.grid.code_array, outfile)
                 interface.from_code_array()
 
-        except (IOError, ValueError), err:
+        except (IOError, ValueError) as err:
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
                                    text=err)
@@ -572,7 +572,7 @@ class FileActions(Actions):
                 interface = Pys(self.grid.code_array, outfile)
                 interface.from_code_array()
 
-        except (IOError, ValueError), err:
+        except (IOError, ValueError) as err:
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
                                    text=err)
@@ -699,7 +699,7 @@ class TableRowActionsMixin(Actions):
         try:
             self.code_array.delete(row, no_rows, axis=0, tab=tab)
 
-        except ValueError, err:
+        except ValueError as err:
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=err.message)
 
@@ -746,7 +746,7 @@ class TableColumnActionsMixin(Actions):
         try:
             self.code_array.delete(col, no_cols, axis=1, tab=tab)
 
-        except ValueError, err:
+        except ValueError as err:
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=err.message)
 
@@ -786,7 +786,7 @@ class TableTabActionsMixin(Actions):
             post_command_event(self.main_window, self.ResizeGridMsg,
                                shape=shape)
 
-        except ValueError, err:
+        except ValueError as err:
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=err.message)
 
@@ -1737,9 +1737,9 @@ class SelectionActions(Actions):
         rh = format_data["row_heights"]
         cw = format_data["col_widths"]
 
-        assert isinstance(ca, types.ListType)
-        assert isinstance(rh, types.DictType)
-        assert isinstance(cw, types.DictType)
+        assert isinstance(ca, list)
+        assert isinstance(rh, dict)
+        assert isinstance(cw, dict)
 
         # Cell attributes
 

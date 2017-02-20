@@ -34,9 +34,10 @@ Provides
  * AOpen: Read and write files with status messages and abort option
 
 """
+from __future__ import absolute_import
 
 import bz2
-import i18n
+from . import i18n
 
 import wx
 

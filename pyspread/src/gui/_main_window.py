@@ -539,11 +539,11 @@ class MainWindowEventHandlers(EventMixin):
         sp = wx.StandardPaths.Get()
         pyspreadrc_path = sp.GetUserConfigDir() + "/." + config.config_filename
         try:
-            os.chmod(pyspreadrc_path, 0600)
+            os.chmod(pyspreadrc_path, 0o600)
         except OSError:
             dummyfile = open(pyspreadrc_path, "w")
             dummyfile.close()
-            os.chmod(pyspreadrc_path, 0600)
+            os.chmod(pyspreadrc_path, 0o600)
 
     def OnSpellCheckToggle(self, event):
         """Spell checking toggle event handler"""

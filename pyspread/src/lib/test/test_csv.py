@@ -85,13 +85,13 @@ def test_get_first_line(filepath, first_line):
 
 param_digested_line = [
     {'line': "1, 3, 1",
-     'digest_types': [types.StringType, types.IntType, types.FloatType],
+     'digest_types': [bytes, int, float],
      'res': ["1", 3, 1.0]},
     {'line': "1",
-     'digest_types': [types.FloatType],
+     'digest_types': [float],
      'res': [1.0]},
     {'line': u"1, Gsdfjkljö",
-     'digest_types': [types.FloatType, types.UnicodeType],
+     'digest_types': [float, str],
      'res': [1.0, u"Gsdfjkljö"]},
 ]
 
@@ -116,10 +116,10 @@ class TestDigest(object):
     """Unit tests for Digest"""
 
     param_make_string = [
-        {'val': 1, 'acc_types': [types.StringType], 'res': "1"},
-        {'val': None, 'acc_types': [types.StringType], 'res': ""},
-        {'val': 1, 'acc_types': [types.UnicodeType], 'res': u"1"},
-        {'val': None, 'acc_types': [types.UnicodeType], 'res': u""},
+        {'val': 1, 'acc_types': [bytes], 'res': "1"},
+        {'val': None, 'acc_types': [bytes], 'res': ""},
+        {'val': 1, 'acc_types': [str], 'res': u"1"},
+        {'val': None, 'acc_types': [str], 'res': u""},
     ]
 
     @params(param_make_string)
@@ -142,7 +142,7 @@ class TestCsvInterface(object):
 
         filepath = TESTPATH + 'test1.csv'
         self.dialect, __ = sniff(filepath)
-        self.digest_types = [types.UnicodeType]
+        self.digest_types = [str]
         has_header = True
 
         self.interface = CsvInterface(self.main_window, filepath, self.dialect,
