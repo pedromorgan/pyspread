@@ -1,3 +1,5 @@
+from builtins import range
+from builtins import object
 # Copyright 2011 Marco Conti
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,13 +87,13 @@ class ODSReader(object):
 
                 if(textContent):
                     if(textContent[0] != "#"):  # ignore comments cells
-                        for rr in xrange(int(repeat)):  # repeated?
+                        for rr in range(int(repeat)):  # repeated?
                             arrCells[count]=textContent
                             count+=1
                     else:
                         row_comment = row_comment + textContent + " "
                 else:
-                    for rr in xrange(int(repeat)):
+                    for rr in range(int(repeat)):
                         count+=1
 
             # if row contained something

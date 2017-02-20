@@ -27,6 +27,7 @@ test_unredo
 Unit tests for unredo.py
 
 """
+from builtins import object
 
 import os
 import sys

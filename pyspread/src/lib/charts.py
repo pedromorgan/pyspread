@@ -34,9 +34,15 @@ Provides
 
 """
 from __future__ import absolute_import
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from past.utils import old_div
 
 from copy import copy
-from cStringIO import StringIO
+from io import StringIO
 import datetime
 from . import i18n
 import warnings
@@ -64,7 +70,7 @@ def object2code(key, code):
             code = False
 
     else:
-        code = unicode(code)
+        code = str(code)
 
     return code
 
@@ -87,8 +93,8 @@ def fig2bmp(figure, width, height, dpi, zoom):
 
     dpi *= float(zoom)
 
-    figure.set_figwidth(width / dpi)
-    figure.set_figheight(height / dpi)
+    figure.set_figwidth(old_div(width, dpi))
+    figure.set_figheight(old_div(height, dpi))
     figure.subplots_adjust()
 
     with warnings.catch_warnings():
@@ -96,7 +102,7 @@ def fig2bmp(figure, width, height, dpi, zoom):
 
     try:
         # The padding is too small for small sizes. This fixes it.
-        figure.tight_layout(pad=1.0/zoom)
+        figure.tight_layout(pad=old_div(1.0,zoom))
     except ValueError:
         pass
 
@@ -273,7 +279,7 @@ class ChartFigure(Figure):
             if x_str in series and \
                len(series[x_str]) != len(series[y_str]):
                 # Wrong length --> ignore xdata
-                series[x_str] = range(len(series[y_str]))
+                series[x_str] = list(range(len(series[y_str])))
             else:
                 # Solve the problem that the series data may contain utf-8 data
                 series_list = list(series[x_str])

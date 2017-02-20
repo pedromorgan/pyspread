@@ -31,6 +31,9 @@ Provides
 
 """
 from __future__ import absolute_import
+from __future__ import division
+from builtins import str
+from past.utils import old_div
 
 import wx.grid
 import wx.lib.mixins.gridlabelrenderer as glr
@@ -55,7 +58,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
     """This renderer draws borders and text at specified font, size, color"""
 
     selection_color_tuple = \
-        tuple([c / 255.0 for c in get_color(config["selection_color"]).Get()] +
+        tuple([old_div(c, 255.0) for c in get_color(config["selection_color"]).Get()] +
               [0.5])
 
     def __init__(self, data_array):
@@ -107,7 +110,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
 
         size = self.get_zoomed_size(1.0)
 
-        caret_length = int(min([rect.width, rect.height]) / 5.0)
+        caret_length = int(old_div(min([rect.width, rect.height]), 5.0))
 
         pen.SetWidth(size)
 
@@ -220,8 +223,8 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         row, col, tab = key
         cell_attributes = grid.code_array.cell_attributes
 
-        zoomed_width = drawn_rect.width / self.zoom
-        zoomed_height = drawn_rect.height / self.zoom
+        zoomed_width = old_div(drawn_rect.width, self.zoom)
+        zoomed_height = old_div(drawn_rect.height, self.zoom)
 
         # Button cells shall not be executed for preview
         if grid.code_array.cell_attributes[key]["button_cell"]:
@@ -229,7 +232,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         else:
             cell_preview = repr(grid.code_array[key])[:100]
 
-        sorted_keys = sorted(grid.code_array.cell_attributes[key].iteritems())
+        sorted_keys = sorted(grid.code_array.cell_attributes[key].items())
 
         key_above_left = row - 1, col - 1, tab
         key_above = row - 1, col, tab
@@ -271,7 +274,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
 
         # Set off cell renderer by 1/2 a pixel to avoid blurry lines
         rect_tuple = \
-            -0.5, -0.5, rect.width / zoom + 0.5, rect.height / zoom + 0.5
+            -0.5, -0.5, old_div(rect.width, zoom) + 0.5, old_div(rect.height, zoom) + 0.5
         spell_check = config["check_spelling"]
         cell_renderer = GridCellCairoRenderer(context, self.data_array,
                                               key, rect_tuple, view_frozen,
@@ -333,7 +336,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
                 except Exception as err:
                     # Someting is wrong with the panel to be displayed
                     post_command_event(grid.main_window, self.StatusBarMsg,
-                                       text=unicode(err))
+                                       text=str(err))
                     bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
                                               grid._view_frozen)
             else:

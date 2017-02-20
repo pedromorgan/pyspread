@@ -32,6 +32,10 @@ Provides
 
 """
 from __future__ import absolute_import
+from builtins import str
+from builtins import zip
+from builtins import range
+from builtins import object
 
 # Architecture
 # ------------
@@ -156,7 +160,7 @@ class IntegerEditor(IntCtrl, ChartDialogEventMixin):
     def get_code(self):
         """Returns string representation of Integer"""
 
-        return unicode(self.GetValue())
+        return str(self.GetValue())
 
     def set_code(self, code):
         """Sets widget from code string
@@ -200,7 +204,7 @@ class FloatEditor(floatspin.FloatSpin, ChartDialogEventMixin):
     def _get_code(self):
         """Returns string representation of Integer"""
 
-        return unicode(self.GetValue())
+        return str(self.GetValue())
 
     def _set_code(self, code):
         """Sets widget from code string
@@ -281,7 +285,7 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
         wx.FONTSTYLE_SLANT: "oblique",
     }
 
-    style_mpl2wx = dict((v, k) for k, v in style_wx2mpl.iteritems())
+    style_mpl2wx = dict((v, k) for k, v in style_wx2mpl.items())
 
     weight_wx2mpl = {
         wx.FONTWEIGHT_BOLD: "bold",
@@ -289,7 +293,7 @@ class TextEditor(wx.Panel, ChartDialogEventMixin):
         wx.FONTWEIGHT_LIGHT: "light",
     }
 
-    weight_mpl2wx = dict((v, k) for k, v in weight_wx2mpl.iteritems())
+    weight_mpl2wx = dict((v, k) for k, v in weight_wx2mpl.items())
 
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
@@ -485,8 +489,8 @@ class TickParamsEditor(wx.Panel, ChartDialogEventMixin):
     choice_labels = [_("Inside"), _("Outside"), _("Both")]
     choice_params = ["in", "out", "inout"]
 
-    choice_label2param = dict(zip(choice_labels, choice_params))
-    choice_param2label = dict(zip(choice_params, choice_labels))
+    choice_label2param = dict(list(zip(choice_labels, choice_params)))
+    choice_param2label = dict(list(zip(choice_params, choice_labels)))
 
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
@@ -1488,7 +1492,7 @@ class AllSeriesPanel(wx.Panel, ChartDialogEventMixin):
         """Yields series panels of the chart's series"""
 
         no_pages = self.series_notebook.GetPageCount()
-        for page_number in xrange(no_pages - 1):
+        for page_number in range(no_pages - 1):
             yield self.series_notebook.GetPage(page_number)
 
     def update(self, series_list):
@@ -1743,9 +1747,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         attributes = []
         strip = lambda s: s.strip('u').strip("'").strip('"')
-        for attr_dict in parse_dict_strings(unicode(code).strip()[19:-1]):
+        for attr_dict in parse_dict_strings(str(code).strip()[19:-1]):
             attrs = list(strip(s) for s in parse_dict_strings(attr_dict[1:-1]))
-            attributes.append(dict(zip(attrs[::2], attrs[1::2])))
+            attributes.append(dict(list(zip(attrs[::2], attrs[1::2]))))
 
         if not attributes:
             return

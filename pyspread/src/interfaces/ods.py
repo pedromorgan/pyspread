@@ -36,6 +36,9 @@ It is split into the following sections
  * macros
 
 """
+from builtins import str
+from builtins import range
+from builtins import object
 
 from src.lib.ODSReader import ODSReader
 
@@ -93,10 +96,10 @@ class Ods(object):
         ods = ODSReader(self.ods_file, clonespannedcolumns=True)
         tables = ods.sheets
         for tab_id, table in enumerate(tables):
-            for row_id in xrange(len(table)):
-                for col_id in xrange(len(table[row_id])):
+            for row_id in range(len(table)):
+                for col_id in range(len(table[row_id])):
                     key = row_id, col_id, tab_id
-                    text = unicode(table[row_id][col_id])
+                    text = str(table[row_id][col_id])
                     self.code_array[key] = text
 
 

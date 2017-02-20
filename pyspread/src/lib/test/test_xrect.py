@@ -28,6 +28,11 @@ Unit tests for xrect.py
 
 """
 from __future__ import print_function
+from __future__ import division
+from builtins import zip
+from builtins import map
+from past.utils import old_div
+from builtins import object
 
 from math import sin, cos, pi
 import os
@@ -128,10 +133,10 @@ class TestRotoOriginRect(object):
         trafo = numpy.matrix([cos(rad_angle), -sin(rad_angle),
                              sin(rad_angle), cos(rad_angle)]).reshape(2, 2)
 
-        points = [numpy.array([-w / 2.0, -h / 2.0]).reshape(2, 1),
-                  numpy.array([-w / 2.0, h / 2.0]).reshape(2, 1),
-                  numpy.array([w / 2.0, h / 2.0]).reshape(2, 1),
-                  numpy.array([w / 2.0, -h / 2.0]).reshape(2, 1)]
+        points = [numpy.array([old_div(-w, 2.0), old_div(-h, 2.0)]).reshape(2, 1),
+                  numpy.array([old_div(-w, 2.0), old_div(h, 2.0)]).reshape(2, 1),
+                  numpy.array([old_div(w, 2.0), old_div(h, 2.0)]).reshape(2, 1),
+                  numpy.array([old_div(w, 2.0), old_div(-h, 2.0)]).reshape(2, 1)]
 
         p_rots = [trafo * point for point in points]
 
@@ -218,7 +223,7 @@ class TestRotoRect(object):
     def test_get_center(self, x, y, w, h, angle, res):
         rect = xrect.RotoRect(x, y, w, h, angle)
         center = rect.get_center()
-        assert map(round, center) == map(round, res)
+        assert list(map(round, center)) == list(map(round, res))
 
     param_get_edges = [
         {'x': 0, 'y': 0, 'w': 20, 'h': 10, 'angle': 0,
@@ -234,7 +239,7 @@ class TestRotoRect(object):
         rect = xrect.RotoRect(x, y, w, h, angle)
         edges = rect.get_edges()
         for edge, resele in zip(edges, res):
-            assert map(round, edge) == map(round, resele)
+            assert list(map(round, edge)) == list(map(round, resele))
 
     param_collides_axisaligned_rect = [
         # Identity

@@ -31,6 +31,7 @@ Provides
 * post_command_event: Posts a command event
 
 """
+from builtins import object
 
 import wx
 import wx.lib

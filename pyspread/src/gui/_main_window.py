@@ -28,6 +28,7 @@ Provides:
   1) MainWindow: Main window of the application pyspread
 
 """
+from builtins import range
 
 import ast
 import os
@@ -796,8 +797,8 @@ class MainWindowEventHandlers(EventMixin):
         # Get filepath from user
         f2w = get_filetypes2wildcards(
             ["pys", "pysu", "xls", "xlsx", "ods", "all"])
-        filetypes = f2w.keys()
-        wildcards = f2w.values()
+        filetypes = list(f2w.keys())
+        wildcards = list(f2w.values())
         wildcard = "|".join(wildcards)
 
         message = _("Choose file to open.")
@@ -866,7 +867,7 @@ class MainWindowEventHandlers(EventMixin):
         if filetype is None:
 
             f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
-            __filetypes = f2w.keys()
+            __filetypes = list(f2w.keys())
 
             # Check if the file extension matches any valid save filetype
             for __filetype in __filetypes:
@@ -901,8 +902,8 @@ class MainWindowEventHandlers(EventMixin):
         # Get filepath from user
 
         f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
-        filetypes = f2w.keys()
-        wildcards = f2w.values()
+        filetypes = list(f2w.keys())
+        wildcards = list(f2w.values())
 
         wildcard = "|".join(wildcards)
 
@@ -971,7 +972,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcards = get_filetypes2wildcards(["csv", "txt"]).values()
+        wildcards = list(get_filetypes2wildcards(["csv", "txt"]).values())
         wildcard = "|".join(wildcards)
 
         message = _("Choose file to import.")
@@ -1015,8 +1016,8 @@ class MainWindowEventHandlers(EventMixin):
         selection_bbox = selection.get_bbox()
 
         f2w = get_filetypes2wildcards(["csv", "pdf", "svg"])
-        filters = f2w.keys()
-        wildcards = f2w.values()
+        filters = list(f2w.keys())
+        wildcards = list(f2w.values())
 
         wildcard = "|".join(wildcards)
 
@@ -1037,9 +1038,9 @@ class MainWindowEventHandlers(EventMixin):
         __right = code_array.shape[1] if right is None else right + 1
 
         def data_gen(top, bottom, left, right):
-            for row in xrange(top, bottom):
+            for row in range(top, bottom):
                 yield (code_array[row, col, tab]
-                       for col in xrange(left, right))
+                       for col in range(left, right))
 
         data = data_gen(__top, __bottom, __left, __right)
         preview_data = data_gen(__top, __bottom, __left, __right)
@@ -1087,7 +1088,7 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
-        wildcards = get_filetypes2wildcards(["pdf"]).values()
+        wildcards = list(get_filetypes2wildcards(["pdf"]).values())
 
         if not wildcards:
             return
@@ -1406,7 +1407,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+        wildcards = list(get_filetypes2wildcards(["py", "all"]).values())
 
         wildcard = "|".join(wildcards)
 
@@ -1435,7 +1436,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+        wildcards = list(get_filetypes2wildcards(["py", "all"]).values())
 
         wildcard = "|".join(wildcards)
 

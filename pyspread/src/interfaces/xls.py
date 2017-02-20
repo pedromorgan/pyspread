@@ -27,6 +27,12 @@ xls
 This file contains interfaces to Excel xls file format.
 
 """
+from __future__ import division
+from builtins import str
+from builtins import zip
+from builtins import range
+from builtins import object
+from past.utils import old_div
 
 from copy import copy
 from collections import defaultdict
@@ -130,7 +136,7 @@ class Xls(object):
         if tabs > self.xls_max_tabs:
             tabs = self.xls_max_tabs
 
-        for tab in xrange(tabs):
+        for tab in range(tabs):
             worksheet = self.workbook.add_sheet(str(tab))
             worksheets.append(worksheet)
 
@@ -188,8 +194,8 @@ class Xls(object):
         for ((bb_top, bb_left), (bb_bottom, bb_right)), __tab in bboxes:
             __bb_bottom = min(bb_bottom, max_shape[0])
             __bb_right = min(bb_right, max_shape[1])
-            for __row, __col in product(xrange(bb_top, __bb_bottom + 1),
-                                        xrange(bb_left, __bb_right + 1)):
+            for __row, __col in product(range(bb_top, __bb_bottom + 1),
+                                        range(bb_left, __bb_right + 1)):
                 cells.append((__row, __col, __tab))
 
         cell_set = set(cells)
@@ -225,7 +231,7 @@ class Xls(object):
         }
 
         rows, cols = worksheet.nrows, worksheet.ncols
-        for row, col in product(xrange(rows), xrange(cols)):
+        for row, col in product(range(rows), range(cols)):
             cell_type = worksheet.cell_type(row, col)
             cell_value = worksheet.cell_value(row, col)
 
@@ -610,9 +616,9 @@ class Xls(object):
             self.code_array.cell_attributes.append((selection, tab, attrs))
 
         # Which cell comprise which format ids
-        xf2cell = dict((xfid, []) for xfid in xrange(self.workbook.xfcount))
+        xf2cell = dict((xfid, []) for xfid in range(self.workbook.xfcount))
         rows, cols = worksheet.nrows, worksheet.ncols
-        for row, col in product(xrange(rows), xrange(cols)):
+        for row, col in product(range(rows), range(cols)):
             xfid = worksheet.cell_xf_index(row, col)
             xf2cell[xfid].append((row, col))
 
@@ -713,7 +719,7 @@ class Xls(object):
             font = self.workbook.font_list[xf.font_index]
 
             attributes["textfont"] = font.name
-            attributes["pointsize"] = font.height / 20.0
+            attributes["pointsize"] = old_div(font.height, 20.0)
 
             fontweight = wx.BOLD if font.weight == 700 else wx.NORMAL
             attributes["fontweight"] = fontweight
@@ -779,7 +785,7 @@ class Xls(object):
         for row, tab in dict_grid.row_heights:
             if row < xls_max_rows and tab < xls_max_tabs:
                 height_pixels = dict_grid.row_heights[(row, tab)]
-                height_inches = height_pixels / float(get_dpi()[1])
+                height_inches = old_div(height_pixels, float(get_dpi()[1]))
                 height_points = height_inches * 72.0
 
                 worksheets[tab].row(row).height_mismatch = True
@@ -788,10 +794,10 @@ class Xls(object):
     def _xls2row_heights(self, worksheet, tab):
         """Updates row_heights in code_array"""
 
-        for row in xrange(worksheet.nrows):
+        for row in range(worksheet.nrows):
             try:
-                height_points = worksheet.rowinfo_map[row].height / 20.0
-                height_inches = height_points / 72.0
+                height_points = old_div(worksheet.rowinfo_map[row].height, 20.0)
+                height_inches = old_div(height_points, 72.0)
                 height_pixels = height_inches * get_dpi()[1]
 
                 self.code_array.row_heights[row, tab] = height_pixels
@@ -811,7 +817,7 @@ class Xls(object):
         """Returns pyspread width from given xls width"""
 
         width_0 = get_default_text_extent("0")[0]
-        width_0_char = xls_width / 256.0
+        width_0_char = old_div(xls_width, 256.0)
         # Scale relative to 10 point font instead of 12 point
         return width_0_char * width_0 / 1.2
 
@@ -835,7 +841,7 @@ class Xls(object):
     def _xls2col_widths(self, worksheet, tab):
         """Updates col_widths in code_array"""
 
-        for col in xrange(worksheet.ncols):
+        for col in range(worksheet.ncols):
             try:
                 xls_width = worksheet.colinfo_map[col].width
                 pys_width = self.xls_width2pys_width(xls_width)

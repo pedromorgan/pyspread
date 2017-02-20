@@ -26,8 +26,11 @@ Selection
 Grid selection representation
 
 """
+from builtins import zip
+from builtins import range
+from builtins import object
 
-from itertools import izip
+
 
 
 class Selection(object):
@@ -56,7 +59,7 @@ class Selection(object):
         self.cols = cols
         self.cells = cells
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Returns True iif any attribute is non-empty"""
 
         return any(self.parameters)
@@ -96,7 +99,7 @@ class Selection(object):
         cell_row, cell_col = cell
 
         # Block selections
-        for top_left, bottom_right in izip(self.block_tl, self.block_br):
+        for top_left, bottom_right in zip(self.block_tl, self.block_br):
             top, left = top_left
             bottom, right = bottom_right
 
@@ -184,8 +187,8 @@ class Selection(object):
                 block_br.append(block[1])
             else:
                 block_cells = []
-                for row in xrange(block[0][0], block[1][0] + 1):
-                    for col in xrange(block[0][1], block[1][1] + 1):
+                for row in range(block[0][0], block[1][0] + 1):
+                    for col in range(block[0][1], block[1][1] + 1):
                         cell = row, col
                         if cell in other:
                             block_cells.append(cell)
@@ -402,7 +405,7 @@ class Selection(object):
 
         # Block selections
         templ = "[(r, c, {}) for r in xrange({}, {}) for c in xrange({}, {})]"
-        for (top, left), (bottom, right) in izip(self.block_tl, self.block_br):
+        for (top, left), (bottom, right) in zip(self.block_tl, self.block_br):
             string_list += [templ.format(table, top, bottom + 1,
                                          left, right + 1)]
 

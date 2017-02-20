@@ -35,6 +35,8 @@ Provides
  * TxtGenerator
 
 """
+from builtins import str
+from builtins import object
 
 import ast
 import csv
@@ -242,7 +244,7 @@ class Digest(object):
                 return u""
 
             try:
-                return unicode(obj)
+                return str(obj)
 
             except Exception:
                 return repr(obj)

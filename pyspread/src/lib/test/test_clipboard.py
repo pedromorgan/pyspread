@@ -27,6 +27,7 @@ test_clipboard
 Unit tests for clipboard.py
 
 """
+from builtins import object
 
 import os
 import sys

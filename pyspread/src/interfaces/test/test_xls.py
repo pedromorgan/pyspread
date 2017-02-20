@@ -26,6 +26,9 @@ test_xls
 Unit tests for xls.py
 
 """
+from __future__ import division
+from builtins import object
+from past.utils import old_div
 
 
 import os
@@ -382,7 +385,7 @@ class TestXls(object):
     def _hpixels_to_xlsheight(self, hpixels):
         """Returns xls height from hpixels"""
 
-        hinches = float(hpixels) / get_dpi()[1]
+        hinches = old_div(float(hpixels), get_dpi()[1])
         hpoints = hinches * 72.0
         xlsheight = hpoints * 20.0
 

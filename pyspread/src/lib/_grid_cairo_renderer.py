@@ -33,6 +33,13 @@ Provides
  * GridCellBorderCairoRenderer: Renders cell border to Cairo context
 
 """
+from __future__ import division
+from builtins import str
+from builtins import map
+from builtins import range
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
 
 import math
 import sys
@@ -137,11 +144,11 @@ class GridCairoRenderer(object):
 
         merge_area = self._get_merge_area((row, col, tab))
 
-        for __row in xrange(top_row, row):
+        for __row in range(top_row, row):
             __row_height = self.code_array.get_row_height(__row, tab)
             pos_y += __row_height
 
-        for __col in xrange(left_col, col):
+        for __col in range(left_col, col):
             __col_width = self.code_array.get_col_width(__col, tab)
             pos_x += __col_width
 
@@ -155,9 +162,9 @@ class GridCairoRenderer(object):
             if top == row and left == col:
                 # Set rect to merge area
                 heights = (self.code_array.get_row_height(__row, tab)
-                           for __row in xrange(top, bottom+1))
+                           for __row in range(top, bottom+1))
                 widths = (self.code_array.get_col_width(__col, tab)
-                          for __col in xrange(left, right+1))
+                          for __col in range(left, right+1))
                 height = sum(heights)
                 width = sum(widths)
             else:
@@ -183,7 +190,7 @@ class GridCairoRenderer(object):
         col_start, col_stop = self.col_rl
         tab_start, tab_stop = self.tab_fl
 
-        for tab in xrange(tab_start, tab_stop):
+        for tab in range(tab_start, tab_stop):
             # Scale context to page extent
             # In order to keep the aspect ration intact use the maximum
             first_key = row_start, col_start, tab
@@ -205,8 +212,8 @@ class GridCairoRenderer(object):
             x_extent = last_rect[0] + last_rect[2] - first_rect[0]
             y_extent = last_rect[1] + last_rect[3] - first_rect[1]
 
-            scale_x = (self.width - 2 * self.x_offset) / float(x_extent)
-            scale_y = (self.height - 2 * self.y_offset) / float(y_extent)
+            scale_x = old_div((self.width - 2 * self.x_offset), float(x_extent))
+            scale_y = old_div((self.height - 2 * self.y_offset), float(y_extent))
 
             self.context.save()
             # Translate offset to o
@@ -223,8 +230,8 @@ class GridCairoRenderer(object):
 
             # Render cells
 
-            for row in xrange(row_start, row_stop):
-                for col in xrange(col_start, col_stop):
+            for row in range(row_start, row_stop):
+                for col in range(col_start, col_stop):
                     key = row, col, tab
                     rect = self.get_cell_rect(row, col, tab)  # Rect
                     if rect is not None:
@@ -344,13 +351,13 @@ class GridCellContentCairoRenderer(object):
         angle = cell_attributes["angle"]
 
         if abs(angle) == 90:
-            scale_x = self.rect[3] / float(ims_width)
-            scale_y = self.rect[2] / float(ims_height)
+            scale_x = old_div(self.rect[3], float(ims_width))
+            scale_y = old_div(self.rect[2], float(ims_height))
 
         else:
             # Normal case
-            scale_x = self.rect[2] / float(ims_width)
-            scale_y = self.rect[3] / float(ims_height)
+            scale_x = old_div(self.rect[2], float(ims_width))
+            scale_y = old_div(self.rect[3], float(ims_height))
 
         return scale_x, scale_y
 
@@ -373,14 +380,14 @@ class GridCellContentCairoRenderer(object):
 
             if scale_x > scale_y:
                 if justification == "center":
-                    x += (self.rect[2] - ims_width * scale) / 2
+                    x += old_div((self.rect[2] - ims_width * scale), 2)
 
                 elif justification == "right":
                     x += self.rect[2] - ims_width * scale
 
             else:
                 if vertical_align == "middle":
-                    y += (self.rect[3] - ims_height * scale) / 2
+                    y += old_div((self.rect[3] - ims_height * scale), 2)
 
                 elif vertical_align == "bottom":
                     y += self.rect[3] - ims_height * scale
@@ -391,14 +398,14 @@ class GridCellContentCairoRenderer(object):
 
             if scale_y > scale_x:
                 if justification == "center":
-                    y += (self.rect[2] - ims_height * scale) / 2
+                    y += old_div((self.rect[2] - ims_height * scale), 2)
 
                 elif justification == "right":
                     y += self.rect[2] - ims_height * scale
 
             else:
                 if vertical_align == "middle":
-                    x -= (self.rect[3] - ims_width * scale) / 2
+                    x -= old_div((self.rect[3] - ims_width * scale), 2)
 
                 elif vertical_align == "bottom":
                     x -= self.rect[3] - ims_width * scale
@@ -409,14 +416,14 @@ class GridCellContentCairoRenderer(object):
 
             if scale_x > scale_y:
                 if justification == "center":
-                    x -= (self.rect[2] - ims_width * scale) / 2
+                    x -= old_div((self.rect[2] - ims_width * scale), 2)
 
                 elif justification == "right":
                     x -= self.rect[2] - ims_width * scale
 
             else:
                 if vertical_align == "middle":
-                    y -= (self.rect[3] - ims_height * scale) / 2
+                    y -= old_div((self.rect[3] - ims_height * scale), 2)
 
                 elif vertical_align == "bottom":
                     y -= self.rect[3] - ims_height * scale
@@ -427,14 +434,14 @@ class GridCellContentCairoRenderer(object):
 
             if scale_y > scale_x:
                 if justification == "center":
-                    y -= (self.rect[2] - ims_height * scale) / 2
+                    y -= old_div((self.rect[2] - ims_height * scale), 2)
 
                 elif justification == "right":
                     y -= self.rect[2] - ims_height * scale
 
             else:
                 if vertical_align == "middle":
-                    x += (self.rect[3] - ims_width * scale) / 2
+                    x += old_div((self.rect[3] - ims_width * scale), 2)
 
                 elif vertical_align == "bottom":
                     x += self.rect[3] - ims_width * scale
@@ -546,11 +553,11 @@ class GridCellContentCairoRenderer(object):
         dpi = float(figure.dpi)
 
         # Set a border so that the figure is not cut off at the cell border
-        border_x = 200 / (self.rect[2] / dpi) ** 2
-        border_y = 200 / (self.rect[3] / dpi) ** 2
+        border_x = old_div(200, (old_div(self.rect[2], dpi)) ** 2)
+        border_y = old_div(200, (old_div(self.rect[3], dpi)) ** 2)
 
-        width = (self.rect[2] - 2 * border_x) / dpi
-        height = (self.rect[3] - 2 * border_y) / dpi
+        width = old_div((self.rect[2] - 2 * border_x), dpi)
+        height = old_div((self.rect[3] - 2 * border_y), dpi)
 
         figure.set_figwidth(width)
         figure.set_figheight(height)
@@ -572,7 +579,7 @@ class GridCellContentCairoRenderer(object):
         """Returns text color rgb tuple of right line"""
 
         color = self.code_array.cell_attributes[self.key]["textcolor"]
-        return tuple(c / 255.0 for c in color_pack2rgb(color))
+        return tuple(old_div(c, 255.0) for c in color_pack2rgb(color))
 
     def set_font(self, pango_layout):
         """Sets the font for draw_text"""
@@ -629,20 +636,20 @@ class GridCellContentCairoRenderer(object):
         """Rotates and translates cell if angle in [90, -90, 180]"""
 
         if angle == 90 and not back:
-            self.context.rotate(-math.pi / 2.0)
+            self.context.rotate(old_div(-math.pi, 2.0))
             self.context.translate(-rect[2] + 4, 0)
 
         elif angle == 90 and back:
             self.context.translate(rect[2] - 4, 0)
-            self.context.rotate(math.pi / 2.0)
+            self.context.rotate(old_div(math.pi, 2.0))
 
         elif angle == -90 and not back:
-            self.context.rotate(math.pi / 2.0)
+            self.context.rotate(old_div(math.pi, 2.0))
             self.context.translate(0, -rect[3] + 2)
 
         elif angle == -90 and back:
             self.context.translate(0, rect[3] - 2)
-            self.context.rotate(-math.pi / 2.0)
+            self.context.rotate(old_div(-math.pi, 2.0))
 
         elif angle == 180 and not back:
             self.context.rotate(math.pi)
@@ -661,17 +668,17 @@ class GridCellContentCairoRenderer(object):
         pit = pango_layout.get_iter()
 
         # Skip characters until start
-        for i in xrange(start):
+        for i in range(start):
             pit.next_char()
 
         extents_list = []
 
-        for char_no in xrange(start, stop):
+        for char_no in range(start, stop):
             char_extents = pit.get_char_extents()
             underline_pixel_extents = [
-                char_extents[0] / pango.SCALE,
-                (char_extents[1] + char_extents[3]) / pango.SCALE - 2,
-                char_extents[2] / pango.SCALE,
+                old_div(char_extents[0], pango.SCALE),
+                old_div((char_extents[1] + char_extents[3]), pango.SCALE) - 2,
+                old_div(char_extents[2], pango.SCALE),
                 4,
             ]
             if extents_list:
@@ -756,14 +763,14 @@ class GridCellContentCairoRenderer(object):
             with warnings.catch_warnings(record=True) as warning_lines:
                 warnings.resetwarnings()
                 warnings.simplefilter("always")
-                pango_layout.set_markup(unicode(content))
+                pango_layout.set_markup(str(content))
 
                 if warning_lines:
-                    w2unicode = lambda m: unicode(m.message)
+                    w2unicode = lambda m: str(m.message)
                     msg = u"\n".join(map(w2unicode, warning_lines))
                     pango_layout.set_text(msg)
         else:
-            pango_layout.set_text(unicode(content))
+            pango_layout.set_text(str(content))
 
         alignment = cell_attributes["justification"]
         pango_layout.set_alignment(wx2pango_alignment[alignment])
@@ -777,7 +784,7 @@ class GridCellContentCairoRenderer(object):
             downshift = rect[3] - extents[1][3] - 4
 
         elif cell_attributes["vertical_align"] == "middle":
-            downshift = int((rect[3] - extents[1][3]) / 2) - 2
+            downshift = int(old_div((rect[3] - extents[1][3]), 2)) - 2
 
         self.context.save()
 
@@ -786,7 +793,7 @@ class GridCellContentCairoRenderer(object):
 
         # Spell check underline drawing
         if SpellChecker is not None and self.spell_check:
-            text = unicode(pango_layout.get_text())
+            text = str(pango_layout.get_text())
             lang = config["spell_lang"]
             for start, stop in self._check_spelling(text, lang=lang):
                 self._draw_error_underline(ptx, pango_layout, start, stop-1)
@@ -848,8 +855,8 @@ class GridCellContentCairoRenderer(object):
         x_bearing, y_bearing, width, height, x_advance, y_advance = \
             context.text_extents(label)
 
-        text_x = (w / 2.0)-(width / 2.0 + x_bearing)
-        text_y = (h / 2.0)-(height / 2.0 + y_bearing) + 1
+        text_x = (old_div(w, 2.0))-(old_div(width, 2.0) + x_bearing)
+        text_y = (old_div(h, 2.0))-(old_div(height, 2.0) + y_bearing) + 1
 
         # Draw the button text
         context.move_to(text_x, text_y)
@@ -939,7 +946,7 @@ class GridCellBackgroundCairoRenderer(object):
         """Returns background color rgb tuple of right line"""
 
         color = self.cell_attributes[self.key]["bgcolor"]
-        return tuple(c / 255.0 for c in color_pack2rgb(color))
+        return tuple(old_div(c, 255.0) for c in color_pack2rgb(color))
 
     def _draw_frozen_pattern(self):
         """Draws frozen pattern, i.e. diagonal lines"""
@@ -1018,7 +1025,7 @@ class Cell(object):
         key_above = self.row - 1, self.col, self.tab
 
         border_width_bottom = \
-            float(self.cell_attributes[key_above]["borderwidth_bottom"]) / 2.0
+            old_div(float(self.cell_attributes[key_above]["borderwidth_bottom"]), 2.0)
 
         rect_above = (self.x, self.y-border_width_bottom,
                       self.width, border_width_bottom)
@@ -1030,7 +1037,7 @@ class Cell(object):
         key_below = self.row + 1, self.col, self.tab
 
         border_width_bottom = \
-            float(self.cell_attributes[self.key]["borderwidth_bottom"]) / 2.0
+            old_div(float(self.cell_attributes[self.key]["borderwidth_bottom"]), 2.0)
 
         rect_below = (self.x, self.y+self.height,
                       self.width, border_width_bottom)
@@ -1042,7 +1049,7 @@ class Cell(object):
         key_left = self.row, self.col - 1, self.tab
 
         border_width_right = \
-            float(self.cell_attributes[key_left]["borderwidth_right"]) / 2.0
+            old_div(float(self.cell_attributes[key_left]["borderwidth_right"]), 2.0)
 
         rect_left = (self.x-border_width_right, self.y,
                      border_width_right, self.height)
@@ -1054,7 +1061,7 @@ class Cell(object):
         key_right = self.row, self.col + 1, self.tab
 
         border_width_right = \
-            float(self.cell_attributes[self.key]["borderwidth_right"]) / 2.0
+            old_div(float(self.cell_attributes[self.key]["borderwidth_right"]), 2.0)
 
         rect_right = (self.x+self.width, self.y,
                       border_width_right, self.height)
@@ -1066,11 +1073,9 @@ class Cell(object):
         key_above_left = self.row - 1, self.col - 1, self.tab
 
         border_width_right = \
-            float(self.cell_attributes[key_above_left]["borderwidth_right"]) \
-            / 2.0
+            old_div(float(self.cell_attributes[key_above_left]["borderwidth_right"]), 2.0)
         border_width_bottom = \
-            float(self.cell_attributes[key_above_left]["borderwidth_bottom"]) \
-            / 2.0
+            old_div(float(self.cell_attributes[key_above_left]["borderwidth_bottom"]), 2.0)
 
         rect_above_left = (self.x-border_width_right,
                            self.y-border_width_bottom,
@@ -1084,10 +1089,9 @@ class Cell(object):
         key_above_right = self.row - 1, self.col + 1, self.tab
 
         border_width_right = \
-            float(self.cell_attributes[key_above]["borderwidth_right"]) / 2.0
+            old_div(float(self.cell_attributes[key_above]["borderwidth_right"]), 2.0)
         border_width_bottom = \
-            float(self.cell_attributes[key_above_right]["borderwidth_bottom"])\
-            / 2.0
+            old_div(float(self.cell_attributes[key_above_right]["borderwidth_bottom"]), 2.0)
 
         rect_above_right = (self.x+self.width, self.y-border_width_bottom,
                             border_width_right, border_width_bottom)
@@ -1100,10 +1104,9 @@ class Cell(object):
         key_below_left = self.row + 1, self.col - 1, self.tab
 
         border_width_right = \
-            float(self.cell_attributes[key_below_left]["borderwidth_right"]) \
-            / 2.0
+            old_div(float(self.cell_attributes[key_below_left]["borderwidth_right"]), 2.0)
         border_width_bottom = \
-            float(self.cell_attributes[key_left]["borderwidth_bottom"]) / 2.0
+            old_div(float(self.cell_attributes[key_left]["borderwidth_bottom"]), 2.0)
 
         rect_below_left = (self.x-border_width_right, self.y-self.height,
                            border_width_right, border_width_bottom)
@@ -1115,9 +1118,9 @@ class Cell(object):
         key_below_right = self.row + 1, self.col + 1, self.tab
 
         border_width_right = \
-            float(self.cell_attributes[self.key]["borderwidth_right"]) / 2.0
+            old_div(float(self.cell_attributes[self.key]["borderwidth_right"]), 2.0)
         border_width_bottom = \
-            float(self.cell_attributes[self.key]["borderwidth_bottom"]) / 2.0
+            old_div(float(self.cell_attributes[self.key]["borderwidth_bottom"]), 2.0)
 
         rect_below_right = (self.x+self.width, self.y-self.height,
                             border_width_right, border_width_bottom)
@@ -1172,23 +1175,23 @@ class CellBorders(object):
         """Returns color rgb tuple of bottom line"""
 
         color = self.cell_attributes[self.key]["bordercolor_bottom"]
-        return tuple(c / 255.0 for c in color_pack2rgb(color))
+        return tuple(old_div(c, 255.0) for c in color_pack2rgb(color))
 
     def _get_right_line_color(self):
         """Returns color rgb tuple of right line"""
 
         color = self.cell_attributes[self.key]["bordercolor_right"]
-        return tuple(c / 255.0 for c in color_pack2rgb(color))
+        return tuple(old_div(c, 255.0) for c in color_pack2rgb(color))
 
     def _get_bottom_line_width(self):
         """Returns width of bottom line"""
 
-        return float(self.cell_attributes[self.key]["borderwidth_bottom"]) / 2.
+        return old_div(float(self.cell_attributes[self.key]["borderwidth_bottom"]), 2.)
 
     def _get_right_line_width(self):
         """Returns width of right line"""
 
-        return float(self.cell_attributes[self.key]["borderwidth_right"]) / 2.0
+        return old_div(float(self.cell_attributes[self.key]["borderwidth_right"]), 2.0)
 
     def get_b(self):
         """Returns the bottom border of the cell"""

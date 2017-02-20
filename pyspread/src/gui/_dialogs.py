@@ -40,8 +40,15 @@ Provides:
   - PasteAsDialog
 
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import chr
+from builtins import str
+from builtins import range
+from builtins import object
 
-import cStringIO
+import io
 import csv
 import os
 import string
@@ -66,7 +73,7 @@ from src.lib.exception_handling import get_user_codeframe
 
 import ast
 from traceback import print_exception
-from StringIO import StringIO
+from io import StringIO
 from sys import exc_info
 
 try:
@@ -549,10 +556,10 @@ class CSVPreviewGrid(wx.grid.Grid):
 
         if choices:
             # Add Choices
-            for col in xrange(self.shape[1]):
+            for col in range(self.shape[1]):
                 choice_renderer = ChoiceRenderer(self)
                 choice_editor = wx.grid.GridCellChoiceEditor(
-                    self.digest_types.keys(), False)
+                    list(self.digest_types.keys()), False)
                 self.SetCellRenderer(has_header, col, choice_renderer)
                 self.SetCellEditor(has_header, col, choice_editor)
                 self.SetCellValue(has_header, col, digest_keys[col])
@@ -580,10 +587,10 @@ class CSVPreviewGrid(wx.grid.Grid):
         """Returns a list of the type choices"""
 
         digest_keys = []
-        for col in xrange(self.GetNumberCols()):
+        for col in range(self.GetNumberCols()):
             digest_key = self.GetCellValue(self.has_header, col)
             if digest_key == "":
-                digest_key = self.digest_types.keys()[0]
+                digest_key = list(self.digest_types.keys())[0]
             digest_keys.append(digest_key)
 
         return digest_keys
@@ -612,7 +619,7 @@ class CSVPreviewTextCtrl(wx.TextCtrl):
 
         """
 
-        csvfile = cStringIO.StringIO()
+        csvfile = io.StringIO()
         csvwriter = csv.writer(csvfile, dialect=dialect)
 
         for i, line in enumerate(data):
@@ -684,7 +691,7 @@ class CsvImportDialog(wx.Dialog):
             sizer_buttons.Add(button, 0, wx.ALL | wx.EXPAND, 5)
 
         sizer_buttons.AddGrowableRow(0)
-        for col in xrange(3):
+        for col in range(3):
             sizer_buttons.AddGrowableCol(col)
 
         # Adding main components
@@ -764,7 +771,7 @@ class CsvExportDialog(wx.Dialog):
             sizer_buttons.Add(button, 0, wx.ALL | wx.EXPAND, 5)
 
         sizer_buttons.AddGrowableRow(0)
-        for col in xrange(3):
+        for col in range(3):
             sizer_buttons.AddGrowableCol(col)
 
         # Adding main components
@@ -1309,7 +1316,7 @@ class PreferencesDialog(wx.Dialog):
             "widget": wx.TextCtrl,
             "widget_args": [],
             "widget_kwargs": {},
-            "prepocessor": unicode,
+            "prepocessor": str,
         }),
         ("default_open_filetype", {
             "label": _(u"Open filetype"),
@@ -1416,7 +1423,7 @@ class PreferencesDialog(wx.Dialog):
         self.grid_sizer.Fit(self)
         self.grid_sizer.AddGrowableCol(1)
 
-        for row in xrange(len(self.parameters)):
+        for row in range(len(self.parameters)):
             self.grid_sizer.AddGrowableRow(row)
 
         self.Layout()

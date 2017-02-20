@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """Unit test for typechecks.py"""
+from builtins import str
+from builtins import range
 
 # --------------------------------------------------------------------
 # pyspread is free software: you can redistribute it and/or modify
@@ -70,8 +72,8 @@ def test_is_string_like(string, res):
 
 param_gen = [
     {"gen": (i for i in [3, 4]), "res": True},
-    {"gen": (str(i) for i in xrange(1000)), "res": True},
-    {"gen": ((2, 3) for _ in xrange(10)), "res": True},
+    {"gen": (str(i) for i in range(1000)), "res": True},
+    {"gen": ((2, 3) for _ in range(10)), "res": True},
     {"gen": u"x" * 1000, "res": False},
     {"gen": ['1'], "res": False},
     {"gen": ('1', '2', '3'), "res": False},

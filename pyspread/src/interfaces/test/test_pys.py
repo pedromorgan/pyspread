@@ -26,6 +26,9 @@ test_pys
 Unit tests for pys.py
 
 """
+from builtins import map
+from builtins import range
+from builtins import object
 
 import bz2
 import os
@@ -99,8 +102,8 @@ class TestPys(object):
         {'keystrings': ["0", "0", "0"], 'res': (0, 0, 0)},
         {'keystrings': ["0", "0"], 'res': (0, 0)},
         {'keystrings': ["-2", "-2", "23"], 'res': (-2, -2, 23)},
-        {'keystrings': map(str, xrange(100)), 'res': tuple(xrange(100))},
-        {'keystrings': map(unicode, xrange(100)), 'res': tuple(xrange(100))},
+        {'keystrings': list(map(str, range(100))), 'res': tuple(range(100))},
+        {'keystrings': list(map(str, range(100))), 'res': tuple(range(100))},
     ]
 
     @params(param_get_key)

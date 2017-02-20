@@ -1,3 +1,7 @@
+from builtins import map
+from builtins import zip
+from builtins import str
+from builtins import range
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -53,7 +57,7 @@ class CellActions(Actions):
         old_code = self.grid.code_array(key)
 
         try:
-            old_code = unicode(old_code, encoding="utf-8")
+            old_code = str(old_code, encoding="utf-8")
 
         except TypeError:
             pass
@@ -373,8 +377,8 @@ class CellActions(Actions):
 
         error_msg = _("Overlapping merge area at {} prevents merge.")
 
-        for row in xrange(top, bottom + 1):
-            for col in xrange(left, right + 1):
+        for row in range(top, bottom + 1):
+            for col in range(left, right + 1):
                 key = row, col, tab
                 if self.code_array.cell_attributes[key]["merge_area"]:
                     post_command_event(self.main_window, self.StatusBarMsg,
@@ -455,7 +459,7 @@ class CellActions(Actions):
         attr_values = self.attr_toggle_values[attr_key]
 
         # Map attr_value to next attr_value
-        attr_map = dict(zip(attr_values, attr_values[1:] + attr_values[:1]))
+        attr_map = dict(list(zip(attr_values, attr_values[1:] + attr_values[:1])))
 
         # Return next value from attr_toggle_values value list
 
@@ -477,7 +481,7 @@ class CellActions(Actions):
         attr_values = self.attr_toggle_values[attr_key]
 
         # Map attr_value to next attr_value
-        attr_map = dict(zip(attr_values, attr_values[1:] + attr_values[:1]))
+        attr_map = dict(list(zip(attr_values, attr_values[1:] + attr_values[:1])))
 
         selection_attrs = \
             (attr for attr in cell_attributes if attr[0] == selection)

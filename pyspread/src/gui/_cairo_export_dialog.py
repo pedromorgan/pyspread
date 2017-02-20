@@ -28,6 +28,9 @@ Provides:
   1) CairoExportDialog
 
 """
+from __future__ import division
+from builtins import str
+from past.utils import old_div
 
 import wx
 from wx.lib.intctrl import IntCtrl
@@ -88,7 +91,7 @@ class CairoExportDialog(wx.Dialog):
             self.page_height_text_ctrl = wx.TextCtrl(self, wx.ID_ANY)
             self.page_layout_choice = \
                 wx.Choice(self, wx.ID_ANY,
-                          choices=self.paper_sizes_points.keys())
+                          choices=list(self.paper_sizes_points.keys()))
             self.sizer_2_staticbox = wx.StaticBox(self, wx.ID_ANY, _("Page"))
 
             self.page_layout_choice.Bind(wx.EVT_CHOICE,
@@ -145,12 +148,12 @@ class CairoExportDialog(wx.Dialog):
             self.page_width_text_ctrl.SetToolTipString(
                 _("Page width in inches"))
             self.page_width_text_ctrl.SetValue(
-                str(self.paper_sizes_points["A4"][0] / 72.0))
+                str(old_div(self.paper_sizes_points["A4"][0], 72.0)))
             self.page_height_label.SetToolTipString(_("Page height in inches"))
             self.page_height_text_ctrl.SetToolTipString(
                 _("Page height in inches"))
             self.page_height_text_ctrl.SetValue(
-                str(self.paper_sizes_points["A4"][1] / 72.0))
+                str(old_div(self.paper_sizes_points["A4"][1], 72.0)))
             self.page_layout_choice.SetToolTipString(
                 _("Choose from predefined page layouts"))
             self.page_layout_choice.SetSelection(0)
@@ -249,8 +252,8 @@ class CairoExportDialog(wx.Dialog):
         """Page layout choice event handler"""
 
         width, height = self.paper_sizes_points[event.GetString()]
-        self.page_width_text_ctrl.SetValue(str(width / 72.0))
-        self.page_height_text_ctrl.SetValue(str(height / 72.0))
+        self.page_width_text_ctrl.SetValue(str(old_div(width, 72.0)))
+        self.page_height_text_ctrl.SetValue(str(old_div(height, 72.0)))
 
         event.Skip()
 

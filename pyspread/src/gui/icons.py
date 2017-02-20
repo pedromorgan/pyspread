@@ -29,6 +29,8 @@ Provides:
   2) Icons: Provides pyspread's icons
 
 """
+from builtins import map
+from builtins import object
 
 import os
 

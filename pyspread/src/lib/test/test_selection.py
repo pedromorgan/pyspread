@@ -27,6 +27,8 @@ test_selection
 Unit tests for selection.py
 
 """
+from builtins import str
+from builtins import object
 
 import os
 import sys

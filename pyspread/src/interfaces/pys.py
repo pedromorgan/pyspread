@@ -36,12 +36,15 @@ It is split into the following sections
  * macros
 
 """
+from builtins import str
+from builtins import map
+from builtins import object
 
 import ast
 import base64
 from collections import OrderedDict
 import src.lib.i18n as i18n
-from itertools import imap
+
 import os
 import tempfile
 
@@ -115,7 +118,7 @@ class Pys(object):
     def _get_key(self, *keystrings):
         """Returns int key tuple from key string list"""
 
-        return tuple(imap(int, keystrings))
+        return tuple(map(int, keystrings))
 
     def _pys_assert_version(self, line):
         """Asserts pys file version"""
@@ -142,7 +145,7 @@ class Pys(object):
 
         """
 
-        shape_line = u"\t".join(map(unicode, self.code_array.shape)) + u"\n"
+        shape_line = u"\t".join(map(str, self.code_array.shape)) + u"\n"
         self.pys_file.write(shape_line)
 
     def _pys2shape(self, line):
@@ -170,7 +173,7 @@ class Pys(object):
         row, col, tab, code = self._split_tidy(line, maxsplit=3)
         key = self._get_key(row, col, tab)
 
-        self.code_array.dict_grid[key] = unicode(code, encoding='utf-8')
+        self.code_array.dict_grid[key] = str(code, encoding='utf-8')
 
     def _attributes2pys(self):
         """Writes attributes to pys file
@@ -205,7 +208,7 @@ class Pys(object):
                 if config["font_save_enabled"] and key == 'textfont':
                     self.fonts_used.append(attr_dict[key])
 
-            line_list = map(repr, sel_list + tab_list + attr_dict_list)
+            line_list = list(map(repr, sel_list + tab_list + attr_dict_list))
 
             self.pys_file.write(u"\t".join(line_list) + u"\n")
 
@@ -214,7 +217,7 @@ class Pys(object):
 
         splitline = self._split_tidy(line)
 
-        selection_data = map(ast.literal_eval, splitline[:5])
+        selection_data = list(map(ast.literal_eval, splitline[:5]))
         selection = Selection(*selection_data)
 
         tab = int(splitline[5])
@@ -242,7 +245,7 @@ class Pys(object):
             if row < self.code_array.shape[0] and \
                tab < self.code_array.shape[2]:
                 height = self.code_array.dict_grid.row_heights[(row, tab)]
-                height_strings = map(repr, [row, tab, height])
+                height_strings = list(map(repr, [row, tab, height]))
                 self.pys_file.write(u"\t".join(height_strings) + u"\n")
 
     def _pys2row_heights(self, line):
@@ -273,7 +276,7 @@ class Pys(object):
             if col < self.code_array.shape[1] and \
                tab < self.code_array.shape[2]:
                 width = self.code_array.dict_grid.col_widths[(col, tab)]
-                width_strings = map(repr, [col, tab, width])
+                width_strings = list(map(repr, [col, tab, width]))
                 self.pys_file.write(u"\t".join(width_strings) + u"\n")
 
     def _pys2col_widths(self, line):

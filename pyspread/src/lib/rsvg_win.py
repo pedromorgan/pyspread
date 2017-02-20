@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import object
 print("Detected windows, creating rsvg.")
 #some workarounds for windows
 
@@ -8,7 +9,7 @@ l=CDLL('librsvg-2-2.dll')
 g=CDLL('libgobject-2.0-0.dll')
 g.g_type_init()
 
-class rsvgHandle():
+class rsvgHandle(object):
     class RsvgDimensionData(Structure):
         _fields_ = [("width", c_int),
                     ("height", c_int),
@@ -39,7 +40,7 @@ class rsvgHandle():
 
 
 
-class rsvgClass():
+class rsvgClass(object):
     def Handle(self,file):
         return rsvgHandle(file)
 

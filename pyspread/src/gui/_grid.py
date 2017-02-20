@@ -30,6 +30,11 @@ Provides
 
 """
 from __future__ import absolute_import
+from __future__ import division
+from builtins import zip
+from builtins import range
+from past.utils import old_div
+from builtins import object
 
 import wx.grid
 import wx.lib.mixins.gridlabelrenderer as glr
@@ -1451,7 +1456,7 @@ class GridEventHandlers(GridActionEventMixin):
 
         row = event.GetRowOrCol()
         tab = self.grid.current_table
-        rowsize = self.grid.GetRowSize(row) / self.grid.grid_renderer.zoom
+        rowsize = old_div(self.grid.GetRowSize(row), self.grid.grid_renderer.zoom)
 
         # Detect for resizing group of rows
         rows = self.grid.GetSelectedRows()
@@ -1465,7 +1470,7 @@ class GridEventHandlers(GridActionEventMixin):
             leftmost_col = box[0][1]
             rightmost_col = box[1][1]
             if leftmost_col == 0 and rightmost_col == num_cols:
-                rows += range(box[0][0], box[1][0]+1)
+                rows += list(range(box[0][0], box[1][0]+1))
 
         for row in rows:
             self.grid.code_array.set_row_height(row, tab, rowsize,
@@ -1481,7 +1486,7 @@ class GridEventHandlers(GridActionEventMixin):
 
         col = event.GetRowOrCol()
         tab = self.grid.current_table
-        colsize = self.grid.GetColSize(col) / self.grid.grid_renderer.zoom
+        colsize = old_div(self.grid.GetColSize(col), self.grid.grid_renderer.zoom)
 
         # Detect for resizing group of cols
         cols = self.grid.GetSelectedCols()
@@ -1495,7 +1500,7 @@ class GridEventHandlers(GridActionEventMixin):
             top_row = box[0][0]
             bottom_row = box[1][0]
             if top_row == 0 and bottom_row == num_rows:
-                cols += range(box[0][1], box[1][1]+1)
+                cols += list(range(box[0][1], box[1][1]+1))
 
         for col in cols:
             self.grid.code_array.set_col_width(col, tab, colsize,

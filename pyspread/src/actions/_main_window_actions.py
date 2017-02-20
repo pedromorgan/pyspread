@@ -39,6 +39,10 @@ Provides:
   6. AllMainWindowActions: All main window actions as a bundle
 
 """
+from builtins import str
+from builtins import zip
+from builtins import map
+from builtins import range
 
 import ast
 import base64
@@ -449,10 +453,10 @@ class ClipboardActions(Actions):
 
         data = []
 
-        for __row in xrange(bb_top, bb_bottom + 1):
+        for __row in range(bb_top, bb_bottom + 1):
             data.append([])
 
-            for __col in xrange(bb_left, bb_right + 1):
+            for __col in range(bb_left, bb_right + 1):
                 # Only copy content if cell is in selection or
                 # if there is no selection
 
@@ -503,7 +507,7 @@ class ClipboardActions(Actions):
         except AttributeError:
             pass
 
-        return unicode(result_obj)
+        return str(result_obj)
 
     def copy_result(self, selection):
         """Returns result
@@ -632,7 +636,7 @@ class ClipboardActions(Actions):
         elif dim == 1:
             return [[repr(o)] for o in obj]
         elif dim == 2:
-            return [map(repr, o) for o in obj]
+            return [list(map(repr, o)) for o in obj]
 
     def paste_as(self, key, data):
         """Paste and transform data
@@ -655,7 +659,7 @@ class ClipboardActions(Actions):
         except (SyntaxError, AttributeError):
             # This is no Python code so te try to interpret it as paste data
             try:
-                obj = [map(ast.literal_eval, line.split("\t"))
+                obj = [list(map(ast.literal_eval, line.split("\t")))
                        for line in data.split("\n")]
 
             except Exception as err:
@@ -676,7 +680,7 @@ class ClipboardActions(Actions):
         paste_data = self._get_pasteas_data(parameters["dim"], obj)
 
         if parameters["transpose"]:
-            paste_data = zip(*paste_data)
+            paste_data = list(zip(*paste_data))
 
         self.main_window.grid.actions.paste(key, paste_data, freq=1000)
 

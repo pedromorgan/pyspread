@@ -34,6 +34,8 @@ Provides
  * verify: verifies stream against signature
 
 """
+from builtins import zip
+from builtins import str
 
 import wx
 import gnupg

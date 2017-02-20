@@ -27,6 +27,8 @@ sysvars
 System environment access
 
 """
+from builtins import map
+from builtins import zip
 
 import os
 
@@ -84,7 +86,7 @@ def get_dpi():
         (pixels, length_mm) = xxx_todo_changeme
         return pixels * 25.6 / length_mm
 
-    return map(pxmm_2_dpi, zip(wx.GetDisplaySize(), wx.GetDisplaySizeMM()))
+    return list(map(pxmm_2_dpi, list(zip(wx.GetDisplaySize(), wx.GetDisplaySizeMM()))))
 
 
 def get_color(name):

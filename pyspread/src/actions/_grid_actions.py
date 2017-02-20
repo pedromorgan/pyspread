@@ -44,6 +44,10 @@ Provides:
 
 
 """
+from __future__ import division
+from builtins import str
+from builtins import range
+from past.utils import old_div
 
 
 import ast
@@ -968,7 +972,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             duplicated_row_data = row_data * (bbox_width // len(row_data) + 1)
             duplicated_row_data = duplicated_row_data[:bbox_width]
 
-            for col in xrange(len(duplicated_row_data)):
+            for col in range(len(duplicated_row_data)):
                 if (bb_top, bb_left + col) not in selection:
                     duplicated_row_data[col] = None
 
@@ -1071,7 +1075,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             sorted_ele = scells[i]
             return sorted_ele is None, sorted_ele
 
-        sorted_row_idxs = sorted(xrange(len(scells)), key=sorter)
+        sorted_row_idxs = sorted(range(len(scells)), key=sorter)
 
         self.replace_cells(key, sorted_row_idxs)
 
@@ -1087,7 +1091,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         row, col, tab = key
 
         scells = self.grid.code_array[:, col, tab]
-        sorted_row_idxs = sorted(xrange(len(scells)), key=scells.__getitem__)
+        sorted_row_idxs = sorted(range(len(scells)), key=scells.__getitem__)
         sorted_row_idxs.reverse()
 
         self.replace_cells(key, sorted_row_idxs)
@@ -1292,15 +1296,15 @@ class GridActions(Actions):
         grid_width, grid_height = self.grid.GetSize()
 
         rows_height = self._get_rows_height() + \
-            (float(self.grid.GetColLabelSize()) / zoom)
+            (old_div(float(self.grid.GetColLabelSize()), zoom))
         cols_width = self._get_cols_width() + \
-            (float(self.grid.GetRowLabelSize()) / zoom)
+            (old_div(float(self.grid.GetRowLabelSize()), zoom))
 
         # Check target zoom for rows
-        zoom_height = float(grid_height) / rows_height
+        zoom_height = old_div(float(grid_height), rows_height)
 
         # Check target zoom for columns
-        zoom_width = float(grid_width) / cols_width
+        zoom_width = old_div(float(grid_width), cols_width)
 
         # Use the minimum target zoom from rows and column target zooms
         target_zoom = min(zoom_height, zoom_width)
@@ -1357,9 +1361,9 @@ class GridActions(Actions):
                 return
 
             try:
-                cell_res_str = unicode(cell_res)
+                cell_res_str = str(cell_res)
             except UnicodeEncodeError:
-                cell_res_str = unicode(cell_res, encoding='utf-8')
+                cell_res_str = str(cell_res, encoding='utf-8')
 
             if len(cell_res_str) > max_result_length:
                 cell_res_str = cell_res_str[:max_result_length] + ' [...]'
@@ -1549,8 +1553,8 @@ class SelectionActions(Actions):
             self.grid.SelectBlock(row_slc.start, col_slc.start,
                                   row_slc.stop - 1, col_slc.stop - 1)
         else:
-            for row in xrange(row_slc.start, row_slc.stop, row_slc.step):
-                for col in xrange(col_slc.start, col_slc.stop, col_slc.step):
+            for row in range(row_slc.start, row_slc.stop, row_slc.step):
+                for col in range(col_slc.start, col_slc.stop, col_slc.step):
                     self.select_cell(row, col, add_to_selected=True)
 
     def delete_selection(self, selection=None, mark_unredo=True):
@@ -1577,7 +1581,7 @@ class SelectionActions(Actions):
 
         current_table = self.grid.current_table
 
-        for row, col, tab in self.grid.code_array.dict_grid.keys():
+        for row, col, tab in list(self.grid.code_array.dict_grid.keys()):
             if tab == current_table and (row, col) in selection:
                 self.grid.actions.delete_cell((row, col, tab),
                                               mark_unredo=False)
@@ -1611,7 +1615,7 @@ class SelectionActions(Actions):
 
         selection = self.get_selection()
         current_table = self.grid.current_table
-        for row, col, tab in self.grid.code_array.dict_grid.keys():
+        for row, col, tab in list(self.grid.code_array.dict_grid.keys()):
             if tab == current_table and (row, col) in selection:
                 self.grid.actions.quote_code((row, col, tab),
                                              mark_unredo=False)

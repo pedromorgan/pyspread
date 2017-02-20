@@ -42,8 +42,16 @@ Provides:
 """
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import chr
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 
-import __builtin__
+import builtins
 import keyword
 from copy import copy
 import time
@@ -451,8 +459,8 @@ class PenWidthComboBox(ImageComboBox):
         dc.SetPen(pen)
 
         # Draw the example line in the combobox
-        dc.DrawLine(r.x + 5, r.y + r.height / 2,
-                    r.x + r.width - 5, r.y + r.height / 2)
+        dc.DrawLine(r.x + 5, r.y + old_div(r.height, 2),
+                    r.x + r.width - 5, r.y + old_div(r.height, 2))
 
 # end of class PenWidthComboBox
 
@@ -599,7 +607,7 @@ class FontChoiceCombobox(ImageComboBox):
 
         height = layout.get_pixel_extents()[1][3]
 
-        y_adjust = int((rect.height - height) / 2.0)
+        y_adjust = int(old_div((rect.height - height), 2.0))
         context.translate(rect.x + 3, rect.y + y_adjust)
 
         pangocairo_context.update_layout(layout)
@@ -1177,7 +1185,7 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
             except ValueError:
                 if self.IsLongAllowed():
                     try:
-                        return long(value)
+                        return int(value)
                     except ValueError:
                         wx.TextCtrl.SetValue(self, "0")
                         return 0
@@ -1382,7 +1390,7 @@ class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
                     dropList = []
 
                     thisItem = self.GetItem(self.startIndex)
-                    for x in xrange(self.GetColumnCount()):
+                    for x in range(self.GetColumnCount()):
                         dropList.append(
                             self.GetItem(self.startIndex, x).GetText())
                     thisItem.SetId(self.dropIndex)

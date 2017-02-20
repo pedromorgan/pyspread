@@ -29,6 +29,7 @@ Provides
  * Clipboard: Clipboard interface class
 
 """
+from builtins import object
 
 import wx
 

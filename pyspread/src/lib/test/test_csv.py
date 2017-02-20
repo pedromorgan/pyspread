@@ -27,6 +27,9 @@ test_csv
 Unit tests for __csv.py
 
 """
+from builtins import zip
+from builtins import range
+from builtins import object
 
 import os
 import sys
@@ -106,7 +109,7 @@ def digested_line(line, digest_types, res):
 def test_cell_key_val_gen():
     """Unit test for cell_key_val_gen"""
 
-    list_of_lists = [range(10), range(10)]
+    list_of_lists = [list(range(10)), list(range(10))]
     gen = __csv.cell_key_val_gen(list_of_lists, (100, 100, 10))
     for row, col, value in gen:
         assert col == value

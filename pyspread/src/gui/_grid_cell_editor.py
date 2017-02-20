@@ -29,6 +29,9 @@ Provides
     a cell in the grid
 """
 from __future__ import absolute_import
+from builtins import chr
+from builtins import str
+from builtins import range
 
 import wx
 import string
@@ -157,7 +160,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         try:
             start_value_list = [start_value[i:i+self.max_char_width]
-                                for i in xrange(0, len(start_value),
+                                for i in range(0, len(start_value),
                                                 self.max_char_width)]
             startValue = "\n".join(start_value_list)
             self.startValue = startValue
@@ -167,7 +170,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
 
         # Set up the textcontrol to look like this cell (TODO: Does not work)
         try:
-            self._tc.SetValue(unicode(startValue))
+            self._tc.SetValue(str(startValue))
         except (TypeError, AttributeError, UnboundLocalError):
             self._tc.SetValue(u"")
 

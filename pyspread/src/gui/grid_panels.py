@@ -38,6 +38,8 @@ Provides
  * vlcpanel_factory: Class factory for VLCPanels
 
 """
+from __future__ import division
+from past.utils import old_div
 
 import wx
 
@@ -153,9 +155,9 @@ class VLCPanel(wx.Panel):
         time = self.player.get_time()
 
         if event.GetWheelRotation() < 0:
-            target_time = max(0, time-length/100.0)
+            target_time = max(0, time-old_div(length,100.0))
         elif event.GetWheelRotation() > 0:
-            target_time = min(length, time+length/100.0)
+            target_time = min(length, time+old_div(length,100.0))
 
         self.player.set_time(int(target_time))
 

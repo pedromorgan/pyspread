@@ -36,6 +36,10 @@ Provides:
 
 """
 from __future__ import absolute_import
+from builtins import chr
+from builtins import map
+from builtins import str
+from builtins import range
 
 import wx
 import wx.lib.colourselect as csel
@@ -549,7 +553,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         font_size = str(get_default_font().GetPointSize())
         self.font_size_combo = \
             wx.ComboBox(self, -1, value=font_size, size=(60, -1),
-                        choices=map(unicode, self.std_font_sizes),
+                        choices=list(map(str, self.std_font_sizes)),
                         style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
 
         self.font_size_combo.SetToolTipString(_(u"Text size\n(points)"))
@@ -636,7 +640,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
     def _create_penwidth_combo(self):
         """Create pen width combo box"""
 
-        choices = map(unicode, xrange(12))
+        choices = list(map(str, range(12)))
         self.pen_width_combo = \
             _widgets.PenWidthComboBox(self, choices=choices,
                                       style=wx.CB_READONLY, size=(50, -1))
@@ -653,7 +657,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
 
         try:
             self.linecolor_choice = \
-                csel.ColourSelect(self, -1, unichr(0x2500), (0, 0, 0),
+                csel.ColourSelect(self, -1, chr(0x2500), (0, 0, 0),
                                   size=button_size, style=button_style)
         except UnicodeEncodeError:
             # ANSI wxPython installed

@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """2D Rectangle collision library"""
+from __future__ import division
+from builtins import map
+from past.utils import old_div
+from builtins import object
 
 from math import sin, cos, pi
 
@@ -94,7 +98,7 @@ class RotoOriginRect(Rect):
     """
 
     def __init__(self, width, height, angle):
-        Rect.__init__(self, -width / 2.0, -height / 2.0, width, height)
+        Rect.__init__(self, old_div(-width, 2.0), old_div(-height, 2.0), width, height)
         self.angle = angle / 180.0 * pi
 
     def __str__(self):
@@ -282,8 +286,8 @@ class RotoRect(object):
         lr_x, lr_y = self.get_vec_lr()
         tb_x, tb_y = self.get_vec_tb()
 
-        center_x = self.x + (lr_x + tb_x) / 2.0
-        center_y = self.y + (lr_y + tb_y) / 2.0
+        center_x = self.x + old_div((lr_x + tb_x), 2.0)
+        center_y = self.y + old_div((lr_y + tb_y), 2.0)
 
         return center_x, center_y
 

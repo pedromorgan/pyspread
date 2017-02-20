@@ -24,6 +24,7 @@ pyspread config file
 ====================
 
 """
+from builtins import object
 
 from ast import literal_eval
 
