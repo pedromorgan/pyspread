@@ -53,7 +53,7 @@ except ImportError:
 _ = i18n.language.gettext
 
 
-class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
+class GridRenderer(wx.grid.GridCellRenderer, EventMixin):
     """This renderer draws borders and text at specified font, size, color"""
 
     selection_color_tuple = \
@@ -62,7 +62,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
 
     def __init__(self, data_array):
 
-        wx.grid.PyGridCellRenderer.__init__(self)
+        wx.grid.GridCellRenderer.__init__(self)
 
         self.data_array = data_array
 

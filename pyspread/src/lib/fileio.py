@@ -39,6 +39,7 @@ from builtins import object
 
 import bz2
 from . import i18n
+import io
 
 import wx
 
@@ -155,7 +156,7 @@ class AOpenMixin(object):
         event.Skip()
 
 
-class AOpen(AOpenMixin, file):
+class AOpen(AOpenMixin, io.BufferedIOBase):
     """Read and write files with status messages and abort option
 
     Extra Key Word Parameters (extends open)
@@ -172,7 +173,7 @@ class AOpen(AOpenMixin, file):
 
     """
 
-    parent_cls = file
+    parent_cls = io.BufferedIOBase
 
     def __init__(self, *args, **kwargs):
 

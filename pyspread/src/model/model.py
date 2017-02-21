@@ -51,7 +51,6 @@ import datetime
 from itertools import product
 import re
 import sys
-from types import SliceType, IntType
 
 import numpy
 
@@ -153,7 +152,7 @@ class CellAttributes(list):
     def __getitem__(self, key):
         """Returns attribute dict for a single key"""
 
-        assert not any(type(key_ele) is SliceType for key_ele in key)
+        assert not any(type(key_ele) is slice for key_ele in key)
 
         if key in self._attr_cache:
             cache_len, cache_dict = self._attr_cache[key]
@@ -719,13 +718,13 @@ class DataArray(object):
         for i, key_ele in enumerate(key):
 
             # Get first element of key that is a slice
-            if type(key_ele) is SliceType:
+            if type(key_ele) is slice:
                 slc_keys = range(*key_ele.indices(self.dict_grid.shape[i]))
                 key_list = list(key)
 
                 key_list[i] = None
 
-                has_subslice = any(type(ele) is SliceType for ele in key_list)
+                has_subslice = any(type(ele) is slice for ele in key_list)
 
                 for slc_key in slc_keys:
                     key_list[i] = slc_key
@@ -1154,7 +1153,7 @@ class CodeArray(DataArray):
         """Returns _eval_cell"""
 
         # Frozen cell handling
-        if all(type(k) is not SliceType for k in key):
+        if all(type(k) is not slice for k in key):
             frozen_res = self.cell_attributes[key]["frozen"]
             if frozen_res:
                 if repr(key) in self.frozen_cache:
@@ -1370,7 +1369,8 @@ class CodeArray(DataArray):
 
         import src.lib.charts as charts
         from src.gui.grid_panels import vlcpanel_factory
-        modules = [charts, bz2, base64, re, ast, sys, wx, numpy, datetime]
+        from importlib import reload
+        modules = [charts, bz2, base64, re, ast, sys, numpy, datetime]  # , wx
 
         for module in modules:
             reload(module)
@@ -1378,9 +1378,9 @@ class CodeArray(DataArray):
     def clear_globals(self):
         """Clears all newly assigned globals"""
 
-        base_keys = ['cStringIO', 'IntType', 'KeyValueStore', 'UnRedo',
+        base_keys = ['cStringIO', 'KeyValueStore', 'UnRedo',
                      'is_generator_like', 'is_string_like', 'bz2', 'base64',
-                     '__package__', 're', 'config', '__doc__', 'SliceType',
+                     '__package__', 're', 'config', '__doc__',
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'charts', 'sys', 'is_slice_like', '__name__',
                      'copy', 'imap', 'wx', 'ifilter', 'Selection', 'DictGrid',
@@ -1507,7 +1507,7 @@ class CodeArray(DataArray):
 
         """
 
-        if type(datastring) is IntType:  # Empty cell
+        if type(datastring) is int:  # Empty cell
             return None
 
         if flags is None:

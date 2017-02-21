@@ -39,14 +39,14 @@ import wx.grid
 from src.config import config
 
 
-class GridTable(wx.grid.PyGridTableBase):
+class GridTable(wx.grid.GridTableBase):
     """Table base class that handles interaction between Grid and data_array"""
 
     def __init__(self, grid, data_array):
         self.grid = grid
         self.data_array = data_array
 
-        wx.grid.PyGridTableBase.__init__(self)
+        wx.grid.GridTableBase.__init__(self)
 
         # we need to store the row length and column length to
         # see if the table has changed size
@@ -100,12 +100,17 @@ class GridTable(wx.grid.PyGridTableBase):
         # Put EOLs into result if it is too long
         maxlength = int(config["max_textctrl_length"])
 
+
         if cell_code is not None and len(cell_code) > maxlength:
             chunk = 80
             cell_code = "\n".join(cell_code[i:i + chunk]
                                   for i in range(0, len(cell_code), chunk))
 
-        return cell_code
+        if cell_code is None:
+            return ""
+
+        else:
+            return cell_code
 
     def SetValue(self, row, col, value, refresh=True):
         """Set the value of a cell, merge line breaks"""

@@ -66,8 +66,8 @@ except ImportError:
     SpellChecker = None
 
 
-import pango
-import pangocairo
+from gi.repository import Pango
+from gi.repository import PangoCairo
 
 from src.lib.parsers import color_pack2rgb, is_svg
 
@@ -585,15 +585,15 @@ class GridCellContentCairoRenderer(object):
         """Sets the font for draw_text"""
 
         wx2pango_weights = {
-            wx.FONTWEIGHT_BOLD: pango.WEIGHT_BOLD,
-            wx.FONTWEIGHT_LIGHT: pango.WEIGHT_LIGHT,
+            wx.FONTWEIGHT_BOLD: Pango.WEIGHT_BOLD,
+            wx.FONTWEIGHT_LIGHT: Pango.WEIGHT_LIGHT,
             wx.FONTWEIGHT_NORMAL: None,  # Do not set a weight by default
         }
 
         wx2pango_styles = {
             wx.FONTSTYLE_NORMAL: None,  # Do not set a style by default
-            wx.FONTSTYLE_SLANT: pango.STYLE_OBLIQUE,
-            wx.FONTSTYLE_ITALIC: pango.STYLE_ITALIC,
+            wx.FONTSTYLE_SLANT: Pango.STYLE_OBLIQUE,
+            wx.FONTSTYLE_ITALIC: Pango.STYLE_ITALIC,
         }
 
         cell_attributes = self.code_array.cell_attributes[self.key]
@@ -607,27 +607,27 @@ class GridCellContentCairoRenderer(object):
         strikethrough = cell_attributes["strikethrough"]
 
         # Now construct the pango font
-        font_description = pango.FontDescription(
+        font_description = Pango.FontDescription(
             " ".join([textfont, str(pointsize)]))
         pango_layout.set_font_description(font_description)
 
-        attrs = pango.AttrList()
+        attrs = Pango.AttrList()
 
         # Underline
-        attrs.insert(pango.AttrUnderline(underline, 0, MAX_RESULT_LENGTH))
+        attrs.insert(Pango.AttrUnderline(underline, 0, MAX_RESULT_LENGTH))
 
         # Weight
         weight = wx2pango_weights[fontweight]
         if weight is not None:
-            attrs.insert(pango.AttrWeight(weight, 0, MAX_RESULT_LENGTH))
+            attrs.insert(Pango.AttrWeight(weight, 0, MAX_RESULT_LENGTH))
 
         # Style
         style = wx2pango_styles[fontstyle]
         if style is not None:
-            attrs.insert(pango.AttrStyle(style, 0, MAX_RESULT_LENGTH))
+            attrs.insert(Pango.AttrStyle(style, 0, MAX_RESULT_LENGTH))
 
         # Strikethrough
-        attrs.insert(pango.AttrStrikethrough(strikethrough, 0,
+        attrs.insert(Pango.AttrStrikethrough(strikethrough, 0,
                                              MAX_RESULT_LENGTH))
 
         pango_layout.set_attributes(attrs)
@@ -676,9 +676,9 @@ class GridCellContentCairoRenderer(object):
         for char_no in range(start, stop):
             char_extents = pit.get_char_extents()
             underline_pixel_extents = [
-                old_div(char_extents[0], pango.SCALE),
-                old_div((char_extents[1] + char_extents[3]), pango.SCALE) - 2,
-                old_div(char_extents[2], pango.SCALE),
+                old_div(char_extents[0], Pango.SCALE),
+                old_div((char_extents[1] + char_extents[3]), Pango.SCALE) - 2,
+                old_div(char_extents[2], Pango.SCALE),
                 4,
             ]
             if extents_list:
@@ -695,7 +695,7 @@ class GridCellContentCairoRenderer(object):
             pit.next_char()
 
         for extent in extents_list:
-            pangocairo.show_error_underline(ptx, *extent)
+            PangoCairo.show_error_underline(ptx, *extent)
 
         self.context.restore()
 
@@ -728,9 +728,9 @@ class GridCellContentCairoRenderer(object):
         """Draws text cell content to context"""
 
         wx2pango_alignment = {
-            "left": pango.ALIGN_LEFT,
-            "center": pango.ALIGN_CENTER,
-            "right": pango.ALIGN_RIGHT,
+            "left": Pango.ALIGN_LEFT,
+            "center": Pango.ALIGN_CENTER,
+            "right": Pango.ALIGN_RIGHT,
         }
 
         cell_attributes = self.code_array.cell_attributes[self.key]
@@ -745,13 +745,13 @@ class GridCellContentCairoRenderer(object):
         # Text color attributes
         self.context.set_source_rgb(*self._get_text_color())
 
-        ptx = pangocairo.CairoContext(self.context)
+        ptx = PangoCairo.CairoContext(self.context)
         pango_layout = ptx.create_layout()
         self.set_font(pango_layout)
 
-        pango_layout.set_wrap(pango.WRAP_WORD_CHAR)
+        pango_layout.set_wrap(Pango.WRAP_WORD_CHAR)
 
-        pango_layout.set_width(int(round((rect[2] - 4.0) * pango.SCALE)))
+        pango_layout.set_width(int(round((rect[2] - 4.0) * Pango.SCALE)))
 
         try:
             markup = cell_attributes["markup"]

@@ -63,14 +63,14 @@ except ImportError:
 
 import wx
 import wx.grid
-import wx.combo
+import wx.adv
 import wx.stc as stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
 import wx.lib.wxcairo
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 import cairo
-import pango
-import pangocairo
+from gi.repository import Pango
+from gi.repository import PangoCairo
 
 import src.lib.i18n as i18n
 from src.lib.parsers import common_start
@@ -403,7 +403,7 @@ class PythonSTC(stc.StyledTextCtrl):
 # end of class PythonSTC
 
 
-class ImageComboBox(wx.combo.OwnerDrawnComboBox):
+class ImageComboBox(wx.adv.OwnerDrawnComboBox):
     """Base class for image combo boxes
 
     The class provides alternating backgrounds. Stolen from demo.py
@@ -421,11 +421,11 @@ class ImageComboBox(wx.combo.OwnerDrawnComboBox):
         # or if we are painting the combo control itself
         # then use the default rendering.
 
-        if (item & 1 == 0 or flags & (wx.combo.ODCB_PAINTING_CONTROL |
-                                      wx.combo.ODCB_PAINTING_SELECTED)):
+        if (item & 1 == 0 or flags & (wx.adv.ODCB_PAINTING_CONTROL |
+                                      wx.adv.ODCB_PAINTING_SELECTED)):
             try:
-                wx.combo.OwnerDrawnComboBox.OnDrawBackground(self, dc,
-                                                             rect, item, flags)
+                wx.adv.OwnerDrawnComboBox.OnDrawBackground(self, dc,
+                                                           rect, item, flags)
             finally:
                 return
 
@@ -592,12 +592,12 @@ class FontChoiceCombobox(ImageComboBox):
         context.rectangle(*rect)
         context.clip()
 
-        pangocairo_context = pangocairo.CairoContext(context)
+        pangocairo_context = PangoCairo.CairoContext(context)
         pangocairo_context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
 
         layout = pangocairo_context.create_layout()
         fontname = self.GetString(item)
-        font = pango.FontDescription("{} {}".format(fontname,
+        font = Pango.FontDescription("{} {}".format(fontname,
                                                     default_font_size))
         layout.set_font_description(font)
 
