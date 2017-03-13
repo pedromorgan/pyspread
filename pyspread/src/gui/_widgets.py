@@ -592,7 +592,7 @@ class FontChoiceCombobox(ImageComboBox):
         context.rectangle(*rect)
         context.clip()
 
-        pangocairo_context = PangoCairo.CairoContext(context)
+        pangocairo_context = PangoCairo.create_context(context)
         pangocairo_context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
 
         layout = pangocairo_context.create_layout()
@@ -632,7 +632,7 @@ class BorderEditChoice(ImageComboBox):
 
         bmp = icons[item_name]
 
-        icon = wx.EmptyIcon()
+        icon = wx.Icon()
         icon.CopyFromBitmap(bmp)
 
         # Draw the border icon in the combobox

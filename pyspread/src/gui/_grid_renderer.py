@@ -57,8 +57,8 @@ class GridRenderer(wx.grid.GridCellRenderer, EventMixin):
     """This renderer draws borders and text at specified font, size, color"""
 
     selection_color_tuple = \
-        tuple([old_div(c, 255.0) for c in get_color(config["selection_color"]).Get()] +
-              [0.5])
+        tuple([old_div(c, 255.0)
+              for c in get_color(config["selection_color"]).Get()] + [0.5])
 
     def __init__(self, data_array):
 
@@ -256,7 +256,7 @@ class GridRenderer(wx.grid.GridCellRenderer, EventMixin):
     def _get_cairo_bmp(self, mdc, key, rect, is_selected, view_frozen):
         """Returns a wx.Bitmap of cell key in size rect"""
 
-        bmp = wx.EmptyBitmap(rect.width, rect.height)
+        bmp = wx.Bitmap(rect.width, rect.height)
         mdc.SelectObject(bmp)
         mdc.SetBackgroundMode(wx.SOLID)
         mdc.SetBackground(wx.WHITE_BRUSH)
@@ -272,8 +272,9 @@ class GridRenderer(wx.grid.GridCellRenderer, EventMixin):
         context.scale(zoom, zoom)
 
         # Set off cell renderer by 1/2 a pixel to avoid blurry lines
-        rect_tuple = \
-            -0.5, -0.5, old_div(rect.width, zoom) + 0.5, old_div(rect.height, zoom) + 0.5
+        rect_tuple = (-0.5, -0.5,
+                      old_div(rect.width, zoom) + 0.5,
+                      old_div(rect.height, zoom) + 0.5)
         spell_check = config["check_spelling"]
         cell_renderer = GridCellCairoRenderer(context, self.data_array,
                                               key, rect_tuple, view_frozen,
@@ -372,7 +373,7 @@ class RowLabelRenderer(glr.GridLabelRenderer):
 
         color = get_color(wx.SYS_COLOUR_MENUBAR)
         dc.SetBrush(wx.Brush(color))
-        dc.DrawRectangleRect(rect)
+        dc.DrawRectangle(rect)
         hAlign, vAlign = grid.GetRowLabelAlignment()
         text = grid.GetRowLabelValue(row)
         self.DrawBorder(grid, dc, rect)
@@ -396,7 +397,7 @@ class ColLabelRenderer(glr.GridLabelRenderer):
 
         color = get_color(wx.SYS_COLOUR_MENUBAR)
         dc.SetBrush(wx.Brush(color))
-        dc.DrawRectangleRect(rect)
+        dc.DrawRectangle(rect)
         hAlign, vAlign = grid.GetColLabelAlignment()
         text = grid.GetColLabelValue(col)
         self.DrawBorder(grid, dc, rect)

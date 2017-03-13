@@ -653,20 +653,16 @@ class AttributesToolbar(ToolbarBase, EventMixin):
 
         button_size = (30, 30)
 
-        try:
-            self.linecolor_choice = \
-                csel.ColourSelect(self, -1, chr(0x2500), (0, 0, 0))
-        except UnicodeEncodeError:
-            # ANSI wxPython installed
-            self.linecolor_choice = csel.ColourSelect(self, -1, "-", (0, 0, 0))
+        self.linecolor_choice = \
+            csel.ColourSelect(self, -1, chr(0x2500), (0, 0, 0))
 
         self.bgcolor_choice = csel.ColourSelect(self, -1, "", (255, 255, 255))
 
         self.textcolor_choice = csel.ColourSelect(self, -1, "A", (0, 0, 0))
 
-#        self.linecolor_choice.SetSize(*button_size)
-#        self.bgcolor_choice.SetSize(*button_size)
-#        self.textcolor_choice.SetSize(*button_size)
+        self.linecolor_choice.SetSize(*button_size)
+        self.bgcolor_choice.SetSize(*button_size)
+        self.textcolor_choice.SetSize(*button_size)
 
         self.linecolor_choice.SetToolTip(_(u"Border line color"))
         self.bgcolor_choice.SetToolTip(_(u"Cell background"))
@@ -883,6 +879,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         textcolor = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
         textcolor.SetRGB(fontcolor)
 
+        self.textcolor_choice.SetSize((32, 32))
         self.textcolor_choice.SetColour(textcolor)
 
     def _update_merge(self, merged):
@@ -896,6 +893,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         brush_color = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
         brush_color.SetRGB(bgcolor)
 
+        self.bgcolor_choice.SetSize((32, 32))
         self.bgcolor_choice.SetColour(brush_color)
 
     def _update_bordercolor(self, bordercolor):
@@ -904,6 +902,7 @@ class AttributesToolbar(ToolbarBase, EventMixin):
         border_color = wx.SystemSettings.GetColour(wx.SYS_COLOUR_ACTIVEBORDER)
         border_color.SetRGB(bordercolor)
 
+        self.linecolor_choice.SetSize((32, 32))
         self.linecolor_choice.SetColour(border_color)
 
     def _update_borderwidth(self, borderwidth):

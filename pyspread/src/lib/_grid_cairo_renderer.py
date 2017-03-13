@@ -728,9 +728,9 @@ class GridCellContentCairoRenderer(object):
         """Draws text cell content to context"""
 
         wx2pango_alignment = {
-            "left": Pango.ALIGN_LEFT,
-            "center": Pango.ALIGN_CENTER,
-            "right": Pango.ALIGN_RIGHT,
+            "left": Pango.Alignment.LEFT,
+            "center": Pango.Alignment.CENTER,
+            "right": Pango.Alignment.RIGHT,
         }
 
         cell_attributes = self.code_array.cell_attributes[self.key]
@@ -897,7 +897,7 @@ class GridCellContentCairoRenderer(object):
             label = self.code_array.cell_attributes[self.key]["button_cell"]
             self.draw_button(1, 1, self.rect[2]-5, self.rect[3]-5, label)
 
-        elif isinstance(content, wx._gdi.Bitmap):
+        elif isinstance(content, wx._core.Bitmap):
             # A bitmap is returned --> Draw it!
             self.draw_bitmap(content)
 

@@ -1232,7 +1232,7 @@ class MainWindowEventHandlers(EventMixin):
         data = self.main_window.actions.copy_result(selection)
 
         # Check if result is a bitmap
-        if type(data) is wx._gdi.Bitmap:
+        if type(data) is wx._core.Bitmap:
             # Copy bitmap to clipboard
             self.main_window.clipboard.set_clipboard(data, datatype="bitmap")
 

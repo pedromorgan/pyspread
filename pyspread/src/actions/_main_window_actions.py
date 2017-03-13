@@ -534,7 +534,7 @@ class ClipboardActions(Actions):
             tab = self.grid.current_table
             result = self.grid.code_array[bb_top, bb_left, tab]
 
-            if isinstance(result, wx._gdi.Bitmap):
+            if isinstance(result, wx._core.Bitmap):
                 # The result is a wx.Bitmap. Return it.
                 return result
 
@@ -593,7 +593,7 @@ class ClipboardActions(Actions):
 
         """
 
-        if type(data) is wx._gdi.Bitmap:
+        if type(data) is wx._core.Bitmap:
             code_str = self.bmp2code(key, data)
             return [[code_str]]
         else:
