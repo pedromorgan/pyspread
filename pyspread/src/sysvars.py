@@ -70,12 +70,15 @@ def get_python_tutorial_path():
     else:
         return "http://docs.python.org/2/tutorial/"
 
+
 # System settings
 
 def get_mo_languages():
-   """Returns list of languages, of which mo files are present"""
+    """Returns list of languages, of which mo files are present"""
 
-   return ["system"] + sorted(os.listdir(get_program_path() + "locale/"))
+    return ["system"] + sorted(os.listdir(get_program_path() + "locale" +
+                               os.sep))
+
 
 def get_dpi():
     """Returns screen dpi resolution"""
