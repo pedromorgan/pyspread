@@ -32,22 +32,30 @@ Provides
 """
 
 import wx.grid
+import wx.lib.mixins.gridlabelrenderer as glr
 
 from src.sysvars import get_color
 from src.config import config
 import src.lib.i18n as i18n
 from src.lib._grid_cairo_renderer import GridCellCairoRenderer
+from src.gui._events import post_command_event, EventMixin
+
+try:
+    import src.lib.vlc as vlc
+    from grid_panels import VLCPanel
+except ImportError:
+    vlc = None
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
-class GridRenderer(wx.grid.PyGridCellRenderer):
+class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
     """This renderer draws borders and text at specified font, size, color"""
 
     selection_color_tuple = \
-        tuple([c / 255.0 for c in get_color(config["selection_color"]).Get()]
-              + [0.5])
+        tuple([c / 255.0 for c in get_color(config["selection_color"]).Get()] +
+              [0.5])
 
     def __init__(self, data_array):
 
@@ -57,6 +65,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         # Cache for cell content
         self.cell_cache = {}
+
+        # Video cell register, contains keys
+        self.video_cells = {}
 
         # Zoom of grid
         self.zoom = 1.0
@@ -80,6 +91,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
     def _draw_cursor(self, dc, grid, row, col,
                      pen=wx.BLACK_PEN, brush=wx.BLACK_BRUSH):
         """Draws cursor as Rectangle in lower right corner"""
+
+        # If in full screen mode draw no cursor
+        if grid.main_window.IsFullScreen():
+            return
 
         key = row, col, grid.current_table
         rect = grid.CellToRect(row, col)
@@ -256,8 +271,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         # Set off cell renderer by 1/2 a pixel to avoid blurry lines
         rect_tuple = \
             -0.5, -0.5, rect.width / zoom + 0.5, rect.height / zoom + 0.5
+        spell_check = config["check_spelling"]
         cell_renderer = GridCellCairoRenderer(context, self.data_array,
-                                              key, rect_tuple, view_frozen)
+                                              key, rect_tuple, view_frozen,
+                                              spell_check=spell_check)
         # Draw cell
         cell_renderer.draw()
 
@@ -285,12 +302,42 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         mdc = wx.MemoryDC()
 
-        if cell_cache_key in self.cell_cache:
+        if vlc is not None and key in self.video_cells and \
+           grid.code_array.cell_attributes[key]["panel_cell"]:
+            # Update video position of previously created video panel
+            self.video_cells[key].SetClientRect(drawn_rect)
+
+        elif cell_cache_key in self.cell_cache:
             mdc.SelectObject(self.cell_cache[cell_cache_key])
 
         else:
-            bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
-                                      grid._view_frozen)
+            code = grid.code_array(key)
+            if vlc is not None and code is not None and \
+               grid.code_array.cell_attributes[key]["panel_cell"]:
+                try:
+                    # A panel is to be displayed
+                    panel_cls = grid.code_array[key]
+
+                    # Assert that we have a subclass of a wxPanel that we
+                    # can instantiate
+                    assert issubclass(panel_cls, wx.Panel)
+
+                    video_panel = panel_cls(grid)
+                    video_panel.SetClientRect(drawn_rect)
+                    # Register video cell
+                    self.video_cells[key] = video_panel
+
+                    return
+
+                except Exception, err:
+                    # Someting is wrong with the panel to be displayed
+                    post_command_event(grid.main_window, self.StatusBarMsg,
+                                       text=unicode(err))
+                    bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
+                                              grid._view_frozen)
+            else:
+                bmp = self._get_cairo_bmp(mdc, key, drawn_rect, isSelected,
+                                          grid._view_frozen)
 
             # Put resulting bmp into cache
             self.cell_cache[cell_cache_key] = bmp
@@ -303,4 +350,53 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         if grid.actions.cursor[:2] == (row, col):
             self.update_cursor(dc, grid, row, col)
 
-# end of class Draw
+# end of class GridRenderer
+
+
+class RowLabelRenderer(glr.GridLabelRenderer):
+    """Row label renderer mixin class that highlights the current line"""
+
+    def Draw(self, grid, dc, rect, row):
+
+        if row == grid.actions.cursor[0]:
+            rect.y += 1
+            rect.height -= 1
+            pen_color = get_color(wx.SYS_COLOUR_MENUHILIGHT)
+            pen = wx.Pen(pen_color, 2, wx.SOLID)
+            dc.SetPen(pen)
+        else:
+            dc.SetPen(wx.TRANSPARENT_PEN)
+
+        color = get_color(wx.SYS_COLOUR_MENUBAR)
+        dc.SetBrush(wx.Brush(color))
+        dc.DrawRectangleRect(rect)
+        hAlign, vAlign = grid.GetRowLabelAlignment()
+        text = grid.GetRowLabelValue(row)
+        self.DrawBorder(grid, dc, rect)
+        self.DrawText(grid, dc, rect, text, hAlign, vAlign)
+
+# end of class RowLabelRenderer
+
+
+class ColLabelRenderer(glr.GridLabelRenderer):
+    """Column label renderer mixin class that highlights the current line"""
+
+    def Draw(self, grid, dc, rect, col):
+        if col == grid.actions.cursor[1]:
+            rect.x += 1
+            rect.width -= 1
+            pen_color = get_color(wx.SYS_COLOUR_MENUHILIGHT)
+            pen = wx.Pen(pen_color, 2, wx.SOLID)
+            dc.SetPen(pen)
+        else:
+            dc.SetPen(wx.TRANSPARENT_PEN)
+
+        color = get_color(wx.SYS_COLOUR_MENUBAR)
+        dc.SetBrush(wx.Brush(color))
+        dc.DrawRectangleRect(rect)
+        hAlign, vAlign = grid.GetColLabelAlignment()
+        text = grid.GetColLabelValue(col)
+        self.DrawBorder(grid, dc, rect)
+        self.DrawText(grid, dc, rect, text, hAlign, vAlign)
+
+# end of class ColLabelRenderer

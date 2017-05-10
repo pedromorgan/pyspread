@@ -53,6 +53,12 @@ try:
 except ImportError:
     pyplot = None
 
+try:
+    from enchant.checker import SpellChecker
+except ImportError:
+    SpellChecker = None
+
+
 import pango
 import pangocairo
 
@@ -100,7 +106,7 @@ class GridCairoRenderer(object):
 
     def __init__(self, context, code_array, row_tb, col_rl, tab_fl,
                  width, height, orientation, x_offset=20.5, y_offset=20.5,
-                 view_frozen=False):
+                 view_frozen=False, spell_check=False):
         self.context = context
         self.code_array = code_array
 
@@ -117,6 +123,8 @@ class GridCairoRenderer(object):
         self.orientation = orientation
 
         self.view_frozen = view_frozen
+
+        self.spell_check = spell_check
 
     def get_cell_rect(self, row, col, tab):
         """Returns rectangle of cell on canvas"""
@@ -253,12 +261,14 @@ class GridCellCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, key, rect, view_frozen=False):
+    def __init__(self, context, code_array, key, rect, view_frozen=False,
+                 spell_check=False):
         self.context = context
         self.code_array = code_array
         self.key = key
         self.rect = rect
         self.view_frozen = view_frozen
+        self.spell_check = spell_check
 
     def draw(self):
         """Draws cell to context"""
@@ -274,7 +284,8 @@ class GridCellCairoRenderer(object):
             self.context,
             self.code_array,
             self.key,
-            self.rect)
+            self.rect,
+            self.spell_check)
 
         cell_border_renderer = GridCellBorderCairoRenderer(
             self.context,
@@ -302,11 +313,12 @@ class GridCellContentCairoRenderer(object):
 
     """
 
-    def __init__(self, context, code_array, key, rect):
+    def __init__(self, context, code_array, key, rect, spell_check=False):
         self.context = context
         self.code_array = code_array
         self.key = key
         self.rect = rect
+        self.spell_check = spell_check
 
     def get_cell_content(self):
         """Returns cell content"""
@@ -568,11 +580,11 @@ class GridCellContentCairoRenderer(object):
         wx2pango_weights = {
             wx.FONTWEIGHT_BOLD: pango.WEIGHT_BOLD,
             wx.FONTWEIGHT_LIGHT: pango.WEIGHT_LIGHT,
-            wx.FONTWEIGHT_NORMAL: pango.WEIGHT_NORMAL,
+            wx.FONTWEIGHT_NORMAL: None,  # Do not set a weight by default
         }
 
         wx2pango_styles = {
-            wx.FONTSTYLE_NORMAL: pango.STYLE_NORMAL,
+            wx.FONTSTYLE_NORMAL: None,  # Do not set a style by default
             wx.FONTSTYLE_SLANT: pango.STYLE_OBLIQUE,
             wx.FONTSTYLE_ITALIC: pango.STYLE_ITALIC,
         }
@@ -599,11 +611,13 @@ class GridCellContentCairoRenderer(object):
 
         # Weight
         weight = wx2pango_weights[fontweight]
-        attrs.insert(pango.AttrWeight(weight, 0, MAX_RESULT_LENGTH))
+        if weight is not None:
+            attrs.insert(pango.AttrWeight(weight, 0, MAX_RESULT_LENGTH))
 
         # Style
         style = wx2pango_styles[fontstyle]
-        attrs.insert(pango.AttrStyle(style, 0, MAX_RESULT_LENGTH))
+        if style is not None:
+            attrs.insert(pango.AttrStyle(style, 0, MAX_RESULT_LENGTH))
 
         # Strikethrough
         attrs.insert(pango.AttrStrikethrough(strikethrough, 0,
@@ -637,6 +651,71 @@ class GridCellContentCairoRenderer(object):
         elif angle == 180 and back:
             self.context.translate(rect[2] - 4, rect[3] - 2)
             self.context.rotate(-math.pi)
+
+    def _draw_error_underline(self, ptx, pango_layout, start, stop):
+        """Draws an error underline"""
+
+        self.context.save()
+        self.context.set_source_rgb(1.0, 0.0, 0.0)
+
+        pit = pango_layout.get_iter()
+
+        # Skip characters until start
+        for i in xrange(start):
+            pit.next_char()
+
+        extents_list = []
+
+        for char_no in xrange(start, stop):
+            char_extents = pit.get_char_extents()
+            underline_pixel_extents = [
+                char_extents[0] / pango.SCALE,
+                (char_extents[1] + char_extents[3]) / pango.SCALE - 2,
+                char_extents[2] / pango.SCALE,
+                4,
+            ]
+            if extents_list:
+                if extents_list[-1][1] == underline_pixel_extents[1]:
+                    # Same line
+                    extents_list[-1][2] = extents_list[-1][2] + \
+                        underline_pixel_extents[2]
+                else:
+                    # Line break
+                    extents_list.append(underline_pixel_extents)
+            else:
+                extents_list.append(underline_pixel_extents)
+
+            pit.next_char()
+
+        for extent in extents_list:
+            pangocairo.show_error_underline(ptx, *extent)
+
+        self.context.restore()
+
+    def _check_spelling(self, text, lang="en_US"):
+        """Returns a list of start stop tuples that have spelling errors
+
+        Parameters
+        ----------
+        text: Unicode or string
+        \tThe text that is checked
+        lang: String, defaults to "en_US"
+        \tName of spell checking dictionary
+
+        """
+
+        chkr = SpellChecker(lang)
+
+        chkr.set_text(text)
+
+        word_starts_ends = []
+
+        for err in chkr:
+            start = err.wordpos
+            stop = err.wordpos + len(err.word) + 1
+            word_starts_ends.append((start, stop))
+
+        return word_starts_ends
 
     def draw_text(self, content):
         """Draws text cell content to context"""
@@ -704,6 +783,13 @@ class GridCellContentCairoRenderer(object):
 
         self._rotate_cell(angle, rect)
         self.context.translate(0, downshift)
+
+        # Spell check underline drawing
+        if SpellChecker is not None and self.spell_check:
+            text = unicode(pango_layout.get_text())
+            lang = config["spell_lang"]
+            for start, stop in self._check_spelling(text, lang=lang):
+                self._draw_error_underline(ptx, pango_layout, start, stop-1)
 
         ptx.update_layout(pango_layout)
         ptx.show_layout(pango_layout)

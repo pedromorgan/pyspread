@@ -29,6 +29,7 @@ Unit tests for model.py
 """
 
 import ast
+from copy import deepcopy
 import fractions  ## Yes, it is required
 import math  ## Yes, it is required
 import os
@@ -45,7 +46,7 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
-from src.lib.testlib import params, pytest_generate_tests
+from src.lib.testlib import params, pytest_generate_tests, unredotest_model
 
 from src.model.model import KeyValueStore, CellAttributes, DictGrid
 from src.model.model import DataArray, CodeArray
@@ -112,12 +113,13 @@ class TestCellAttributes(object):
     def test_get_merging_cell(self):
         """Test get_merging_cell"""
 
-        selection_1 = Selection([], [], [], [], [(2, 2)])
-        selection_2 = Selection([], [], [], [], [(3, 2)])
+        selection_1 = Selection([(2, 2)], [(5, 5)], [], [], [])
+        selection_2 = Selection([(3, 2)], [(9, 9)], [], [], [])
+        selection_3 = Selection([(2, 2)], [(9, 9)], [], [], [])
 
         self.cell_attr.append((selection_1, 0, {"merge_area": (2, 2, 5, 5)}))
         self.cell_attr.append((selection_2, 0, {"merge_area": (3, 2, 9, 9)}))
-        self.cell_attr.append((selection_1, 1, {"merge_area": (2, 2, 9, 9)}))
+        self.cell_attr.append((selection_3, 1, {"merge_area": (2, 2, 9, 9)}))
 
         # Cell 1. 1, 0 is not merged
         assert self.cell_attr.get_merging_cell((1, 1, 0)) is None
@@ -175,6 +177,7 @@ class TestDataArray(object):
 
         assert sorted(self.data_array.keys()) == [(1, 2, 3), (1, 2, 4)]
 
+    @unredotest_model
     def test_pop(self):
         """Unit test for pop"""
 
@@ -185,13 +188,16 @@ class TestDataArray(object):
 
         assert sorted(self.data_array.keys()) == [(1, 2, 4)]
 
-    def test_shape(self):
-        """Unit test for _get_shape and _set_shape"""
+    def test_get_shape(self):
+        """Unit test for _get_shape"""
 
         assert self.data_array.shape == (100, 100, 100)
 
-        self.data_array.shape = (10000, 100, 100)
+    @unredotest_model
+    def test_set_shape(self):
+        """Unit test for _set_shape"""
 
+        self.data_array.shape = (10000, 100, 100)
         assert self.data_array.shape == (10000, 100, 100)
 
     param_get_last_filled_cell = [
@@ -247,6 +253,78 @@ class TestDataArray(object):
         self.data_array._set_cell_attributes(cell_attributes)
         assert self.data_array.cell_attributes == cell_attributes
 
+    param_adjust_merge_area = [
+        {'attrs': {},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {}
+         },
+        {'attrs': {'merge_area': None},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 5, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 3, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': (3, 2, 4, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 10, 'axis': 0,
+         'res_attrs': {'merge_area': (12, 2, 13, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 2, 'no_to_insert': 1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 4, 4)}
+         },
+        {'attrs': {'merge_area': (992, 2, 993, 4)},
+         'insertion_point': 5, 'no_to_insert': 10, 'axis': 0,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -1, 'axis': 0,
+         'res_attrs': {'merge_area': (1, 2, 2, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 5, 'no_to_insert': -1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 3, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 2, 'no_to_insert': -1, 'axis': 0,
+         'res_attrs': {'merge_area': (2, 2, 2, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -2, 'axis': 0,
+         'res_attrs': {'merge_area': (0, 2, 1, 4)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -3, 'axis': 0,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 1, 'axis': 1,
+         'res_attrs': {'merge_area': (2, 3, 3, 5)}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': 200, 'axis': 1,
+         'res_attrs': {'merge_area': None}
+         },
+        {'attrs': {'merge_area': (2, 2, 3, 4)},
+         'insertion_point': 0, 'no_to_insert': -2, 'axis': 1,
+         'res_attrs': {'merge_area': (2, 0, 3, 2)}
+         },
+    ]
+
+    @params(param_adjust_merge_area)
+    def test_adjust_merge_area(self, attrs, insertion_point, no_to_insert,
+                               axis, res_attrs):
+        """Unit test for _adjust_merge_area"""
+
+        self.data_array._adjust_merge_area(attrs, insertion_point,
+                                           no_to_insert, axis)
+        assert attrs == res_attrs
+
     param_adjust_cell_attributes = [
         {'inspoint': 0, 'noins': 5, 'axis': 0,
          'src': (4, 3, 0), 'target': (9, 3, 0)},
@@ -258,6 +336,10 @@ class TestDataArray(object):
          'src': (4, 3, 0), 'target': (4, 8, 0)},
         {'inspoint': 1, 'noins': 5, 'axis': 1,
          'src': (4, 3, 1), 'target': (4, 8, 1)},
+        {'inspoint': 0, 'noins': -1, 'axis': 2,
+         'src': (4, 3, 1), 'target': None},
+        {'inspoint': 0, 'noins': -1, 'axis': 2,
+         'src': (4, 3, 2), 'target': (4, 3, 1)},
     ]
 
     @params(param_adjust_cell_attributes)
@@ -272,27 +354,86 @@ class TestDataArray(object):
         self.data_array._set_cell_attributes(attrs)
         self.data_array._adjust_cell_attributes(inspoint, noins, axis)
 
-        for key in val:
-            assert self.data_array.cell_attributes[target][key] == val[key]
+        if target is None:
+            for key in val:
+                # Should be at default value
+                cell_attributes = self.data_array.cell_attributes
+                default_ca = cell_attributes.default_cell_attributes[key]
+                assert cell_attributes[src][key] == default_ca
+        else:
+            for key in val:
+                assert self.data_array.cell_attributes[target][key] == val[key]
 
-    def test_insert(self):
+    param_test_insert = [
+        {
+            "data": {(2, 3, 0): "42"},
+            "inspoint": 1, "notoins": 1, "axis": 0, "tab": None,
+            "res": {(2, 3, 0): None, (3, 3, 0): "42"},
+         },
+        {
+            "data": {(0, 0, 0): "0", (0, 0, 2): "2"},
+            "inspoint": 1, "notoins": 1, "axis": 2, "tab": None,
+            "res": {(0, 0, 3): "2", (0, 0, 4): None},
+         },
+    ]
+
+    @params(param_test_insert)
+    def test_insert(self, data, inspoint, notoins, axis, tab, res):
         """Unit test for insert operation"""
 
-        self.data_array[2, 3, 0] = 42
-        self.data_array.insert(1, 1, 0)
+        self.data_array.dict_grid.update(data)
+        self.data_array.insert(inspoint, notoins, axis, tab)
 
-        assert self.data_array[2, 3, 0] is None
+        for key in res:
+            assert self.data_array[key] == res[key]
 
-        assert self.data_array[3, 3, 0] == 42
+    param_test_delete = [
+        {
+            "data": {(2, 3, 4): "42"},
+            "delpoint": 1, "notodel": 1, "axis": 0, "tab": None,
+            "res": {(1, 3, 4): "42"},
+         },
+        {
+            "data": {(0, 0, 0): "1"},
+            "delpoint": 0, "notodel": 1, "axis": 0, "tab": 0,
+            "res": {(0, 0, 0): None},
+         },
+        {
+            "data": {(0, 0, 1): "1"},
+            "delpoint": 0, "notodel": 1, "axis": 2, "tab": None,
+            "res": {(0, 0, 0): "1"},
+         },
+        {
+            "data": {(3, 3, 2): "3"},
+            "delpoint": 0, "notodel": 2, "axis": 2, "tab": None,
+            "res": {(3, 3, 0): "3"},
+         },
+        {
+            "data": {(4, 2, 1): "3"},
+            "delpoint": 2, "notodel": 1, "axis": 1, "tab": 1,
+            "res": {(4, 2, 1): None},
+         },
+        {
+            "data": {(10, 0, 0): "1"},
+            "delpoint": 0, "notodel": 10, "axis": 0, "tab": 0,
+            "res": {(0, 0, 0): "1"},
+         },
+    ]
 
-    def test_delete(self):
+    @params(param_test_delete)
+    def test_delete(self, data, delpoint, notodel, axis, tab, res):
         """Tests delete operation"""
 
-        self.data_array[2, 3, 4] = "42"
-        self.data_array.delete(1, 1, 0)
+        self.data_array.dict_grid.update(data)
+        self.data_array.delete(delpoint, notodel, axis, tab)
 
-        assert self.data_array[2, 3, 4] is None
-        assert self.data_array[1, 3, 4] == "42"
+        for key in res:
+            assert self.data_array[key] == res[key]
+
+    def test_delete_error(self):
+        """Tests delete operation error"""
+
+        self.data_array[2, 3, 4] = "42"
 
         try:
             self.data_array.delete(1, 1000, 0)
@@ -321,10 +462,27 @@ class TestCodeArray(object):
 
         self.code_array = CodeArray((100, 10, 3))
 
+    param_test_setitem = [
+        {"data": {(2, 3, 2): "42"},
+         "items": {(1, 3, 2): "42"},
+         "res_data": {(1, 3, 2): "42", (2, 3, 2): "42"},
+         },
+    ]
+
+    @params(param_test_setitem)
+    def test_setitem(self, data, items, res_data):
+        """Unit test for __setitem__"""
+
+        self.code_array.dict_grid.update(data)
+        for key in items:
+            self.code_array[key] = items[key]
+        for key in res_data:
+            assert res_data[key] == self.code_array(key)
+
     def test_slicing(self):
         """Unit test for __getitem__ and __setitem__"""
 
-        #Test for item getting, slicing, basic evaluation correctness
+        # Test for item getting, slicing, basic evaluation correctness
 
         shape = self.code_array.shape
         x_list = [0, shape[0]-1]
@@ -359,10 +517,9 @@ class TestCodeArray(object):
                 filled_grid[1, 0, 0] = "math = __import__('math')"
                 filled_grid[1, 0, 0]
                 filled_grid[j, 3, 0] = funcname + ' (' + str(i) + ')'
-                #res = eval(funcname + "(" + "i" + ")")
 
                 assert filled_grid[j, 3, 0] == eval(funcname + "(" + "i" + ")")
-        #Test X, Y, Z
+        # Test X, Y, Z
         for i in xrange(10):
             self.code_array[i, 0, 0] = str(i)
         assert [self.code_array((i, 0, 0)) for i in xrange(10)] == \
@@ -376,9 +533,6 @@ class TestCodeArray(object):
         filled_grid[1, 0, 0] = "sum(S[0,0,0])"
 
         assert filled_grid[1, 0, 0] == sum(numpy.arange(0, 10, 0.1))
-
-        ##filled_grid[0, 0, 0] = "S[5:10, 1, 0]"
-        ##assert filled_grid[0, 0, 0].tolist() == range(7, 12)
 
     def test_make_nested_list(self):
         """Unit test for _make_nested_list"""

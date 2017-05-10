@@ -55,7 +55,8 @@ import wx.stc as stc
 
 import src.lib.i18n as i18n
 from src.config import config, VERSION
-from src.sysvars import get_program_path
+from src.sysvars import get_program_path, get_mo_languages
+from src.sysvars import get_dependencies
 from src.gui._widgets import PythonSTC
 from src.gui._events import post_command_event
 from src.gui._events import MainWindowEventMixin, GridEventMixin
@@ -67,6 +68,11 @@ import ast
 from traceback import print_exception
 from StringIO import StringIO
 from sys import exc_info
+
+try:
+    import enchant
+except ImportError:
+    enchant = None
 
 # use ugettext instead of gettext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -1171,7 +1177,8 @@ class AboutDialog(object):
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
                             "Martin Manns", "Andreas Noteng",
-                            "Enrico Nicoletto", u"Frédéric Marchal"]
+                            "Enrico Nicoletto", u"Frédéric Marchal",
+                            "Philipp Thomas", "Rafael Fontenelle"]
 
         license_file = open(get_program_path() + "/COPYING", "r")
         license_text = license_file.read()
@@ -1236,64 +1243,123 @@ class CheckBoxCtrl(wx.CheckBox):
 class PreferencesDialog(wx.Dialog):
     """Dialog for changing pyspread's configuration preferences"""
 
-    parameters = (
+    open_filetypes = ["pys", "pysu", "xls", "xlsx", "all"]
+    save_filetypes = ["pys", "pysu", "xls", "all"]
+
+    parameters = [
         ("max_unredo", {
             "label": _(u"Max. undo steps"),
             "tooltip": _(u"Maximum number of undo steps"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_rows", {
             "label": _(u"Grid rows"),
             "tooltip": _(u"Number of grid rows when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_columns", {
             "label": _(u"Grid columns"),
             "tooltip": _(u"Number of grid columns when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("grid_tables", {
             "label": _(u"Grid tables"),
             "tooltip": _(u"Number of grid tables when starting pyspread"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("max_result_length", {
             "label": _(u"Max. result length"),
             "tooltip": _(u"Maximum length of cell result string"),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("timeout", {
             "label": _(u"Timeout"),
             "tooltip": _(u"Maximum time that an evaluation process may take."),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 0, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 0, "allow_long": True},
             "prepocessor": int,
         }),
         ("timer_interval", {
             "label": _(u"Timer interval"),
             "tooltip": _(u"Interval for periodic updating of timed cells."),
             "widget": wx.lib.intctrl.IntCtrl,
-            "widget_params": {"min": 100, "allow_long": True},
+            "widget_args": [],
+            "widget_kwargs": {"min": 100, "allow_long": True},
             "prepocessor": int,
         }),
         ("gpg_key_fingerprint", {
             "label": _(u"GPG fingerprint"),
             "tooltip": _(u"Fingerprint of the GPG key for signing files"),
             "widget": wx.TextCtrl,
-            "widget_params": {},
+            "widget_args": [],
+            "widget_kwargs": {},
             "prepocessor": unicode,
         }),
-    )
+        ("default_open_filetype", {
+            "label": _(u"Open filetype"),
+            "tooltip": _(u"Default filetype when opening via File -> Open"),
+            "widget": wx.Choice,
+            "widget_args": [(100, 50)],
+            "widget_kwargs": {"choices": open_filetypes},
+            "prepocessor": open_filetypes.index,
+        }),
+        ("default_save_filetype", {
+            "label": _(u"Save filetype"),
+            "tooltip": _(u"Default filetype when saving via File -> Save As"),
+            "widget": wx.Choice,
+            "widget_args": [(100, 50)],
+            "widget_kwargs": {"choices": save_filetypes},
+            "prepocessor": save_filetypes.index,
+        }),
+#        ("font_save_enabled", {
+#            "label": _(u"Save font in pys"),
+#            "tooltip": _(u"Enable font saving in pys and pysu files."),
+#            "widget": wx.lib.intctrl.IntCtrl,
+#            "widget_args": [],
+#            "widget_kwargs": {"min": 0, "max": 1, "allow_long": False},
+#            "prepocessor": int,
+#        }),
+        ("ui_language", {
+            "label": _(u"UI language"),
+            "tooltip": _(u"User interface language. Choose 'system' for " + \
+                         u"the system default language. Restart pyspread " + \
+                         u"to activate."),
+            "widget": wx.Choice,
+            "widget_args": [(100, 50)],
+            "widget_kwargs": {"choices": get_mo_languages()},
+            "prepocessor": get_mo_languages().index,
+        }),
+    ]
+
+    if enchant is not None:
+        list_dicts = [d[0] for d in enchant.list_dicts()]
+        parameters += [(
+            "spell_lang", {
+                "label": _(u"Spell checker language"),
+                "tooltip":
+                    _(u"The language that is used for the spell checker."),
+                "widget": wx.Choice,
+                "widget_args": [(100, 50)],
+                "widget_kwargs": {"choices": list_dicts},
+                "prepocessor": list_dicts.index,
+            }
+        )]
 
     def __init__(self, *args, **kwargs):
         kwargs["title"] = _(u"Preferences")
@@ -1319,7 +1385,15 @@ class PreferencesDialog(wx.Dialog):
             widget = info["widget"]
             preproc = info["prepocessor"]
 
-            ctrl = widget(self, -1, preproc(value), **info["widget_params"])
+            if widget is wx.Choice:
+                ctrl = widget(self, -1, *info["widget_args"],
+                              **info["widget_kwargs"])
+
+                ctrl.SetSelection(preproc(value))
+            else:
+                ctrl = widget(self, -1, preproc(value), *info["widget_args"],
+                              **info["widget_kwargs"])
+
             ctrl.SetToolTipString(tooltip)
 
             self.textctrls.append(ctrl)
@@ -1461,3 +1535,40 @@ class PasteAsDialog(wx.Dialog):
         }
 
     parameters = property(get_parameters)
+
+
+class DependencyDialog(wx.Dialog):
+    """Displays required and instaled versions of deendencies"""
+
+    def __init__(self, parent, *args, **kwargs):
+        kwargs["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        wx.Dialog.__init__(self, parent, *args, **kwargs)
+        self.SetSize((640, -1))
+
+        panel = wx.Panel(self, wx.ID_ANY)
+
+        self.list_ctrl = wx.ListCtrl(panel, size=(-1, -1),
+                         style=wx.LC_REPORT
+                         |wx.BORDER_SUNKEN
+                         )
+        self.list_ctrl.InsertColumn(0, _('Package'), width=125)
+        self.list_ctrl.InsertColumn(1, _('Required version'), width=125)
+        self.list_ctrl.InsertColumn(2, _('Installed version'), width=125)
+        self.list_ctrl.InsertColumn(3, _('Description'), width=250)
+
+        sizer = wx.FlexGridSizer()
+        sizer.AddGrowableRow(0)
+        sizer.AddGrowableCol(0)
+        sizer.Add(self.list_ctrl, 0, wx.ALL|wx.EXPAND, 5)
+        panel.SetSizer(sizer)
+
+        self._populate()
+
+        self.Layout()
+
+    def _populate(self):
+        for d in get_dependencies():
+            item_list = [
+                d["name"], d["min_version"], d["version"], d["description"]
+            ]
+            self.list_ctrl.Append(item_list)

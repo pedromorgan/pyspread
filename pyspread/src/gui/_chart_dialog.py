@@ -70,6 +70,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
 from wx.lib.intctrl import IntCtrl, EVT_INT
 import wx.lib.agw.flatnotebook as fnb
+import wx.lib.agw.floatspin as floatspin
 
 from _widgets import LineStyleComboBox, MarkerStyleComboBox
 from _widgets import CoordinatesComboBox
@@ -175,6 +176,50 @@ class IntegerEditor(IntCtrl, ChartDialogEventMixin):
     # Handlers
 
     def OnInt(self, event):
+        """Check event handler"""
+
+        post_command_event(self, self.DrawChartMsg)
+
+
+class FloatEditor(floatspin.FloatSpin, ChartDialogEventMixin):
+    """Editor widget for integer values"""
+
+    def __init__(self, *args, **kwargs):
+        floatspin.FloatSpin.__init__(self, *args, **kwargs)
+        self.SetDigits(2)
+        self.SetIncrement(0.01)
+        self.SetRange(0.0, 1.0)
+
+        self.__bindings()
+
+    def __bindings(self):
+        """Binds events to handlers"""
+        self.Bind(floatspin.EVT_FLOATSPIN, self.OnFloatSpin)
+
+    def _get_code(self):
+        """Returns string representation of Integer"""
+
+        return unicode(self.GetValue())
+
+    def _set_code(self, code):
+        """Sets widget from code string
+
+        Parameters
+        ----------
+        code: String
+        \tCode representation of integer value
+
+        """
+
+        self.SetValue(float(code))
+
+    # Properties
+
+    code = property(_get_code, _set_code)
+
+    # Handlers
+
+    def OnFloatSpin(self, event):
         """Check event handler"""
 
         post_command_event(self, self.DrawChartMsg)
@@ -881,6 +926,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         "markersize": (_("Size"), IntegerEditor, "5"),
         "markerfacecolor": (_("Face color"), ColorEditor, "(0, 0, 0)"),
         "markeredgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -890,7 +936,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         (_("Data"), ["label", "xdata", "ydata"]),
         (_("Line"), ["linestyle", "linewidth", "color"]),
         (_("Marker"), ["marker", "markersize", "markerfacecolor",
-                       "markeredgecolor"]),
+                       "markeredgecolor", "alpha"]),
     ]
 
     tooltips = {
@@ -902,6 +948,7 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
         "linewidth": _(u"The line width in points"),
         "marker": _(u"The line marker"),
         "markersize": _(u"The marker size in points"),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -919,6 +966,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
         "bottom": (_("Bar bottoms"), StringEditor, ""),
         "color": (_("Bar color"), ColorEditor, "(0, 0, 0)"),
         "edgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -926,7 +974,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
 
     boxes = [
         (_("Data"), ["label", "left", "height", "width", "bottom"]),
-        (_("Bar"), ["color", "edgecolor"]),
+        (_("Bar"), ["color", "edgecolor", "alpha"]),
     ]
 
     tooltips = {
@@ -935,6 +983,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
         "height": _(u"The heights of the bars"),
         "width": _(u"The widths of the bars"),
         "bottom": _(u"The y coordinates of the bottom edges of the bars"),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -987,6 +1036,7 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
         "normed": (_("Normed"), BoolEditor, False),
         "cumulative": (_("Cumulative"), BoolEditor, False),
         "color": (_("Color"), ColorEditor, "(0, 0, 1)"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -994,7 +1044,7 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
 
     boxes = [
         (_("Data"), ["label", "x"]),
-        (_("Histogram"), ["bins", "normed", "cumulative", "color"]),
+        (_("Histogram"), ["bins", "normed", "cumulative", "color", "alpha"]),
     ]
 
     tooltips = {
@@ -1008,6 +1058,7 @@ class HistogramAttributesPanel(SeriesAttributesPanelBase):
                     u"to form a probability density, i.e., n/(len(x)*dbin)."),
         "cumulative": _(u"If True then each bin gives the counts in that bin"
                         u"\nplus all bins for smaller values."),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -1062,13 +1113,14 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
         "s": (_("Text"), StringEditor, ""),
         "xy": (_("Point"), StringEditor, ""),
         "xycoords": (_("Coordinates"), CoordinatesEditor, "data"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Annotation"), ["s", "xy", "xycoords"]),
+        (_("Annotation"), ["s", "xy", "xycoords", "alpha"]),
     ]
 
     tooltips = {
@@ -1077,6 +1129,7 @@ class AnnotateAttributesPanel(SeriesAttributesPanelBase):
         "xycoords": _(u"String that indicates the coordinates of xy"),
         "xytext": _(u"Location of annotation text"),
         "textcoords": _(u"String that indicates the coordinates of xytext."),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -1091,7 +1144,7 @@ class ContourAttributesPanel(SeriesAttributesPanelBase):
         "Y": (_("Y"), StringEditor, ""),
         "Z": (_("Z"), StringEditor, ""),
         "colors": (_("Colors"), StringEditor, ""),
-        "alpha": (_("Alpha"), StringEditor, "1.0"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
         "linestyles": (_("Style"), LineStyleEditor, '-'),
         "linewidths": (_("Width"), IntegerEditor, "1"),
         "contour_labels": (_("Contour labels"), BoolEditor, True),
@@ -1164,6 +1217,7 @@ class SankeyAttributesPanel(SeriesAttributesPanelBase):
         "head_angle": (_("Angle"), IntegerEditor, "100"),
         "edgecolor": (_("Edge"), ColorEditor, "(0, 0, 1)"),
         "facecolor": (_("Face"), ColorEditor, "(0, 0, 1)"),
+        "alpha": (_("Alpha"), FloatEditor, "1.0"),
     }
 
     # Boxes and their widgets' matplotlib_keys
@@ -1172,7 +1226,7 @@ class SankeyAttributesPanel(SeriesAttributesPanelBase):
     boxes = [
         (_("Data"), ["flows", "orientations", "labels", "format", "unit"]),
         (_("Diagram"), ["rotation", "gap", "radius", "shoulder", "offset",
-                        "head_angle"]),
+                        "head_angle", "alpha"]),
         (_("Area"), ["edgecolor", "facecolor"]),
     ]
 
@@ -1209,6 +1263,7 @@ class SankeyAttributesPanel(SeriesAttributesPanelBase):
                         u"of the tails) [deg]"),
         "edgecolor": _(u"Edge color of Sankey diagram"),
         "facecolor": _(u"Face color of Sankey diagram"),
+        "alpha": _(u"The alpha blending value"),
     }
 
 
@@ -1252,17 +1307,17 @@ Code 	Meaning
         "xlabel": (_("Label"), TextEditor, ""),
         "xlim": (_("Limits"), StringEditor, ""),
         "xscale": (_("Log. scale"), BoolEditor, False),
-        "xticks": (_("X-axis ticks"), StringEditor, ""),
-        "xtick_labels": (_("X-axis labels"), TextEditor, ""),
-        "xtick_params": (_("X-axis ticks"), TickParamsEditor, ""),
+        "xticks": (_("Ticks"), StringEditor, ""),
+        "xtick_labels": (_("Labels"), TextEditor, ""),
+        "xtick_params": (_("Ticks"), TickParamsEditor, ""),
         "ylabel": (_("Label"), TextEditor, ""),
         "ylim": (_("Limits"), StringEditor, ""),
         "yscale": (_("Log. scale"), BoolEditor, False),
-        "yticks": (_("Y-axis ticks"), StringEditor, ""),
-        "ytick_labels": (_("Y-axis labels"), TextEditor, ""),
-        "ytick_params": (_("Y-axis ticks"), TickParamsEditor, ""),
-        "xgrid": (_("X-axis grid"), BoolEditor, False),
-        "ygrid": (_("Y-axis grid"), BoolEditor, False),
+        "yticks": (_("Ticks"), StringEditor, ""),
+        "ytick_labels": (_("Labels"), TextEditor, ""),
+        "ytick_params": (_("Ticks"), TickParamsEditor, ""),
+        "xgrid": (_("Grid"), BoolEditor, False),
+        "ygrid": (_("Grid"), BoolEditor, False),
         "legend": (_("Legend"), BoolEditor, False),
         "xdate_format": (_("Date format"), StringEditor, ""),
     }
@@ -1668,7 +1723,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
                   "xlim", "ylim", "x", "labels", "colors", "xy", "xytext",
-                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z",
+                  "title", "xlabel", "ylabel", "label", "X", "Y", "Z", "s",
                   "hatches", "flows", "orientations", "labels"]
 
     # String keys need to be put in "

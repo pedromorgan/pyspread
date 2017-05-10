@@ -38,13 +38,19 @@ It is split into the following sections
 """
 
 import ast
+import base64
 from collections import OrderedDict
 import src.lib.i18n as i18n
 from itertools import imap
+import os
+import tempfile
+
+from matplotlib import font_manager
 
 from src.lib.selection import Selection
+from src.config import config
 
-#use ugettext instead of getttext to avoid unicode errors
+# Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
 
 
@@ -68,6 +74,11 @@ class Pys(object):
         self.code_array = code_array
         self.pys_file = pys_file
 
+        if config["font_save_enabled"]:
+            # Clean up fonts used info
+            self.fonts_used = []
+            self.temp_fontdir = tempfile.mkdtemp()
+
         self._section2reader = {
             "[Pyspread save file version]\n": self._pys_assert_version,
             "[shape]\n": self._pys2shape,
@@ -88,6 +99,11 @@ class Pys(object):
             ("[macros]\n", self._macros2pys),
         ])
 
+        # Update sections for font handling if it is activated
+        if config["font_save_enabled"]:
+            self._section2reader["[fonts]\n"] = self._pys2fonts
+            self._section2writer["[fonts]\n"] = self._fonts2pys
+
     def _split_tidy(self, string, maxsplit=None):
         """Rstrips string for \n and splits string for \t"""
 
@@ -104,9 +120,9 @@ class Pys(object):
     def _pys_assert_version(self, line):
         """Asserts pys file version"""
 
-        if line != "0.1\n":
+        if float(line.strip()) > 1.0:
             # Abort if file version not supported
-            msg = _("File version {version} unsupported (not 0.1).").format(
+            msg = _("File version {version} unsupported (>1.0).").format(
                 version=line.strip())
             raise ValueError(msg)
 
@@ -185,6 +201,9 @@ class Pys(object):
             for key in attr_dict:
                 attr_dict_list.append(key)
                 attr_dict_list.append(attr_dict[key])
+
+                if config["font_save_enabled"] and key == 'textfont':
+                    self.fonts_used.append(attr_dict[key])
 
             line_list = map(repr, sel_list + tab_list + attr_dict_list)
 
@@ -296,6 +315,58 @@ class Pys(object):
 
         self.code_array.dict_grid.macros += line.decode("utf-8")
 
+    def _fonts2pys(self):
+        """Writes fonts to pys file"""
+
+        # Get mapping from fonts to fontfiles
+
+        system_fonts = font_manager.findSystemFonts()
+
+        font_name2font_file = {}
+        for sys_font in system_fonts:
+            font_name = font_manager.FontProperties(fname=sys_font).get_name()
+            if font_name in self.fonts_used:
+                font_name2font_file[font_name] = sys_font
+
+        # Only include fonts that have been used in the attributes
+        for font_name in font_name2font_file:
+            # Serialize font
+            with open(font_name2font_file[font_name]) as fontfile:
+                font_data = fontfile.read()
+                ascii_font_data = base64.b64encode(font_data)
+
+            # Store font in pys file
+            font_line_list = [font_name, ascii_font_data]
+            self.pys_file.write(u"\t".join(font_line_list) + u"\n")
+
+    def _pys2fonts(self, line):
+        """Updates custom font list"""
+
+        font_name, ascii_font_data = self._split_tidy(line)
+        font_data = base64.b64decode(ascii_font_data)
+
+        # Get system font names
+        system_fonts = font_manager.findSystemFonts()
+
+        system_font_names = []
+        for sys_font in system_fonts:
+            system_font_names.append(
+                font_manager.FontProperties(fname=sys_font).get_name()
+            )
+
+        # Use the system font if applicable
+        if font_name not in system_font_names:
+            self.code_array.custom_fonts[font_name] = font_data
+
+        with open(self.temp_fontdir + os.sep + font_name, "wb") as font_file:
+            font_file.write(font_data)
+
+        with tempfile.NamedTemporaryFile() as fontsconf_tmpfile:
+            fontsconf_tmpfile_name = fontsconf_tmpfile.name
+            fontsconf_tmpfile.write(self.temp_fontdir)
+
+        os.environ["FONTCONFIG_FILE"] = fontsconf_tmpfile_name
+
     # Access via model.py data
     # ------------------------
 
@@ -310,8 +381,12 @@ class Pys(object):
                 if self.pys_file.aborted:
                     break
             except AttributeError:
-                # pys_fileis not opened via fileio.BZAopen
+                # pys_file is not opened via fileio.BZAopen
                 pass
+
+        if config["font_save_enabled"]:
+            # Clean up fonts used info
+            self.fonts_used = []
 
     def to_code_array(self):
         """Replaces everything in code_array from pys_file"""

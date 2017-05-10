@@ -99,7 +99,12 @@ class ModalDialogInterfaceMixin(object):
 
         if change_choice == wx.ID_OK:
             for (parameter, _), ctrl in zip(dlg.parameters, dlg.textctrls):
-                preferences[parameter] = repr(ctrl.Value)
+                if isinstance(ctrl, wx.Choice):
+                    value = ctrl.GetStringSelection()
+                    if value:
+                        preferences[parameter] = repr(value)
+                else:
+                    preferences[parameter] = repr(ctrl.Value)
 
         dlg.Destroy()
 
@@ -123,77 +128,6 @@ class ModalDialogInterfaceMixin(object):
 
         elif save_choice == wx.ID_NO:
             return False
-
-    def get_file_open_wildcard_list(self):
-        """Returns a tuple of a list of filetypes and a list of wildcards.
-
-        The lists are valid for opening files (not for import).
-        The wildcards have to be concatenates with '|' so that it can be used
-        by wx.FileDialog.
-
-        """
-
-        filetypes = ["pys", "pysu"]
-
-        wildcards = [
-            _("Pyspread file") + " (*.pys)|*.pys",
-            _("Uncompressed pyspread file") + " (*.pysu)|*.pysu",
-        ]
-
-        if xlrd is not None:
-            # Offer xls and xlsx if xlrd is present
-
-            filetypes += ["xls", "xlsx"]
-
-            wildcards += [
-                _("Excel file") + " (*.xls)|*.xls",
-                _("Excel file") + " (*.xlsx)|*.xlsx",
-            ]
-
-        # Finally offer opening a pys file with an unconventional name
-
-        filetypes += ["pys"]
-
-        wildcards += [
-            _("All files") + " (*.*)|*.*",
-        ]
-
-        return filetypes, wildcards
-
-    def get_file_save_wildcard_list(self):
-        """Returns a tuple of a list of filetypes and a list of wildcards.
-
-        The lists are valid for saving files (not for export).
-        The wildcards have to be concatenates with '|' so that it can be used
-        by wx.FileDialog.
-
-        """
-
-        filetypes = ["pys", "pysu"]
-
-        wildcards = [
-            _("Pyspread file") + " (*.pys)|*.pys",
-            _("Uncompressed pyspread file") + " (*.pysu)|*.pysu",
-        ]
-
-        if xlwt is not None:
-            # Offer xls if xlwt is present
-
-            filetypes += ["xls"]
-
-            wildcards += [
-                _("Excel file") + " (*.xls)|*.xls",
-            ]
-
-        # Finally offer opening a pys file with an unconventional name
-
-        filetypes += ["pys"]
-
-        wildcards += [
-            _("All files") + " (*.*)|*.*",
-        ]
-
-        return filetypes, wildcards
 
     def get_filepath_findex_from_user(self, wildcard, message, style,
                                       filterindex=0):

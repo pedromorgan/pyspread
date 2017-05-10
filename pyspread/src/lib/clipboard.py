@@ -102,24 +102,24 @@ class Clipboard(object):
         data: Object
         \tData object for clipboard
         datatype: String in ["text", "bitmap"]
-        \tIdentifies datatype to be copied to teh clipboard
+        \tIdentifies datatype to be copied to the clipboard
 
         """
 
         error_log = []
 
         if datatype == "text":
-            data = wx.TextDataObject(text=data)
+            clip_data = wx.TextDataObject(text=data)
 
         elif datatype == "bitmap":
-            data = wx.BitmapDataObject(bitmap=data)
+            clip_data = wx.BitmapDataObject(bitmap=data)
 
         else:
             msg = _("Datatype {type} unknown").format(type=datatype)
             raise ValueError(msg)
 
         if self.clipboard.Open():
-            self.clipboard.SetData(data)
+            self.clipboard.SetData(clip_data)
             self.clipboard.Close()
         else:
             wx.MessageBox(_("Can't open the clipboard"), _("Error"))

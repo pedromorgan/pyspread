@@ -45,9 +45,15 @@ Provides:
 
 """
 
+
+import ast
 import itertools
+import os
+import os.path
 import src.lib.i18n as i18n
 import shutil
+import tempfile
+import types
 
 try:
     import xlrd
@@ -59,6 +65,11 @@ try:
 except ImportError:
     xlwt = None
 
+try:
+    import odf
+except ImportError:
+    odf = None
+
 import wx
 
 from src.config import config
@@ -66,6 +77,10 @@ from src.sysvars import get_default_font, is_gtk
 from src.gui._grid_table import GridTable
 from src.interfaces.pys import Pys
 from src.interfaces.xls import Xls
+try:
+    from src.interfaces.ods import Ods
+except ImportError:
+    Ods = None
 
 try:
     from src.lib.gpg import sign, verify
@@ -106,6 +121,7 @@ class FileActions(Actions):
             "pysu": Pys,
             "xls": Xls,
             "xlsx": Xls,
+            "ods": Ods,
         }
 
     def _is_aborted(self, cycle, statustext, total_elements=None, freq=None):
@@ -319,7 +335,7 @@ class FileActions(Actions):
             except:
                 file_ext = None
 
-            if file_ext in ["pys", "pysu"]:
+            if file_ext in ["pys", "pysu", "xls", "xlsx", "ods"]:
                 filetype = file_ext
             else:
                 filetype = "pys"
@@ -337,8 +353,10 @@ class FileActions(Actions):
             type2opener["xlsx"] = \
                 (xlrd.open_workbook, [filepath], {"formatting_info": False})
 
-        # Specify the interface that shall be used
+        if odf is not None and Ods is not None:
+            type2opener["ods"] = (open, [filepath, "rb"], {})
 
+        # Specify the interface that shall be used
         opener, op_args, op_kwargs = type2opener[filetype]
         Interface = self.type2interface[filetype]
 
@@ -382,6 +400,10 @@ class FileActions(Actions):
 
                 # File sucessfully opened. Approve again to show status.
                 self.approve(filepath)
+
+                # Change current directory to file directory
+                filedir = os.path.dirname(filepath)
+                os.chdir(filedir)
 
         except IOError, err:
             txt = _("Error opening file {filepath}:").format(filepath=filepath)
@@ -593,9 +615,14 @@ class FileActions(Actions):
         except KeyError:
             filetype = "pys"
 
-        # Use ntmpfile to make sure that old save file does not get lost
+        # If saving is already in progress abort
+        if self.saving:
+            return
+
+        # Use tmpfile to make sure that old save file does not get lost
         # on abort save
-        tmpfilepath = filepath + "~"
+
+        __, tmpfilepath = tempfile.mkstemp()
 
         if filetype == "xls":
             self._set_save_states()
@@ -603,7 +630,7 @@ class FileActions(Actions):
             self._move_tmp_file(tmpfilepath, filepath)
             self._release_save_states()
 
-        elif filetype == "pys":
+        elif filetype == "pys" or filetype == "all":
             self._set_save_states()
             if self._save_pys(tmpfilepath):
                 # Writing was successful
@@ -620,8 +647,14 @@ class FileActions(Actions):
             self._release_save_states()
 
         else:
+            os.remove(tmpfilepath)
             msg = "Filetype {filetype} unknown.".format(filetype=filetype)
             raise ValueError(msg)
+
+        try:
+            os.remove(tmpfilepath)
+        except OSError:
+            pass
 
 
 class TableRowActionsMixin(Actions):
@@ -1206,6 +1239,79 @@ class GridActions(Actions):
         if target_zoom > config["minimum_zoom"]:
             self.zoom(target_zoom)
 
+    def _get_rows_height(self):
+        """Returns the total height of all grid rows"""
+
+        tab = self.grid.current_table
+        no_rows = self.grid.code_array.shape[0]
+        default_row_height = self.grid.code_array.cell_attributes.\
+            default_cell_attributes["row-height"]
+
+        non_standard_row_heights = []
+        __row_heights = self.grid.code_array.row_heights
+        for __row, __tab in __row_heights:
+            if __tab == tab:
+                non_standard_row_heights.append(__row_heights[(__row, __tab)])
+
+        rows_height = sum(non_standard_row_heights)
+        rows_height += \
+            (no_rows - len(non_standard_row_heights)) * default_row_height
+
+        return rows_height
+
+    def _get_cols_width(self):
+        """Returns the total width of all grid cols"""
+
+        tab = self.grid.current_table
+        no_cols = self.grid.code_array.shape[1]
+        default_col_width = self.grid.code_array.cell_attributes.\
+            default_cell_attributes["column-width"]
+
+        non_standard_col_widths = []
+        __col_widths = self.grid.code_array.col_widths
+        for __col, __tab in __col_widths:
+            if __tab == tab:
+                non_standard_col_widths.append(__col_widths[(__col, __tab)])
+
+        cols_width = sum(non_standard_col_widths)
+        cols_width += \
+            (no_cols - len(non_standard_col_widths)) * default_col_width
+
+        return cols_width
+
+    def zoom_fit(self):
+        """Zooms the rid to fit the window.
+
+        Only has an effect if the resulting zoom level is between
+        minimum and maximum zoom level.
+
+        """
+
+        zoom = self.grid.grid_renderer.zoom
+
+        grid_width, grid_height = self.grid.GetSize()
+
+        rows_height = self._get_rows_height() + \
+            (float(self.grid.GetColLabelSize()) / zoom)
+        cols_width = self._get_cols_width() + \
+            (float(self.grid.GetRowLabelSize()) / zoom)
+
+        # Check target zoom for rows
+        zoom_height = float(grid_height) / rows_height
+
+        # Check target zoom for columns
+        zoom_width = float(grid_width) / cols_width
+
+        # Use the minimum target zoom from rows and column target zooms
+        target_zoom = min(zoom_height, zoom_width)
+
+        # Zoom only if between min and max
+
+        if config["minimum_zoom"] < target_zoom < config["maximum_zoom"]:
+            self.zoom(target_zoom)
+
+    # Tooltip actions
+
     def on_mouse_over(self, key):
         """Displays cell code of cell key in status bar"""
 
@@ -1224,6 +1330,12 @@ class GridActions(Actions):
             return result[:-1]
 
         row, col, tab = key
+
+        # If the cell is a button cell or a frozen cell then do nothing
+        cell_attributes = self.grid.code_array.cell_attributes
+        if cell_attributes[key]["button_cell"] or \
+           cell_attributes[key]["frozen"]:
+            return
 
         if (row, col) != self.prev_rowcol and row >= 0 and col >= 0:
             self.prev_rowcol[:] = [row, col]
@@ -1300,6 +1412,32 @@ class GridActions(Actions):
 
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
+
+            self.grid.SetToolTip(None)
+
+            # Delete renderer cache
+            self.grid.grid_renderer.cell_cache.clear()
+
+            # Delete video cells
+            video_cells = self.grid.grid_renderer.video_cells
+            for key in video_cells:
+                video_panel = video_cells[key]
+                video_panel.player.stop()
+                video_panel.player.release()
+                video_panel.Destroy()
+            video_cells.clear()
+
+            # Hide cell editor
+            cell_editor = self.grid.GetCellEditor(self.grid.GetGridCursorRow(),
+                                                  self.grid.GetGridCursorCol())
+
+            try:
+                cell_editor.Reset()
+            except AttributeError:
+                # No cell editor open
+                pass
+
+            self.grid.HideCellEditControl()
 
             # Change value of entry_line and table choice
             post_command_event(self.main_window, self.TableChangedMsg,
@@ -1508,6 +1646,123 @@ class SelectionActions(Actions):
 
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
+
+    def _shifted_merge_area(self, merge_area, rows, cols):
+        """Shifts merge area by rows and cols"""
+
+        top, left, bottom, right = merge_area
+        return top + rows, left + cols, bottom + rows, right + cols
+
+    def copy_format(self):
+        """Copies the format of the selected cells to the Clipboard
+
+        Cells are shifted so that the top left bbox corner is at 0,0
+
+        """
+
+        row, col, tab = self.grid.actions.cursor
+        code_array = self.grid.code_array
+
+        # Cell attributes
+
+        new_cell_attributes = []
+        selection = self.get_selection()
+        if not selection:
+            # Current cell is chosen for selection
+            selection = Selection([], [], [], [], [(row, col)])
+
+        # Format content is shifted so that the top left corner is 0,0
+        ((top, left), (bottom, right)) = \
+            selection.get_grid_bbox(self.grid.code_array.shape)
+
+        cell_attributes = code_array.cell_attributes
+        for __selection, table, attrs in cell_attributes:
+            if tab == table:
+                new_selection = selection & __selection
+                new_shifted_selection = new_selection.shifted(-top, -left)
+                if "merge_area" in attrs and attrs["merge_area"]:
+                    attrs["merge_area"] = \
+                        self._shifted_merge_area(attrs["merge_area"],
+                                                 -top, -left)
+                new_cell_attributes.append(
+                    (new_shifted_selection.parameters, table, attrs))
+
+        # Rows
+
+        shifted_new_row_heights = {}
+        for row, table in code_array.row_heights:
+            if tab == table and top <= row <= bottom:
+                shifted_new_row_heights[row-top, table] = \
+                    code_array.row_heights[row, table]
+
+        # Columns
+
+        shifted_new_col_widths = {}
+        for col, table in code_array.col_widths:
+            if tab == table and left <= col <= right:
+                shifted_new_col_widths[col-left, table] = \
+                    code_array.col_widths[col, table]
+
+        format_data = {
+            "cell_attributes": new_cell_attributes,
+            "row_heights": shifted_new_row_heights,
+            "col_widths": shifted_new_col_widths,
+        }
+
+        attr_string = repr(format_data)
+
+        self.grid.main_window.clipboard.set_clipboard(attr_string)
+
+    def paste_format(self):
+        """Pastes cell formats
+
+        Pasting starts at cursor or at top left bbox corner
+
+        """
+
+        row, col, tab = self.grid.actions.cursor
+
+        selection = self.get_selection()
+        if selection:
+            # Use selection rather than cursor for top left cell if present
+            row, col = [tl if tl is not None else 0
+                        for tl in selection.get_bbox()[0]]
+
+        cell_attributes = self.grid.code_array.cell_attributes
+
+        string_data = self.grid.main_window.clipboard.get_clipboard()
+        format_data = ast.literal_eval(string_data)
+
+        ca = format_data["cell_attributes"]
+        rh = format_data["row_heights"]
+        cw = format_data["col_widths"]
+
+        assert isinstance(ca, types.ListType)
+        assert isinstance(rh, types.DictType)
+        assert isinstance(cw, types.DictType)
+
+        # Cell attributes
+
+        for ca_ele in ca:
+            base_selection = Selection(*ca_ele[0])
+            shifted_selection = base_selection.shifted(row, col)
+            attrs = ca_ele[2]
+            if "merge_area" in attrs and attrs["merge_area"]:
+                attrs["merge_area"] = \
+                    self._shifted_merge_area(attrs["merge_area"], row, col)
+
+            new_cell_attribute = shifted_selection, tab, attrs
+            cell_attributes.undoable_append(new_cell_attribute)
+
+        # Row heights
+        row_heights = self.grid.code_array.row_heights
+        for __row, __tab in rh:
+            row_heights[__row+row, tab] = rh[__row, __tab]
+
+        # Column widths
+        col_widths = self.grid.code_array.col_widths
+        for __col, __tab in cw:
+            col_widths[__col+col, tab] = cw[(__col, __tab)]
 
 
 class FindActions(Actions):

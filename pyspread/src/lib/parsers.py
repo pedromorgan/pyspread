@@ -112,15 +112,13 @@ def color_rgb2pack(r, g, b):
 
 
 def unquote_string(code):
-    """Returns a string from code that contains aa repr of the string"""
+    """Returns a string from code that contains a repr of the string"""
 
-    if code[0] in ['"', "'"]:
-        start = 1
-    else:
-        # start may have a Unicode or raw string
-        start = 2
+    scode = code.strip()
+    assert scode[-1] in ["'", '"']
+    assert scode[0] in ["'", '"'] or scode[1] in ["'", '"']
 
-    return code[start:-1]
+    return ast.literal_eval(scode)
 
 
 def parse_dict_strings(code):

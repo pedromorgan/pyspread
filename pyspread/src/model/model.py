@@ -55,6 +55,7 @@ from src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from src.lib.selection import Selection
 
 import src.lib.charts as charts
+from src.gui.grid_panels import vlcpanel_factory
 
 from src.sysvars import get_color, get_font_string
 
@@ -108,7 +109,7 @@ class CellAttributes(list):
         "strikethrough": False,
         "locked": False,
         "angle": 0.0,
-        "column-width": 150,
+        "column-width": 75,
         "row-height": 26,
         "vertical_align": "top",
         "justification": "left",
@@ -116,11 +117,14 @@ class CellAttributes(list):
         "merge_area": None,
         "markup": False,
         "button_cell": False,
+        "panel_cell": False,
+        "video_volume": None,
     }
 
     # Cache for __getattr__ maps key to tuple of len and attr_dict
 
     _attr_cache = {}
+    _table_cache = {}
 
     def undoable_append(self, value, mark_unredo=True):
         """Appends item to list and provides undo and redo functionality"""
@@ -136,6 +140,8 @@ class CellAttributes(list):
         self.append(value)
         self._attr_cache.clear()
 
+        sel, tab, val = value
+
     def __getitem__(self, key):
         """Returns attribute dict for a single key"""
 
@@ -148,18 +154,47 @@ class CellAttributes(list):
             if cache_len == len(self):
                 return cache_dict
 
+        # Update table cache if it is outdated (e.g. when creating a new grid)
+        if len(self) != self._len_table_cache():
+            self._update_table_cache()
+
         row, col, tab = key
 
         result_dict = copy(self.default_cell_attributes)
 
-        for selection, table, attr_dict in self:
-            if tab == table and (row, col) in selection:
-                result_dict.update(attr_dict)
+        try:
+            for selection, attr_dict in self._table_cache[tab]:
+                if (row, col) in selection:
+                    result_dict.update(attr_dict)
+        except KeyError:
+            pass
 
         # Upddate cache with current length and dict
         self._attr_cache[key] = (len(self), result_dict)
 
         return result_dict
+
+    def _len_table_cache(self):
+        """Returns the length of the table cache"""
+
+        length = 0
+
+        for table in self._table_cache:
+            length += len(self._table_cache[table])
+
+        return length
+
+    def _update_table_cache(self):
+        """Clears and updates the table cache to be in sync with self"""
+
+        self._table_cache.clear()
+        for sel, tab, val in self:
+            try:
+                self._table_cache[tab].append((sel, val))
+            except KeyError:
+                self._table_cache[tab] = [(sel, val)]
+
+        assert len(self) == self._len_table_cache()
 
     def get_merging_cell(self, key):
         """Returns key of cell that merges the cell key
@@ -175,23 +210,11 @@ class CellAttributes(list):
 
         row, col, tab = key
 
-        merging_cell = None
+        # Is cell merged
+        merge_area = self[key]["merge_area"]
 
-        def is_in_merge_area(row, col, merge_area):
-            top, left, bottom, right = merge_area
-            return top <= row <= bottom and left <= col <= right
-
-        for selection, table, attr_dict in self:
-            try:
-                merge_area = attr_dict["merge_area"]
-                if table == tab and merge_area is not None:
-                    # We have a merge area in the cell's table
-                    if is_in_merge_area(row, col, merge_area):
-                        merging_cell = merge_area[0], merge_area[1], tab
-            except KeyError:
-                pass
-
-        return merging_cell
+        if merge_area:
+            return merge_area[0], merge_area[1], tab
 
     # Allow getting and setting elements in list
     get_item = list.__getitem__
@@ -273,6 +296,17 @@ class DataArray(object):
 
         # Safe mode
         self.safe_mode = False
+
+    def __eq__(self, other):
+        if not hasattr(other, "dict_grid") or \
+           not hasattr(other, "cell_attributes"):
+            return NotImplemented
+
+        return self.dict_grid == other.dict_grid and \
+            self.cell_attributes == other.cell_attributes
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     # Data is the central content interface for loading / saving data.
     # It shall be used for loading and saving from and to pys and other files.
@@ -656,7 +690,7 @@ class DataArray(object):
             else:
                 # Value is empty --> delete cell
                 try:
-                    self.dict_grid.pop(key)
+                    self.pop(key)
 
                 except (KeyError, TypeError):
                     pass
@@ -782,64 +816,115 @@ class DataArray(object):
         if mark_unredo:
             self.unredo.mark()
 
+    def _adjust_merge_area(self, attrs, insertion_point, no_to_insert, axis):
+        """Returns an updated merge area
+
+        Parameters
+        ----------
+        attrs: Dict
+        \tCell attribute dictionary that shall be adjusted
+        insertion_point: Integer
+        \tPont on axis, before which insertion takes place
+        no_to_insert: Integer >= 0
+        \tNumber of rows/cols/tabs that shall be inserted
+        axis: Integer in range(2)
+        \tSpecifies number of dimension, i.e. 0 == row, 1 == col
+
+        """
+
+        assert axis in range(2)
+
+        if "merge_area" not in attrs or attrs["merge_area"] is None:
+            return
+
+        top, left, bottom, right = attrs["merge_area"]
+        selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+        selection.insert(insertion_point, no_to_insert, axis)
+        __top, __left = selection.block_tl[0]
+        __bottom, __right = selection.block_br[0]
+
+        # Adjust merge area if it is beyond the grid shape
+        rows, cols, tabs = self.shape
+
+        if __top < 0 or __bottom >= rows or __left < 0 or __right >= cols:
+            attrs["merge_area"] = None
+        else:
+            attrs["merge_area"] = __top, __left, __bottom, __right
+
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis,
                                 tab=None, cell_attrs=None, mark_unredo=True):
-        """Adjusts cell attributes on insertion/deletion"""
+        """Adjusts cell attributes on insertion/deletion
 
-        if mark_unredo:
-            self.unredo.mark()
+        Parameters
+        ----------
+        insertion_point: Integer
+        \tPont on axis, before which insertion takes place
+        no_to_insert: Integer >= 0
+        \tNumber of rows/cols/tabs that shall be inserted
+        axis: Integer in range(3)
+        \tSpecifies number of dimension, i.e. 0 == row, 1 == col, ...
+        tab: Integer, defaults to None
+        \tIf given then insertion is limited to this tab for axis < 2
+        cell_attrs: List, defaults to []
+        \tIf not empty then the given cell attributes replace the existing ones
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
 
+        """
+
+        def replace_cell_attributes_table(index, new_table):
+            ca = list(self.cell_attributes.get_item(index))
+            ca[1] = new_table
+            self.cell_attributes.set_item(index, tuple(ca))
+
+        if axis not in range(3):
+            raise ValueError("Axis must be in [0, 1, 2]")
+
+        assert tab is None or tab >= 0
+
+        if cell_attrs is None:
+            cell_attrs = []
+
+        # Store existing cell attributes for creating undo operation
         old_cell_attrs = self.cell_attributes[:]
 
-        if axis < 2:
-            # Adjust selections
-
-            if cell_attrs is None:
-                cell_attrs = []
-
-                for key in self.cell_attributes:
-                    selection, table, value = key
-                    if tab is None or tab == table:
-                        new_sel = copy(selection)
-                        new_val = copy(value)
-                        new_sel.insert(insertion_point, no_to_insert, axis)
-                        # Update merge area if present
-                        if "merge_area" in value and \
-                           value["merge_area"] is not None:
-                            top, left, bottom, right = value["merge_area"]
-                            ma_sel = Selection([(top, left)],
-                                               [(bottom, right)], [], [], [])
-                            ma_sel.insert(insertion_point, no_to_insert, axis)
-                            __top, __left = ma_sel.block_tl[0]
-                            __bottom, __right = ma_sel.block_br[0]
-
-                            new_val["merge_area"] = \
-                                __top, __left, __bottom, __right
-
-                        cell_attrs.append((new_sel, table, new_val))
-
+        if cell_attrs:
             self.cell_attributes[:] = cell_attrs
 
-            self.cell_attributes._attr_cache.clear()
+        elif axis < 2:
+            # Adjust selections on given table
+
+            for selection, table, attrs in self.cell_attributes:
+                if tab is None or tab == table:
+                    selection.insert(insertion_point, no_to_insert, axis)
+                    # Update merge area if present
+                    self._adjust_merge_area(attrs, insertion_point,
+                                            no_to_insert, axis)
 
         elif axis == 2:
             # Adjust tabs
-            new_tabs = []
-            for selection, old_tab, value in self.cell_attributes:
-                if old_tab > insertion_point and \
-                   (tab is None or tab == old_tab):
-                    new_tabs.append((selection, old_tab + no_to_insert, value))
-                else:
-                    new_tabs.append(None)
 
-            for i, sel_tab_val in enumerate(new_tabs):
-                if sel_tab_val is not None:
-                    self.dict_grid.cell_attributes.set_item(i, sel_tab_val)
+            pop_indices = []
 
-            self.cell_attributes._attr_cache.clear()
+            for i, cell_attribute in enumerate(self.cell_attributes):
+                selection, table, value = cell_attribute
 
-        else:
-            raise ValueError("Axis must be in [0, 1, 2]")
+                if no_to_insert < 0 and insertion_point <= table:
+                    if insertion_point > table + no_to_insert:
+                        # Delete later
+                        pop_indices.append(i)
+                    else:
+                        replace_cell_attributes_table(i, table + no_to_insert)
+
+                elif insertion_point < table:
+                    # Insert
+                    replace_cell_attributes_table(i, table + no_to_insert)
+
+            for i in pop_indices[::-1]:
+                self.cell_attributes.pop(i)
+
+        self.cell_attributes._attr_cache.clear()
+        self.cell_attributes._update_table_cache()
 
         undo_operation = (self._adjust_cell_attributes,
                           [insertion_point, -no_to_insert, axis, tab,
@@ -892,9 +977,6 @@ class DataArray(object):
 
         # Now re-insert moved keys
 
-        for key in new_keys:
-            self.__setitem__(key, new_keys[key], mark_unredo=False)
-
         for key in del_keys:
             if key not in new_keys and self(key) is not None:
                 self.pop(key, mark_unredo=False)
@@ -902,14 +984,17 @@ class DataArray(object):
         self._adjust_rowcol(insertion_point, no_to_insert, axis, tab=tab,
                             mark_unredo=False)
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis,
-                                     tab=tab, mark_unredo=False)
+                                     tab, mark_unredo=False)
+
+        for key in new_keys:
+            self.__setitem__(key, new_keys[key], mark_unredo=False)
 
         self.unredo.mark()
 
     def delete(self, deletion_point, no_to_delete, axis, tab=None):
         """Deletes no_to_delete rows/cols/... starting with deletion_point
 
-        Axis specifies number of dimension, i.e. 0 == row, 1 == col, ...
+        Axis specifies number of dimension, i.e. 0 == row, 1 == col, 2 == tab
 
         """
 
@@ -956,7 +1041,7 @@ class DataArray(object):
         self._adjust_rowcol(deletion_point, -no_to_delete, axis, tab=tab,
                             mark_unredo=False)
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis,
-                                     tab=tab, mark_unredo=False)
+                                     tab, mark_unredo=False)
 
         self.unredo.mark()
 
@@ -1035,6 +1120,9 @@ class CodeArray(DataArray):
 
     # Cache for frozen objects
     frozen_cache = {}
+
+    # Custom font storage
+    custom_fonts = {}
 
     def __setitem__(self, key, value, mark_unredo=True):
         """Sets cell code and resets result cache"""
@@ -1156,7 +1244,8 @@ class CodeArray(DataArray):
 
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2], 'bz2': bz2,
                     'base64': base64, 'charts': charts, 'nn': nn,
-                    'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
+                    'R': key[0], 'C': key[1], 'T': key[2], 'S': self,
+                    'vlcpanel_factory': vlcpanel_factory}
         env = self._get_updated_environment(env_dict=env_dict)
 
         _old_code = self(key)
@@ -1272,6 +1361,7 @@ class CodeArray(DataArray):
         """Reloads modules that are available in cells"""
 
         import src.lib.charts as charts
+        from src.gui.grid_panels import vlcpanel_factory
         modules = [charts, bz2, base64, re, ast, sys, wx, numpy, datetime]
 
         for module in modules:
@@ -1286,7 +1376,8 @@ class CodeArray(DataArray):
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'charts', 'sys', 'is_slice_like', '__name__',
                      'copy', 'imap', 'wx', 'ifilter', 'Selection', 'DictGrid',
-                     'numpy', 'CodeArray', 'DataArray', 'datetime']
+                     'numpy', 'CodeArray', 'DataArray', 'datetime',
+                     'vlcpanel_factory']
 
         for key in globals().keys():
             if key not in base_keys:

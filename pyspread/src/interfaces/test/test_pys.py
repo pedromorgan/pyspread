@@ -112,7 +112,8 @@ class TestPys(object):
     param_pys_assert_version = [
         {'line': "\n", 'res': False},
         {'line': "0.1\n", 'res': True},
-        {'line': "0.2\n", 'res': False},
+        {'line': "1.0\n", 'res': True},
+        {'line': "1.1\n", 'res': False},
     ]
 
     @params(param_pys_assert_version)

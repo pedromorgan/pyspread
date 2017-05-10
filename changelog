@@ -3,6 +3,59 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+1.1
+---
+
+Default UI language changed from system default to English (en)
+UI language can now be chosen from preferences dialog
+Video support in cells (requires libvlc)
+Default open and save filetypes can noww be set in preferences dialog
+Spell checking functionality added (requires pyenchant)
+The current row and column now is highlighted in the grid labels
+In fullscreen mode, arrow keys and space navigate through the tables
+Cell cursor is not drawn any onger in fullscreen mode
+F6 now fits the grid to the screen ssize if possible
+ODS file open support added (still rudimentary, requires pyodf)
+Unmerging cell bug fixed
+Changing preferences now refreshes the grid
+Font choice box switches to pangocairo to achieve rendering that matches the grid
+Fonts are now drawn with their standard weight, style etc. if no weight/style is chosen
+The cell editor is noww closed and all changes are discarded when the table is switched
+If a cell is a button cell or a frozen cell then no tooltip is showwn any longer to avoid side effects
+Copy and paste of cell formats added
+Chart dialog labels shortened in order to avoid display problems with other locales
+Alpha blending option added to multiple chart types
+XLS import made independent from screen resolution
+Clicking on any part of a merged button cell now executes the cell function instead of the upper left part of the cell
+The current directory is now changed to the directory of a file that is opened in order to allow relative file access
+Trying to save while saving is now prohibited in a more robust way
+File save tempfile naming made more robust
+Cell attribute access is now faster if many tables are present
+New panel for table choice for better usability with poor mouse wheels
+Various bug fixes
+
+Non-functional additions:
+Framework for font saving added (font loading does not work yet)
+Skeleton for new chart dialog added (does not work yet)
+
+
+1.0.3
+-----
+
+GUI translations updated
+Unmerging of cells fixed
+Font default style fixed for fonts that are originally bold
+When a table is switched, the cell editor now is closed and all changes in an open cell editor are forgotten
+Merge areas that are shifted beyond a sheet boundary via insert rows / columns are now deleted
+
+
+1.0.2
+-----
+
+Save function bug fixed
+Accepts now pys files up to v1.0
+
+
 1.0.1
 -----
 
@@ -10,6 +63,9 @@ Jedi 0.9 API change fixed
 French translation added
 Translations updated
 GPG now only accepts the chosen key as valid
+When an unsaveable xlsx file is opened, now a Save As dialog opens
+The default file type can now be adjusted in the .pyspreadrc file
+Undoing a merge operation now correctly restores data from the merged cells
 
 
 1.0

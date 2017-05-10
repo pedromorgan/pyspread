@@ -42,16 +42,6 @@ except ImportError:
     Figure = None
 
 try:
-    import cairo
-except ImportError:
-    cairo = None
-
-try:
-    import xlrd
-except ImportError:
-    xlrd = None
-
-try:
     from src.lib.gpg import genkey
 except ImportError:
     genkey = None
@@ -60,19 +50,22 @@ import src.lib.i18n as i18n
 from src.config import config
 from src.sysvars import get_python_tutorial_path, is_gtk
 
-from _menubars import MainMenu
-from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
-from _toolbars import WidgetToolbar
-from _widgets import EntryLineToolbarPanel, StatusBar
+from src.gui._menubars import MainMenu
+from src.gui._toolbars import MainToolbar, MacroToolbar, FindToolbar
+from src.gui._toolbars import WidgetToolbar, AttributesToolbar
+from src.gui._widgets import EntryLineToolbarPanel, StatusBar
+from src.gui._widgets import TableChoiceListCtrl
+from src.gui._dialogs import DependencyDialog
 
 from src.lib.clipboard import Clipboard
+from src.lib.filetypes import get_filetypes2wildcards
 
-from _gui_interfaces import GuiInterfaces
+from src.gui._gui_interfaces import GuiInterfaces
 from src.gui.icons import icons
 
-from _grid import Grid
+from src.gui._grid import Grid
 
-from _events import post_command_event, EventMixin
+from src.gui._events import post_command_event, EventMixin
 
 from src.actions._main_window_actions import AllMainWindowActions
 
@@ -153,6 +146,9 @@ class MainWindow(wx.Frame, EventMixin):
         # Main grid
         self.grid = Grid(self, -1, S=S, dimensions=dimensions)
 
+        # TableChoiceListCtrl
+        self.table_list_panel = TableChoiceListCtrl(self, self.grid)
+
         # Clipboard
         self.clipboard = Clipboard()
 
@@ -201,6 +197,7 @@ class MainWindow(wx.Frame, EventMixin):
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
             (self.widget_toolbar, "widget_toolbar", _("Widget toolbar")),
             (self.entry_line_panel, "entry_line_panel", _("Entry line")),
+            (self.table_list_panel, "table_list_panel", _("Table list")),
         ]
 
         for toolbar, pane_name, toggle_label in toggles:
@@ -248,6 +245,10 @@ class MainWindow(wx.Frame, EventMixin):
                           Gripper(False).CenterPane().Top().Row(2).
                           BestSize(400, 30).PaneBorder(False))
 
+        self._mgr.AddPane(self.table_list_panel, aui.AuiPaneInfo().
+                          Name("table_list_panel").Caption(_("Table")).
+                          CenterPane().Left().BestSize(50, 300))
+
         # Load perspective from config
         window_layout = config["window_layout"]
 
@@ -294,6 +295,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_SAFE_MODE_EXIT, handlers.OnSafeModeExit)
         self.Bind(wx.EVT_CLOSE, handlers.OnClose)
         self.Bind(self.EVT_CMD_CLOSE, handlers.OnClose)
+        self.Bind(self.EVT_SPELL_CHECK, handlers.OnSpellCheckToggle)
 
         # Preferences events
 
@@ -314,6 +316,8 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnFindToolbarToggle)
         self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
+        self.Bind(self.EVT_CMD_TABLELIST_TOGGLE,
+                  handlers.OnTableListToggle)
         self.Bind(aui.EVT_AUI_PANE_CLOSE, handlers.OnPaneClose)
 
         # File events
@@ -359,6 +363,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_TUTORIAL, handlers.OnTutorial)
         self.Bind(self.EVT_CMD_FAQ, handlers.OnFaq)
         self.Bind(self.EVT_CMD_PYTHON_TURORIAL, handlers.OnPythonTutorial)
+        self.Bind(self.EVT_CMD_DEPENDENCIES, handlers.OnDependencies)
         self.Bind(self.EVT_CMD_ABOUT, handlers.OnAbout)
 
         self.Bind(self.EVT_CMD_MACROLIST, handlers.OnMacroList)
@@ -540,6 +545,18 @@ class MainWindowEventHandlers(EventMixin):
             dummyfile.close()
             os.chmod(pyspreadrc_path, 0600)
 
+    def OnSpellCheckToggle(self, event):
+        """Spell checking toggle event handler"""
+
+        spelltoolid = self.main_window.main_toolbar.label2id["CheckSpelling"]
+        self.main_window.main_toolbar.ToggleTool(spelltoolid,
+                                                 not config["check_spelling"])
+
+        config["check_spelling"] = repr(not config["check_spelling"])
+
+        self.main_window.grid.grid_renderer.cell_cache.clear()
+        self.main_window.grid.ForceRefresh()
+
     # Preferences events
 
     def OnPreferences(self, event):
@@ -553,6 +570,9 @@ class MainWindowEventHandlers(EventMixin):
                     config[key] = preferences[key]
                 else:
                     config[key] = ast.literal_eval(preferences[key])
+
+        self.main_window.grid.grid_renderer.cell_cache.clear()
+        self.main_window.grid.ForceRefresh()
 
     def OnNewGpgKey(self, event):
         """New GPG key event handler.
@@ -651,6 +671,16 @@ class MainWindowEventHandlers(EventMixin):
             self.main_window._mgr.GetPane("entry_line_panel")
 
         self._toggle_pane(entry_line_panel_info)
+
+        event.Skip()
+
+    def OnTableListToggle(self, event):
+        """Table list toggle event handler"""
+
+        table_list_panel_info = \
+            self.main_window._mgr.GetPane("table_list_panel")
+
+        self._toggle_pane(table_list_panel_info)
 
         event.Skip()
 
@@ -764,7 +794,10 @@ class MainWindowEventHandlers(EventMixin):
                 post_command_event(self.main_window, self.main_window.SaveMsg)
 
         # Get filepath from user
-        filetypes, wildcards = self.interfaces.get_file_open_wildcard_list()
+        f2w = get_filetypes2wildcards(
+            ["pys", "pysu", "xls", "xlsx", "ods", "all"])
+        filetypes = f2w.keys()
+        wildcards = f2w.values()
         wildcard = "|".join(wildcards)
 
         message = _("Choose file to open.")
@@ -832,7 +865,8 @@ class MainWindowEventHandlers(EventMixin):
 
         if filetype is None:
 
-            __filetypes, __ = self.interfaces.get_file_save_wildcard_list()
+            f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
+            __filetypes = f2w.keys()
 
             # Check if the file extension matches any valid save filetype
             for __filetype in __filetypes:
@@ -865,7 +899,11 @@ class MainWindowEventHandlers(EventMixin):
         """File save as event handler"""
 
         # Get filepath from user
-        filetypes, wildcards = self.interfaces.get_file_save_wildcard_list()
+
+        f2w = get_filetypes2wildcards(["pys", "pysu", "xls", "all"])
+        filetypes = f2w.keys()
+        wildcards = f2w.values()
+
         wildcard = "|".join(wildcards)
 
         message = _("Choose filename for saving.")
@@ -933,9 +971,9 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("CSV file") + " (*.*)|*.*|" + \
-            _("Tab delimited text file") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["csv", "txt"]).values()
+        wildcard = "|".join(wildcards)
+
         message = _("Choose file to import.")
         style = wx.OPEN
         filepath, filterindex = \
@@ -967,8 +1005,6 @@ class MainWindowEventHandlers(EventMixin):
 
         """
 
-        filters = []
-
         code_array = self.main_window.grid.code_array
         tab = self.main_window.grid.current_table
 
@@ -978,14 +1014,11 @@ class MainWindowEventHandlers(EventMixin):
 
         selection_bbox = selection.get_bbox()
 
-        wildcard = _("CSV file") + " (*.*)|*.*"
-        filters.append("csv")
+        f2w = get_filetypes2wildcards(["csv", "pdf", "svg"])
+        filters = f2w.keys()
+        wildcards = f2w.values()
 
-        if cairo is not None:
-            wildcard += "|" + _("PDF file") + " (*.pdf)|*.pdf"
-            filters.append("pdf")
-            wildcard += "|" + _("SVG file") + " (*.svg)|*.svg"
-            filters.append("svg")
+        wildcard = "|".join(wildcards)
 
         if selection_bbox is None:
             # No selection --> Use smallest filled area for bottom right edge
@@ -1054,8 +1087,14 @@ class MainWindowEventHandlers(EventMixin):
     def OnExportPDF(self, event):
         """Export PDF event handler"""
 
+        wildcards = get_filetypes2wildcards(["pdf"]).values()
+
+        if not wildcards:
+            return
+
+        wildcard = "|".join(wildcards)
+
         # Get filepath from user
-        wildcard = _("PDF") + " (*.pdf)|*.pdf"
         message = _("Choose file path for PDF export.")
 
         style = wx.SAVE
@@ -1367,9 +1406,10 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Macro file") + " (*.py)|*.py|" + \
-            _("All files") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+
+        wildcard = "|".join(wildcards)
+
         message = _("Choose macro file.")
 
         style = wx.OPEN
@@ -1395,9 +1435,10 @@ class MainWindowEventHandlers(EventMixin):
 
         # Get filepath from user
 
-        wildcard = \
-            _("Macro file") + " (*.py)|*.py|" + \
-            _("All files") + " (*.*)|*.*"
+        wildcards = get_filetypes2wildcards(["py", "all"]).values()
+
+        wildcard = "|".join(wildcards)
+
         message = _("Choose macro file.")
 
         style = wx.SAVE
@@ -1437,10 +1478,15 @@ class MainWindowEventHandlers(EventMixin):
     def OnPythonTutorial(self, event):
         """Python tutorial launch event handler"""
 
-        # Doas not work any more
-
         self.main_window.actions.launch_help("Python tutorial",
                                              get_python_tutorial_path())
+
+    def OnDependencies(self, event):
+        """Display dependency dialog"""
+
+        dlg = DependencyDialog(self.main_window)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnAbout(self, event):
         """About dialog event handler"""

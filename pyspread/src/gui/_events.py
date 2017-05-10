@@ -73,6 +73,11 @@ class MainWindowEventMixin(object):
 
     CloseMsg, EVT_CMD_CLOSE = new_command_event()
 
+    SpellCheckMsg, EVT_SPELL_CHECK = new_command_event()
+
+    CopyFormatMsg, EVT_CMD_COPY_FORMAT = new_command_event()
+    PasteFormatMsg, EVT_CMD_PASTE_FORMAT = new_command_event()
+
     FontDialogMsg, EVT_CMD_FONTDIALOG = new_command_event()
     TextColorDialogMsg, EVT_CMD_TEXTCOLORDIALOG = new_command_event()
     BgColorDialogMsg, EVT_CMD_BGCOLORDIALOG = new_command_event()
@@ -81,6 +86,7 @@ class MainWindowEventMixin(object):
     TutorialMsg, EVT_CMD_TUTORIAL = new_command_event()
     FaqMsg, EVT_CMD_FAQ = new_command_event()
     PythonTutorialMsg, EVT_CMD_PYTHON_TURORIAL = new_command_event()
+    DependenciesMsg, EVT_CMD_DEPENDENCIES = new_command_event()
     AboutMsg, EVT_CMD_ABOUT = new_command_event()
 
     MacroListMsg, EVT_CMD_MACROLIST = new_command_event()
@@ -97,6 +103,7 @@ class MainWindowEventMixin(object):
         new_command_event()
     FindToolbarToggleMsg, EVT_CMD_FIND_TOOLBAR_TOGGLE = new_command_event()
     EntryLineToggleMsg, EVT_CMD_ENTRYLINE_TOGGLE = new_command_event()
+    TableListToggleMsg, EVT_CMD_TABLELIST_TOGGLE = new_command_event()
     TableChoiceToggleMsg, EVT_CMD_TABLECHOICE_TOGGLE = new_command_event()
 
     ToolbarUpdateMsg, EVT_CMD_TOOLBAR_UPDATE = new_command_event()
@@ -136,6 +143,7 @@ class GridCellEventMixin(object):
     Rotation270Msg,  EVT_CMD_ROTATION270 = new_command_event()
     TextRotationMsg, EVT_CMD_TEXTROTATATION = new_command_event()
     ButtonCellMsg, EVT_CMD_BUTTON_CELL = new_command_event()
+    VideoCellMsg, EVT_CMD_VIDEO_CELL = new_command_event()
 
     # Cell edit events
 
@@ -198,6 +206,7 @@ class GridEventMixin(object):
     ZoomInMsg, EVT_CMD_ZOOM_IN = new_command_event()
     ZoomOutMsg, EVT_CMD_ZOOM_OUT = new_command_event()
     ZoomStandardMsg, EVT_CMD_ZOOM_STANDARD = new_command_event()
+    ZoomFitMsg, EVT_CMD_ZOOM_FIT = new_command_event()
 
     # Find events
 

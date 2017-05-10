@@ -31,6 +31,7 @@ Provides
 """
 
 import wx.grid
+import wx.lib.mixins.gridlabelrenderer as glr
 
 try:
     import rsvg
@@ -41,7 +42,7 @@ except ImportError:
 from _events import post_command_event, EventMixin, GridActionEventMixin
 
 from _grid_table import GridTable
-from _grid_renderer import GridRenderer
+from _grid_renderer import GridRenderer, RowLabelRenderer, ColLabelRenderer
 from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
 from _chart_dialog import ChartDialog
@@ -60,7 +61,7 @@ from src.gui._grid_cell_editor import GridCellEditor
 _ = i18n.language.ugettext
 
 
-class Grid(wx.grid.Grid, EventMixin):
+class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
     """Pyspread's main grid"""
 
     def __init__(self, main_window, *args, **kwargs):
@@ -79,6 +80,7 @@ class Grid(wx.grid.Grid, EventMixin):
             kwargs.pop("dimensions")
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
+        glr.GridWithLabelRenderersMixin.__init__(self)
 
         self.SetDefaultCellBackgroundColour(wx.Colour(255, 255, 255, 255))
 
@@ -101,6 +103,9 @@ class Grid(wx.grid.Grid, EventMixin):
         # Grid renderer draws the grid
         self.grid_renderer = GridRenderer(self.code_array)
         self.SetDefaultRenderer(self.grid_renderer)
+
+        self.SetDefaultRowLabelRenderer(RowLabelRenderer())
+        self.SetDefaultColLabelRenderer(ColLabelRenderer())
 
         # Context menu for quick access of important functions
         self.contextmenu = ContextMenu(parent=self)
@@ -145,8 +150,14 @@ class Grid(wx.grid.Grid, EventMixin):
         self.EnableGridLines(False)
 
         # Standard row and col sizes for zooming
-        self.std_row_size = self.GetRowSize(0)
-        self.std_col_size = self.GetColSize(0)
+        default_cell_attributes = \
+            self.code_array.cell_attributes.default_cell_attributes
+
+        self.std_row_size = default_cell_attributes["row-height"]
+        self.std_col_size = default_cell_attributes["column-width"]
+
+        self.SetDefaultRowSize(self.std_row_size)
+        self.SetDefaultColSize(self.std_col_size)
 
         # Standard row and col label sizes for zooming
         self.col_label_size = self.GetColLabelSize()
@@ -185,10 +196,14 @@ class Grid(wx.grid.Grid, EventMixin):
 
         main_window.Bind(self.EVT_CMD_INSERT_BMP, c_handlers.OnInsertBitmap)
         main_window.Bind(self.EVT_CMD_LINK_BMP, c_handlers.OnLinkBitmap)
+        main_window.Bind(self.EVT_CMD_VIDEO_CELL, c_handlers.OnLinkVLCVideo)
         main_window.Bind(self.EVT_CMD_INSERT_CHART,
                          c_handlers.OnInsertChartDialog)
 
         # Cell attribute events
+
+        main_window.Bind(self.EVT_CMD_COPY_FORMAT, c_handlers.OnCopyFormat)
+        main_window.Bind(self.EVT_CMD_PASTE_FORMAT, c_handlers.OnPasteFormat)
 
         main_window.Bind(self.EVT_CMD_FONT, c_handlers.OnCellFont)
         main_window.Bind(self.EVT_CMD_FONTSIZE, c_handlers.OnCellFontSize)
@@ -250,6 +265,7 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_ZOOM_IN, handlers.OnZoomIn)
         main_window.Bind(self.EVT_CMD_ZOOM_OUT, handlers.OnZoomOut)
         main_window.Bind(self.EVT_CMD_ZOOM_STANDARD, handlers.OnZoomStandard)
+        main_window.Bind(self.EVT_CMD_ZOOM_FIT, handlers.OnZoomFit)
 
         # Find events
         main_window.Bind(self.EVT_CMD_FIND, handlers.OnFind)
@@ -384,6 +400,40 @@ class Grid(wx.grid.Grid, EventMixin):
         post_command_event(self, self.ToolbarUpdateMsg, key=key,
                            attr=self.code_array.cell_attributes[key])
 
+    def _update_video_volume_cell_attributes(self, key):
+        """Updates the panel cell attrutes of a panel cell"""
+
+        try:
+            video_cell_panel = self.grid_renderer.video_cells[key]
+        except KeyError:
+            return
+
+        old_video_volume = self.code_array.cell_attributes[key]["video_volume"]
+        new_video_volume = video_cell_panel.volume
+
+        if old_video_volume == new_video_volume:
+            return
+
+        selection = Selection([], [], [], [], [key])
+
+        self.actions.set_attr("video_volume", new_video_volume, selection,
+                              mark_unredo=False)
+
+    def ForceRefresh(self, *args, **kwargs):
+        """Refresh hook"""
+
+        wx.grid.Grid.ForceRefresh(self, *args, **kwargs)
+
+        for video_cell_key in self.grid_renderer.video_cells:
+            if video_cell_key[2] == self.current_table:
+                video_cell = self.grid_renderer.video_cells[video_cell_key]
+                rect = self.CellToRect(video_cell_key[0], video_cell_key[1])
+                drawn_rect = self.grid_renderer._get_drawn_rect(self,
+                                                                video_cell_key,
+                                                                rect)
+                video_cell.SetClientRect(drawn_rect)
+                self._update_video_volume_cell_attributes(video_cell_key)
+
 # End of class Grid
 
 
@@ -412,7 +462,7 @@ class GridCellEventHandlers(object):
 
         wildcard = _("Bitmap file") + " (*)|*"
         if rsvg is not None:
-            wildcard += "|"+ _("SVG file") + " (*.svg)|*.svg"
+            wildcard += "|" + _("SVG file") + " (*.svg)|*.svg"
 
         message = _("Select image for current cell")
         style = wx.OPEN | wx.CHANGE_DIR
@@ -476,6 +526,39 @@ class GridCellEventHandlers(object):
         key = self.grid.actions.cursor
         self.grid.actions.set_code(key, code)
 
+    def OnLinkVLCVideo(self, event):
+        """VLC video code event handler"""
+
+        key = self.grid.actions.cursor
+
+        if event.videofile:
+            try:
+                video_volume = \
+                    self.grid.code_array.cell_attributes[key]["video_volume"]
+            except KeyError:
+                video_volume = None
+
+            self.grid.actions.set_attr("panel_cell", True, mark_unredo=False)
+
+            if video_volume is not None:
+                code = 'vlcpanel_factory("{}", {})'.format(
+                    event.videofile, video_volume)
+            else:
+                code = 'vlcpanel_factory("{}")'.format(event.videofile)
+
+            self.grid.actions.set_code(key, code)
+
+        else:
+            try:
+                video_panel = self.grid.grid_renderer.video_cells.pop(key)
+                video_panel.player.stop()
+                video_panel.player.release()
+                video_panel.Destroy()
+            except KeyError:
+                pass
+
+            self.grid.actions.set_code(key, u"")
+
     def OnInsertChartDialog(self, event):
         """Chart dialog event handler"""
 
@@ -494,6 +577,20 @@ class GridCellEventHandlers(object):
             self.grid.actions.set_code(key, code)
 
     # Cell attribute events
+
+    def OnCopyFormat(self, event):
+        """Copy format event handler"""
+
+        self.grid.actions.copy_format()
+
+    def OnPasteFormat(self, event):
+        """Paste format event handler"""
+
+        self.grid.actions.paste_format()
+
+        self.grid.ForceRefresh()
+        self.grid.update_attribute_toolbar()
+        self.grid.actions.zoom()
 
     def OnCellFont(self, event):
         """Cell font event handler"""
@@ -771,6 +868,12 @@ class GridCellEventHandlers(object):
         if merging_cell is not None and merging_cell != key:
             post_command_event(self.grid, self.grid.GotoCellMsg,
                                key=merging_cell)
+
+            # Check if the merging cell is a button cell
+            if cell_attributes[merging_cell]["button_cell"]:
+                # Button cells shall be executed on click
+                self.grid.EnableCellEditControl()
+
             return
 
         # If in selection mode do nothing
@@ -829,6 +932,16 @@ class GridEventHandlers(GridActionEventMixin):
     def OnKey(self, event):
         """Handles non-standard shortcut events"""
 
+        def switch_to_next_table():
+            newtable = self.grid.current_table + 1
+            post_command_event(self.grid, self.GridActionTableSwitchMsg,
+                               newtable=newtable)
+
+        def switch_to_previous_table():
+            newtable = self.grid.current_table - 1
+            post_command_event(self.grid, self.GridActionTableSwitchMsg,
+                               newtable=newtable)
+
         grid = self.grid
         actions = grid.actions
 
@@ -857,6 +970,14 @@ class GridEventHandlers(GridActionEventMixin):
             # <Shift> + <Ctrl> + <Space> pressed
             (shift | ctrl, 32): grid.SelectAll,
         }
+
+        if self.main_window.IsFullScreen():
+            # <Arrow up> pressed
+            shortcuts[(0, 315)] = switch_to_previous_table
+            # <Arrow down> pressed
+            shortcuts[(0, 317)] = switch_to_next_table
+            # <Space> pressed
+            shortcuts[(0, 32)] = switch_to_next_table
 
         keycode = event.GetKeyCode()
 
@@ -991,6 +1112,13 @@ class GridEventHandlers(GridActionEventMixin):
 
         event.Skip()
 
+    def OnZoomFit(self, event):
+        """Event handler for zooming the grid to fit the window"""
+
+        self.grid.actions.zoom_fit()
+
+        event.Skip()
+
     def OnContextMenu(self, event):
         """Context menu event handler"""
 
@@ -1013,9 +1141,9 @@ class GridEventHandlers(GridActionEventMixin):
 
         elif self.main_window.IsFullScreen():
             if event.WheelRotation > 0:
-                newtable = self.grid.current_table + 1
-            else:
                 newtable = self.grid.current_table - 1
+            else:
+                newtable = self.grid.current_table + 1
 
             post_command_event(self.grid, self.GridActionTableSwitchMsg,
                                newtable=newtable)
