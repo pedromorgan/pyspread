@@ -71,6 +71,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self._tc.Show(not locked)
 
         if locked:
+            grid.code_array.result_cache.clear()
             self._execute_cell_code(key[0], key[1], grid)
 
         self._tc.SetInsertionPoint(0)
@@ -141,6 +142,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self._tc.Show(not locked)
 
         if locked:
+            grid.code_array.result_cache.clear()
             self._execute_cell_code(row, col, grid)
 
         # Mirror our changes onto the main_window's code bar
