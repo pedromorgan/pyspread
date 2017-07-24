@@ -54,7 +54,7 @@ class DefaultConfig(object):
         # UI language
         # -----------
 
-        self.ui_language = "'en'"  # 'system' for system locale 
+        self.ui_language = "'en'"  # 'system' for system locale
 
         # Spell checking lamguage
         # -----------------------
