@@ -48,7 +48,7 @@ from _menubars import ContextMenu
 from _chart_dialog import ChartDialog
 
 import src.lib.i18n as i18n
-from src.sysvars import is_gtk
+from src.sysvars import is_gtk, get_color
 from src.config import config
 
 from src.lib.selection import Selection
@@ -82,7 +82,7 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
         glr.GridWithLabelRenderersMixin.__init__(self)
 
-        self.SetDefaultCellBackgroundColour(wx.Colour(255, 255, 255, 255))
+        self.SetDefaultCellBackgroundColour(get_color(config["background_color"]))
 
         # Cursor position on entering selection mode
         self.sel_mode_cursor = None
