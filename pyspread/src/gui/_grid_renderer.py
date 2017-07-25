@@ -89,7 +89,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         return max(1.0, round(size * self.zoom))
 
     def _draw_cursor(self, dc, grid, row, col,
-                     pen=wx.BLACK_PEN, brush=wx.BLACK_BRUSH):
+                     pen=None, brush=None):
         """Draws cursor as Rectangle in lower right corner"""
 
         # If in full screen mode draw no cursor
@@ -107,6 +107,12 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         size = self.get_zoomed_size(1.0)
 
         caret_length = int(min([rect.width, rect.height]) / 5.0)
+
+        color = get_color(config["text_color"])
+        if pen is None:
+          pen = wx.Pen(color)
+        if brush is None:
+          brush = wx.Brush(color)
 
         pen.SetWidth(size)
 
@@ -155,8 +161,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
 
         old_row, old_col = self.old_cursor_row_col
 
+        bgcolor = get_color(config["background_color"])
+
         self._draw_cursor(dc, grid, old_row, old_col,
-                          pen=wx.WHITE_PEN, brush=wx.WHITE_BRUSH)
+                          pen=wx.Pen(bgcolor), brush=wx.Brush(bgcolor))
         self._draw_cursor(dc, grid, row, col)
 
     def get_merging_cell(self, grid, key):
