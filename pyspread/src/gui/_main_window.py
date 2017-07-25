@@ -48,7 +48,7 @@ except ImportError:
 
 import src.lib.i18n as i18n
 from src.config import config
-from src.sysvars import get_python_tutorial_path, is_gtk
+from src.sysvars import get_python_tutorial_path, is_gtk, get_color
 
 from src.gui._menubars import MainMenu
 from src.gui._toolbars import MainToolbar, MacroToolbar, FindToolbar
@@ -215,6 +215,11 @@ class MainWindow(wx.Frame, EventMixin):
 
     def _do_layout(self):
         """Adds widgets to the aui manager and controls the layout"""
+
+        # Set background color for the toolbar via the manager
+        ap = self._mgr.GetArtProvider()
+        ap.SetColour(aui.AUI_DOCKART_BACKGROUND_GRADIENT_COLOUR, 
+                     get_color(config["background_color"]))
 
         # Add the toolbars to the manager
 

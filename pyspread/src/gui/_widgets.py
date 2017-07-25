@@ -423,7 +423,7 @@ class ImageComboBox(wx.combo.OwnerDrawnComboBox):
         # Otherwise, draw every other background with
         # different color.
 
-        bg_color = wx.Colour(240, 240, 250)
+        bg_color = get_color(wx.SYS_COLOUR_MENUBAR)
         dc.SetBrush(wx.Brush(bg_color))
         dc.SetPen(wx.Pen(bg_color))
         dc.DrawRectangleRect(rect)
@@ -593,7 +593,9 @@ class FontChoiceCombobox(ImageComboBox):
         layout.set_font_description(font)
 
         layout.set_text(fontname)
-        context.set_source_rgb(0, 0, 0)
+
+        color = tuple([c / 255.0 for c in get_color(config["text_color"]).Get()])
+        context.set_source_rgb(*color)
 
         height = layout.get_pixel_extents()[1][3]
 
