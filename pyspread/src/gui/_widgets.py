@@ -1112,7 +1112,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         self.main_window = main_window
         self.no_tabs = no_tabs
 
-        IntCtrl.__init__(self, parent, allow_long=True, style=wx.NO_BORDER)
+        IntCtrl.__init__(self, parent, allow_long=True, style=wx.NO_BORDER,
+                         default_color=get_color(config["text_color"]))
 
         self.last_change_s = time.clock()
 
