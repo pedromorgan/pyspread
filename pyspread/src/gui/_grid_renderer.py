@@ -375,7 +375,7 @@ class RowLabelRenderer(glr.GridLabelRenderer):
         else:
             dc.SetPen(wx.TRANSPARENT_PEN)
 
-        color = get_color(wx.SYS_COLOUR_MENUBAR)
+        color = get_color(wx.SYS_COLOUR_BACKGROUND)
         dc.SetBrush(wx.Brush(color))
         dc.DrawRectangleRect(rect)
         hAlign, vAlign = grid.GetRowLabelAlignment()
@@ -399,7 +399,7 @@ class ColLabelRenderer(glr.GridLabelRenderer):
         else:
             dc.SetPen(wx.TRANSPARENT_PEN)
 
-        color = get_color(wx.SYS_COLOUR_MENUBAR)
+        color = get_color(wx.SYS_COLOUR_BACKGROUND)
         dc.SetBrush(wx.Brush(color))
         dc.DrawRectangleRect(rect)
         hAlign, vAlign = grid.GetColLabelAlignment()
