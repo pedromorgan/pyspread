@@ -226,7 +226,7 @@ def sign(filename):
         keyid = fingerprint2keyid(config["gpg_key_fingerprint"])
 
         if keyid is None:
-            msg = "No private key for fingerprint {}."
+            msg = "No private key for GPG fingerprint '{}'."
             raise ValueError(msg.format(config["gpg_key_fingerprint"]))
 
         signed_data = gpg.sign_file(signfile, keyid=keyid, detach=True)

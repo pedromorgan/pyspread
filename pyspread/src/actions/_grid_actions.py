@@ -596,7 +596,13 @@ class FileActions(Actions):
                 pass
 
         else:
-            self.sign_file(filepath)
+            try:
+                self.sign_file(filepath)
+
+            except ValueError, err:
+                msg = "Signing file failed. " + unicode(err)
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=msg)
 
     def save(self, event):
         """Saves a file that is specified in event.attr
