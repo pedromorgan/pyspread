@@ -423,7 +423,7 @@ class ImageComboBox(wx.combo.OwnerDrawnComboBox):
         # Otherwise, draw every other background with
         # different color.
 
-        bg_color = get_color(wx.SYS_COLOUR_MENUBAR)
+        bg_color = get_color(wx.SYS_COLOUR_BACKGROUND)
         dc.SetBrush(wx.Brush(bg_color))
         dc.SetPen(wx.Pen(bg_color))
         dc.DrawRectangleRect(rect)
@@ -1112,7 +1112,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         self.main_window = main_window
         self.no_tabs = no_tabs
 
-        IntCtrl.__init__(self, parent, allow_long=True, style=wx.NO_BORDER)
+        IntCtrl.__init__(self, parent, allow_long=True, style=wx.NO_BORDER,
+                         default_color=get_color(config["text_color"]))
 
         self.last_change_s = time.clock()
 
