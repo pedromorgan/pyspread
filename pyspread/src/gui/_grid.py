@@ -1152,8 +1152,11 @@ class GridEventHandlers(GridActionEventMixin):
         else:
             x, y = self.grid.GetViewStart()
             direction = 1 if event.GetWheelRotation() < 0 else -1
-            self.grid.Scroll(x, y + direction)
-            event.Skip()
+            if event.ShiftDown():
+                # Scroll sideways if shift is pressed.
+                self.grid.Scroll(x + direction, y)
+            else:
+                self.grid.Scroll(x, y + direction)
 
     # Find events
 
