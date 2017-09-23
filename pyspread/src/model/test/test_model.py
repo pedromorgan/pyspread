@@ -84,14 +84,14 @@ class TestCellAttributes(object):
         self.cell_attr = CellAttributes()
         self.cell_attr.unredo = UnRedo()
 
-    def test_undoable_append(self):
-        """Test undoable_append"""
+    def test_append(self):
+        """Test append"""
 
         selection = Selection([], [], [], [], [(23, 12)])
         table = 0
         attr = {"angle": 0.2}
 
-        self.cell_attr.undoable_append((selection, table, attr))
+        self.cell_attr.append((selection, table, attr))
 
         # Check if 2 items - the actual action and the marker - have been added
         assert len(self.cell_attr.unredo.undolist) == 2

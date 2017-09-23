@@ -204,8 +204,7 @@ class CellActions(Actions):
 
         if selection is not None:
             cell_attributes = self.code_array.cell_attributes
-            cell_attributes.undoable_append((selection, table, attr),
-                                            mark_unredo=False)
+            cell_attributes.append((selection, table, attr))
 
     def set_attr(self, attr, value, selection=None, mark_unredo=True):
         """Sets attr of current selection to value"""

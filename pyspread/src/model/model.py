@@ -54,6 +54,8 @@ from src.config import config
 from src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from src.lib.selection import Selection
 
+from src.lib.undo import undoable
+
 import src.lib.charts as charts
 from src.gui.grid_panels import vlcpanel_factory
 
@@ -67,12 +69,45 @@ class KeyValueStore(dict):
 
     This class represents layer 0 of the model.
 
+    The following methods mave been made undoable:
+    * __setitem__
+    * pop
+
     """
 
     def __missing__(self, value):
         """Returns the default value None"""
 
         return
+
+    @undoable
+    def __setitem__(self, key, value):
+        try:
+            old_value = self[key]
+        except KeyError:
+            old_value = None
+
+        dict.__setitem__(self, key, value)
+
+        yield "__setitem__"
+
+        # Undo functionality comes here
+        if old_value is None:
+            self.pop(self, key)
+        else:
+            dict.__setitem__(self, key, old_value)
+
+    @undoable
+    def pop(self, key, *args):
+        if len(args) == 1 and key not in self:
+            default_value_returned = True
+        res = dict.pop(self, key, *args)
+
+        yield "pop", res
+
+        # Undo functionality comes here
+        if not default_value_returned:
+            self[key] = res
 
 # End of class KeyValueStore
 
@@ -89,10 +124,29 @@ class CellAttributes(list):
     The class provides attribute read access to single cells via __getitem__
     Otherwise it behaves similar to a list.
 
-    Note that for the method undoable_append to work, unredo has to be
-    defined as class attribute.
+    The following methods mave been made undoable:
+    * append
+
+    List methods that may alter the list have been removed
 
     """
+
+    def __init__(self, *args, **kwargs):
+        self.__add__ = None
+        self.__delattr__ = None
+        self.__delitem__ = None
+        self.__delslice__ = None
+        self.__iadd__ = None
+        self.__imul__ = None
+        self.__rmul__ = None
+        self.__setattr__ = None
+        self.__setitem__ = None
+        self.__setslice__ = None
+        self.insert = None
+        self.pop = None
+        self.remove = None
+        self.reverse = None
+        self.sort = None
 
     default_cell_attributes = {
         "borderwidth_bottom": 1,
@@ -126,21 +180,17 @@ class CellAttributes(list):
     _attr_cache = {}
     _table_cache = {}
 
-    def undoable_append(self, value, mark_unredo=True):
-        """Appends item to list and provides undo and redo functionality"""
+    @undoable
+    def append(self, value):
+        list.append(self, value)
 
-        undo_operation = (self.pop, [])
-        redo_operation = (self.undoable_append, [value, mark_unredo])
+        yield "append"
 
-        self.unredo.append(undo_operation, redo_operation)
+        # Undo functionality comes here
 
-        if mark_unredo:
-            self.unredo.mark()
+        list.pop(self)
 
-        self.append(value)
-        self._attr_cache.clear()
-
-        sel, tab, val = value
+    # The f
 
     def __getitem__(self, key):
         """Returns attribute dict for a single key"""
@@ -216,10 +266,6 @@ class CellAttributes(list):
         if merge_area:
             return merge_area[0], merge_area[1], tab
 
-    # Allow getting and setting elements in list
-    get_item = list.__getitem__
-    set_item = list.__setitem__
-
 # End of class CellAttributes
 
 
@@ -250,8 +296,8 @@ class DictGrid(KeyValueStore):
 
         self.macros = u""
 
-        self.row_heights = {}  # Keys have the format (row, table)
-        self.col_widths = {}  # Keys have the format (col, table)
+        self.row_heights = KeyValueStore()  # Keys have the format (row, table)
+        self.col_widths = KeyValueStore()  # Keys have the format (col, table)
 
     def __getitem__(self, key):
 

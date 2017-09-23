@@ -191,8 +191,8 @@ class TestPys(object):
     def test_attributes2pys(self, selection, table, key, attr, val, code):
         """Test _attributes2pys method"""
 
-        self.code_array.dict_grid.cell_attributes.undoable_append(
-            (selection, table, {attr: val}), mark_unredo=False)
+        self.code_array.dict_grid.cell_attributes.append(
+            (selection, table, {attr: val}))
 
         self.write_pys_out("_attributes2pys")
         assert self.read_pys_out() == code

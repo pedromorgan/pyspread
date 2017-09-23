@@ -367,16 +367,7 @@ class TestXls(object):
 #        {'row': 10, 'tab': 10, 'height': 100.0, 'code': "10\t10\t100.0\n"},
 #    ]
 #
-#    @params(param_cell_attribute_append)
-#    def test_cell_attribute_append(self, selection, table, key, attr, val,
-#                                   code):
-#        """Test _cell_attribute_append method"""
-#
-#        self.code_array.dict_grid.cell_attributes.undoable_append(
-#            (selection, table, {attr: val}), mark_unredo=False)
-#
-#        self.write_xls_out("_attributes2xls")
-#        assert self.read_xls_out() == code
+
 #
 
     def _hpixels_to_xlsheight(self, hpixels):

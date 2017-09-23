@@ -1758,7 +1758,7 @@ class SelectionActions(Actions):
                     self._shifted_merge_area(attrs["merge_area"], row, col)
 
             new_cell_attribute = shifted_selection, tab, attrs
-            cell_attributes.undoable_append(new_cell_attribute)
+            cell_attributes.append(new_cell_attribute)
 
         # Row heights
         row_heights = self.grid.code_array.row_heights
