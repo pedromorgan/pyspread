@@ -851,6 +851,11 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
     def OnContentChange(self, event):
         """Event handler for updating the content"""
 
+        self.ignore_changes = True
+        self.SetValue(u"" if event.text is None else event.text)
+
+        self.ignore_changes = False
+
         event.Skip()
 
     def OnGridSelection(self, event):
