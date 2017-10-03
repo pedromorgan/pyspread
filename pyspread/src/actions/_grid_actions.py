@@ -1018,13 +1018,15 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.grid.code_array.shape = shape
+        self.code_array.shape = shape
 
         # Update TableChoiceIntCtrl
         post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
 
+        # Change grid table dimensions
+        self.grid.GetTable().ResetView()
+
         # Clear caches
-        undo_stack().clear()
         self.code_array.result_cache.clear()
 
     def replace_cells(self, key, sorted_row_idxs):

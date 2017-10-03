@@ -27,7 +27,7 @@ _grid_table
 Provides
 --------
 
-1) GridTable: Handles interaction to data_array
+1) GridTable: Handles interaction to code_array
 
 """
 
@@ -38,28 +38,23 @@ from src.config import config
 
 
 class GridTable(wx.grid.PyGridTableBase):
-    """Table base class that handles interaction between Grid and data_array"""
+    """Table base class that handles interaction between Grid and code_array"""
 
-    def __init__(self, grid, data_array):
+    def __init__(self, grid, code_array):
         self.grid = grid
-        self.data_array = data_array
+        self.code_array = code_array
 
         wx.grid.PyGridTableBase.__init__(self)
 
-        # we need to store the row length and column length to
-        # see if the table has changed size
-        self._rows = self.GetNumberRows()
-        self._cols = self.GetNumberCols()
-
     def GetNumberRows(self):
-        """Return the number of rows in the grid"""
+        """Return the number of rows in the code_arry"""
 
-        return self.data_array.shape[0]
+        return self.code_array.shape[0]
 
     def GetNumberCols(self):
-        """Return the number of columns in the grid"""
+        """Return the number of columns in the code_arry"""
 
-        return self.data_array.shape[1]
+        return self.code_array.shape[1]
 
     def GetRowLabelValue(self, row):
         """Returns row number"""
@@ -77,7 +72,7 @@ class GridTable(wx.grid.PyGridTableBase):
         if table is None:
             table = self.grid.current_table
 
-        value = self.data_array((row, col, table))
+        value = self.code_array((row, col, table))
 
         if value is None:
             return u""
@@ -91,7 +86,7 @@ class GridTable(wx.grid.PyGridTableBase):
             table = self.grid.current_table
 
         try:
-            cell_code = self.data_array((row, col, table))
+            cell_code = self.code_array((row, col, table))
         except IndexError:
             cell_code = None
 
@@ -139,16 +134,18 @@ class GridTable(wx.grid.PyGridTableBase):
 
         grid = self.grid
 
+        current_rows = self.grid.GetNumberRows()
+        current_cols = self.grid.GetNumberCols()
+
         grid.BeginBatch()
 
         for current, new, delmsg, addmsg in [
-            (self._rows, self.GetNumberRows(),
+            (current_rows, self.GetNumberRows(),
              wx.grid.GRIDTABLE_NOTIFY_ROWS_DELETED,
              wx.grid.GRIDTABLE_NOTIFY_ROWS_APPENDED),
-            (self._cols, self.GetNumberCols(),
+            (current_cols, self.GetNumberCols(),
              wx.grid.GRIDTABLE_NOTIFY_COLS_DELETED,
-             wx.grid.GRIDTABLE_NOTIFY_COLS_APPENDED),
-        ]:
+             wx.grid.GRIDTABLE_NOTIFY_COLS_APPENDED)]:
 
             if new < current:
                 msg = wx.grid.GridTableMessage(self, delmsg, new,
@@ -161,9 +158,6 @@ class GridTable(wx.grid.PyGridTableBase):
 
         grid.EndBatch()
 
-        self._rows = self.GetNumberRows()
-        self._cols = self.GetNumberCols()
-
         # Reset cell sizes to standard cell size
 
         grid.SetDefaultRowSize(grid.GetDefaultRowSize(),
@@ -175,7 +169,7 @@ class GridTable(wx.grid.PyGridTableBase):
         row_heights = grid.code_array.row_heights
         for key in row_heights:
             if key[1] == grid.current_table and \
-               key[0] < self.data_array.shape[0]:
+               key[0] < self.code_array.shape[0]:
                 row = key[0]
                 if row_heights[key] is None:
                     # Default row size
@@ -187,7 +181,7 @@ class GridTable(wx.grid.PyGridTableBase):
         col_widths = grid.code_array.col_widths
         for key in col_widths:
             if key[1] == grid.current_table and \
-               key[0] < self.data_array.shape[1]:
+               key[0] < self.code_array.shape[1]:
                 col = key[0]
                 if col_widths[key] is None:
                     # Default row size

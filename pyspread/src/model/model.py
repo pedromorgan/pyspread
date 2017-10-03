@@ -84,7 +84,7 @@ class KeyValueStore(dict):
         dict.__setitem__(self, key, value)
 
         yield "__setitem__"
-        # Undo functionality comes here
+        # Undo actions
         dict.__setitem__(self, key, old_value)
 
     @undoable
@@ -93,7 +93,7 @@ class KeyValueStore(dict):
 
         yield "pop", res
 
-        # Undo functionality comes here
+        # Undo actions
         dict.__setitem__(self, key, res)
 
 # End of class KeyValueStore
@@ -173,7 +173,7 @@ class CellAttributes(list):
 
         yield "append"
 
-        # Undo functionality comes here
+        # Undo actions
 
         list.pop(self)
 
@@ -271,6 +271,8 @@ class Macros(object):
         self._string = string
 
         yield "Macros changed"
+
+        # Undo actions
 
         self._string = old_string
 
@@ -541,6 +543,7 @@ class DataArray(object):
 
         return self.dict_grid.shape
 
+    @undoable
     def _set_shape(self, shape):
         """Deletes all cells beyond new shape and sets dict_grid shape
 
@@ -554,17 +557,26 @@ class DataArray(object):
         # Delete each cell that is beyond new borders
 
         old_shape = self.shape
+        deleted_cells = {}
 
         if any(new_axis < old_axis
                for new_axis, old_axis in zip(shape, old_shape)):
             for key in self.dict_grid.keys():
                 if any(key_ele >= new_axis
                        for key_ele, new_axis in zip(key, shape)):
-                    self.pop(key)
+                    deleted_cells[key] = self.pop(key)
 
         # Set dict_grid shape attribute
-
         self.dict_grid.shape = shape
+
+        # Undo actions
+
+        yield "_set_shape"
+
+        self.shape = old_shape
+
+        for key in deleted_cells:
+            self[key] = deleted_cells[key]
 
     shape = property(_get_shape, _set_shape)
 

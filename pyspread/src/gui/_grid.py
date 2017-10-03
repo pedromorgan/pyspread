@@ -1310,7 +1310,8 @@ class GridEventHandlers(GridActionEventMixin):
             ins_point = bbox[0][0] - 1
             no_rows = self._get_no_rowscols(bbox)[0]
 
-        self.grid.actions.insert_rows(ins_point, no_rows)
+        with undo_group(_("Insert rows")):
+            self.grid.actions.insert_rows(ins_point, no_rows)
 
         self.grid.GetTable().ResetView()
 
@@ -1333,7 +1334,8 @@ class GridEventHandlers(GridActionEventMixin):
             ins_point = bbox[0][1] - 1
             no_cols = self._get_no_rowscols(bbox)[1]
 
-        self.grid.actions.insert_cols(ins_point, no_cols)
+        with undo_group(_("Insert columns")):
+            self.grid.actions.insert_cols(ins_point, no_cols)
 
         self.grid.GetTable().ResetView()
 
@@ -1345,7 +1347,9 @@ class GridEventHandlers(GridActionEventMixin):
     def OnInsertTabs(self, event):
         """Insert one table into grid"""
 
-        self.grid.actions.insert_tabs(self.grid.current_table - 1, 1)
+        with undo_group(_("Insert table")):
+            self.grid.actions.insert_tabs(self.grid.current_table - 1, 1)
+
         self.grid.GetTable().ResetView()
         self.grid.actions.zoom()
 
@@ -1365,7 +1369,8 @@ class GridEventHandlers(GridActionEventMixin):
             del_point = bbox[0][0]
             no_rows = self._get_no_rowscols(bbox)[0]
 
-        self.grid.actions.delete_rows(del_point, no_rows)
+        with undo_group(_("Delete rows")):
+            self.grid.actions.delete_rows(del_point, no_rows)
 
         self.grid.GetTable().ResetView()
 
@@ -1388,7 +1393,8 @@ class GridEventHandlers(GridActionEventMixin):
             del_point = bbox[0][1]
             no_cols = self._get_no_rowscols(bbox)[1]
 
-        self.grid.actions.delete_cols(del_point, no_cols)
+        with undo_group(_("Delete columns")):
+            self.grid.actions.delete_cols(del_point, no_cols)
 
         self.grid.GetTable().ResetView()
 
@@ -1400,7 +1406,9 @@ class GridEventHandlers(GridActionEventMixin):
     def OnDeleteTabs(self, event):
         """Deletes tables"""
 
-        self.grid.actions.delete_tabs(self.grid.current_table, 1)
+        with undo_group(_("Delete table")):
+            self.grid.actions.delete_tabs(self.grid.current_table, 1)
+
         self.grid.GetTable().ResetView()
         self.grid.actions.zoom()
 
@@ -1416,9 +1424,8 @@ class GridEventHandlers(GridActionEventMixin):
         if new_shape is None:
             return
 
-        self.grid.actions.change_grid_shape(new_shape)
-
-        self.grid.GetTable().ResetView()
+        with undo_group(_("Resize grid")):
+            self.grid.actions.change_grid_shape(new_shape)
 
         statustext = _("Grid dimensions changed to {shape}.")
         statustext = statustext.format(shape=new_shape)
@@ -1433,22 +1440,23 @@ class GridEventHandlers(GridActionEventMixin):
         grid = self.grid
         grid.DisableCellEditControl()
 
-        # Is a selection present?
-        if self.grid.IsSelection():
-            # Enclose all selected cells
-            self.grid.actions.quote_selection()
+        with undo_group(_("Quote cell(s)")):
+            # Is a selection present?
+            if self.grid.IsSelection():
+                # Enclose all selected cells
+                self.grid.actions.quote_selection()
 
-            # Update grid
-            self.grid.ForceRefresh()
+                # Update grid
+                self.grid.ForceRefresh()
 
-        else:
-            row = self.grid.GetGridCursorRow()
-            col = self.grid.GetGridCursorCol()
-            key = row, col, grid.current_table
+            else:
+                row = self.grid.GetGridCursorRow()
+                col = self.grid.GetGridCursorCol()
+                key = row, col, grid.current_table
 
-            self.grid.actions.quote_code(key)
+                self.grid.actions.quote_code(key)
 
-            grid.MoveCursorDown(False)
+                grid.MoveCursorDown(False)
 
     # Grid attribute events
 
@@ -1526,7 +1534,8 @@ class GridEventHandlers(GridActionEventMixin):
         """Sort ascending event handler"""
 
         try:
-            self.grid.actions.sort_ascending(self.grid.actions.cursor)
+            with undo_group(_("Sort ascending")):
+                self.grid.actions.sort_ascending(self.grid.actions.cursor)
             statustext = _(u"Sorting complete.")
 
         except Exception, err:
@@ -1539,7 +1548,8 @@ class GridEventHandlers(GridActionEventMixin):
         """Sort descending event handler"""
 
         try:
-            self.grid.actions.sort_descending(self.grid.actions.cursor)
+            with undo_group(_("Sort descending")):
+                self.grid.actions.sort_descending(self.grid.actions.cursor)
             statustext = _(u"Sorting complete.")
 
         except Exception, err:
@@ -1563,6 +1573,14 @@ class GridEventHandlers(GridActionEventMixin):
         # Reset row heights and column widths by zooming
         self.grid.actions.zoom()
 
+        # Change grid table dimensions
+        self.grid.GetTable().ResetView()
+
+        # Update TableChoiceIntCtrl
+        shape = self.grid.code_array.shape
+        post_command_event(self.main_window, self.grid.ResizeGridMsg,
+                           shape=shape)
+
         # Update toolbars
         self.grid.update_entry_line()
         self.grid.update_attribute_toolbar()
@@ -1582,6 +1600,15 @@ class GridEventHandlers(GridActionEventMixin):
 
         # Reset row heights and column widths by zooming
         self.grid.actions.zoom()
+
+        # Change grid table dimensions
+        self.grid.GetTable().ResetView()
+
+        # Update TableChoiceIntCtrl
+        shape = self.grid.code_array.shape
+        post_command_event(self.main_window, self.grid.ResizeGridMsg,
+                           shape=shape)
+
         # Update toolbars
         self.grid.update_entry_line()
         self.grid.update_attribute_toolbar()
