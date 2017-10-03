@@ -588,7 +588,8 @@ class GridCellEventHandlers(object):
     def OnPasteFormat(self, event):
         """Paste format event handler"""
 
-        self.grid.actions.paste_format()
+        with undo_group(_("Paste format")):
+            self.grid.actions.paste_format()
 
         self.grid.ForceRefresh()
         self.grid.update_attribute_toolbar()
@@ -597,7 +598,8 @@ class GridCellEventHandlers(object):
     def OnCellFont(self, event):
         """Cell font event handler"""
 
-        self.grid.actions.set_attr("textfont", event.font)
+        with undo_group(_("Font")):
+            self.grid.actions.set_attr("textfont", event.font)
 
         self.grid.ForceRefresh()
 
@@ -608,7 +610,8 @@ class GridCellEventHandlers(object):
     def OnCellFontSize(self, event):
         """Cell font size event handler"""
 
-        self.grid.actions.set_attr("pointsize", event.size)
+        with undo_group(_("Font size")):
+            self.grid.actions.set_attr("pointsize", event.size)
 
         self.grid.ForceRefresh()
 
@@ -619,18 +622,20 @@ class GridCellEventHandlers(object):
     def OnCellFontBold(self, event):
         """Cell font bold event handler"""
 
-        try:
+        with undo_group(_("Bold")):
             try:
-                weight = getattr(wx, event.weight[2:])
+                try:
+                    weight = getattr(wx, event.weight[2:])
+
+                except AttributeError:
+                    msg = _("Weight {weight} unknown").format(
+                            weight=event.weight)
+                    raise ValueError(msg)
+
+                self.grid.actions.set_attr("fontweight", weight)
 
             except AttributeError:
-                msg = _("Weight {weight} unknown").format(weight=event.weight)
-                raise ValueError(msg)
-
-            self.grid.actions.set_attr("fontweight", weight)
-
-        except AttributeError:
-            self.grid.actions.toggle_attr("fontweight")
+                self.grid.actions.toggle_attr("fontweight")
 
         self.grid.ForceRefresh()
 
@@ -641,18 +646,19 @@ class GridCellEventHandlers(object):
     def OnCellFontItalics(self, event):
         """Cell font italics event handler"""
 
-        try:
+        with undo_group(_("Italics")):
             try:
-                style = getattr(wx, event.style[2:])
+                try:
+                    style = getattr(wx, event.style[2:])
+
+                except AttributeError:
+                    msg = _("Style {style} unknown").format(style=event.style)
+                    raise ValueError(msg)
+
+                self.grid.actions.set_attr("fontstyle", style)
 
             except AttributeError:
-                msg = _("Style {style} unknown").format(style=event.style)
-                raise ValueError(msg)
-
-            self.grid.actions.set_attr("fontstyle", style)
-
-        except AttributeError:
-            self.grid.actions.toggle_attr("fontstyle")
+                self.grid.actions.toggle_attr("fontstyle")
 
         self.grid.ForceRefresh()
 
@@ -663,7 +669,8 @@ class GridCellEventHandlers(object):
     def OnCellFontUnderline(self, event):
         """Cell font underline event handler"""
 
-        self.grid.actions.toggle_attr("underline")
+        with undo_group(_("Underline")):
+            self.grid.actions.toggle_attr("underline")
 
         self.grid.ForceRefresh()
 
@@ -674,7 +681,8 @@ class GridCellEventHandlers(object):
     def OnCellFontStrikethrough(self, event):
         """Cell font strike through event handler"""
 
-        self.grid.actions.toggle_attr("strikethrough")
+        with undo_group(_("Strikethrough")):
+            self.grid.actions.toggle_attr("strikethrough")
 
         self.grid.ForceRefresh()
 
@@ -685,7 +693,8 @@ class GridCellEventHandlers(object):
     def OnCellFrozen(self, event):
         """Cell frozen event handler"""
 
-        self.grid.actions.change_frozen_attr()
+        with undo_group(_("Frozen")):
+            self.grid.actions.change_frozen_attr()
 
         self.grid.ForceRefresh()
 
@@ -696,7 +705,8 @@ class GridCellEventHandlers(object):
     def OnCellLocked(self, event):
         """Cell locked event handler"""
 
-        self.grid.actions.toggle_attr("locked")
+        with undo_group(_("Lock")):
+            self.grid.actions.toggle_attr("locked")
 
         self.grid.ForceRefresh()
 
@@ -710,7 +720,8 @@ class GridCellEventHandlers(object):
         # The button text
         text = event.text
 
-        self.grid.actions.set_attr("button_cell", text)
+        with undo_group(_("Button")):
+            self.grid.actions.set_attr("button_cell", text)
 
         self.grid.ForceRefresh()
 
@@ -721,7 +732,8 @@ class GridCellEventHandlers(object):
     def OnCellMarkup(self, event):
         """Cell markup event handler"""
 
-        self.grid.actions.toggle_attr("markup")
+        with undo_group(_("Markup")):
+            self.grid.actions.toggle_attr("markup")
 
         self.grid.ForceRefresh()
 
@@ -732,7 +744,8 @@ class GridCellEventHandlers(object):
     def OnMerge(self, event):
         """Merge cells event handler"""
 
-        self.grid.actions.merge_selected_cells(self.grid.selection)
+        with undo_group(_("Merge cells")):
+            self.grid.actions.merge_selected_cells(self.grid.selection)
 
         self.grid.ForceRefresh()
 
@@ -741,7 +754,8 @@ class GridCellEventHandlers(object):
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
 
-        self.grid.actions.toggle_attr("justification")
+        with undo_group(_("Justification")):
+            self.grid.actions.toggle_attr("justification")
 
         self.grid.ForceRefresh()
 
@@ -752,7 +766,8 @@ class GridCellEventHandlers(object):
     def OnCellAlignment(self, event):
         """Vertical cell alignment event handler"""
 
-        self.grid.actions.toggle_attr("vertical_align")
+        with undo_group(_("Alignment")):
+            self.grid.actions.toggle_attr("vertical_align")
 
         self.grid.ForceRefresh()
 
@@ -763,8 +778,9 @@ class GridCellEventHandlers(object):
     def OnCellBorderWidth(self, event):
         """Cell border width event handler"""
 
-        self.grid.actions.set_border_attr("borderwidth",
-                                          event.width, event.borders)
+        with undo_group(_("Border width")):
+            self.grid.actions.set_border_attr("borderwidth",
+                                              event.width, event.borders)
 
         self.grid.ForceRefresh()
 
@@ -775,8 +791,9 @@ class GridCellEventHandlers(object):
     def OnCellBorderColor(self, event):
         """Cell border color event handler"""
 
-        self.grid.actions.set_border_attr("bordercolor",
-                                          event.color, event.borders)
+        with undo_group(_("Border color")):
+            self.grid.actions.set_border_attr("bordercolor",
+                                              event.color, event.borders)
 
         self.grid.ForceRefresh()
 
@@ -787,7 +804,8 @@ class GridCellEventHandlers(object):
     def OnCellBackgroundColor(self, event):
         """Cell background color event handler"""
 
-        self.grid.actions.set_attr("bgcolor", event.color)
+        with undo_group(_("Background color")):
+            self.grid.actions.set_attr("bgcolor", event.color)
 
         self.grid.ForceRefresh()
 
@@ -798,7 +816,8 @@ class GridCellEventHandlers(object):
     def OnCellTextColor(self, event):
         """Cell text color event handler"""
 
-        self.grid.actions.set_attr("textcolor", event.color)
+        with undo_group(_("Text color")):
+            self.grid.actions.set_attr("textcolor", event.color)
 
         self.grid.ForceRefresh()
 
@@ -809,7 +828,8 @@ class GridCellEventHandlers(object):
     def OnTextRotation0(self, event):
         """Text rotation dialog event handler"""
 
-        self.grid.actions.set_attr("angle", 0)
+        with undo_group(_("Rotation 0°")):
+            self.grid.actions.set_attr("angle", 0)
 
         self.grid.ForceRefresh()
 
@@ -818,7 +838,8 @@ class GridCellEventHandlers(object):
     def OnTextRotation90(self, event):
         """Text rotation dialog event handler"""
 
-        self.grid.actions.set_attr("angle", 90)
+        with undo_group(_("Rotation 90°")):
+            self.grid.actions.set_attr("angle", 90)
 
         self.grid.ForceRefresh()
 
@@ -827,7 +848,8 @@ class GridCellEventHandlers(object):
     def OnTextRotation180(self, event):
         """Text rotation dialog event handler"""
 
-        self.grid.actions.set_attr("angle", 180)
+        with undo_group(_("Rotation 180°")):
+            self.grid.actions.set_attr("angle", 180)
 
         self.grid.ForceRefresh()
 
@@ -836,7 +858,8 @@ class GridCellEventHandlers(object):
     def OnTextRotation270(self, event):
         """Text rotation dialog event handler"""
 
-        self.grid.actions.set_attr("angle", -90)
+        with undo_group(_("Rotation 270°")):
+            self.grid.actions.set_attr("angle", -90)
 
         self.grid.ForceRefresh()
 
@@ -845,7 +868,8 @@ class GridCellEventHandlers(object):
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
 
-        self.grid.actions.toggle_attr("angle")
+        with undo_group(_("Rotation")):
+            self.grid.actions.toggle_attr("angle")
 
         self.grid.ForceRefresh()
 
