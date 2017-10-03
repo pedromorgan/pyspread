@@ -88,8 +88,6 @@ class DefaultConfig(object):
         self.grid_columns = "100"
         self.grid_tables = "3"
 
-        self.max_unredo = "5000"
-
         self.timer_interval = "1000"
 
         # Default row height and col width e.g. for Cairo rendering

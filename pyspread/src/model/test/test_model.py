@@ -46,14 +46,13 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 3)
 sys.path.insert(0, TESTPATH + (os.sep + os.pardir) * 2)
 
-from src.lib.testlib import params, pytest_generate_tests, unredotest_model
+from src.lib.testlib import params, pytest_generate_tests, undotest_model
 
 from src.model.model import KeyValueStore, CellAttributes, DictGrid
 from src.model.model import DataArray, CodeArray
 
 from src.lib.selection import Selection
-
-from src.model.unredo import UnRedo
+from src.lib.undo import stack as undo_stack
 
 
 class TestKeyValueStore(object):
@@ -82,7 +81,7 @@ class TestCellAttributes(object):
         """Creates empty CellAttributes"""
 
         self.cell_attr = CellAttributes()
-        self.cell_attr.unredo = UnRedo()
+        undo_stack().clear()
 
     def test_append(self):
         """Test append"""
@@ -94,8 +93,8 @@ class TestCellAttributes(object):
         self.cell_attr.append((selection, table, attr))
 
         # Check if 2 items - the actual action and the marker - have been added
-        assert len(self.cell_attr.unredo.undolist) == 2
-        assert len(self.cell_attr.unredo.redolist) == 0
+        assert undo_stack().undocount() == 2
+        assert undo_stack().redocount() == 0
         assert not self.cell_attr._attr_cache
 
     def test_getitem(self):
@@ -177,7 +176,7 @@ class TestDataArray(object):
 
         assert sorted(self.data_array.keys()) == [(1, 2, 3), (1, 2, 4)]
 
-    @unredotest_model
+    @undotest_model
     def test_pop(self):
         """Unit test for pop"""
 
@@ -193,7 +192,7 @@ class TestDataArray(object):
 
         assert self.data_array.shape == (100, 100, 100)
 
-    @unredotest_model
+    @undotest_model
     def test_set_shape(self):
         """Unit test for _set_shape"""
 

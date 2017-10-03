@@ -36,11 +36,10 @@ Provides:
   4. TableTabActionsMixin: Mixin for TableActions
   5. TableActions: Actions which affect table
   6. MacroActions: Actions on macros
-  7. UnRedoActions: Actions on the undo redo system
-  8. GridActions: Actions on the grid as a whole
-  9. SelectionActions: Actions on the grid selection
-  10. FindActions: Actions for finding and replacing
-  11. AllGridActions: All grid actions as a bundle
+  7. GridActions: Actions on the grid as a whole
+  8. SelectionActions: Actions on the grid selection
+  9. FindActions: Actions for finding and replacing
+  10. AllGridActions: All grid actions as a bundle
 
 
 """
@@ -91,6 +90,7 @@ except ImportError:
 
 from src.lib.selection import Selection
 from src.lib.fileio import AOpen, Bz2AOpen
+from src.lib.undo import stack as undo_stack
 
 from src.actions._main_window_actions import Actions
 from src.actions._grid_cell_actions import CellActions
@@ -306,7 +306,7 @@ class FileActions(Actions):
         self.code_array.macros = ""
 
         # Clear caches
-        self.code_array.unredo.reset()
+        undo_stack().clear()
         self.code_array.result_cache.clear()
 
         # Clear globals
@@ -368,9 +368,6 @@ class FileActions(Actions):
                 # Make loading safe
                 self.approve(filepath)
 
-                # Disable undo
-                self.grid.code_array.unredo.active = True
-
                 try:
                     wx.BeginBusyCursor()
                     self.grid.Disable()
@@ -392,8 +389,8 @@ class FileActions(Actions):
                 # Execute macros
                 self.main_window.actions.execute_macros()
 
-                # Enable undo again
-                self.grid.code_array.unredo.active = False
+                # Clear undo stack
+                undo_stack().clear()
 
                 self.grid.GetTable().ResetView()
                 self.grid.ForceRefresh()
@@ -935,11 +932,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                     key = target_row, target_col, tl_tab
 
                     try:
-                        # Set cell but do not mark unredo
-                        # before pasting is finished
-
-                        CellActions.set_code(self, key, cell_data,
-                                             mark_unredo=False)
+                        CellActions.set_code(self, key, cell_data)
                         no_pasted_cells += 1
                     except KeyError:
                         pass
@@ -949,10 +942,6 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
 
         else:
             self._show_final_paste_message(tl_key, no_pasted_cells)
-
-        if no_pasted_cells:
-            # If cells have been pasted mark unredo operation
-            self.grid.code_array.unredo.mark()
 
         self.pasting = False
 
@@ -1035,7 +1024,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
 
         # Clear caches
-        self.code_array.unredo.reset()
+        undo_stack().clear()
         self.code_array.result_cache.clear()
 
     def replace_cells(self, key, sorted_row_idxs):
@@ -1058,12 +1047,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                     del_keys.append((__row, __col, __tab))
 
         for key in del_keys:
-            self.grid.code_array.pop(key, mark_unredo=False)
+            self.grid.code_array.pop(key)
 
         for key in new_keys:
-            CellActions.set_code(self, key, new_keys[key], mark_unredo=False)
-
-        self.grid.code_array.unredo.mark()
+            CellActions.set_code(self, key, new_keys[key])
 
     def sort_ascending(self, key):
         """Sorts selection (or grid if none) corresponding to column of key"""
@@ -1098,28 +1085,6 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         self.replace_cells(key, sorted_row_idxs)
 
         self.grid.ForceRefresh()
-
-
-class UnRedoActions(Actions):
-    """Undo and redo operations"""
-
-    def undo(self):
-        """Calls undo in model.code_array.unredo, marks content as changed"""
-
-        # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
-
-        self.grid.code_array.unredo.undo()
-
-    def redo(self):
-        """Calls redo in model.code_array.unredo, marks content as changed"""
-
-        # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
-
-        self.grid.code_array.unredo.redo()
 
 
 class GridActions(Actions):
@@ -1563,7 +1528,7 @@ class SelectionActions(Actions):
                 for col in xrange(col_slc.start, col_slc.stop, col_slc.step):
                     self.select_cell(row, col, add_to_selected=True)
 
-    def delete_selection(self, selection=None, mark_unredo=True):
+    def delete_selection(self, selection=None):
         """Deletes selection, marks content as changed
 
         If selection is None then the current grid selection is used.
@@ -1573,8 +1538,6 @@ class SelectionActions(Actions):
 
         selection: Selection, defaults to None
         \tSelection that shall be deleted
-        mark_unredo: Boolean, defaults to True
-        \tIf True deletion is marked as separate undo step
 
         """
 
@@ -1589,11 +1552,7 @@ class SelectionActions(Actions):
 
         for row, col, tab in self.grid.code_array.dict_grid.keys():
             if tab == current_table and (row, col) in selection:
-                self.grid.actions.delete_cell((row, col, tab),
-                                              mark_unredo=False)
-
-        if mark_unredo:
-            self.grid.code_array.unredo.mark()
+                self.grid.actions.delete_cell((row, col, tab))
 
         self.grid.code_array.result_cache.clear()
 
@@ -1623,10 +1582,7 @@ class SelectionActions(Actions):
         current_table = self.grid.current_table
         for row, col, tab in self.grid.code_array.dict_grid.keys():
             if tab == current_table and (row, col) in selection:
-                self.grid.actions.quote_code((row, col, tab),
-                                             mark_unredo=False)
-
-        self.grid.code_array.unredo.mark()
+                self.grid.actions.quote_code((row, col, tab))
 
         self.grid.code_array.result_cache.clear()
 
@@ -1914,14 +1870,13 @@ class FindActions(Actions):
                            text=statustext)
 
 
-class AllGridActions(FileActions, TableActions, UnRedoActions,
+class AllGridActions(FileActions, TableActions,
                      GridActions, SelectionActions, FindActions, CellActions):
     """All grid actions as a bundle"""
 
     def __init__(self, grid):
         FileActions.__init__(self, grid)
         TableActions.__init__(self, grid)
-        UnRedoActions.__init__(self, grid)
         GridActions.__init__(self, grid)
         SelectionActions.__init__(self, grid)
         FindActions.__init__(self, grid)

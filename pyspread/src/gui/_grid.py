@@ -418,8 +418,7 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
 
         selection = Selection([], [], [], [], [key])
 
-        self.actions.set_attr("video_volume", new_video_volume, selection,
-                              mark_unredo=False)
+        self.actions.set_attr("video_volume", new_video_volume, selection)
 
     def ForceRefresh(self, *args, **kwargs):
         """Refresh hook"""
@@ -540,7 +539,7 @@ class GridCellEventHandlers(object):
             except KeyError:
                 video_volume = None
 
-            self.grid.actions.set_attr("panel_cell", True, mark_unredo=False)
+            self.grid.actions.set_attr("panel_cell", True)
 
             if video_volume is not None:
                 code = 'vlcpanel_factory("{}", {})'.format(
@@ -710,7 +709,7 @@ class GridCellEventHandlers(object):
         # The button text
         text = event.text
 
-        self.grid.actions.set_attr("button_cell", text, mark_unredo=False)
+        self.grid.actions.set_attr("button_cell", text)
 
         self.grid.ForceRefresh()
 
@@ -1472,10 +1471,8 @@ class GridEventHandlers(GridActionEventMixin):
                 rows += range(box[0][0], box[1][0]+1)
 
         for row in rows:
-            self.grid.code_array.set_row_height(row, tab, rowsize,
-                                                mark_unredo=False)
+            self.grid.code_array.set_row_height(row, tab, rowsize)
             self.grid.SetRowSize(row, rowsize * self.grid.grid_renderer.zoom)
-        self.grid.code_array.unredo.mark()
 
         # Mark content as changed
         post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,
@@ -1506,10 +1503,9 @@ class GridEventHandlers(GridActionEventMixin):
                 cols += range(box[0][1], box[1][1]+1)
 
         for col in cols:
-            self.grid.code_array.set_col_width(col, tab, colsize,
-                                               mark_unredo=False)
+            self.grid.code_array.set_col_width(col, tab, colsize)
             self.grid.SetColSize(col, colsize * self.grid.grid_renderer.zoom)
-        self.grid.code_array.unredo.mark()
+
 
         # Mark content as changed
         post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,

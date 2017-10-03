@@ -31,6 +31,8 @@ from copy import deepcopy
 
 import wx
 
+from src.lib.undo import stack as undo_stack
+
 # Standard grid values for initial filling
 
 grid_values = { \
@@ -93,17 +95,17 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs=funcargs)
 
 
-def unredo_test(grid):
+def undo_test(grid):
     """Tests if the model is identical after an undo and a redo"""
 
     code_array = deepcopy(grid.code_array)
-    grid.actions.undo()
-    grid.actions.redo()
+    undo_stack().undo()
+    undo_stack().redo()
     assert code_array.dict_grid == grid.code_array.dict_grid
     assert code_array == grid.code_array
 
 
-def unredotest_model(function):
+def undotest_model(function):
     """Tests if the model is identical after an undo and a redo
 
     The wrapped function's self must be the code_array or the data_array.
@@ -114,8 +116,8 @@ def unredotest_model(function):
     def wrapper(self, *args, **kwargs):
         function(self, *args, **kwargs)
         code_array = deepcopy(self.data_array)
-        self.data_array.unredo.undo()
-        self.data_array.unredo.redo()
+        undo_stack().undo()
+        undo_stack().redo()
         assert code_array == self.data_array
 
     return wrapper

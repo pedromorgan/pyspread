@@ -1247,14 +1247,6 @@ class PreferencesDialog(wx.Dialog):
     save_filetypes = ["pys", "pysu", "xls", "all"]
 
     parameters = [
-        ("max_unredo", {
-            "label": _(u"Max. undo steps"),
-            "tooltip": _(u"Maximum number of undo steps"),
-            "widget": wx.lib.intctrl.IntCtrl,
-            "widget_args": [],
-            "widget_kwargs": {"min": 0, "allow_long": True},
-            "prepocessor": int,
-        }),
         ("grid_rows", {
             "label": _(u"Grid rows"),
             "tooltip": _(u"Number of grid rows when starting pyspread"),
