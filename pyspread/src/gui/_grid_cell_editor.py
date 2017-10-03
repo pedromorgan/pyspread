@@ -209,6 +209,7 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         a non-None value.
         *Must Override*
         """
+
         val = self._tc.GetValue()
         grid.GetTable().SetValue(row, col, val)  # update the table
 
@@ -309,9 +310,8 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         keycode = event.GetKeyCode()
         if keycode == 13 and event.ControlDown():
             self._tc.SetValue(quote(self._tc.GetValue()))
-        else:
-            post_command_event(self.main_window, self.TableChangedMsg,
-                               updated_cell=self._tc.GetValue())
+        post_command_event(self.main_window, self.TableChangedMsg,
+                           updated_cell=self._tc.GetValue())
         event.Skip()
 
     def _update_control_length(self):

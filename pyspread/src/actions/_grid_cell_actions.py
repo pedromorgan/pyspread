@@ -58,6 +58,9 @@ class CellActions(Actions):
         except TypeError:
             pass
 
+        if code == old_code:
+            return
+
         if not (old_code is None and not code) and code != old_code:
             # Mark content as changed
             post_command_event(self.main_window, self.ContentChangedMsg,
@@ -381,8 +384,7 @@ class CellActions(Actions):
                     return
 
         self.delete_selection(selection, mark_unredo=False)
-        self.code_array.__setitem__((top, left, cursor[2]), top_left_code,
-                                    mark_unredo=False)
+        self.set_code((top, left, cursor[2]), top_left_code, mark_unredo=False)
 
         attr = {"merge_area": merge_area, "locked": True}
 

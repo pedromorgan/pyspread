@@ -82,32 +82,21 @@ class KeyValueStore(dict):
 
     @undoable
     def __setitem__(self, key, value):
-        try:
-            old_value = self[key]
-        except KeyError:
-            old_value = None
-
+        old_value = self[key]
         dict.__setitem__(self, key, value)
 
         yield "__setitem__"
-
         # Undo functionality comes here
-        if old_value is None:
-            self.pop(self, key)
-        else:
-            dict.__setitem__(self, key, old_value)
+        dict.__setitem__(self, key, old_value)
 
     @undoable
     def pop(self, key, *args):
-        if len(args) == 1 and key not in self:
-            default_value_returned = True
         res = dict.pop(self, key, *args)
 
         yield "pop", res
 
         # Undo functionality comes here
-        if not default_value_returned:
-            self[key] = res
+        dict.__setitem__(self, key, res)
 
 # End of class KeyValueStore
 
@@ -269,6 +258,25 @@ class CellAttributes(list):
 # End of class CellAttributes
 
 
+class Macros(object):
+    """Data descriptor for macro unicode string with undo functionality"""
+
+    def __init__(self, string=u""):
+        self._string = string
+
+    def __get__(self, instance, owner):
+        return self._string
+
+    @undoable
+    def __set__(self, instance, string):
+        old_string = self._string
+        self._string = string
+
+        yield "Macros changed"
+
+        self._string = old_string
+
+
 class DictGrid(KeyValueStore):
     """The core data class with all information that is stored in a pys file.
 
@@ -294,7 +302,7 @@ class DictGrid(KeyValueStore):
 
         self.cell_attributes = CellAttributes()
 
-        self.macros = u""
+        self.macros = Macros()
 
         self.row_heights = KeyValueStore()  # Keys have the format (row, table)
         self.col_widths = KeyValueStore()  # Keys have the format (col, table)
@@ -1294,7 +1302,7 @@ class CodeArray(DataArray):
                     'vlcpanel_factory': vlcpanel_factory}
         env = self._get_updated_environment(env_dict=env_dict)
 
-        _old_code = self(key)
+        #_old_code = self(key)
 
         # Return cell value if in safe mode
 
@@ -1376,7 +1384,7 @@ class CodeArray(DataArray):
                     pass
 
         # Change back cell value for evaluation from other cells
-        self.dict_grid[key] = _old_code
+        #self.dict_grid[key] = _old_code
 
         if glob_var is not None:
             globals().update({glob_var: result})

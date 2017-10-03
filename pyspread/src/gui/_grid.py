@@ -52,6 +52,8 @@ from src.sysvars import is_gtk, get_color
 from src.config import config
 
 from src.lib.selection import Selection
+from src.lib.undo import stack as undo_stack
+from src.lib.undo import undoable
 from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
@@ -1539,7 +1541,11 @@ class GridEventHandlers(GridActionEventMixin):
     def OnUndo(self, event):
         """Calls the grid undo method"""
 
-        self.grid.actions.undo()
+        undo_stack().undo()
+        self.grid.code_array.result_cache.clear()
+        # self.grid.actions.undo()
+
+
         self.grid.GetTable().ResetView()
         self.grid.Refresh()
         # Reset row heights and column widths by zooming
@@ -1551,7 +1557,12 @@ class GridEventHandlers(GridActionEventMixin):
     def OnRedo(self, event):
         """Calls the grid redo method"""
 
-        self.grid.actions.redo()
+        undo_stack().redo()
+        #self.grid.actions.redo()
+
+
+
+
         self.grid.GetTable().ResetView()
         self.grid.Refresh()
         # Reset row heights and column widths by zooming

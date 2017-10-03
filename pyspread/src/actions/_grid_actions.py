@@ -938,8 +938,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
                         # Set cell but do not mark unredo
                         # before pasting is finished
 
-                        self.grid.code_array.__setitem__(key, cell_data,
-                                                         mark_unredo=False)
+                        CellActions.set_code(self, key, cell_data,
+                                             mark_unredo=False)
                         no_pasted_cells += 1
                     except KeyError:
                         pass
@@ -1061,8 +1061,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             self.grid.code_array.pop(key, mark_unredo=False)
 
         for key in new_keys:
-            self.grid.code_array.__setitem__(key, new_keys[key],
-                                             mark_unredo=False)
+            CellActions.set_code(self, key, new_keys[key], mark_unredo=False)
 
         self.grid.code_array.unredo.mark()
 
