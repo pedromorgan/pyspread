@@ -1477,6 +1477,10 @@ class GridEventHandlers(GridActionEventMixin):
             self.grid.SetRowSize(row, rowsize * self.grid.grid_renderer.zoom)
         self.grid.code_array.unredo.mark()
 
+        # Mark content as changed
+        post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,
+                           changed=True)
+
         event.Skip()
         self.grid.ForceRefresh()
 
@@ -1506,6 +1510,10 @@ class GridEventHandlers(GridActionEventMixin):
                                                mark_unredo=False)
             self.grid.SetColSize(col, colsize * self.grid.grid_renderer.zoom)
         self.grid.code_array.unredo.mark()
+
+        # Mark content as changed
+        post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,
+                           changed=True)
 
         event.Skip()
         self.grid.ForceRefresh()
