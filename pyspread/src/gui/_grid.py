@@ -1544,12 +1544,12 @@ class GridEventHandlers(GridActionEventMixin):
         undo_stack().undo()
         self.grid.code_array.result_cache.clear()
         # self.grid.actions.undo()
+        post_command_event(self.grid.main_window, self.grid.TableChangedMsg,
+                           updated_cell=True)
 
-
-        self.grid.GetTable().ResetView()
-        self.grid.Refresh()
         # Reset row heights and column widths by zooming
         self.grid.actions.zoom()
+
         # Update toolbars
         self.grid.update_entry_line()
         self.grid.update_attribute_toolbar()
@@ -1559,12 +1559,9 @@ class GridEventHandlers(GridActionEventMixin):
 
         undo_stack().redo()
         #self.grid.actions.redo()
+        post_command_event(self.grid.main_window, self.grid.TableChangedMsg,
+                           updated_cell=True)
 
-
-
-
-        self.grid.GetTable().ResetView()
-        self.grid.Refresh()
         # Reset row heights and column widths by zooming
         self.grid.actions.zoom()
         # Update toolbars

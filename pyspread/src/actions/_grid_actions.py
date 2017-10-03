@@ -1162,8 +1162,10 @@ class GridActions(Actions):
         for row, tab in self.code_array.row_heights:
             if tab == self.grid.current_table and \
                row < self.grid.code_array.shape[0]:
-                zoomed_row_size = \
-                    self.code_array.row_heights[(row, tab)] * zoom
+                base_row_width = self.code_array.row_heights[(row, tab)]
+                if base_row_width is None:
+                    base_row_width = self.grid.GetDefaultRowSize()
+                zoomed_row_size = base_row_width * zoom
                 self.grid.SetRowSize(row, zoomed_row_size)
 
     def _zoom_cols(self, zoom):
@@ -1176,7 +1178,10 @@ class GridActions(Actions):
         for col, tab in self.code_array.col_widths:
             if tab == self.grid.current_table and \
                col < self.grid.code_array.shape[1]:
-                zoomed_col_size = self.code_array.col_widths[(col, tab)] * zoom
+                base_col_width = self.code_array.col_widths[(col, tab)]
+                if base_col_width is None:
+                    base_col_width = self.grid.GetDefaultColSize()
+                zoomed_col_size = base_col_width * zoom
                 self.grid.SetColSize(col, zoomed_col_size)
 
     def _zoom_labels(self, zoom):
