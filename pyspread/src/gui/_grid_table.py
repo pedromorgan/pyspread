@@ -112,7 +112,13 @@ class GridTable(wx.grid.PyGridTableBase):
         value = "".join(value.split("\n"))
 
         key = row, col, self.grid.current_table
-        self.grid.actions.set_code(key, value)
+
+        old_code = self.grid.code_array(key)
+        if old_code is None:
+            old_code = ""
+
+        if value != old_code:
+            self.grid.actions.set_code(key, value)
 
     def UpdateValues(self):
         """Update all displayed values"""

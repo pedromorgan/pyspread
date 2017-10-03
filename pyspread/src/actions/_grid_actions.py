@@ -1465,7 +1465,8 @@ class GridActions(Actions):
             self.grid._last_selected_cell = row, col, self.grid.current_table
 
         if not (row is None and col is None):
-            self.grid.MakeCellVisible(row, col)
+            if not self.grid.IsVisible(row, col, wholeCellVisible=True):
+                self.grid.MakeCellVisible(row, col)
             self.grid.SetGridCursor(row, col)
 
     cursor = property(get_cursor, set_cursor)
@@ -1869,6 +1870,7 @@ class FindActions(Actions):
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
+        self.grid.ForceRefresh()
 
 class AllGridActions(FileActions, TableActions,
                      GridActions, SelectionActions, FindActions, CellActions):

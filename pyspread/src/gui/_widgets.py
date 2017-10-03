@@ -851,11 +851,6 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
     def OnContentChange(self, event):
         """Event handler for updating the content"""
 
-        if event.text is None:
-            self.SetValue(u"")
-        else:
-            self.SetValue(event.text)
-
         event.Skip()
 
     def OnGridSelection(self, event):
@@ -1379,7 +1374,6 @@ class TableChoiceListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, GridEventMixin,
                     # 1. gather item data
                     # 2. delete item in list
                     # 3. insert item & it's data into the list at the new index
-                    print self.startIndex, self.dropIndex
 
                     # dropList is a list of field values from the list control
                     dropList = []

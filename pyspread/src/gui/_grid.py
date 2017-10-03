@@ -53,6 +53,7 @@ from src.config import config
 
 from src.lib.selection import Selection
 from src.lib.undo import stack as undo_stack
+from src.lib.undo import group as undo_group
 from src.lib.undo import undoable
 from src.model.model import CodeArray
 
@@ -450,7 +451,7 @@ class GridCellEventHandlers(object):
         """Text entry event handler"""
 
         row, col, _ = self.grid.actions.cursor
-
+        print 5455, row, col, event.code
         self.grid.GetTable().SetValue(row, col, event.code)
 
         event.Skip()
@@ -1237,7 +1238,8 @@ class GridEventHandlers(GridActionEventMixin):
             statustext = statustext.format(find_string=find_string)
 
         else:
-            self.grid.actions.replace(findpos, find_string, replace_string)
+            with undo_group(_("Replace")):
+                self.grid.actions.replace(findpos, find_string, replace_string)
             self.grid.actions.cursor = findpos
 
             # Update statusbar
@@ -1261,8 +1263,9 @@ class GridEventHandlers(GridActionEventMixin):
 
         findpositions = self.grid.actions.find_all(find_string, flags)
 
-        self.grid.actions.replace_all(findpositions, find_string,
-                                      replace_string)
+        with undo_group(_("Replace all")):
+            self.grid.actions.replace_all(findpositions, find_string,
+                                          replace_string)
 
         event.Skip()
 
@@ -1470,9 +1473,12 @@ class GridEventHandlers(GridActionEventMixin):
             if leftmost_col == 0 and rightmost_col == num_cols:
                 rows += range(box[0][0], box[1][0]+1)
 
-        for row in rows:
-            self.grid.code_array.set_row_height(row, tab, rowsize)
-            self.grid.SetRowSize(row, rowsize * self.grid.grid_renderer.zoom)
+        # All row resizing is undone in one click
+        with undo_group(_("Resize Rows")):
+            for row in rows:
+                self.grid.code_array.set_row_height(row, tab, rowsize)
+                zoomed_rowsize = rowsize * self.grid.grid_renderer.zoom
+                self.grid.SetRowSize(row, zoomed_rowsize)
 
         # Mark content as changed
         post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,
@@ -1502,10 +1508,12 @@ class GridEventHandlers(GridActionEventMixin):
             if top_row == 0 and bottom_row == num_rows:
                 cols += range(box[0][1], box[1][1]+1)
 
-        for col in cols:
-            self.grid.code_array.set_col_width(col, tab, colsize)
-            self.grid.SetColSize(col, colsize * self.grid.grid_renderer.zoom)
-
+        # All column resizing is undone in one click
+        with undo_group(_("Resize Columns")):
+            for col in cols:
+                self.grid.code_array.set_col_width(col, tab, colsize)
+                zoomed_colsize = colsize * self.grid.grid_renderer.zoom
+                self.grid.SetColSize(col, zoomed_colsize)
 
         # Mark content as changed
         post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,
@@ -1545,9 +1553,10 @@ class GridEventHandlers(GridActionEventMixin):
     def OnUndo(self, event):
         """Calls the grid undo method"""
 
+        statustext = undo_stack().undotext()
         undo_stack().undo()
         self.grid.code_array.result_cache.clear()
-        # self.grid.actions.undo()
+
         post_command_event(self.grid.main_window, self.grid.TableChangedMsg,
                            updated_cell=True)
 
@@ -1557,12 +1566,17 @@ class GridEventHandlers(GridActionEventMixin):
         # Update toolbars
         self.grid.update_entry_line()
         self.grid.update_attribute_toolbar()
+
+        post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
+                           text=statustext)
 
     def OnRedo(self, event):
         """Calls the grid redo method"""
 
+        statustext = undo_stack().redotext()
         undo_stack().redo()
-        #self.grid.actions.redo()
+        self.grid.code_array.result_cache.clear()
+
         post_command_event(self.grid.main_window, self.grid.TableChangedMsg,
                            updated_cell=True)
 
@@ -1571,5 +1585,8 @@ class GridEventHandlers(GridActionEventMixin):
         # Update toolbars
         self.grid.update_entry_line()
         self.grid.update_attribute_toolbar()
+
+        post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
+                           text=statustext)
 
 # End of class GridEventHandlers
