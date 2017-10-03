@@ -673,6 +673,10 @@ class ClipboardActions(Actions):
 
         parameters = interfaces.get_pasteas_parameters_from_user(obj)
 
+        if parameters is None:
+            # Dialog aborted
+            return
+
         paste_data = self._get_pasteas_data(parameters["dim"], obj)
 
         if parameters["transpose"]:

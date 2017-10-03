@@ -1063,7 +1063,7 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
     def OnMessage(self, event):
         """Statusbar message event handler"""
 
-        self.SetStatusText(event.text)
+        self.SetStatusText(unicode(event.text))
 
     def OnSize(self, evt):
         self.Reposition()  # for normal size events

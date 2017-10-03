@@ -59,6 +59,7 @@ from src.gui._dialogs import DependencyDialog
 
 from src.lib.clipboard import Clipboard
 from src.lib.filetypes import get_filetypes2wildcards
+from src.lib.undo import group as undo_group
 
 from src.gui._gui_interfaces import GuiInterfaces
 from src.gui.icons import icons
@@ -218,7 +219,7 @@ class MainWindow(wx.Frame, EventMixin):
 
         # Set background color for the toolbar via the manager
         ap = self._mgr.GetArtProvider()
-        ap.SetColour(aui.AUI_DOCKART_BACKGROUND_GRADIENT_COLOUR, 
+        ap.SetColour(aui.AUI_DOCKART_BACKGROUND_GRADIENT_COLOUR,
                      get_color(config["background_color"]))
 
         # Add the toolbars to the manager
@@ -1204,7 +1205,10 @@ class MainWindowEventHandlers(EventMixin):
 
         if wx.Window.FindFocus() != entry_line:
             selection = self.main_window.grid.selection
-            data = self.main_window.actions.cut(selection)
+
+            with undo_group(_("Cut")):
+                data = self.main_window.actions.cut(selection)
+
             self.main_window.clipboard.set_clipboard(data)
 
             self.main_window.grid.ForceRefresh()
@@ -1263,7 +1267,8 @@ class MainWindowEventHandlers(EventMixin):
             # We got a grid selection
             key = self.main_window.grid.actions.cursor
 
-            self.main_window.actions.paste(key, data)
+            with undo_group(_("Paste")):
+                self.main_window.actions.paste(key, data)
 
         self.main_window.grid.ForceRefresh()
 
@@ -1275,7 +1280,8 @@ class MainWindowEventHandlers(EventMixin):
         data = self.main_window.clipboard.get_clipboard()
         key = self.main_window.grid.actions.cursor
 
-        self.main_window.actions.paste_as(key, data)
+        with undo_group(_("Paste As...")):
+            self.main_window.actions.paste_as(key, data)
 
         self.main_window.grid.ForceRefresh()
 
