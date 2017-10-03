@@ -55,7 +55,7 @@ from src.gui._toolbars import MainToolbar, MacroToolbar, FindToolbar
 from src.gui._toolbars import WidgetToolbar, AttributesToolbar
 from src.gui._widgets import EntryLineToolbarPanel, StatusBar
 from src.gui._widgets import TableChoiceListCtrl
-from src.gui._dialogs import DependencyDialog
+from src.gui._dialogs import DependencyDialog, MacroPanel
 
 from src.lib.clipboard import Clipboard
 from src.lib.filetypes import get_filetypes2wildcards
@@ -150,6 +150,10 @@ class MainWindow(wx.Frame, EventMixin):
         # TableChoiceListCtrl
         self.table_list_panel = TableChoiceListCtrl(self, self.grid)
 
+        # Macro panel
+        macros = self.grid.code_array.macros
+        self.macro_panel = MacroPanel(self, macros, -1)
+
         # Clipboard
         self.clipboard = Clipboard()
 
@@ -193,6 +197,7 @@ class MainWindow(wx.Frame, EventMixin):
         toggles = [
             (self.main_toolbar, "main_window_toolbar", _("Main toolbar")),
             (self.macro_toolbar, "macro_toolbar", _("Macro toolbar")),
+            (self.macro_panel, "macro_panel", _("Macro panel")),
             (self.attributes_toolbar, "attributes_toolbar",
              _("Format toolbar")),
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
@@ -254,6 +259,11 @@ class MainWindow(wx.Frame, EventMixin):
         self._mgr.AddPane(self.table_list_panel, aui.AuiPaneInfo().
                           Name("table_list_panel").Caption(_("Table")).
                           CenterPane().Left().BestSize(50, 300))
+
+        self._mgr.AddPane(self.macro_panel, aui.AuiPaneInfo().
+                          Name("macro_panel").Caption(_("Macro panel")).
+                          Gripper(False).CenterPane().Right().
+                          BestSize(200, 200))
 
         # Load perspective from config
         window_layout = config["window_layout"]
@@ -322,6 +332,8 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnFindToolbarToggle)
         self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
+        self.Bind(self.EVT_CMD_MACROPANEL_TOGGLE,
+                  handlers.OnMacroPanelToggle)
         self.Bind(self.EVT_CMD_TABLELIST_TOGGLE,
                   handlers.OnTableListToggle)
         self.Bind(aui.EVT_AUI_PANE_CLOSE, handlers.OnPaneClose)
@@ -372,7 +384,6 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_DEPENDENCIES, handlers.OnDependencies)
         self.Bind(self.EVT_CMD_ABOUT, handlers.OnAbout)
 
-        self.Bind(self.EVT_CMD_MACROLIST, handlers.OnMacroList)
         self.Bind(self.EVT_CMD_MACROREPLACE, handlers.OnMacroReplace)
         self.Bind(self.EVT_CMD_MACROEXECUTE, handlers.OnMacroExecute)
         self.Bind(self.EVT_CMD_MACROLOAD, handlers.OnMacroListLoad)
@@ -675,6 +686,16 @@ class MainWindowEventHandlers(EventMixin):
 
         entry_line_panel_info = \
             self.main_window._mgr.GetPane("entry_line_panel")
+
+        self._toggle_pane(entry_line_panel_info)
+
+        event.Skip()
+
+    def OnMacroPanelToggle(self, event):
+        """Macro panel toggle event handler"""
+
+        entry_line_panel_info = \
+            self.main_window._mgr.GetPane("macro_panel")
 
         self._toggle_pane(entry_line_panel_info)
 
@@ -1394,13 +1415,6 @@ class MainWindowEventHandlers(EventMixin):
         dlg.Destroy()
 
     # Macro events
-
-    def OnMacroList(self, event):
-        """Macro list dialog event handler"""
-
-        self.main_window.interfaces.display_macros()
-
-        event.Skip()
 
     def OnMacroReplace(self, event):
         """Macro change event handler"""

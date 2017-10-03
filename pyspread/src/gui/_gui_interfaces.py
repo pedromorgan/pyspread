@@ -49,7 +49,7 @@ import wx.lib.agw.genericmessagedialog as GMD
 
 import src.lib.i18n as i18n
 
-from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
+from _dialogs import DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
 from _dialogs import PreferencesDialog, GPGParamsDialog, PasteAsDialog
 from src.gui._cairo_export_dialog import CairoExportDialog
@@ -364,15 +364,6 @@ class DialogInterfaceMixin(object):
         """Displays goto cell dialog"""
 
         dlg = CellEntryDialog(self.main_window)
-
-        dlg.Show()
-
-    def display_macros(self):
-        """Displays macro dialog"""
-
-        macros = self.main_window.grid.code_array.macros
-
-        dlg = MacroDialog(self.main_window, macros, -1)
 
         dlg.Show()
 

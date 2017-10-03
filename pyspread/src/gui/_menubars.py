@@ -296,6 +296,9 @@ class MainMenu(_filledMenu, EventMixin):
                         wx.ITEM_CHECK]]],
                 [item, [self.EntryLineToggleMsg, _("Entry line"),
                         _("Shows and hides the entry line.")], wx.ITEM_CHECK],
+                [item, [self.MacroPanelToggleMsg, _("Macro panel"),
+                        _("Shows and hides the macro panel.")],
+                    wx.ITEM_CHECK],
                 [item, [self.TableListToggleMsg, _("Table list"),
                         _("Shows and hides the table selection list.")],
                     wx.ITEM_CHECK],
@@ -388,8 +391,6 @@ class MainMenu(_filledMenu, EventMixin):
                         _("Merges / unmerges selected cells. ")]],
                 ]],
             [wx.Menu, _("&Macro"), [
-                [item, [self.MacroListMsg, _("&Macro list") + "\tCtrl+m",
-                        _("Choose, fill in, manage, and create macros")]],
                 [item, [self.MacroLoadMsg, _("&Load macro list"),
                         _("Load macro list")]],
                 [item, [self.MacroSaveMsg, _("&Save macro list"),

@@ -374,6 +374,8 @@ class FileActions(Actions):
                     self.clear()
                     interface = Interface(self.grid.code_array, infile)
                     interface.to_code_array()
+                    self.grid.main_window.macro_panel.codetext_ctrl.SetText(
+                        self.grid.code_array.macros)
 
                 except (ValueError, xlrd.biffh.XLRDError), err:
                     post_command_event(self.main_window, self.StatusBarMsg,

@@ -89,7 +89,6 @@ class MainWindowEventMixin(object):
     DependenciesMsg, EVT_CMD_DEPENDENCIES = new_command_event()
     AboutMsg, EVT_CMD_ABOUT = new_command_event()
 
-    MacroListMsg, EVT_CMD_MACROLIST = new_command_event()
     MacroReplaceMsg, EVT_CMD_MACROREPLACE = new_command_event()
     MacroExecuteMsg, EVT_CMD_MACROEXECUTE = new_command_event()
     MacroLoadMsg, EVT_CMD_MACROLOAD = new_command_event()
@@ -98,6 +97,7 @@ class MainWindowEventMixin(object):
 
     MainToolbarToggleMsg, EVT_CMD_MAINTOOLBAR_TOGGLE = new_command_event()
     MacroToolbarToggleMsg, EVT_CMD_MACROTOOLBAR_TOGGLE = new_command_event()
+    MacroPanelToggleMsg, EVT_CMD_MACROPANEL_TOGGLE = new_command_event()
     WidgetToolbarToggleMsg, EVT_CMD_WIDGETTOOLBAR_TOGGLE = new_command_event()
     AttributesToolbarToggleMsg, EVT_CMD_ATTRIBUTESTOOLBAR_TOGGLE = \
         new_command_event()

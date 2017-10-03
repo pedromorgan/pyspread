@@ -256,27 +256,6 @@ class CellAttributes(list):
 # End of class CellAttributes
 
 
-class Macros(object):
-    """Data descriptor for macro unicode string with undo functionality"""
-
-    def __init__(self, string=u""):
-        self._string = string
-
-    def __get__(self, instance, owner):
-        return self._string
-
-    @undoable
-    def __set__(self, instance, string):
-        old_string = self._string
-        self._string = string
-
-        yield "Macros changed"
-
-        # Undo actions
-
-        self._string = old_string
-
-
 class DictGrid(KeyValueStore):
     """The core data class with all information that is stored in a pys file.
 
@@ -302,7 +281,7 @@ class DictGrid(KeyValueStore):
 
         self.cell_attributes = CellAttributes()
 
-        self.macros = Macros()
+        self.macros = u""
 
         self.row_heights = KeyValueStore()  # Keys have the format (row, table)
         self.col_widths = KeyValueStore()  # Keys have the format (col, table)

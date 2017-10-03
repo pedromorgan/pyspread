@@ -732,6 +732,8 @@ class MacroActions(Actions):
                 macrocode = macro_infile.read()
 
                 self.grid.code_array.macros += "\n" + macrocode.strip("\n")
+                self.grid.main_window.macro_panel.codetext_ctrl.SetText(
+                    self.grid.code_array.macros)
 
         except IOError:
             msg = _("Error opening file {filepath}.").format(filepath=filepath)

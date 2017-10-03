@@ -797,8 +797,8 @@ class CsvExportDialog(wx.Dialog):
 # end of class CsvImportDialog
 
 
-class MacroDialog(wx.Frame, MainWindowEventMixin):
-    """Macro management dialog"""
+class MacroPanel(wx.Panel, MainWindowEventMixin):
+    """Macro management panel"""
 
     def __init__(self, parent, macros, *args, **kwds):
 
@@ -809,7 +809,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         self.parent = parent
         self.macros = macros
 
-        wx.Frame.__init__(self, parent, *args, **kwds)
+        wx.Panel.__init__(self, parent, *args, **kwds)
 
         self.splitter = wx.SplitterWindow(self, -1,
                                           style=wx.SP_3D | wx.SP_BORDER)
@@ -824,9 +824,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         style = wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH
         self.result_ctrl = wx.TextCtrl(self.lower_panel, -1, style=style)
 
-        self.ok_button = wx.Button(self.lower_panel, wx.ID_OK)
         self.apply_button = wx.Button(self.lower_panel, wx.ID_APPLY)
-        self.close_button = wx.Button(self.lower_panel, wx.ID_CLOSE)
 
         self._set_properties()
         self._do_layout()
@@ -835,9 +833,7 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
         # Bindings
         self.Bind(stc.EVT_STC_MODIFIED, self.OnText, self.codetext_ctrl)
-        self.Bind(wx.EVT_BUTTON, self.OnOk, self.ok_button)
         self.Bind(wx.EVT_BUTTON, self.OnApply, self.apply_button)
-        self.Bind(wx.EVT_BUTTON, self.OnClose, self.close_button)
         parent.Bind(self.EVT_CMD_MACROERR, self.update_result_ctrl)
 
         # States
@@ -856,16 +852,14 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         upper_sizer.Add(self.codetext_ctrl, 1, wx.EXPAND, 0)
         lower_sizer.Add(self.result_ctrl, 1, wx.EXPAND, 0)
         lower_sizer.Add(button_sizer, 1, wx.EXPAND, 0)
-        button_sizer.Add(self.ok_button, 1, wx.EXPAND, 0)
         button_sizer.Add(self.apply_button, 1, wx.EXPAND, 0)
-        button_sizer.Add(self.close_button, 1, wx.EXPAND, 0)
 
         self.upper_panel.SetSizer(upper_sizer)
         self.lower_panel.SetSizer(lower_sizer)
+        sash_50 = int(round((config["window_size"][1] - 100) * 0.5))
 
         self.splitter.SplitHorizontally(self.upper_panel,
-                                        self.lower_panel,
-                                        400)
+                                        self.lower_panel, sash_50)
         dialog_main_sizer.Add(self.splitter, 1, wx.EXPAND, 0)
         self.SetSizer(dialog_main_sizer)
         self.Layout()
@@ -873,12 +867,8 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
     def _set_properties(self):
         """Setup title, size and tooltips"""
 
-        self.SetTitle(_("Macro list"))
-        self.SetSize((800, 600))
         self.codetext_ctrl.SetToolTipString(_("Enter python code here."))
-        self.ok_button.SetToolTipString(_("Accept all changes"))
         self.apply_button.SetToolTipString(_("Apply changes to current macro"))
-        self.close_button.SetToolTipString(_("Remove current macro"))
         self.splitter.SetBackgroundStyle(wx.BG_STYLE_COLOUR)
         self.result_ctrl.SetMinSize((10, 10))
 
@@ -886,12 +876,6 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
         """Event handler for code control"""
 
         self.macros = self.codetext_ctrl.GetText()
-
-    def OnOk(self, event):
-        """Event handler for Ok button"""
-
-        self._ok_pressed = True
-        self.OnApply(event)
 
     def OnApply(self, event):
         """Event handler for Apply button"""
@@ -920,21 +904,6 @@ class MacroDialog(wx.Frame, MainWindowEventMixin):
 
         event.Skip()
         return success
-
-    def OnClose(self, event):
-        """Event handler for Cancel button"""
-
-        # Warn if any unsaved changes
-        if self.parent.grid.code_array.macros != self.macros:
-            dlg = wx.MessageDialog(
-                self, _("There are changes in the macro editor "
-                        "which have not yet been applied.  Are you sure you "
-                        "wish to close the editor?"), _("Close Editor"),
-                wx.YES_NO | wx.ICON_WARNING)
-            if dlg.ShowModal() == wx.ID_NO:
-                return
-
-        self.Destroy()
 
     def update_result_ctrl(self, event):
         """Update event result following execution by main window"""
