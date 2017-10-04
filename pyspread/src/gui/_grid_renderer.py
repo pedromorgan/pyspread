@@ -365,22 +365,19 @@ class RowLabelRenderer(glr.GridLabelRenderer):
     """Row label renderer mixin class that highlights the current line"""
 
     def Draw(self, grid, dc, rect, row):
-
+        rect.y -= 1
         if row == grid.actions.cursor[0]:
-            rect.y += 1
-            rect.height -= 1
-            pen_color = get_color(wx.SYS_COLOUR_MENUHILIGHT)
-            pen = wx.Pen(pen_color, 2, wx.SOLID)
-            dc.SetPen(pen)
+            color = get_color(config["selection_color"])
         else:
-            dc.SetPen(wx.TRANSPARENT_PEN)
+            color = get_color(config["label_color"])
 
-        color = get_color(wx.SYS_COLOUR_BACKGROUND)
+        dc.SetPen(wx.TRANSPARENT_PEN)
         dc.SetBrush(wx.Brush(color))
         dc.DrawRectangleRect(rect)
         hAlign, vAlign = grid.GetRowLabelAlignment()
         text = grid.GetRowLabelValue(row)
-        self.DrawBorder(grid, dc, rect)
+        if row != grid.actions.cursor[0]:
+            self.DrawBorder(grid, dc, rect)
         self.DrawText(grid, dc, rect, text, hAlign, vAlign)
 
 # end of class RowLabelRenderer
@@ -390,21 +387,20 @@ class ColLabelRenderer(glr.GridLabelRenderer):
     """Column label renderer mixin class that highlights the current line"""
 
     def Draw(self, grid, dc, rect, col):
+        rect.x -= 1
         if col == grid.actions.cursor[1]:
-            rect.x += 1
-            rect.width -= 1
-            pen_color = get_color(wx.SYS_COLOUR_MENUHILIGHT)
-            pen = wx.Pen(pen_color, 2, wx.SOLID)
-            dc.SetPen(pen)
-        else:
-            dc.SetPen(wx.TRANSPARENT_PEN)
+            color = get_color(config["selection_color"])
 
-        color = get_color(wx.SYS_COLOUR_BACKGROUND)
+        else:
+            color = get_color(config["label_color"])
+
+        dc.SetPen(wx.TRANSPARENT_PEN)
         dc.SetBrush(wx.Brush(color))
         dc.DrawRectangleRect(rect)
         hAlign, vAlign = grid.GetColLabelAlignment()
         text = grid.GetColLabelValue(col)
-        self.DrawBorder(grid, dc, rect)
+        if col != grid.actions.cursor[1]:
+            self.DrawBorder(grid, dc, rect)
         self.DrawText(grid, dc, rect, text, hAlign, vAlign)
 
 # end of class ColLabelRenderer
