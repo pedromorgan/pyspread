@@ -1173,8 +1173,10 @@ class GridEventHandlers(GridActionEventMixin):
             return
 
         else:
+            wheel_speed = config["mouse_wheel_speed_factor"]
             x, y = self.grid.GetViewStart()
-            direction = 1 if event.GetWheelRotation() < 0 else -1
+            direction = wheel_speed if event.GetWheelRotation() < 0 \
+                else -wheel_speed
             if event.ShiftDown():
                 # Scroll sideways if shift is pressed.
                 self.grid.Scroll(x + direction, y)

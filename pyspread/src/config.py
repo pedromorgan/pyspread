@@ -122,6 +122,9 @@ class DefaultConfig(object):
         # Increase and decrease factor on zoom in and zoom out
         self.zoom_factor = "0.05"
 
+        # Mouse wheel scroll speed for the grid
+        self.mouse_wheel_speed_factor = "3"
+
         # GPG parameters
         # --------------
 
