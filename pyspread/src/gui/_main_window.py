@@ -59,7 +59,7 @@ from src.gui._dialogs import DependencyDialog, MacroPanel
 
 from src.lib.clipboard import Clipboard
 from src.lib.filetypes import get_filetypes2wildcards
-from src.lib.undo import group as undo_group
+import src.lib.undo as undo
 
 from src.gui._gui_interfaces import GuiInterfaces
 from src.gui.icons import icons
@@ -167,11 +167,26 @@ class MainWindow(wx.Frame, EventMixin):
         self._do_layout()
         self._bind()
 
+        if is_gtk():
+            try:
+                wx.Yield()
+            except:
+                pass
+
+        # Update undo stack savepoint
+        undo.stack().savepoint()
+
+        # Update content changed state
+        try:
+            post_command_event(self.grid.main_window,
+                               self.grid.ContentChangedMsg)
+        except TypeError:
+            # The main window does not exist any more
+            pass
+
     def _states(self):
         """Sets main window states"""
 
-        # Has the current file been changed since the last save?
-        self.changed_since_save = False
         self.filepath = None
 
         # Print data
@@ -473,11 +488,9 @@ class MainWindowEventHandlers(EventMixin):
     def OnContentChanged(self, event):
         """Titlebar star adjustment event handler"""
 
-        self.main_window.changed_since_save = event.changed
-
         title = self.main_window.GetTitle()
 
-        if event.changed:
+        if undo.stack().haschanged():
             # Put * in front of title
             if title[:2] != "* ":
                 new_title = "* " + title
@@ -526,7 +539,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # If changes have taken place save of old grid
 
-        if self.main_window.changed_since_save:
+        if undo.stack().haschanged():
             save_choice = self.interfaces.get_save_request_from_user()
 
             if save_choice is None:
@@ -737,7 +750,7 @@ class MainWindowEventHandlers(EventMixin):
 
         # If changes have taken place save of old grid
 
-        if self.main_window.changed_since_save:
+        if undo.stack().haschanged():
             save_choice = self.interfaces.get_save_request_from_user()
 
             if save_choice is None:
@@ -796,10 +809,13 @@ class MainWindowEventHandlers(EventMixin):
             except:
                 pass
 
-        # Mark content as unchanged
+        # Update undo stack savepoint and clear undo stack
+        undo.stack().clear()
+        undo.stack().savepoint()
+
+        # Update content changed state
         try:
-            post_command_event(self.main_window, self.ContentChangedMsg,
-                               changed=False)
+            post_command_event(self.main_window, self.ContentChangedMsg)
         except TypeError:
             # The main window does not exist any more
             pass
@@ -808,8 +824,7 @@ class MainWindowEventHandlers(EventMixin):
         """File open event handler"""
 
         # If changes have taken place save of old grid
-
-        if self.main_window.changed_since_save:
+        if undo.stack().haschanged():
             save_choice = self.interfaces.get_save_request_from_user()
 
             if save_choice is None:
@@ -869,13 +884,17 @@ class MainWindowEventHandlers(EventMixin):
             except:
                 pass
 
-        # Mark content as unchanged
+        # Update savepoint and clear the undo stack
+        undo.stack().clear()
+        undo.stack().savepoint()
+
+        # Update content changed state
         try:
-            post_command_event(self.main_window, self.ContentChangedMsg,
-                               changed=False)
+            post_command_event(self.main_window, self.ContentChangedMsg)
         except TypeError:
             # The main window does not exist any more
             pass
+
 
     def OnSave(self, event):
         """File save event handler"""
@@ -914,6 +933,9 @@ class MainWindowEventHandlers(EventMixin):
                            self.main_window.GridActionSaveMsg,
                            attr={"filepath": self.main_window.filepath,
                                  "filetype": filetype})
+
+        # Update undo stack savepoint
+        undo.stack().savepoint()
 
         # Display file save in status bar
 
@@ -1227,7 +1249,7 @@ class MainWindowEventHandlers(EventMixin):
         if wx.Window.FindFocus() != entry_line:
             selection = self.main_window.grid.selection
 
-            with undo_group(_("Cut")):
+            with undo.group(_("Cut")):
                 data = self.main_window.actions.cut(selection)
 
             self.main_window.clipboard.set_clipboard(data)
@@ -1288,7 +1310,7 @@ class MainWindowEventHandlers(EventMixin):
             # We got a grid selection
             key = self.main_window.grid.actions.cursor
 
-            with undo_group(_("Paste")):
+            with undo.group(_("Paste")):
                 self.main_window.actions.paste(key, data)
 
         self.main_window.grid.ForceRefresh()
@@ -1301,7 +1323,7 @@ class MainWindowEventHandlers(EventMixin):
         data = self.main_window.clipboard.get_clipboard()
         key = self.main_window.grid.actions.cursor
 
-        with undo_group(_("Paste As...")):
+        with undo.group(_("Paste As...")):
             self.main_window.actions.paste_as(key, data)
 
         self.main_window.grid.ForceRefresh()

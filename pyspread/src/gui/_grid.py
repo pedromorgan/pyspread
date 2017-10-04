@@ -52,9 +52,7 @@ from src.sysvars import is_gtk, get_color
 from src.config import config
 
 from src.lib.selection import Selection
-from src.lib.undo import stack as undo_stack
-from src.lib.undo import group as undo_group
-from src.lib.undo import undoable
+import src.lib.undo as undo
 from src.model.model import CodeArray
 
 from src.actions._grid_actions import AllGridActions
@@ -85,7 +83,8 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
         glr.GridWithLabelRenderersMixin.__init__(self)
 
-        self.SetDefaultCellBackgroundColour(get_color(config["background_color"]))
+        default_bg_color = get_color(config["background_color"])
+        self.SetDefaultCellBackgroundColour(default_bg_color)
 
         # Cursor position on entering selection mode
         self.sel_mode_cursor = None
@@ -451,7 +450,6 @@ class GridCellEventHandlers(object):
         """Text entry event handler"""
 
         row, col, _ = self.grid.actions.cursor
-        print 5455, row, col, event.code
         self.grid.GetTable().SetValue(row, col, event.code)
 
         event.Skip()
@@ -588,7 +586,7 @@ class GridCellEventHandlers(object):
     def OnPasteFormat(self, event):
         """Paste format event handler"""
 
-        with undo_group(_("Paste format")):
+        with undo.group(_("Paste format")):
             self.grid.actions.paste_format()
 
         self.grid.ForceRefresh()
@@ -598,7 +596,7 @@ class GridCellEventHandlers(object):
     def OnCellFont(self, event):
         """Cell font event handler"""
 
-        with undo_group(_("Font")):
+        with undo.group(_("Font")):
             self.grid.actions.set_attr("textfont", event.font)
 
         self.grid.ForceRefresh()
@@ -610,7 +608,7 @@ class GridCellEventHandlers(object):
     def OnCellFontSize(self, event):
         """Cell font size event handler"""
 
-        with undo_group(_("Font size")):
+        with undo.group(_("Font size")):
             self.grid.actions.set_attr("pointsize", event.size)
 
         self.grid.ForceRefresh()
@@ -622,7 +620,7 @@ class GridCellEventHandlers(object):
     def OnCellFontBold(self, event):
         """Cell font bold event handler"""
 
-        with undo_group(_("Bold")):
+        with undo.group(_("Bold")):
             try:
                 try:
                     weight = getattr(wx, event.weight[2:])
@@ -646,7 +644,7 @@ class GridCellEventHandlers(object):
     def OnCellFontItalics(self, event):
         """Cell font italics event handler"""
 
-        with undo_group(_("Italics")):
+        with undo.group(_("Italics")):
             try:
                 try:
                     style = getattr(wx, event.style[2:])
@@ -669,7 +667,7 @@ class GridCellEventHandlers(object):
     def OnCellFontUnderline(self, event):
         """Cell font underline event handler"""
 
-        with undo_group(_("Underline")):
+        with undo.group(_("Underline")):
             self.grid.actions.toggle_attr("underline")
 
         self.grid.ForceRefresh()
@@ -681,7 +679,7 @@ class GridCellEventHandlers(object):
     def OnCellFontStrikethrough(self, event):
         """Cell font strike through event handler"""
 
-        with undo_group(_("Strikethrough")):
+        with undo.group(_("Strikethrough")):
             self.grid.actions.toggle_attr("strikethrough")
 
         self.grid.ForceRefresh()
@@ -693,7 +691,7 @@ class GridCellEventHandlers(object):
     def OnCellFrozen(self, event):
         """Cell frozen event handler"""
 
-        with undo_group(_("Frozen")):
+        with undo.group(_("Frozen")):
             self.grid.actions.change_frozen_attr()
 
         self.grid.ForceRefresh()
@@ -705,7 +703,7 @@ class GridCellEventHandlers(object):
     def OnCellLocked(self, event):
         """Cell locked event handler"""
 
-        with undo_group(_("Lock")):
+        with undo.group(_("Lock")):
             self.grid.actions.toggle_attr("locked")
 
         self.grid.ForceRefresh()
@@ -720,7 +718,7 @@ class GridCellEventHandlers(object):
         # The button text
         text = event.text
 
-        with undo_group(_("Button")):
+        with undo.group(_("Button")):
             self.grid.actions.set_attr("button_cell", text)
 
         self.grid.ForceRefresh()
@@ -732,7 +730,7 @@ class GridCellEventHandlers(object):
     def OnCellMarkup(self, event):
         """Cell markup event handler"""
 
-        with undo_group(_("Markup")):
+        with undo.group(_("Markup")):
             self.grid.actions.toggle_attr("markup")
 
         self.grid.ForceRefresh()
@@ -744,7 +742,7 @@ class GridCellEventHandlers(object):
     def OnMerge(self, event):
         """Merge cells event handler"""
 
-        with undo_group(_("Merge cells")):
+        with undo.group(_("Merge cells")):
             self.grid.actions.merge_selected_cells(self.grid.selection)
 
         self.grid.ForceRefresh()
@@ -754,7 +752,7 @@ class GridCellEventHandlers(object):
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
 
-        with undo_group(_("Justification")):
+        with undo.group(_("Justification")):
             self.grid.actions.toggle_attr("justification")
 
         self.grid.ForceRefresh()
@@ -766,7 +764,7 @@ class GridCellEventHandlers(object):
     def OnCellAlignment(self, event):
         """Vertical cell alignment event handler"""
 
-        with undo_group(_("Alignment")):
+        with undo.group(_("Alignment")):
             self.grid.actions.toggle_attr("vertical_align")
 
         self.grid.ForceRefresh()
@@ -778,7 +776,7 @@ class GridCellEventHandlers(object):
     def OnCellBorderWidth(self, event):
         """Cell border width event handler"""
 
-        with undo_group(_("Border width")):
+        with undo.group(_("Border width")):
             self.grid.actions.set_border_attr("borderwidth",
                                               event.width, event.borders)
 
@@ -791,7 +789,7 @@ class GridCellEventHandlers(object):
     def OnCellBorderColor(self, event):
         """Cell border color event handler"""
 
-        with undo_group(_("Border color")):
+        with undo.group(_("Border color")):
             self.grid.actions.set_border_attr("bordercolor",
                                               event.color, event.borders)
 
@@ -804,7 +802,7 @@ class GridCellEventHandlers(object):
     def OnCellBackgroundColor(self, event):
         """Cell background color event handler"""
 
-        with undo_group(_("Background color")):
+        with undo.group(_("Background color")):
             self.grid.actions.set_attr("bgcolor", event.color)
 
         self.grid.ForceRefresh()
@@ -816,7 +814,7 @@ class GridCellEventHandlers(object):
     def OnCellTextColor(self, event):
         """Cell text color event handler"""
 
-        with undo_group(_("Text color")):
+        with undo.group(_("Text color")):
             self.grid.actions.set_attr("textcolor", event.color)
 
         self.grid.ForceRefresh()
@@ -828,7 +826,7 @@ class GridCellEventHandlers(object):
     def OnTextRotation0(self, event):
         """Text rotation dialog event handler"""
 
-        with undo_group(_("Rotation 0°")):
+        with undo.group(_("Rotation 0°")):
             self.grid.actions.set_attr("angle", 0)
 
         self.grid.ForceRefresh()
@@ -838,7 +836,7 @@ class GridCellEventHandlers(object):
     def OnTextRotation90(self, event):
         """Text rotation dialog event handler"""
 
-        with undo_group(_("Rotation 90°")):
+        with undo.group(_("Rotation 90°")):
             self.grid.actions.set_attr("angle", 90)
 
         self.grid.ForceRefresh()
@@ -848,7 +846,7 @@ class GridCellEventHandlers(object):
     def OnTextRotation180(self, event):
         """Text rotation dialog event handler"""
 
-        with undo_group(_("Rotation 180°")):
+        with undo.group(_("Rotation 180°")):
             self.grid.actions.set_attr("angle", 180)
 
         self.grid.ForceRefresh()
@@ -858,7 +856,7 @@ class GridCellEventHandlers(object):
     def OnTextRotation270(self, event):
         """Text rotation dialog event handler"""
 
-        with undo_group(_("Rotation 270°")):
+        with undo.group(_("Rotation 270°")):
             self.grid.actions.set_attr("angle", -90)
 
         self.grid.ForceRefresh()
@@ -868,7 +866,7 @@ class GridCellEventHandlers(object):
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
 
-        with undo_group(_("Rotation")):
+        with undo.group(_("Rotation")):
             self.grid.actions.toggle_attr("angle")
 
         self.grid.ForceRefresh()
@@ -1262,7 +1260,7 @@ class GridEventHandlers(GridActionEventMixin):
             statustext = statustext.format(find_string=find_string)
 
         else:
-            with undo_group(_("Replace")):
+            with undo.group(_("Replace")):
                 self.grid.actions.replace(findpos, find_string, replace_string)
             self.grid.actions.cursor = findpos
 
@@ -1287,7 +1285,7 @@ class GridEventHandlers(GridActionEventMixin):
 
         findpositions = self.grid.actions.find_all(find_string, flags)
 
-        with undo_group(_("Replace all")):
+        with undo.group(_("Replace all")):
             self.grid.actions.replace_all(findpositions, find_string,
                                           replace_string)
 
@@ -1334,7 +1332,7 @@ class GridEventHandlers(GridActionEventMixin):
             ins_point = bbox[0][0] - 1
             no_rows = self._get_no_rowscols(bbox)[0]
 
-        with undo_group(_("Insert rows")):
+        with undo.group(_("Insert rows")):
             self.grid.actions.insert_rows(ins_point, no_rows)
 
         self.grid.GetTable().ResetView()
@@ -1358,7 +1356,7 @@ class GridEventHandlers(GridActionEventMixin):
             ins_point = bbox[0][1] - 1
             no_cols = self._get_no_rowscols(bbox)[1]
 
-        with undo_group(_("Insert columns")):
+        with undo.group(_("Insert columns")):
             self.grid.actions.insert_cols(ins_point, no_cols)
 
         self.grid.GetTable().ResetView()
@@ -1371,7 +1369,7 @@ class GridEventHandlers(GridActionEventMixin):
     def OnInsertTabs(self, event):
         """Insert one table into grid"""
 
-        with undo_group(_("Insert table")):
+        with undo.group(_("Insert table")):
             self.grid.actions.insert_tabs(self.grid.current_table - 1, 1)
 
         self.grid.GetTable().ResetView()
@@ -1393,7 +1391,7 @@ class GridEventHandlers(GridActionEventMixin):
             del_point = bbox[0][0]
             no_rows = self._get_no_rowscols(bbox)[0]
 
-        with undo_group(_("Delete rows")):
+        with undo.group(_("Delete rows")):
             self.grid.actions.delete_rows(del_point, no_rows)
 
         self.grid.GetTable().ResetView()
@@ -1417,7 +1415,7 @@ class GridEventHandlers(GridActionEventMixin):
             del_point = bbox[0][1]
             no_cols = self._get_no_rowscols(bbox)[1]
 
-        with undo_group(_("Delete columns")):
+        with undo.group(_("Delete columns")):
             self.grid.actions.delete_cols(del_point, no_cols)
 
         self.grid.GetTable().ResetView()
@@ -1430,7 +1428,7 @@ class GridEventHandlers(GridActionEventMixin):
     def OnDeleteTabs(self, event):
         """Deletes tables"""
 
-        with undo_group(_("Delete table")):
+        with undo.group(_("Delete table")):
             self.grid.actions.delete_tabs(self.grid.current_table, 1)
 
         self.grid.GetTable().ResetView()
@@ -1448,7 +1446,7 @@ class GridEventHandlers(GridActionEventMixin):
         if new_shape is None:
             return
 
-        with undo_group(_("Resize grid")):
+        with undo.group(_("Resize grid")):
             self.grid.actions.change_grid_shape(new_shape)
 
         statustext = _("Grid dimensions changed to {shape}.")
@@ -1464,7 +1462,7 @@ class GridEventHandlers(GridActionEventMixin):
         grid = self.grid
         grid.DisableCellEditControl()
 
-        with undo_group(_("Quote cell(s)")):
+        with undo.group(_("Quote cell(s)")):
             # Is a selection present?
             if self.grid.IsSelection():
                 # Enclose all selected cells
@@ -1506,15 +1504,14 @@ class GridEventHandlers(GridActionEventMixin):
                 rows += range(box[0][0], box[1][0]+1)
 
         # All row resizing is undone in one click
-        with undo_group(_("Resize Rows")):
+        with undo.group(_("Resize Rows")):
             for row in rows:
                 self.grid.code_array.set_row_height(row, tab, rowsize)
                 zoomed_rowsize = rowsize * self.grid.grid_renderer.zoom
                 self.grid.SetRowSize(row, zoomed_rowsize)
 
         # Mark content as changed
-        post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.grid.main_window, self.grid.ContentChangedMsg)
 
         event.Skip()
         self.grid.ForceRefresh()
@@ -1541,15 +1538,14 @@ class GridEventHandlers(GridActionEventMixin):
                 cols += range(box[0][1], box[1][1]+1)
 
         # All column resizing is undone in one click
-        with undo_group(_("Resize Columns")):
+        with undo.group(_("Resize Columns")):
             for col in cols:
                 self.grid.code_array.set_col_width(col, tab, colsize)
                 zoomed_colsize = colsize * self.grid.grid_renderer.zoom
                 self.grid.SetColSize(col, zoomed_colsize)
 
         # Mark content as changed
-        post_command_event(self.grid.main_window, self.grid.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.grid.main_window, self.grid.ContentChangedMsg)
 
         event.Skip()
         self.grid.ForceRefresh()
@@ -1558,7 +1554,7 @@ class GridEventHandlers(GridActionEventMixin):
         """Sort ascending event handler"""
 
         try:
-            with undo_group(_("Sort ascending")):
+            with undo.group(_("Sort ascending")):
                 self.grid.actions.sort_ascending(self.grid.actions.cursor)
             statustext = _(u"Sorting complete.")
 
@@ -1572,7 +1568,7 @@ class GridEventHandlers(GridActionEventMixin):
         """Sort descending event handler"""
 
         try:
-            with undo_group(_("Sort descending")):
+            with undo.group(_("Sort descending")):
                 self.grid.actions.sort_descending(self.grid.actions.cursor)
             statustext = _(u"Sorting complete.")
 
@@ -1587,8 +1583,17 @@ class GridEventHandlers(GridActionEventMixin):
     def OnUndo(self, event):
         """Calls the grid undo method"""
 
-        statustext = undo_stack().undotext()
-        undo_stack().undo()
+        statustext = undo.stack().undotext()
+        undo.stack().undo()
+
+        # Update content changed state
+        try:
+            post_command_event(self.grid.main_window,
+                               self.grid.ContentChangedMsg)
+        except TypeError:
+            # The main window does not exist any more
+            pass
+
         self.grid.code_array.result_cache.clear()
 
         post_command_event(self.grid.main_window, self.grid.TableChangedMsg,
@@ -1615,8 +1620,17 @@ class GridEventHandlers(GridActionEventMixin):
     def OnRedo(self, event):
         """Calls the grid redo method"""
 
-        statustext = undo_stack().redotext()
-        undo_stack().redo()
+        statustext = undo.stack().redotext()
+        undo.stack().redo()
+
+        # Update content changed state
+        try:
+            post_command_event(self.grid.main_window,
+                               self.grid.ContentChangedMsg)
+        except TypeError:
+            # The main window does not exist any more
+            pass
+
         self.grid.code_array.result_cache.clear()
 
         post_command_event(self.grid.main_window, self.grid.TableChangedMsg,

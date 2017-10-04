@@ -63,8 +63,7 @@ class CellActions(Actions):
 
         if not (old_code is None and not code) and code != old_code:
             # Mark content as changed
-            post_command_event(self.main_window, self.ContentChangedMsg,
-                               changed=True)
+            post_command_event(self.main_window, self.ContentChangedMsg)
 
         # Set cell code
         self.grid.code_array.__setitem__(key, code)
@@ -202,8 +201,7 @@ class CellActions(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         if selection is not None:
             cell_attributes = self.code_array.cell_attributes

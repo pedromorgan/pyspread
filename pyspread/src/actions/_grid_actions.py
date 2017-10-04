@@ -90,7 +90,7 @@ except ImportError:
 
 from src.lib.selection import Selection
 from src.lib.fileio import AOpen, Bz2AOpen
-from src.lib.undo import stack as undo_stack
+import src.lib.undo as undo
 
 from src.actions._main_window_actions import Actions
 from src.actions._grid_cell_actions import CellActions
@@ -306,7 +306,6 @@ class FileActions(Actions):
         self.code_array.macros = ""
 
         # Clear caches
-        undo_stack().clear()
         self.code_array.result_cache.clear()
 
         # Clear globals
@@ -391,9 +390,6 @@ class FileActions(Actions):
                 # Execute macros
                 self.main_window.actions.execute_macros()
 
-                # Clear undo stack
-                undo_stack().clear()
-
                 self.grid.GetTable().ResetView()
                 self.grid.ForceRefresh()
 
@@ -472,8 +468,7 @@ class FileActions(Actions):
 
         # Mark content as unchanged
         try:
-            post_command_event(self.main_window, self.ContentChangedMsg,
-                               changed=False)
+            post_command_event(self.main_window, self.ContentChangedMsg)
         except TypeError:
             # The main window does not exist any more
             pass
@@ -669,8 +664,7 @@ class TableRowActionsMixin(Actions):
         """Sets row height and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         tab = self.grid.current_table
 
@@ -685,8 +679,7 @@ class TableRowActionsMixin(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         tab = self.grid.current_table
 
@@ -696,8 +689,7 @@ class TableRowActionsMixin(Actions):
         """Deletes no_rows rows and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         tab = self.grid.current_table
 
@@ -716,8 +708,7 @@ class TableColumnActionsMixin(Actions):
         """Sets column width and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         tab = self.grid.current_table
 
@@ -732,8 +723,7 @@ class TableColumnActionsMixin(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         tab = self.grid.current_table
 
@@ -743,8 +733,7 @@ class TableColumnActionsMixin(Actions):
         """Deletes no_cols column and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         tab = self.grid.current_table
 
@@ -767,8 +756,7 @@ class TableTabActionsMixin(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         self.code_array.insert(tab, no_tabs, axis=2)
 
@@ -780,8 +768,7 @@ class TableTabActionsMixin(Actions):
         """Deletes no_tabs tabs and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         try:
             self.code_array.delete(tab, no_tabs, axis=2)
@@ -1003,8 +990,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         selection = self.get_selection()
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         if selection:
             # There is a selection.  Paste into it
@@ -1017,8 +1003,7 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         """Grid shape change event handler, marks content as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         self.code_array.shape = shape
 
@@ -1547,8 +1532,7 @@ class SelectionActions(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         if selection is None:
             selection = self.get_selection()
@@ -1824,8 +1808,7 @@ class FindActions(Actions):
 
         """
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         for findpos in findpositions:
             old_code = self.grid.code_array(findpos)
@@ -1859,8 +1842,7 @@ class FindActions(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         old_code = self.grid.code_array(findpos)
         new_code = old_code.replace(find_string, replace_string)

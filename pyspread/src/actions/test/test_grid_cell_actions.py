@@ -64,8 +64,6 @@ class TestCellActions(object):
     def test_set_code(self, key, code, result):
         """Unit test for set_code"""
 
-        self.main_window.changed_since_save = False
-
         self.grid.actions.set_code(key, code)
 
         assert self.grid.code_array(key) == result
@@ -173,8 +171,6 @@ class TestCellActions(object):
     @params(param_set_cell_attr)
     def test_set_cell_attr(self, selection, tab, attr, testcell):
         """Unit test for _set_cell_attr"""
-
-        self.main_window.changed_since_save = False
 
         attr = {attr[0]: attr[1]}
 

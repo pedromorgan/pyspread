@@ -128,8 +128,7 @@ class ExchangeActions(Actions):
         """
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         if filterindex == 0:
             # CSV import option choice
@@ -697,8 +696,7 @@ class MacroActions(Actions):
         """Executes macros and marks grid as changed"""
 
         # Mark content as changed
-        post_command_event(self.main_window, self.ContentChangedMsg,
-                           changed=True)
+        post_command_event(self.main_window, self.ContentChangedMsg)
 
         (result, err) = self.grid.code_array.execute_macros()
 
@@ -726,8 +724,7 @@ class MacroActions(Actions):
                 post_command_event(self.main_window, self.SafeModeEntryMsg)
 
                 # Mark content as changed
-                post_command_event(self.main_window, self.ContentChangedMsg,
-                                   changed=True)
+                post_command_event(self.main_window, self.ContentChangedMsg)
 
                 macrocode = macro_infile.read()
 
@@ -747,8 +744,8 @@ class MacroActions(Actions):
 
         # Mark content as changed
         try:
-            post_command_event(self.main_window, self.ContentChangedMsg,
-                               changed=True)
+            post_command_event(self.main_window, self.ContentChangedMsg)
+
         except TypeError:
             # The main window does not exist any more
             pass
