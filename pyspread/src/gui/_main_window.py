@@ -488,6 +488,8 @@ class MainWindowEventHandlers(EventMixin):
     def OnContentChanged(self, event):
         """Titlebar star adjustment event handler"""
 
+        self.main_window.grid.update_attribute_toolbar()
+
         title = self.main_window.GetTitle()
 
         if undo.stack().haschanged():

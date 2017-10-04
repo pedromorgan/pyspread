@@ -46,6 +46,7 @@ import src.lib.i18n as i18n
 
 from src.config import config
 from src.sysvars import get_default_font, get_font_list
+import src.lib.undo as undo
 from icons import icons
 from _gui_interfaces import ModalDialogInterfaceMixin
 
@@ -203,6 +204,7 @@ class MainToolbar(ToolbarBase):
         # --------
 
         self.Bind(wx.EVT_TOOL, self.OnToggleTool)
+        self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
 
     def OnToggleTool(self, event):
         """Tool event handler"""
@@ -219,6 +221,19 @@ class MainToolbar(ToolbarBase):
         self.parent.grid.ForceRefresh()
 
         event.Skip()
+
+    def OnUpdate(self, event):
+        """Updates the toolbar states"""
+
+        # Gray out undo and redo id not available
+
+        undo_toolid = self.label2id["Undo"]
+        redo_toolid = self.label2id["Redo"]
+
+        self.EnableTool(undo_toolid, undo.stack().canundo())
+        self.EnableTool(redo_toolid, undo.stack().canredo())
+
+        self.Refresh()
 
 # end of class MainToolbar
 
