@@ -237,9 +237,16 @@ class MainToolbar(ToolbarBase):
         undotext = undo.stack().undotext()
         undo_tool = self.FindTool(undo_toolid)
         if undotext is None:
-            undo_tool.SetShortHelp("No undo actions available")
+            undo_tool.SetShortHelp(_("No undo actions available"))
         else:
             undo_tool.SetShortHelp(undotext)
+
+        redotext = undo.stack().redotext()
+        redo_tool = self.FindTool(redo_toolid)
+        if redotext is None:
+            redo_tool.SetShortHelp(_("No redo actions available"))
+        else:
+            redo_tool.SetShortHelp(redotext)
 
         self.Refresh()
 
