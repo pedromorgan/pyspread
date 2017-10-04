@@ -95,7 +95,6 @@ class Grid(wx.grid.Grid, glr.GridWithLabelRenderersMixin, EventMixin):
         # Create new grid
         if S is None:
             self.code_array = CodeArray(dimensions)
-            post_command_event(self, self.GridActionNewMsg, shape=dimensions)
         else:
             self.code_array = S
 

@@ -233,6 +233,14 @@ class MainToolbar(ToolbarBase):
         self.EnableTool(undo_toolid, undo.stack().canundo())
         self.EnableTool(redo_toolid, undo.stack().canredo())
 
+        # Set ToolTip strings to potential next undo / redo action
+        undotext = undo.stack().undotext()
+        undo_tool = self.FindTool(undo_toolid)
+        if undotext is None:
+            undo_tool.SetShortHelp("No undo actions available")
+        else:
+            undo_tool.SetShortHelp(undotext)
+
         self.Refresh()
 
 # end of class MainToolbar
