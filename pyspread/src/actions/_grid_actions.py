@@ -367,6 +367,11 @@ class FileActions(Actions):
                 # Make loading safe
                 self.approve(filepath)
 
+                if xlrd is None:
+                    interface_errors = (ValueError, )
+                else:
+                    interface_errors = (ValueError, xlrd.biffh.XLRDError)
+
                 try:
                     wx.BeginBusyCursor()
                     self.grid.Disable()
@@ -376,7 +381,7 @@ class FileActions(Actions):
                     self.grid.main_window.macro_panel.codetext_ctrl.SetText(
                         self.grid.code_array.macros)
 
-                except (ValueError, xlrd.biffh.XLRDError), err:
+                except interface_errors, err:
                     post_command_event(self.main_window, self.StatusBarMsg,
                                        text=str(err))
 
