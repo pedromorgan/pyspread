@@ -37,6 +37,7 @@ import wx
 from _events import post_command_event, EventMixin
 
 import src.lib.i18n as i18n
+import src.lib.undo as undo
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -79,10 +80,18 @@ class _filledMenu(wx.Menu):
         # id - message type storage
         self.ids_msgs = {}
 
+        # Find menuitems by shortcut
+        self.shortcut2menuitem = {}
+
+        # Find menuitems by id
+        self.id2menuitem = {}
+
         # Stores approve_item for disabling
         self.approve_item = None
 
         self._add_submenu(self, self.menudata)
+
+        self.parent.Bind(self.EVT_CMD_TOOLBAR_UPDATE, self.OnUpdate)
 
     def _add_submenu(self, parent, data):
         """Adds items in data as a submenu to parent"""
@@ -117,11 +126,10 @@ class _filledMenu(wx.Menu):
                     style = wx.ITEM_NORMAL
 
                 menuitem = obj(parent, item_id, shortcut, helptext, style)
+                self.shortcut2menuitem[shortcut] = menuitem
+                self.id2menuitem[item_id] = menuitem
 
                 parent.AppendItem(menuitem)
-
-                if _("&Approve file") == shortcut:
-                    self.approve_item = menuitem
 
                 self.ids_msgs[item_id] = msgtype
 
@@ -138,6 +146,20 @@ class _filledMenu(wx.Menu):
 
         msgtype = self.ids_msgs[event.GetId()]
         post_command_event(self.parent, msgtype)
+
+    def OnUpdate(self, event):
+        """Menu state update"""
+
+        if wx.ID_UNDO in self.id2menuitem:
+            undo_item = self.id2menuitem[wx.ID_UNDO]
+            undo_item.Enable(undo.stack().canundo())
+
+        if wx.ID_REDO in self.id2menuitem:
+            redo_item = self.id2menuitem[wx.ID_REDO]
+            redo_item.Enable(undo.stack().canredo())
+
+        event.Skip()
+
 
 # end of class _filledMenu
 
@@ -422,6 +444,7 @@ class MainMenu(_filledMenu, EventMixin):
     def enable_file_approve(self, enable=True):
         """Enables or disables menu item (for entering/leaving save mode)"""
 
-        self.approve_item.Enable(enable)
+        approve_item = self.shortcut2menuitem[_("&Approve file")]
+        approve_item.Enable(enable)
 
 # end of class MainMenu

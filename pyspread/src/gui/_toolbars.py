@@ -250,6 +250,8 @@ class MainToolbar(ToolbarBase):
 
         self.Refresh()
 
+        event.Skip()
+
 # end of class MainToolbar
 
 
