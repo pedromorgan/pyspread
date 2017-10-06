@@ -157,28 +157,35 @@ class TestCellActions(object):
 
     param_set_cell_attr = [
         {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 1,
-         'attr': ('bordercolor_right', wx.RED), 'testcell': (2, 5, 1)},
+         'attr': {'bordercolor_right': wx.Colour(255, 0, 0).GetRGB()},
+         'testcell': (2, 5, 1), 'res_key': 'bordercolor_right',
+         'res': wx.Colour(255, 0, 0).GetRGB()},
         {'selection': Selection([(0, 0)], [(99, 99)], [], [], []), 'tab': 0,
-         'attr': ('bordercolor_right', wx.RED), 'testcell': (2, 5, 0)},
+         'attr': {'bordercolor_right': wx.Colour(255, 10, 0).GetRGB()},
+         'testcell': (2, 5, 0), 'res_key': 'bordercolor_right',
+         'res': wx.Colour(255, 10, 0).GetRGB()},
         {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 1,
-         'attr': ('bordercolor_bottom', wx.BLUE), 'testcell': (2, 5, 1)},
+         'attr': {'bordercolor_bottom': wx.Colour(0, 0, 255).GetRGB()},
+         'testcell': (2, 5, 1), 'res_key': 'bordercolor_bottom',
+         'res': wx.Colour(0, 0, 255).GetRGB()},
         {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 1,
-         'attr': ('bgcolor', wx.RED), 'testcell': (2, 5, 1)},
+         'attr': {'bgcolor': wx.Colour(255, 0, 0).GetRGB()},
+         'testcell': (2, 5, 1), 'res_key': 'bgcolor',
+         'res': wx.Colour(255, 0, 0, 255).GetRGB()},
         {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 2,
-         'attr': ('pointsize', 24), 'testcell': (2, 5, 2)},
+         'attr': {'pointsize': 24}, 'testcell': (2, 5, 2),
+         'res_key': 'pointsize', 'res': 24},
     ]
 
     @params(param_set_cell_attr)
-    def test_set_cell_attr(self, selection, tab, attr, testcell):
+    def test_set_cell_attr(self, selection, tab, attr, testcell, res_key, res):
         """Unit test for _set_cell_attr"""
-
-        attr = {attr[0]: attr[1]}
 
         self.grid.actions._set_cell_attr(selection, tab, attr)
 
-        color = self.grid.code_array.cell_attributes[testcell][attr.keys()[0]]
+        attr_res = self.grid.code_array.cell_attributes[testcell][res_key]
 
-        assert color == attr[attr.keys()[0]]
+        assert attr_res == res
 
     def test_set_border_attr(self):
         """Unit test for set_border_attr"""

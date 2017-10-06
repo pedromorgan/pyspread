@@ -92,9 +92,8 @@ class TestCellAttributes(object):
 
         self.cell_attr.append((selection, table, attr))
 
-        # Check if 2 items - the actual action and the marker - have been added
-        assert undo_stack().undocount() == 2
-        assert undo_stack().redocount() == 0
+        # Check if 1 item - the actual action has been added
+        assert undo_stack().undocount() == 1
         assert not self.cell_attr._attr_cache
 
     def test_getitem(self):

@@ -158,18 +158,18 @@ class TestFileActions(object):
         # Test if safe_mode is correctly set for invalid sig
         self.grid.actions.approve(self.filename_invalid_sig)
 
-        assert self.grid.GetTable().data_array.safe_mode
+        assert self.grid.code_array.safe_mode
 
         # Test if safe_mode is correctly set for valid sig
 
         self.grid.actions.approve(self.filename_valid_sig)
 
-        assert not self.grid.GetTable().data_array.safe_mode
+        assert not self.grid.code_array.safe_mode
 
         # Test if safe_mode is correctly set for missing sig
         self.grid.actions.approve(self.filename_no_sig)
 
-        assert self.grid.GetTable().data_array.safe_mode
+        assert self.grid.code_array.safe_mode
 
         # Test if safe_mode is correctly set for io-error sig
 
@@ -178,7 +178,7 @@ class TestFileActions(object):
 
         self.grid.actions.approve(self.filename_not_permitted)
 
-        assert self.grid.GetTable().data_array.safe_mode
+        assert self.grid.code_array.safe_mode
 
         os.chmod(self.filename_not_permitted, 0644)
         os.chmod(self.filename_not_permitted + ".sig", 0644)
@@ -240,10 +240,6 @@ class TestFileActions(object):
         col_widths = self.grid.code_array.col_widths
         assert len(col_widths) == 0
 
-        # Undo and redo
-        assert undo_stack().undocount() == 0
-        assert undo_stack().redocount() == 0
-
         # Caches
 
         # Clear self.grid again because lookup is added in resultcache
@@ -276,37 +272,37 @@ class TestFileActions(object):
         event.attr["filepath"] = self.filename_empty
         assert not self.grid.actions.open(event)
 
-        assert self.grid.GetTable().data_array.safe_mode  # sig is also empty
+        assert self.grid.code_array.safe_mode  # sig is also empty
 
         if gnupg is not None:
             # Test invalid sig files
             event.attr["filepath"] = self.filename_invalid_sig
             self.grid.actions.open(event)
 
-            assert self.grid.GetTable().data_array.safe_mode
+            assert self.grid.code_array.safe_mode
 
             # Test file with sig
             event.attr["filepath"] = self.filename_valid_sig
             self.grid.actions.open(event)
 
-            assert not self.grid.GetTable().data_array.safe_mode
+            assert not self.grid.code_array.safe_mode
 
             # Test file without sig
             event.attr["filepath"] = self.filename_no_sig
             self.grid.actions.open(event)
 
-            assert self.grid.GetTable().data_array.safe_mode
+            assert self.grid.code_array.safe_mode
 
             # Test self.grid size for valid file
             event.attr["filepath"] = self.filename_gridsize
             self.grid.actions.open(event)
 
-            new_shape = self.grid.GetTable().data_array.shape
+            new_shape = self.grid.code_array.shape
             assert new_shape == (1000, 100, 10)
 
             # Test self.grid content for valid file
             assert not self.grid.code_array.safe_mode
-            assert self.grid.GetTable().data_array[0, 0, 0] == "test4"
+            assert self.grid.code_array((0, 0, 0)) == '"test4"'
 
     def test_save(self):
         """Tests save functionality"""
@@ -860,35 +856,6 @@ class TestTableActions(object):
             assert res == 'fail'
 
 
-class TestUndoActions(object):
-    """Unit test class for undo and redo actions"""
-
-    def setup_method(self, method):
-        self.main_window = MainWindow(None, -1)
-        self.grid = self.main_window.grid
-        self.code_array = self.grid.code_array
-
-    def test_undo(self):
-        """Tests undo action"""
-
-        restore_basic_grid(self.grid)
-        self.grid.actions.clear()
-
-        self.grid.code_array[(0, 0, 0)] = "Test"
-
-        self.grid.actions.undo()
-
-        assert self.grid.code_array((0, 0, 0)) is None
-
-    def test_redo(self):
-        """Tests redo action"""
-
-        self.test_undo()
-        self.grid.actions.redo()
-
-        assert self.grid.code_array((0, 0, 0)) == "Test"
-
-
 class TestGridActions(object):
     """self.grid level self.grid actions test class"""
 
@@ -907,7 +874,7 @@ class TestGridActions(object):
             event = self.Event()
             event.shape = dim
             self.grid.actions.new(event)
-            new_shape = self.grid.GetTable().data_array.shape
+            new_shape = self.grid.code_array.shape
             assert new_shape == dim
 
     param_zoom_rows = [

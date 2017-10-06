@@ -204,8 +204,7 @@ class CellActions(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg)
 
         if selection is not None:
-            cell_attributes = self.code_array.cell_attributes
-            cell_attributes.append((selection, table, attr))
+            self.code_array.cell_attributes.append((selection, table, attr))
 
     def set_attr(self, attr, value, selection=None):
         """Sets attr of current selection to value"""

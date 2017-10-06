@@ -90,7 +90,6 @@ except ImportError:
 
 from src.lib.selection import Selection
 from src.lib.fileio import AOpen, Bz2AOpen
-import src.lib.undo as undo
 
 from src.actions._main_window_actions import Actions
 from src.actions._grid_cell_actions import CellActions

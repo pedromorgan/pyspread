@@ -112,6 +112,7 @@ class CellAttributes(list):
     Otherwise it behaves similar to a list.
 
     The following methods mave been made undoable:
+    * __setitem__
     * append
 
     List methods that may alter the list have been removed
@@ -127,7 +128,6 @@ class CellAttributes(list):
         self.__imul__ = None
         self.__rmul__ = None
         self.__setattr__ = None
-        self.__setitem__ = None
         self.__setslice__ = None
         self.insert = None
         self.pop = None
@@ -170,14 +170,16 @@ class CellAttributes(list):
     @undoable
     def append(self, value):
         list.append(self, value)
+        self._attr_cache.clear()
+        self._table_cache.clear()
 
         yield "append"
 
         # Undo actions
 
         list.pop(self)
-
-    # The f
+        self._attr_cache.clear()
+        self._table_cache.clear()
 
     def __getitem__(self, key):
         """Returns attribute dict for a single key"""
@@ -210,6 +212,22 @@ class CellAttributes(list):
         self._attr_cache[key] = (len(self), result_dict)
 
         return result_dict
+
+    @undoable
+    def __setitem__(self, key, value):
+        """Undoable version of list.__setitem__"""
+
+        list.__setitem__(self, key, value)
+
+        self._attr_cache.clear()
+        self._table_cache.clear()
+
+        yield "__setitem__"
+
+        self.pop(key)
+
+        self._attr_cache.clear()
+        self._table_cache.clear()
 
     def _len_table_cache(self):
         """Returns the length of the table cache"""
@@ -829,9 +847,9 @@ class DataArray(object):
         """
 
         def replace_cell_attributes_table(index, new_table):
-            ca = list(self.cell_attributes.get_item(index))
+            ca = list(list.__getitem__(self.cell_attributes, index))
             ca[1] = new_table
-            self.cell_attributes.set_item(index, tuple(ca))
+            self.cell_attributes.__setitem__(index, tuple(ca))
 
         if axis not in range(3):
             raise ValueError("Axis must be in [0, 1, 2]")
