@@ -301,6 +301,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
 
         key = row, col, grid.current_table
 
+        # If cell is merge draw the merging cell if invisibile
+        if grid.code_array.cell_attributes[key]["merge_area"]:
+            key = self.get_merging_cell(grid, key)
+
         drawn_rect = self._get_drawn_rect(grid, key, rect)
         if drawn_rect is None:
             return

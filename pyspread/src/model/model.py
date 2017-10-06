@@ -73,10 +73,15 @@ class KeyValueStore(dict):
 
     """
 
+    def __init__(self, default_value=None):
+        dict.__init__(self)
+
+        self.default_value = default_value
+
     def __missing__(self, value):
         """Returns the default value None"""
 
-        return
+        return self.default_value
 
     @undoable
     def __setitem__(self, key, value):
@@ -99,6 +104,7 @@ class KeyValueStore(dict):
 # End of class KeyValueStore
 
 # -----------------------------------------------------------------------------
+
 
 
 class CellAttributes(list):
@@ -301,8 +307,14 @@ class DictGrid(KeyValueStore):
 
         self.macros = u""
 
-        self.row_heights = KeyValueStore()  # Keys have the format (row, table)
-        self.col_widths = KeyValueStore()  # Keys have the format (col, table)
+        default_row_height = config["default_row_height"]
+        default_col_width = config["default_col_width"]
+
+        # Keys have the format (row, table)
+        self.row_heights = KeyValueStore(default_value=default_row_height)
+
+        # Keys have the format (col, table)
+        self.col_widths = KeyValueStore(default_value=default_col_width)
 
     def __getitem__(self, key):
 
