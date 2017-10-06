@@ -177,9 +177,18 @@ class GridCellEditor(wx.grid.PyGridCellEditor, GridEventMixin):
         self._update_control_length()
 
         self._tc.SetInsertionPointEnd()
+
+        h_scroll_pos = grid.GetScrollPos(wx.SB_HORIZONTAL)
+        v_scroll_pos = grid.GetScrollPos(wx.SB_VERTICAL)
+
         self._tc.SetFocus()
 
-        # For this example, select the text
+        # GTK Bugfix for jumping grid when focusing the textctrl
+        if grid.GetScrollPos(wx.SB_HORIZONTAL) != h_scroll_pos or \
+           grid.GetScrollPos(wx.SB_VERTICAL) != v_scroll_pos:
+            wx.ScrolledWindow.Scroll(grid, (h_scroll_pos, v_scroll_pos))
+
+        # Select the text
         self._tc.SetSelection(0, self._tc.GetLastPosition())
 
     def EndEdit(self, row, col, grid, oldVal=None):
