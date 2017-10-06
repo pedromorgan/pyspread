@@ -1141,7 +1141,8 @@ class AboutDialog(object):
             350, wx.ClientDC(parent))
         info.WebSite = ("http://manns.github.io/pyspread/",
                         _("Pyspread Web site"))
-        info.Developers = ["Martin Manns", "Jason Sexauer", "Vova Kolobok"]
+        info.Developers = ["Martin Manns", "Jason Sexauer", "Vova Kolobok",
+                           "mgunyho"]
         info.DocWriters = ["Martin Manns", "Bosko Markovic"]
         info.Translators = ["Joe Hansen", "Mark Haanen", "Yuri Chornoivan",
                             u"Mario Blättermann", "Christian Kirbach",
