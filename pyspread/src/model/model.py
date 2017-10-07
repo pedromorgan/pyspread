@@ -90,7 +90,10 @@ class KeyValueStore(dict):
 
         yield "__setitem__"
         # Undo actions
-        dict.__setitem__(self, key, old_value)
+        if old_value is None:
+            dict.pop(self, key)
+        else:
+            dict.__setitem__(self, key, old_value)
 
     @undoable
     def pop(self, key, *args):
@@ -99,7 +102,8 @@ class KeyValueStore(dict):
         yield "pop", res
 
         # Undo actions
-        dict.__setitem__(self, key, res)
+        if res is not None:
+            dict.__setitem__(self, key, res)
 
 # End of class KeyValueStore
 
@@ -223,6 +227,11 @@ class CellAttributes(list):
     def __setitem__(self, key, value):
         """Undoable version of list.__setitem__"""
 
+        try:
+            old_value = list.__getitem__(self, key)
+        except IndexError:
+            old_value = None
+
         list.__setitem__(self, key, value)
 
         self._attr_cache.clear()
@@ -230,7 +239,10 @@ class CellAttributes(list):
 
         yield "__setitem__"
 
-        self.pop(key)
+        if old_value is None:
+            self.pop(key)
+        else:
+            list.__setitem__(self, key, old_value)
 
         self._attr_cache.clear()
         self._table_cache.clear()

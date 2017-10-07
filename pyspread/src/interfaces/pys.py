@@ -160,9 +160,10 @@ class Pys(object):
         for key in self.code_array:
             key_str = u"\t".join(repr(ele) for ele in key)
             code_str = self.code_array(key)
-            out_str = key_str + u"\t" + code_str + u"\n"
+            if code_str is not None:
+                out_str = key_str + u"\t" + code_str + u"\n"
 
-            self.pys_file.write(out_str.encode("utf-8"))
+                self.pys_file.write(out_str.encode("utf-8"))
 
     def _pys2code(self, line):
         """Updates code in pys code_array"""

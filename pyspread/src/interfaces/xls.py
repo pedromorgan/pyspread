@@ -163,8 +163,10 @@ class Xls(object):
                 # Cell lies within Excel boundaries
                 row, col, tab = key
                 code_str = code_array(key)
-                style = self._get_xfstyle(worksheets, key)
-                worksheets[tab].write(row, col, label=code_str, style=style)
+                if code_str is not None:
+                    style = self._get_xfstyle(worksheets, key)
+                    worksheets[tab].write(row, col, label=code_str,
+                                          style=style)
 
         # Handle cell formatting in cells without code
 
