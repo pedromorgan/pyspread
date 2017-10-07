@@ -1606,12 +1606,6 @@ class SelectionActions(Actions):
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
-    def _shifted_merge_area(self, merge_area, rows, cols):
-        """Shifts merge area by rows and cols"""
-
-        top, left, bottom, right = merge_area
-        return top + rows, left + cols, bottom + rows, right + cols
-
     def copy_format(self):
         """Copies the format of the selected cells to the Clipboard
 
@@ -1638,13 +1632,12 @@ class SelectionActions(Actions):
         for __selection, table, attrs in cell_attributes:
             if tab == table:
                 new_selection = selection & __selection
-                new_shifted_selection = new_selection.shifted(-top, -left)
-                if "merge_area" in attrs and attrs["merge_area"]:
-                    attrs["merge_area"] = \
-                        self._shifted_merge_area(attrs["merge_area"],
-                                                 -top, -left)
-                new_cell_attributes.append(
-                    (new_shifted_selection.parameters, table, attrs))
+                if new_selection:
+                    new_shifted_selection = new_selection.shifted(-top, -left)
+                    if "merge_area" not in attrs:
+                        selection_params = new_shifted_selection.parameters
+                        cellattribute = selection_params, table, attrs
+                        new_cell_attributes.append(cellattribute)
 
         # Rows
 
@@ -1702,16 +1695,14 @@ class SelectionActions(Actions):
 
         # Cell attributes
 
-        for ca_ele in ca:
-            base_selection = Selection(*ca_ele[0])
+        for selection_params, tab, attrs in ca:
+            base_selection = Selection(*selection_params)
             shifted_selection = base_selection.shifted(row, col)
-            attrs = ca_ele[2]
-            if "merge_area" in attrs and attrs["merge_area"]:
-                attrs["merge_area"] = \
-                    self._shifted_merge_area(attrs["merge_area"], row, col)
-
-            new_cell_attribute = shifted_selection, tab, attrs
-            cell_attributes.append(new_cell_attribute)
+            if "merge_area" not in attrs:
+                # Do not paste merge areas because this may have
+                # inintended consequences for existing merge areas
+                new_cell_attribute = shifted_selection, tab, attrs
+                cell_attributes.append(new_cell_attribute)
 
         # Row heights
         row_heights = self.grid.code_array.row_heights
