@@ -816,8 +816,9 @@ class DataArray(object):
             if (pos, table) not in new_sizes:
                 set_cell_size(pos, table, None)
 
-    def _adjust_merge_area(self, attrs, insertion_point, no_to_insert, axis):
-        """Returns an updated merge area
+    def _get_adjusted_merge_area(self, attrs, insertion_point, no_to_insert,
+                                 axis):
+        """Returns updated merge area
 
         Parameters
         ----------
@@ -839,7 +840,9 @@ class DataArray(object):
 
         top, left, bottom, right = attrs["merge_area"]
         selection = Selection([(top, left)], [(bottom, right)], [], [], [])
+
         selection.insert(insertion_point, no_to_insert, axis)
+
         __top, __left = selection.block_tl[0]
         __bottom, __right = selection.block_br[0]
 
@@ -847,9 +850,9 @@ class DataArray(object):
         rows, cols, tabs = self.shape
 
         if __top < 0 or __bottom >= rows or __left < 0 or __right >= cols:
-            attrs["merge_area"] = None
+            return None
         else:
-            attrs["merge_area"] = __top, __left, __bottom, __right
+            return __top, __left, __bottom, __right
 
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis,
                                 tab=None, cell_attrs=None):
@@ -883,21 +886,36 @@ class DataArray(object):
         if cell_attrs is None:
             cell_attrs = []
 
-        # Store existing cell attributes for creating undo operation
-        old_cell_attrs = self.cell_attributes[:]
-
         if cell_attrs:
             self.cell_attributes[:] = cell_attrs
 
         elif axis < 2:
             # Adjust selections on given table
 
-            for selection, table, attrs in self.cell_attributes:
+            ca_updates = {}
+            for i, (selection, table, attrs) in enumerate(
+                                                    self.cell_attributes):
+                selection = copy(selection)
                 if tab is None or tab == table:
                     selection.insert(insertion_point, no_to_insert, axis)
                     # Update merge area if present
-                    self._adjust_merge_area(attrs, insertion_point,
-                                            no_to_insert, axis)
+                    merge_area = self._get_adjusted_merge_area(attrs,
+                                                               insertion_point,
+                                                               no_to_insert,
+                                                               axis)
+                    new_attrs = copy(attrs)
+                    if merge_area is None:
+                        try:
+                            new_attrs.pop("merge_area")
+                        except KeyError:
+                            pass
+                    else:
+                        new_attrs["merge_area"] = merge_area
+
+                    ca_updates[i] = selection, table, new_attrs
+
+            for idx in ca_updates:
+                self.cell_attributes[idx] = ca_updates[idx]
 
         elif axis == 2:
             # Adjust tabs
