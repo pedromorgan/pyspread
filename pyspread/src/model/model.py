@@ -849,10 +849,19 @@ class DataArray(object):
         # Adjust merge area if it is beyond the grid shape
         rows, cols, tabs = self.shape
 
-        if __top < 0 or __bottom >= rows or __left < 0 or __right >= cols:
-            return None
-        else:
-            return __top, __left, __bottom, __right
+        if __top < 0:
+            __top = 0
+
+        if __bottom >= rows:
+            __bottom = rows - 1
+
+        if __left < 0:
+            __left = 0
+
+        if __right >= cols:
+            __right = cols - 1
+
+        return __top, __left, __bottom, __right
 
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis,
                                 tab=None, cell_attrs=None):
