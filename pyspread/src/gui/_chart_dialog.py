@@ -65,6 +65,7 @@ Provides
 
 
 import wx
+import wx.aui
 import matplotlib
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 import wx.lib.colourselect as csel
@@ -1601,6 +1602,11 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
         wx.Dialog.__init__(self, main_window, -1, style=style)
 
+        self.SetMinSize((1024, 768))
+
+        self._mgr = wx.aui.AuiManager()
+        self._mgr.SetManagedWindow(self)
+
         self.updating = False
 
         self.grid = main_window.grid
@@ -1621,7 +1627,27 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.code = code
 
         self.__set_properties()
-        self.__do_layout()
+
+        self._mgr.AddPane(self.figure_attributes_panel, wx.aui.AuiPaneInfo().
+                          Name("figure_attributes").Caption("Pane Caption").
+                          Left().Row(1).MaximizeButton(True).MinSize((300,200)).CaptionVisible(False))
+
+        self._mgr.AddPane(self.all_series_panel, wx.aui.AuiPaneInfo().
+                          Name("all_series").Caption("Pane Caption").
+                          Centre().Row(1).MaximizeButton(True).MinSize((400,200)).CaptionVisible(False))
+
+        self._mgr.AddPane(self.figure_panel, wx.aui.AuiPaneInfo().
+                          Name("figure").Caption("Pane Caption").Right().
+                          Row(1).MaximizeButton(True).MinSize((300,200)).CaptionVisible(False))
+
+        self._mgr.AddPane(self.cancel_button, wx.aui.AuiPaneInfo().
+                          Name("cancel_button").Right().Bottom().CaptionVisible(False).PaneBorder(False))
+
+        self._mgr.AddPane(self.ok_button, wx.aui.AuiPaneInfo().
+                          Name("ok_button").Left().Bottom().CaptionVisible(False).PaneBorder(False))
+
+        self._mgr.Update()
+        #self.__do_layout()
         self.__bindings()
 
     def __bindings(self):
