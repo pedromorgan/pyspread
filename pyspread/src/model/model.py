@@ -852,14 +852,30 @@ class DataArray(object):
         # Adjust merge area if it is beyond the grid shape
         rows, cols, tabs = self.shape
 
+        if __top < 0 and __bottom < 0 or __top >= rows and __bottom >= rows or\
+           __left < 0 and __right < 0 or __left >= cols and __right >= cols:
+            return
+
         if __top < 0:
             __top = 0
+
+        if __top >= rows:
+            __top = rows - 1
+
+        if __bottom < 0:
+            __bottom = 0
 
         if __bottom >= rows:
             __bottom = rows - 1
 
         if __left < 0:
             __left = 0
+
+        if __left >= cols:
+            __left = cols - 1
+
+        if __right < 0:
+            __right = 0
 
         if __right >= cols:
             __right = cols - 1
@@ -886,9 +902,26 @@ class DataArray(object):
         """
 
         def replace_cell_attributes_table(index, new_table):
+            """Replaces table in cell_attributes item"""
+
             ca = list(list.__getitem__(self.cell_attributes, index))
             ca[1] = new_table
             self.cell_attributes.__setitem__(index, tuple(ca))
+
+        def get_ca_with_updated_ma(attrs, merge_area):
+            """Returns cell attributes with updated merge area"""
+
+            new_attrs = copy(attrs)
+
+            if merge_area is None:
+                try:
+                    new_attrs.pop("merge_area")
+                except KeyError:
+                    pass
+            else:
+                new_attrs["merge_area"] = merge_area
+
+            return new_attrs
 
         if axis not in range(3):
             raise ValueError("Axis must be in [0, 1, 2]")
@@ -915,14 +948,7 @@ class DataArray(object):
                                                                insertion_point,
                                                                no_to_insert,
                                                                axis)
-                    new_attrs = copy(attrs)
-                    if merge_area is None:
-                        try:
-                            new_attrs.pop("merge_area")
-                        except KeyError:
-                            pass
-                    else:
-                        new_attrs["merge_area"] = merge_area
+                    new_attrs = get_ca_with_updated_ma(attrs, merge_area)
 
                     ca_updates[i] = selection, table, new_attrs
 
