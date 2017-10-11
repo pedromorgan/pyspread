@@ -1630,24 +1630,28 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         self._mgr.AddPane(self.figure_attributes_panel, wx.aui.AuiPaneInfo().
                           Name("figure_attributes").Caption("Pane Caption").
-                          Left().Row(1).MaximizeButton(True).MinSize((300,200)).CaptionVisible(False))
+                          Left().Row(1).MaximizeButton(True).
+                          MinSize((300, 200)).CaptionVisible(False))
 
         self._mgr.AddPane(self.all_series_panel, wx.aui.AuiPaneInfo().
                           Name("all_series").Caption("Pane Caption").
-                          Centre().Row(1).MaximizeButton(True).MinSize((400,200)).CaptionVisible(False))
+                          Centre().Row(1).MaximizeButton(True).
+                          MinSize((400, 200)).CaptionVisible(False))
 
         self._mgr.AddPane(self.figure_panel, wx.aui.AuiPaneInfo().
                           Name("figure").Caption("Pane Caption").Right().
-                          Row(1).MaximizeButton(True).MinSize((300,200)).CaptionVisible(False))
+                          Row(1).MaximizeButton(True).MinSize((300, 200)).
+                          CaptionVisible(False))
 
         self._mgr.AddPane(self.cancel_button, wx.aui.AuiPaneInfo().
-                          Name("cancel_button").Right().Bottom().CaptionVisible(False).PaneBorder(False))
+                          Name("cancel_button").Right().Bottom().
+                          CaptionVisible(False).PaneBorder(False))
 
         self._mgr.AddPane(self.ok_button, wx.aui.AuiPaneInfo().
-                          Name("ok_button").Left().Bottom().CaptionVisible(False).PaneBorder(False))
+                          Name("ok_button").Left().Bottom().
+                          CaptionVisible(False).PaneBorder(False))
 
         self._mgr.Update()
-        #self.__do_layout()
         self.__bindings()
 
     def __bindings(self):
@@ -1660,56 +1664,6 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
         self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
-
-    def __do_layout(self):
-        main_sizer = wx.FlexGridSizer(2, 1, 2, 2)
-        chart_sizer = wx.FlexGridSizer(1, 3, 2, 2)
-        figure_attributes_box_sizer = \
-            wx.StaticBoxSizer(self.figure_attributes_staticbox, wx.HORIZONTAL)
-        series_box_sizer = \
-            wx.StaticBoxSizer(self.series_staticbox, wx.VERTICAL)
-        button_sizer = wx.FlexGridSizer(1, 3, 0, 3)
-
-        main_sizer.Add(chart_sizer, 1, wx.EXPAND, 0)
-        main_sizer.Add(button_sizer, 1, wx.FIXED_MINSIZE, 0)
-
-        chart_sizer.Add(figure_attributes_box_sizer, 1, wx.EXPAND, 0)
-        chart_sizer.Add(series_box_sizer, 1, wx.EXPAND, 0)
-        chart_sizer.Add(self.figure_panel, 1, wx.EXPAND, 0)
-
-        main_sizer.SetMinSize((1000, -1))
-        main_sizer.SetFlexibleDirection(wx.BOTH)
-        main_sizer.AddGrowableCol(0)
-        main_sizer.AddGrowableRow(0)
-        try:
-            main_sizer.RemoveGrowableRow(1)
-        except:
-            pass
-
-        chart_sizer.SetMinSize((1000, -1))
-        chart_sizer.AddGrowableRow(0)
-
-        if wx.version().startswith("2."):
-            chart_sizer.AddGrowableCol(0, proportion=1)
-            chart_sizer.AddGrowableCol(1, proportion=1)
-            chart_sizer.AddGrowableCol(2, proportion=1)
-        else:
-            # wxPython3 has changed widow layout
-            chart_sizer.AddGrowableCol(0, proportion=0.5)
-            chart_sizer.AddGrowableCol(1, proportion=2)
-            chart_sizer.AddGrowableCol(2, proportion=2)
-
-        figure_attributes_box_sizer.Add(self.figure_attributes_panel,
-                                        1, wx.EXPAND, 0)
-        series_box_sizer.Add(self.all_series_panel, 1, wx.EXPAND, 0)
-
-        style = wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL
-        button_sizer.Add(self.ok_button, 0, style, 3)
-        button_sizer.Add(self.cancel_button, 0, style, 3)
-        button_sizer.AddGrowableCol(2)
-
-        self.Layout()
-        self.SetSizerAndFit(main_sizer)
 
     def get_figure(self, code):
         """Returns figure from executing code in grid
