@@ -590,6 +590,9 @@ class DataArray(object):
         # Set dict_grid shape attribute
         self.dict_grid.shape = shape
 
+        self._adjust_rowcol(0, 0, 0)
+        self._adjust_cell_attributes(0, 0, 0)
+
         # Undo actions
 
         yield "_set_shape"
