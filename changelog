@@ -3,25 +3,51 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+1.1.1
+-----
+
+Windows: GUI translations are now correctly found
+Windows: Code is now executed when clicking on locked or on button cells
+COPYING file moved to top folder
+Pyspread color scheme now adapts better to most dark themes
+Missing or non-existent GPG key is no longer crashing the GUI
+Shift-scroll now scrolls the grid sideways
+Undo and redo functionality made robust (now based on David Townshend's functional undo framework)
+Table choice panel is now shown and hidden with F3
+Macro dialog changed to AUI panel (shown and hidden with F4)
+The entry line is now correctly updated
+The last savepoint is now identified using the undo framework
+Undo and redo buttons are now disabled if no undo / redo is available
+Current grid label highlights changed for better visibility on high resolution displays
+Mouse wheel scrolling speed increased
+xlrd is not anymore a hard requirement (bugfix)
+The grid is now prevented from scrolling on focusing a cell editor
+Merged cells are now correctly drawn if the top left cell is invisible
+Copy and paste format now ignores merged cell information
+If a merged area is shifted outside the grid via insert rows etc. this is now correctly handled
+Chart dialog switched to AUI panel for better resizeability of sub panels
+GPG key choice now only allows choosing private keys without passwords
+
+
 1.1
 ---
 
 Default UI language changed from system default to English (en)
 UI language can now be chosen from preferences dialog
 Video support in cells (requires libvlc)
-Default open and save filetypes can noww be set in preferences dialog
+Default open and save filetypes can now be set in preferences dialog
 Spell checking functionality added (requires pyenchant)
 The current row and column now is highlighted in the grid labels
 In fullscreen mode, arrow keys and space navigate through the tables
-Cell cursor is not drawn any onger in fullscreen mode
-F6 now fits the grid to the screen ssize if possible
+Cell cursor is not drawn any longer in fullscreen mode
+F6 now fits the grid to the screen size if possible
 ODS file open support added (still rudimentary, requires pyodf)
 Unmerging cell bug fixed
 Changing preferences now refreshes the grid
 Font choice box switches to pangocairo to achieve rendering that matches the grid
 Fonts are now drawn with their standard weight, style etc. if no weight/style is chosen
-The cell editor is noww closed and all changes are discarded when the table is switched
-If a cell is a button cell or a frozen cell then no tooltip is showwn any longer to avoid side effects
+The cell editor is now closed and all changes are discarded when the table is switched
+If a cell is a button cell or a frozen cell then no tooltip is shown any longer to avoid side effects
 Copy and paste of cell formats added
 Chart dialog labels shortened in order to avoid display problems with other locales
 Alpha blending option added to multiple chart types
@@ -478,7 +504,7 @@ Adjusted run_tests so that gpg key is created if not present
 run_tests patch so that signatures are created before test run
 Changes from Andreas Noteng for run_test.py path identification
 Format menu added
-Text and backgound color added to Format menu
+Text and background color added to Format menu
 Fixed print bug that ommits first row and first col on selection prints
 Password generation moved to setup.py
 changelog added
