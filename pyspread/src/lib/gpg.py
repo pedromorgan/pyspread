@@ -46,14 +46,6 @@ from src.gui._gui_interfaces import get_key_params_from_user
 _ = i18n.language.ugettext
 
 
-def _eq_keyid(fingerprint1, fingerprint2):
-    """Returns True if keyids for fingerprints match, False otherwise"""
-
-    keyid = fingerprint2keyid(fingerprint1)
-    pyspread_keyid = fingerprint2keyid(fingerprint2)
-    return keyid == pyspread_keyid
-
-
 def choose_key(gpg_private_keys):
     """Displays gpg key choice and returns key"""
 
@@ -65,7 +57,7 @@ def choose_key(gpg_private_keys):
     for i, key in enumerate(gpg_private_keys):
         fingerprint = key['fingerprint']
 
-        if _eq_keyid(fingerprint, config["gpg_key_fingerprint"]):
+        if fingerprint == config["gpg_key_fingerprint"]:
             current_key_index = i
 
         for uid_string in key['uids']:
@@ -111,6 +103,14 @@ def _register_key(fingerprint, gpg):
             pass
 
 
+def has_no_password(gpg_secret_keyid):
+    """Returns True iif gpg_secret_key has a password"""
+
+    gpg = gnupg.GPG()
+    s = gpg.sign("", keyid=gpg_secret_keyid, passphrase="")
+    return s.status == "signature created"
+
+
 def genkey(key_name=None):
     """Creates a new standard GPG key
 
@@ -137,8 +137,11 @@ def genkey(key_name=None):
     # Check if standard key is already present
 
     pyspread_key_fingerprint = config["gpg_key_fingerprint"]
-    gpg_private_keys = gpg.list_keys(True)
-    gpg_private_fingerprints = gpg.list_keys(True).fingerprints
+    gpg_private_keys = [key for key in gpg.list_keys(secret=True)
+                        if has_no_password(key["keyid"])]
+    gpg_private_fingerprints = \
+        [key['fingerprint'] for key in gpg.list_keys(secret=True)
+         if has_no_password(key["keyid"])]
 
     pyspread_key = None
 
@@ -147,8 +150,8 @@ def genkey(key_name=None):
         if str(pyspread_key_fingerprint) == fingerprint:
             pyspread_key = private_key
 
-    if key_name is None and pyspread_key is None:
-        # If no GPG key is set in config, choose one
+    if gpg_private_keys:
+        # If GPG are available, choose one
         pyspread_key = choose_key(gpg_private_keys)
 
     if pyspread_key:

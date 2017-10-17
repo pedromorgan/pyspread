@@ -620,7 +620,6 @@ class MainWindowEventHandlers(EventMixin):
                 _("Key selection failed."))
         else:
             # gnupg is present
-            config["gpg_key_fingerprint"] = repr("")
             genkey()
 
     # Toolbar events
