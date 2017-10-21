@@ -43,7 +43,7 @@ from src.gui._events import post_command_event, EventMixin
 try:
     import src.lib.vlc as vlc
     from grid_panels import VLCPanel
-except ImportError:
+except (ImportError, WindowsError):
     vlc = None
 
 # Use ugettext instead of getttext to avoid unicode errors

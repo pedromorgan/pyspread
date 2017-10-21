@@ -38,6 +38,7 @@ Provides:
   - PreferencesDialog
   - GPGParamsDialog
   - PasteAsDialog
+  - DependencyDialog
 
 """
 
@@ -1505,7 +1506,6 @@ class DependencyDialog(wx.Dialog):
     def __init__(self, parent, *args, **kwargs):
         kwargs["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         wx.Dialog.__init__(self, parent, *args, **kwargs)
-        self.SetSize((640, -1))
 
         panel = wx.Panel(self, wx.ID_ANY)
 
@@ -1514,7 +1514,7 @@ class DependencyDialog(wx.Dialog):
                          |wx.BORDER_SUNKEN
                          )
         self.list_ctrl.InsertColumn(0, _('Package'), width=125)
-        self.list_ctrl.InsertColumn(1, _('Required version'), width=125)
+        self.list_ctrl.InsertColumn(1, _('Required version'), width=100)
         self.list_ctrl.InsertColumn(2, _('Installed version'), width=125)
         self.list_ctrl.InsertColumn(3, _('Description'), width=250)
 
@@ -1523,6 +1523,9 @@ class DependencyDialog(wx.Dialog):
         sizer.AddGrowableCol(0)
         sizer.Add(self.list_ctrl, 0, wx.ALL|wx.EXPAND, 5)
         panel.SetSizer(sizer)
+        sizer.Fit(self)
+
+        self.SetSize((640, 400))
 
         self._populate()
 

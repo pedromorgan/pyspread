@@ -108,7 +108,12 @@ def has_no_password(gpg_secret_keyid):
 
     gpg = gnupg.GPG()
     s = gpg.sign("", keyid=gpg_secret_keyid, passphrase="")
-    return s.status == "signature created"
+
+    try:
+        return s.status == "signature created"
+    except AttributeError:
+        # This may happen on Windows
+        return "GOOD_PASSPHRASE" in s.stderr
 
 
 def genkey(key_name=None):

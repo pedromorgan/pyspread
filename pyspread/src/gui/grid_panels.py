@@ -46,7 +46,7 @@ import src.lib.i18n as i18n
 try:
     import src.lib.vlc as vlc
 
-except ImportError:
+except (ImportError, WindowsError):
     vlc = None
 
 _ = i18n.language.ugettext

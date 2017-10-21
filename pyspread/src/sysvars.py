@@ -167,6 +167,9 @@ def get_dependencies():
         dep_attrs["version"] = matplotlib._version.get_versions()["version"]
     except ImportError:
         dep_attrs["version"] = None
+    except AttributeError:
+        # May happen in old matplotlib versions
+        dep_attrs["version"] = matplotlib.__version__
 
     dependencies.append(dep_attrs)
 
