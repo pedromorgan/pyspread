@@ -53,7 +53,7 @@ def get_program_path():
 def get_help_path():
     """Returns the pyspread help path"""
 
-    return get_program_path() + "doc/help/"
+    return get_program_path() + "doc" + os.sep + "help" + os.sep
 
 
 def get_python_tutorial_path():

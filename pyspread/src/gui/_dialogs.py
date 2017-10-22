@@ -1151,7 +1151,7 @@ class AboutDialog(object):
                             "Enrico Nicoletto", u"Frédéric Marchal",
                             "Philipp Thomas", "Rafael Fontenelle"]
 
-        license_file = open(get_program_path() + "/COPYING", "r")
+        license_file = open(get_program_path() + os.sep + "COPYING", "r")
         license_text = license_file.read()
         license_file.close()
 
