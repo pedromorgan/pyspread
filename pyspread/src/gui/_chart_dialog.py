@@ -1654,6 +1654,9 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self._mgr.Update()
         self.__bindings()
 
+        self.SetSize((1024, 768))
+        self.Center()
+
     def __bindings(self):
         """Binds events to handlers"""
 
@@ -1661,9 +1664,6 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-
-        self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
-        self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
 
     def get_figure(self, code):
         """Returns figure from executing code in grid

@@ -113,7 +113,8 @@ def has_no_password(gpg_secret_keyid):
         return s.status == "signature created"
     except AttributeError:
         # This may happen on Windows
-        return "GOOD_PASSPHRASE" in s.stderr
+        if hasattr(s, "stderr"):
+            return "GOOD_PASSPHRASE" in s.stderr
 
 
 def genkey(key_name=None):
