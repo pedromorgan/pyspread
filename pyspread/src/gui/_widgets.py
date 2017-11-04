@@ -423,7 +423,7 @@ class ImageComboBox(wx.combo.OwnerDrawnComboBox):
         # Otherwise, draw every other background with
         # different color.
 
-        bg_color = get_color(wx.SYS_COLOUR_BACKGROUND)
+        bg_color = get_color(config["label_color"])
         dc.SetBrush(wx.Brush(bg_color))
         dc.SetPen(wx.Pen(bg_color))
         dc.DrawRectangleRect(rect)
