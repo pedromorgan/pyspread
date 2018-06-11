@@ -600,10 +600,13 @@ class FontChoiceCombobox(ImageComboBox):
         height = layout.get_pixel_extents()[1][3]
 
         y_adjust = int((rect.height - height) / 2.0)
+        context.save()
         context.translate(rect.x + 3, rect.y + y_adjust)
 
         pangocairo_context.update_layout(layout)
         pangocairo_context.show_layout(layout)
+
+        context.restore()
 
 # end of class FontChoiceCombobox
 
