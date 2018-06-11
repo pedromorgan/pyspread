@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-21 22:28+0200\n"
+"POT-Creation-Date: 2018-06-11 22:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1231,7 +1231,7 @@ msgstr ""
 msgid "Link bitmap"
 msgstr ""
 
-#: src/gui/_toolbars.py:268 src/gui/_chart_dialog.py:1663
+#: src/gui/_toolbars.py:268 src/gui/_chart_dialog.py:1666
 msgid "Insert chart"
 msgstr ""
 
@@ -1714,7 +1714,6 @@ msgstr ""
 
 #: src/gui/_chart_dialog.py:998 src/gui/_chart_dialog.py:1035
 #: src/gui/_chart_dialog.py:1073 src/gui/_chart_dialog.py:1537
-#: src/gui/_chart_dialog.py:1666
 msgid "Series"
 msgstr ""
 
@@ -2215,10 +2214,6 @@ msgstr ""
 msgid "+"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:1665
-msgid "Axes"
-msgstr ""
-
 #: src/gui/_widgets.py:487
 #, python-brace-format
 msgid "Label {label} is invalid."
@@ -2229,21 +2224,21 @@ msgstr ""
 msgid "Code {code} is invalid."
 msgstr ""
 
-#: src/gui/_widgets.py:766
+#: src/gui/_widgets.py:769
 msgid "Toggles link insertion mode."
 msgstr ""
 
-#: src/gui/_widgets.py:835
+#: src/gui/_widgets.py:838
 msgid "Enter Python expression here."
 msgstr ""
 
-#: src/gui/_widgets.py:1055
+#: src/gui/_widgets.py:1058
 msgid ""
 "Pyspread is in safe mode.\n"
 "Expressions are not evaluated."
 msgstr ""
 
-#: src/gui/_widgets.py:1122
+#: src/gui/_widgets.py:1125
 msgid "For switching tables enter the table number or use the mouse wheel."
 msgstr ""
 
@@ -2304,20 +2299,20 @@ msgstr ""
 msgid "Create new key"
 msgstr ""
 
-#: src/lib/gpg.py:189
+#: src/lib/gpg.py:190
 msgid "New GPG key"
 msgstr ""
 
-#: src/lib/gpg.py:190
+#: src/lib/gpg.py:191
 msgid "After confirming this dialog, a new GPG key "
 msgstr ""
 
-#: src/lib/gpg.py:191
+#: src/lib/gpg.py:192
 #, python-brace-format
 msgid "'{key}' will be generated."
 msgstr ""
 
-#: src/lib/gpg.py:192
+#: src/lib/gpg.py:193
 msgid ""
 " \n"
 " \n"

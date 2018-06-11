@@ -1158,7 +1158,7 @@ class AboutDialog(object):
         info.License = wordwrap(license_text, 500, wx.ClientDC(parent))
 
         # Then we call wx.AboutBox giving it that info object
-        wx.AboutBox(info)
+        wx.AboutBox(info, parent=parent)
 
     def _set_properties(self):
         """Setup title and label"""
