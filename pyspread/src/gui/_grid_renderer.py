@@ -41,7 +41,7 @@ import wx.lib.mixins.gridlabelrenderer as glr
 from src.sysvars import get_color
 from src.config import config
 import src.lib.i18n as i18n
-from src.lib._grid_cairo_renderer import GridCellCairoRenderer
+#from src.lib._grid_cairo_renderer import GridCellCairoRenderer
 from src.gui._events import post_command_event, EventMixin
 
 try:
@@ -257,38 +257,38 @@ class GridRenderer(wx.grid.GridCellRenderer, EventMixin):
         """Returns a wx.Bitmap of cell key in size rect"""
 
         bmp = wx.Bitmap(rect.width, rect.height)
-        mdc.SelectObject(bmp)
-        mdc.SetBackgroundMode(wx.SOLID)
-        mdc.SetBackground(wx.WHITE_BRUSH)
-        mdc.Clear()
-        mdc.SetDeviceOrigin(0, 0)
-
-        context = wx.lib.wxcairo.ContextFromDC(mdc)
-
-        context.save()
-
-        # Zoom context
-        zoom = self.zoom
-        context.scale(zoom, zoom)
-
-        # Set off cell renderer by 1/2 a pixel to avoid blurry lines
-        rect_tuple = (-0.5, -0.5,
-                      old_div(rect.width, zoom) + 0.5,
-                      old_div(rect.height, zoom) + 0.5)
-        spell_check = config["check_spelling"]
-        cell_renderer = GridCellCairoRenderer(context, self.data_array,
-                                              key, rect_tuple, view_frozen,
-                                              spell_check=spell_check)
-        # Draw cell
-        cell_renderer.draw()
-
-        # Draw selection if present
-        if is_selected:
-            context.set_source_rgba(*self.selection_color_tuple)
-            context.rectangle(*rect_tuple)
-            context.fill()
-
-        context.restore()
+#        mdc.SelectObject(bmp)
+#        mdc.SetBackgroundMode(wx.SOLID)
+#        mdc.SetBackground(wx.WHITE_BRUSH)
+#        mdc.Clear()
+#        mdc.SetDeviceOrigin(0, 0)
+#
+#        context = wx.lib.wxcairo.ContextFromDC(mdc)
+#
+#        context.save()
+#
+#        # Zoom context
+#        zoom = self.zoom
+#        context.scale(zoom, zoom)
+#
+#        # Set off cell renderer by 1/2 a pixel to avoid blurry lines
+#        rect_tuple = (-0.5, -0.5,
+#                      old_div(rect.width, zoom) + 0.5,
+#                      old_div(rect.height, zoom) + 0.5)
+#        spell_check = config["check_spelling"]
+#        cell_renderer = GridCellCairoRenderer(context, self.data_array,
+#                                              key, rect_tuple, view_frozen,
+#                                              spell_check=spell_check)
+#        # Draw cell
+#        cell_renderer.draw()
+#
+#        # Draw selection if present
+#        if is_selected:
+#            context.set_source_rgba(*self.selection_color_tuple)
+#            context.rectangle(*rect_tuple)
+#            context.fill()
+#
+#        context.restore()
 
         return bmp
 

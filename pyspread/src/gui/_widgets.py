@@ -669,11 +669,11 @@ class BitmapToggleButton(wx.BitmapButton):
 
         self.bitmap_list = []
         for bmp in bitmap_list:
-            if '__WXMSW__' not in wx.PlatformInfo:
-                # Setting a mask fails on Windows.
-                # Therefore transparency is set only for other platforms
-                mask = wx.Mask(bmp, wx.BLUE)
-                bmp.SetMask(mask)
+#            if '__WXMSW__' not in wx.PlatformInfo:
+#                # Setting a mask fails on Windows.
+#                # Therefore transparency is set only for other platforms
+#                mask = wx.Mask(bmp, wx.BLUE)
+#                bmp.SetMask(mask)
 
             self.bitmap_list.append(bmp)
 
@@ -1060,7 +1060,7 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
             _("Pyspread is in safe mode.\nExpressions are not evaluated."))
         self.safemode_staticbmp.SetToolTip(tooltip)
 
-        self.SetStatusWidths([-1, safemode_bmp.GetWidth() + 4])
+        #self.SetStatusWidths([-1, safemode_bmp.GetWidth() + 4])
 
         self.safemode_staticbmp.Hide()
 
