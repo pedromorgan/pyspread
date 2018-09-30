@@ -17,7 +17,7 @@ class Icon(QIcon):
     """Class for getting items from names"""
 
     icon_path = {
-        "pyspread": str(ICON_PATH / 'pyspread.ico'),
+        "pyspread": str(ICON_PATH / 'pyspread.svg'),
 
         "new": str(ICON_PATH / 'actions/filenew.svg'),
         "open": str(ICON_PATH / 'actions/fileopen.svg'),
