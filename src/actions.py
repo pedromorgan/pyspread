@@ -19,11 +19,11 @@ class Action(QAction):
     """
 
     def __init__(self, parent, label, *connects,
-                 icon=None, shortcut=None, statustip=None):
+                 icon=None, shortcut=None, statustip=None, checkable=False):
         if icon is None:
-            super().__init__(label, parent)
+            super().__init__(label, parent, checkable=checkable)
         else:
-            super().__init__(icon, label, parent)
+            super().__init__(icon, label, parent, checkable=checkable)
 
         if shortcut is not None:
             self.setShortcut(shortcut)
@@ -125,139 +125,150 @@ class MainWindowActions(dict):
     def _add_edit_actions(self):
         """Adds actions for Edit menu"""
 
-        self["undo"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["undo"] = Action(self.parent, "&Undo", self.parent.close,
+                              icon=Icon("undo"),
+                              shortcut='Ctrl+z',
+                              statustip='Undo last step')
 
-        self["redo"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["redo"] = Action(self.parent, "&Redo", self.parent.close,
+                              icon=Icon("redo"),
+                              shortcut='Shift+Ctrl+z',
+                              statustip='Redo last undone step')
 
-        self["cut"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["cut"] = Action(self.parent, "Cut", self.parent.close,
+                             icon=Icon("cut"),
+                             shortcut='Ctrl+x',
+                             statustip='Cut cell to the clipboard')
 
-        self["copy"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["copy"] = Action(self.parent, "&Copy", self.parent.close,
+                              icon=Icon("copy"),
+                              shortcut='Ctrl+c',
+                              statustip='Copy the input strings of the cells '
+                                        'to the clipboard')
 
-        self["copy_results"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["copy_results"] = Action(self.parent, "Copy results",
+                                      self.parent.close,
+                                      shortcut='Shift+Ctrl+c',
+                                      statustip='Copy the result strings of '
+                                                'the cells to the clipboard')
 
-        self["paste"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["paste"] = Action(self.parent, "&Paste", self.parent.close,
+                               icon=Icon("paste"),
+                               shortcut='Ctrl+v',
+                               statustip='Paste cells from the clipboard')
 
-        self["paste_as"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["paste_as"] = Action(self.parent, "Paste as...",
+                                  self.parent.close,
+                                  shortcut='Shift+Ctrl+v',
+                                  statustip='Transform clipboard and paste '
+                                            'results')
 
-        self["select_all"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["select_all"] = Action(self.parent, "&Select all",
+                                    self.parent.close,
+                                    icon=Icon("select_all"),
+                                    shortcut='Ctrl+a',
+                                    statustip='Select all cells')
 
-        self["find"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["find"] = Action(self.parent, "&Find", self.parent.close,
+                              icon=Icon("find"),
+                              shortcut='Ctrl+f',
+                              statustip='Find cell by content')
 
-        self["replace"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["replace"] = Action(self.parent, "&Replace...", self.parent.close,
+                                 icon=Icon("replace"),
+                                 shortcut='Shift+Ctrl+f',
+                                 statustip='Replace sub-strings in cells')
 
-        self["quote"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["quote"] = Action(self.parent, "&Quote", self.parent.close,
+                               shortcut='Ctrl+Return',
+                               statustip="Convert cells' code to strings by "
+                                         "addding quotes")
 
-        self["sort_ascending"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["sort_ascending"] = Action(self.parent, "Sort ascending",
+                                        self.parent.close,
+                                        icon=Icon("sort_ascending"),
+                                        statustip='Sort selected columns (or '
+                                                  'all if none selected) in '
+                                                  'ascending order')
 
-        self["sort_decending"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["sort_decending"] = Action(self.parent, "Sort descending",
+                                        self.parent.close,
+                                        icon=Icon("sort_descending"),
+                                        statustip='Sort selected columns (or '
+                                                  'all if none selected) in '
+                                                  'descending order')
 
-        self["insert_rows"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["insert_rows"] = Action(self.parent, "Insert rows",
+                                     self.parent.close,
+                                     statustip='Insert max(1, no. selected '
+                                               'rows) rows at cursor')
 
-        self["insert_columns"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["insert_columns"] = Action(self.parent, "Insert columns",
+                                        self.parent.close,
+                                        statustip='Insert max(1, no. selected '
+                                                  'columns) columns at cursor')
 
-        self["insert_table"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["insert_table"] = Action(self.parent, "Insert table",
+                                      self.parent.close,
+                                      statustip='Insert table before current '
+                                                'table')
 
-        self["delete_rows"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["delete_rows"] = Action(self.parent, "Delete rows",
+                                     self.parent.close,
+                                     statustip='Delete max(1, no. selected '
+                                               'rows) rows at cursor')
 
-        self["delete_columns"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["delete_columns"] = Action(self.parent, "Delete columns",
+                                        self.parent.close,
+                                        statustip='Delete max(1, no. selected '
+                                                  'columns) columns at cursor')
 
-        self["delete_table"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["delete_table"] = Action(self.parent, "Delete table",
+                                      self.parent.close,
+                                      statustip='Delete current table')
 
-        self["resize_grid"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["resize_grid"] = Action(self.parent, "Resize grid",
+                                     self.parent.close,
+                                     icon=Icon("resize_grid"),
+                                     statustip='Resizes the current grid')
 
     def _add_view_actions(self):
         """Adds actions for View menu"""
 
-        self["fullscreen"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["fullscreen"] = Action(self.parent, "Fullscreen", self.parent.close,
+                             icon=Icon("fullscreen"),
+                             shortcut='F11',
+                             statustip='Show grid in fullscreen mode (press <F11> to leave)')
 
-        self["toggle_main_toolbar"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_main_toolbar"] = Action(self.parent, "Main toolbar",
+                                             self.parent.close,
+                                             checkable=True,
+                                             statustip='Show/hide the main '
+                                                       'toolbar')
 
-        self["toggle_macro_toolbar"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_macro_toolbar"] = Action(self.parent, "Macro toolbar",
+                                              self.parent.close,
+                                              checkable=True,
+                                              statustip='Show/hide the macro '
+                                                        'toolbar')
 
-        self["toggle_widget_toolbar"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_widget_toolbar"] = Action(self.parent, "Widget toolbar",
+                                               self.parent.close,
+                                               checkable=True,
+                                               statustip='Show/hide the '
+                                                         'widget toolbar')
 
-        self["toggle_format_toolbar"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_format_toolbar"] = Action(self.parent, "Format toolbar",
+                                               self.parent.close,
+                                               checkable=True,
+                                               statustip='Show/hide the '
+                                                         'format toolbar')
 
-        self["toggle_find_toolbar"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
+        self["toggle_find_toolbar"] = Action(self.parent, "Find toolbar",
+                                             self.parent.close,
+                                             checkable=True,
+                                             statustip='Show/hide the find '
+                                                       'toolbar')
 
         self["toggle_entryline"] = Action(self.parent, "&New", self.parent.close,
                              icon=Icon("new"),

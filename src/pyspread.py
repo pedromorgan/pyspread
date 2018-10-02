@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.setMenuBar(MenuBar(self))
         self.addToolBar(ToolBar(self))
 
-        self.setGeometry(300, 300, 350, 250)
+        self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('Pyspread')
         self.show()
 

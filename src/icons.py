@@ -30,6 +30,21 @@ class Icon(QIcon):
         "preferences": str(ICON_PATH / 'actions/stock_properties.svg'),
         "new_gpg_key": str(ICON_PATH / 'actions/exit.svg'),
         "quit": str(ICON_PATH / 'actions/exit.svg'),
+
+        "undo": str(ICON_PATH / 'actions/undo.svg'),
+        "redo": str(ICON_PATH / 'actions/redo.svg'),
+        "cut": str(ICON_PATH / 'actions/edit-cut.svg'),
+        "copy": str(ICON_PATH / 'actions/edit-copy.svg'),
+        "paste": str(ICON_PATH / 'actions/edit-paste.svg'),
+        "select_all": str(ICON_PATH / 'actions/edit-select-all.svg'),
+        "find": str(ICON_PATH / 'actions/edit-find.svg'),
+        "replace": str(ICON_PATH / 'actions/edit-find-replace.svg'),
+        "sort_ascending": str(ICON_PATH / 'actions/sort-ascending.svg'),
+        "sort_descending": str(ICON_PATH / 'actions/sort-descending.svg'),
+        "resize_grid": str(ICON_PATH / 'actions/resize-grid.svg'),
+
+        "fullscreen": str(ICON_PATH / 'actions/view-fullscreen.svg'),
+
     }
 
     def __init__(self, name):
