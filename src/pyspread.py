@@ -7,7 +7,7 @@ Pyspread QT transition tryout
 """
 
 import sys
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QApplication
+from PyQt5.QtWidgets import QMainWindow, QTableView, QApplication
 from icons import Icon
 
 from menubar import MenuBar
@@ -22,14 +22,14 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.actions = MainWindowActions(self)
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
 
         self.setWindowIcon(Icon("pyspread"))
 
-        textEdit = QTextEdit()
-        self.setCentralWidget(textEdit)
+        grid = QTableView()
+        self.setCentralWidget(grid)
 
         self.statusBar()
         self.setMenuBar(MenuBar(self))
@@ -38,6 +38,9 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('Pyspread')
         self.show()
+
+    def nothing(self):
+        pass
 
 
 def main():

@@ -72,10 +72,12 @@ class MainWindowActions(dict):
                                  statustip='Save spreadsheet to a new file')
 
         self["import"] = Action(self.parent, "&Import", self.parent.close,
+                                icon=Icon("import"),
                                 statustip='Import a file and paste it into '
                                           'the current grid')
 
         self["export"] = Action(self.parent, "&Export", self.parent.close,
+                                icon=Icon("export"),
                                 statustip="Export selection to a file")
 
         self["approve"] = Action(self.parent, "&Approve file",
@@ -93,6 +95,7 @@ class MainWindowActions(dict):
 
         self["page_setup"] = Action(self.parent, "Page setup",
                                     self.parent.close,
+                                    icon=Icon("page_setup"),
                                     statustip='Setup printer page')
 
         self["print_preview"] = Action(self.parent, "Print preview",
@@ -148,6 +151,7 @@ class MainWindowActions(dict):
 
         self["copy_results"] = Action(self.parent, "Copy results",
                                       self.parent.close,
+                                      icon=Icon("copy_results"),
                                       shortcut='Shift+Ctrl+c',
                                       statustip='Copy the result strings of '
                                                 'the cells to the clipboard')
@@ -159,6 +163,7 @@ class MainWindowActions(dict):
 
         self["paste_as"] = Action(self.parent, "Paste as...",
                                   self.parent.close,
+                                  icon=Icon("paste_as"),
                                   shortcut='Shift+Ctrl+v',
                                   statustip='Transform clipboard and paste '
                                             'results')
@@ -180,6 +185,7 @@ class MainWindowActions(dict):
                                  statustip='Replace sub-strings in cells')
 
         self["quote"] = Action(self.parent, "&Quote", self.parent.close,
+                               icon=Icon("quote"),
                                shortcut='Ctrl+Return',
                                statustip="Convert cells' code to strings by "
                                          "addding quotes")
@@ -200,31 +206,37 @@ class MainWindowActions(dict):
 
         self["insert_rows"] = Action(self.parent, "Insert rows",
                                      self.parent.close,
+                                     icon=Icon("insert_row"),
                                      statustip='Insert max(1, no. selected '
                                                'rows) rows at cursor')
 
         self["insert_columns"] = Action(self.parent, "Insert columns",
                                         self.parent.close,
+                                        icon=Icon("insert_column"),
                                         statustip='Insert max(1, no. selected '
                                                   'columns) columns at cursor')
 
         self["insert_table"] = Action(self.parent, "Insert table",
                                       self.parent.close,
+                                      icon=Icon("insert_table"),
                                       statustip='Insert table before current '
                                                 'table')
 
         self["delete_rows"] = Action(self.parent, "Delete rows",
                                      self.parent.close,
+                                     icon=Icon("delete_row"),
                                      statustip='Delete max(1, no. selected '
                                                'rows) rows at cursor')
 
         self["delete_columns"] = Action(self.parent, "Delete columns",
                                         self.parent.close,
+                                        icon=Icon("delete_column"),
                                         statustip='Delete max(1, no. selected '
                                                   'columns) columns at cursor')
 
         self["delete_table"] = Action(self.parent, "Delete table",
                                       self.parent.close,
+                                      icon=Icon("delete_table"),
                                       statustip='Delete current table')
 
         self["resize_grid"] = Action(self.parent, "Resize grid",
@@ -235,10 +247,12 @@ class MainWindowActions(dict):
     def _add_view_actions(self):
         """Adds actions for View menu"""
 
-        self["fullscreen"] = Action(self.parent, "Fullscreen", self.parent.close,
-                             icon=Icon("fullscreen"),
-                             shortcut='F11',
-                             statustip='Show grid in fullscreen mode (press <F11> to leave)')
+        self["fullscreen"] = Action(self.parent, "Fullscreen",
+                                    self.parent.close,
+                                    icon=Icon("fullscreen"),
+                                    shortcut='F11',
+                                    statustip='Show grid in fullscreen mode '
+                                              '(press <F11> to leave)')
 
         self["toggle_main_toolbar"] = Action(self.parent, "Main toolbar",
                                              self.parent.close,
@@ -270,251 +284,266 @@ class MainWindowActions(dict):
                                              statustip='Show/hide the find '
                                                        'toolbar')
 
-        self["toggle_entryline"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_entryline"] = Action(self.parent, "Entry line",
+                                          self.parent.close,
+                                          checkable=True,
+                                          statustip='Show/hide the entry line')
 
-        self["toggle_tablelist"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_tablelist"] = Action(self.parent, "Table list",
+                                          self.parent.close,
+                                          checkable=True,
+                                          statustip='Show/hide the table list')
 
-        self["toggle_macropanel"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_macropanel"] = Action(self.parent, "Macro panel",
+                                           self.parent.close,
+                                           checkable=True,
+                                           statustip='Show/hide the macro '
+                                                     'panel')
 
+        self["goto_cell"] = Action(self.parent, "Go to cell",
+                                   self.parent.close,
+                                   icon=Icon("goto_cell"),
+                                   shortcut='Ctrl+g',
+                                   statustip='Select a cell and put it into '
+                                             'view')
 
-        self["goto_cell"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["check_spelling"] = Action(self.parent, "Check spelling",
+                                        self.parent.nothing,
+                                        icon=Icon("check_spelling"),
+                                        checkable=True,
+                                        statustip='Turn spell checker on/off')
 
+        self["zoom_in"] = Action(self.parent, "Zoom in", self.parent.close,
+                                 icon=Icon("zoom_in"),
+                                 shortcut='Ctrl++',
+                                 statustip='Zoom in the grid')
 
-        self["check_spelling"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["zoom_out"] = Action(self.parent, "Zoom out", self.parent.close,
+                                  icon=Icon("zoom_out"),
+                                  shortcut='Ctrl+-',
+                                  statustip='Zoom out the grid')
 
-        self["zoom_in"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["zoom_1"] = Action(self.parent, "Original size",
+                                self.parent.close,
+                                icon=Icon("zoom_1"),
+                                shortcut='Ctrl+0',
+                                statustip='Show grid on standard zoom level')
 
-        self["zoom_out"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["zoom_fit"] = Action(self.parent, "Zoom to fit",
+                                  self.parent.close,
+                                  icon=Icon("zoom_fit"),
+                                  shortcut='F6',
+                                  statustip='Zooms the grid so that it fits '
+                                            'into the window')
 
+        self["refresh_cells"] = Action(self.parent, "Refresh selected cells",
+                                       self.parent.close,
+                                       icon=Icon("refresh"),
+                                       shortcut='F5',
+                                       statustip='Refresh selected cells even '
+                                                 'when frozen')
 
-        self["zoom_1"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["toggle_periodic_updates"] = \
+            Action(self.parent, "Toggle periodic updates", self.parent.nothing,
+                   icon=Icon("toggle_periodic_updates"),
+                   checkable=True,
+                   statustip='Toggles periodic updates for frozen cells')
 
-
-        self["zoom_fit"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["refresh_cells"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["toggle_periodic_updates"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["show_frozen"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["show_frozen"] = Action(self.parent, "Show frozen",
+                                     self.parent.nothing,
+                                     icon=Icon("show_frozen"),
+                                     checkable=True,
+                                     statustip='Indicates frozen cells with a '
+                                               'background crosshatch')
 
     def _add_format_actions(self):
         """Adds actions for Format menu"""
 
-        self["copy_format"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["copy_format"] = Action(self.parent, "&Copy format",
+                                     self.parent.close,
+                                     icon=Icon("copy_format"),
+                                     shortcut='Alt+Ctrl+c',
+                                     statustip='Copy format of selection to '
+                                               'the clipboard')
 
-        self["paste_format"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["paste_format"] = Action(self.parent, "&Paste format",
+                                      self.parent.close,
+                                      icon=Icon("paste_format"),
+                                      shortcut='Alt+Ctrl+v',
+                                      statustip='Apply format from the '
+                                                'clipboard to the selected '
+                                                'cells')
 
+        self["font"] = Action(self.parent, "&Font...", self.parent.close,
+                              icon=Icon("font_dialog"),
+                              shortcut='Ctrl+n',
+                              statustip='Lauch font dialog')
 
-        self["font"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["bold"] = Action(self.parent, "&Bold", self.parent.close,
+                              icon=Icon("bold"),
+                              shortcut='Ctrl+b',
+                              statustip='Toggle bold font weight for the '
+                                        'selected cells')
 
+        self["italics"] = Action(self.parent, "&Italics", self.parent.close,
+                                 icon=Icon("italics"),
+                                 shortcut='Ctrl+i',
+                                 statustip='Toggle italics font style for the '
+                                           'selected cells')
 
-        self["bold"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["underline"] = Action(self.parent, "&Underline",
+                                   self.parent.close,
+                                   icon=Icon("underline"),
+                                   shortcut='Ctrl+u',
+                                   statustip='Toggle underline for the '
+                                             'selected cells')
 
+        self["strikethrough"] = Action(self.parent, "&Strikethrough",
+                                       self.parent.close,
+                                       icon=Icon("strikethrough"),
+                                       statustip='Toggle strikethrough for '
+                                                 'the selected cells')
 
-        self["italics"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["markup"] = Action(self.parent, "Markup", self.parent.close,
+                                icon=Icon("markup"),
+                                statustip='Show cell results as markup '
+                                          '(allows partly formatted output)')
 
+        self["text_color"] = Action(self.parent, "Text color...",
+                                    self.parent.close,
+                                    icon=Icon("text_color"),
+                                    statustip='Lauch text color dialog')
 
-        self["underline"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["background_color"] = Action(self.parent, "Background color...",
+                                          self.parent.close,
+                                          icon=Icon("background_color"),
+                                          statustip='Lauch background color '
+                                                    'dialog')
 
+        self["justify_left"] = Action(self.parent, "Left", self.parent.close,
+                                      icon=Icon("justify_left"),
+                                      statustip='Display cell result text '
+                                                'left justified')
 
-        self["strikethrough"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["justify_center"] = Action(self.parent, "Center",
+                                        self.parent.close,
+                                        icon=Icon("justify_center"),
+                                        statustip='Display cell result text '
+                                                  'centered')
 
+        self["justify_right"] = Action(self.parent, "Right", self.parent.close,
+                                       icon=Icon("justify_right"),
+                                       statustip='Display cell result text '
+                                                 'right justified')
 
-        self["text_color"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["align_top"] = Action(self.parent, "Top", self.parent.close,
+                                   icon=Icon("align_top"),
+                                   statustip='Align cell result at the top of '
+                                             'the cell')
 
-        self["background_color"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["align_center"] = Action(self.parent, "Center", self.parent.close,
+                                      icon=Icon("align_center"),
+                                      statustip='Center cell result within '
+                                                'the cell')
 
-        self["markup"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["align_bottom"] = Action(self.parent, "Bottom", self.parent.close,
+                                      icon=Icon("align_bottom"),
+                                      statustip='Align cell result at the '
+                                                'bottom of the cell')
 
-        self["justify_left"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["rotate_0"] = Action(self.parent, "0°", self.parent.close,
+                                  icon=Icon("rotate_0"),
+                                  statustip='Set text rotation to 0°')
 
-        self["justify_center"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["rotate_90"] = Action(self.parent, "90°", self.parent.close,
+                                   icon=Icon("rotate_90"),
+                                   statustip='Set text rotation to 90°')
 
-        self["justify_right"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["rotate_180"] = Action(self.parent, "180°", self.parent.close,
+                                    icon=Icon("rotate_180"),
+                                    statustip='Set text rotation to 180°')
 
-        self["align_top"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["rotate_270"] = Action(self.parent, "270°", self.parent.close,
+                                    icon=Icon("rotate_270"),
+                                    statustip='Set text rotation to 270°')
 
-        self["align_center"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["freeze_cell"] = Action(self.parent, "Freeze cell",
+                                     self.parent.close,
+                                     icon=Icon("freeze"),
+                                     statustip='Freeze the selected cell so '
+                                               'that is is only updated when '
+                                               '<F5> is pressed')
 
-        self["align_bottom"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["lock_cell"] = Action(self.parent, "Lock cell", self.parent.close,
+                                   icon=Icon("lock"),
+                                   statustip='Lock cell so that its code '
+                                             'cannot be changed')
 
-        self["rotate_0"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["rotate_90"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["rotate_180"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["rotate_270"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["freeze_cell"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["lock_cell"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["merge_cells"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["merge_cells"] = Action(self.parent, "Merge cells",
+                                     self.parent.close,
+                                     icon=Icon("merge_cells"),
+                                     statustip='Merge/unmerge selected cells')
 
     def _add_macro_actions(self):
         """Adds actions for Macro menu"""
 
-        self["load_macros"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["load_macros"] = Action(self.parent, "Load macros",
+                                     self.parent.close,
+                                     icon=Icon("load_macros"),
+                                     statustip='Load macros from an external '
+                                               'Python file')
 
-        self["save_macros"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["save_macros"] = Action(self.parent, "Save macros",
+                                     self.parent.close,
+                                     icon=Icon("save_macros"),
+                                     statustip='Save macros to an external '
+                                               'Python file')
 
+        self["insert_image"] = Action(self.parent, "Insert image...",
+                                      self.parent.close,
+                                      icon=Icon("insert_image"),
+                                      statustip='Load an image from a file '
+                                                'into a cell')
 
-        self["insert_bitmap"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["link_image"] = Action(self.parent, "Link image...",
+                                    self.parent.close,
+                                    icon=Icon("link_image"),
+                                    statustip='Link an image file from a cell')
 
-
-        self["link_bitmap"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-
-        self["insert_chart"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["insert_chart"] = Action(self.parent, "Insert chart...",
+                                      self.parent.close,
+                                      icon=Icon("insert_chart"),
+                                      statustip='Create a matplotlib chart '
+                                                'and insert code so that it '
+                                                'is displayed')
 
     def _add_help_actions(self):
         """Adds actions for Help menu"""
 
-        self["first_steps"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["first_steps"] = Action(self.parent, "First steps...",
+                                     self.parent.close,
+                                     icon=Icon("help"),
+                                     shortcut='F1',
+                                     statustip='Display the first steps '
+                                               'document that provides a '
+                                               'basic overview of pyspread')
 
-        self["tutorial"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["tutorial"] = Action(self.parent, "Tutorial...",
+                                  self.parent.close,
+                                  icon=Icon("tutorial"),
+                                  statustip='Display a pyspread tutorial')
 
+        self["faq"] = Action(self.parent, "FAQ...", self.parent.close,
+                             icon=Icon("faq"),
+                             statustip='Display frequently asked questions')
 
-        self["faq"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["dependencies"] = Action(self.parent, "Dependencies...",
+                                      self.parent.close,
+                                      icon=Icon("dependencies"),
+                                      statustip='Overview of installed '
+                                                'dependencies')
 
-
-        self["dependencies"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
-
-        self["about"] = Action(self.parent, "&New", self.parent.close,
-                             icon=Icon("new"),
-                             shortcut='Ctrl+n',
-                             statustip='Create a new, empty spreadsheet')
+        self["about"] = Action(self.parent, "About pyspread...",
+                               self.parent.close,
+                               icon=Icon("pyspread"),
+                               statustip='About pyspread')

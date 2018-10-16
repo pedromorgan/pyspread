@@ -179,8 +179,8 @@ class MenuBar(QMenuBar):
         macro_menu.addAction(self.actions["load_macros"])
         macro_menu.addAction(self.actions["save_macros"])
         macro_menu.addSeparator()
-        macro_menu.addAction(self.actions["insert_bitmap"])
-        macro_menu.addAction(self.actions["link_bitmap"])
+        macro_menu.addAction(self.actions["insert_image"])
+        macro_menu.addAction(self.actions["link_image"])
         macro_menu.addAction(self.actions["insert_chart"])
 
         return macro_menu
