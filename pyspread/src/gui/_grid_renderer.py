@@ -43,7 +43,11 @@ from src.gui._events import post_command_event, EventMixin
 try:
     import src.lib.vlc as vlc
     from grid_panels import VLCPanel
-except (ImportError, WindowsError):
+except ImportError:
+    vlc = None
+except NotImplementedError:  # OpenBSD fix
+    vlc = None
+except WindowsError:  # Windows fix
     vlc = None
 
 # Use ugettext instead of getttext to avoid unicode errors
