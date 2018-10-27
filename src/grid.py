@@ -6,8 +6,6 @@ Created on Sun Oct 21 22:48:45 2018
 @author: mn
 """
 
-import random
-
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QBrush, QPen
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
@@ -106,10 +104,6 @@ class GridItemModel(QAbstractTableModel):
         return QVariant()
 
     def setData(self, index, value, role):
-#        if not index.isValid():
-#            return False
-#        elif role != Qt.DisplayRole:
-#            return False
         row = index.row()
         column = index.column()
         self.code_array[row, column, 0] = "{}".format(value)
@@ -130,28 +124,19 @@ class GridCellDelegate(QStyledItemDelegate):
         super().__init__()
 
         self.code_array = code_array
+        self.cell_attributes = self.code_array.cell_attributes
 
-    def _paint_border_lines(self, rect, painter, index):
-        """Paint bottom and right border lines around the cell"""
+    def _paint_bl_border_lines(self, x, y, width, height, painter, key):
+        """Paint the bottom and the left border line of the cell"""
 
-        key = index.row, index.column, 0
+        border_bottom = (x, y + height, x + width, y + height)
+        border_right = (x + width, y, x + width, y + height)
 
-        cell_attributes = self.code_array.cell_attributes
+        bordercolor_bottom = self.cell_attributes[key]["bordercolor_bottom"]
+        bordercolor_right = self.cell_attributes[key]["bordercolor_right"]
 
-        width = rect.width() - 1
-        height = rect.height() - 1
-
-        border_bottom = (0, height, width, height)
-        border_right = (width, 0, width, height)
-
-        bordercolor_bottom = cell_attributes[key]["bordercolor_bottom"]
-        bordercolor_right = cell_attributes[key]["bordercolor_right"]
-
-        borderwidth_bottom = cell_attributes[key]["borderwidth_bottom"]
-        borderwidth_right = cell_attributes[key]["borderwidth_right"]
-
-        painter.save()
-        painter.translate(rect.topLeft())
+        borderwidth_bottom = self.cell_attributes[key]["borderwidth_bottom"]
+        borderwidth_right = self.cell_attributes[key]["borderwidth_right"]
 
         painter.setPen(QPen(QBrush(QColor(*bordercolor_bottom)),
                             borderwidth_bottom))
@@ -161,7 +146,38 @@ class GridCellDelegate(QStyledItemDelegate):
                             borderwidth_right))
         painter.drawLine(*border_right)
 
-        painter.restore()
+    def _paint_border_lines(self, rect, painter, index):
+        """Paint border lines around the cell
+
+        First, bottom and right border lines are painted.
+        Next, border lines of the cell above are painted.
+        Next, border lines of the cell left are painted.
+        Finally, bottom and right border lines of the cell above left
+        are painted.
+
+        """
+
+        x = rect.x() - 1
+        y = rect.y() - 1
+        width = rect.width()
+        height = rect.height()
+
+        # Paint bottom and right border lines of the current cell
+        key = index.row(), index.column(), 0
+        self._paint_bl_border_lines(x, y, width, height, painter, key)
+
+        # Paint bottom and right border lines of the cell above
+        key = index.row() - 1, index.column(), 0
+        self._paint_bl_border_lines(x, y - height, width, height, painter, key)
+
+        # Paint bottom and right border lines of the cell left
+        key = index.row(), index.column() - 1, 0
+        self._paint_bl_border_lines(x - width, y, width, height, painter, key)
+
+        # Paint bottom and right border lines of the current cell
+        key = index.row() - 1, index.column() - 1, 0
+        self._paint_bl_border_lines(x - width, y - height, width, height,
+                                    painter, key)
 
     def paint(self, painter, option, index):
         QStyledItemDelegate.paint(self, painter, option, index)
