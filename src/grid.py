@@ -28,30 +28,31 @@ class Grid(QTableView):
         window_size = config["window_size"]
 
         self.setGeometry(*window_position, *window_size)
-        # SELECTING THE MODEL - FRAMEWORK THAT HANDLES QUERIES AND EDITS
+
         self.code_array = CodeArray(dimensions)
         self.grid_item_model = GridItemModel(self.code_array)
         self.setModel(self.grid_item_model)  # SETTING THE MODEL
-        # grid.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
         self.doubleClicked.connect(self.on_grid_click)
         # self.model.itemChanged.connect(self.on_state_changed)
+
         self.setShowGrid(False)
 
         delegate = GridCellDelegate(self.code_array)
         self.setItemDelegate(delegate)
 
     def on_grid_click(self, signal):
-        row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
-        column = signal.column()  # RETRIEVES COLUMN OF CELL THAT WAS DOUBLE CLICKED
-        cell_dict = self.grid_item_model.itemData(signal)  # RETURNS DICT VALUE OF SIGNAL
-        cell_value = cell_dict.get(0)  # RETRIEVE VALUE FROM DICT
+        row = signal.row()
+        column = signal.column()
+        cell_dict = self.grid_item_model.itemData(signal)
+        cell_value = cell_dict.get(0)
 
         index = signal.sibling(row, 0)
         index_dict = self.grid_item_model.itemData(index)
         index_value = index_dict.get(0)
 
-        print(
-            'Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
+        print('Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.
+              format(row, column, cell_value, index_value))
 
     def on_state_changed(self, signal):
         print(signal.row(), signal.column(), signal.text())
@@ -74,7 +75,7 @@ class GridItemModel(QAbstractTableModel):
             row = index.row()
             column = index.column()
 
-            value = self.code_array[row-1, column-1, 0]
+            value = self.code_array[row, column, 0]
 
             if value is None:
                 return ""
@@ -97,10 +98,10 @@ class GridItemModel(QAbstractTableModel):
             return QColor(Qt.black)
 
         if role == Qt.ToolTipRole:
-            return "Tooltip"
+            row = index.row()
+            column = index.column()
 
-        if role == Qt.StatusTipRole:
-            return "Statustip"
+            return self.code_array((row, column, 0))
 
         return QVariant()
 
@@ -111,7 +112,7 @@ class GridItemModel(QAbstractTableModel):
 #            return False
         row = index.row()
         column = index.column()
-        self.code_array[row-1, column-1, 0] = "{}".format(value)
+        self.code_array[row, column, 0] = "{}".format(value)
 
         return True
 
