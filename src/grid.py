@@ -12,26 +12,33 @@ from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QBrush, QPen
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 
+from config import config
 from model.model import CodeArray
+
 
 class Grid(QTableView):
     def __init__(self, parent):
         super().__init__(parent)
 
-        dimensions = 1000, 100, 3
+        dimensions = (config["grid_rows"],
+                      config["grid_columns"],
+                      config["grid_tables"])
 
-        self.setGeometry(0, 0, 575, 575)
+        window_position = config["window_position"]
+        window_size = config["window_size"]
+
+        self.setGeometry(*window_position, *window_size)
         # SELECTING THE MODEL - FRAMEWORK THAT HANDLES QUERIES AND EDITS
-        self.grid_item_model = GridItemModel(CodeArray(dimensions))
+        self.code_array = CodeArray(dimensions)
+        self.grid_item_model = GridItemModel(self.code_array)
         self.setModel(self.grid_item_model)  # SETTING THE MODEL
-        #grid.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # grid.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.doubleClicked.connect(self.on_grid_click)
-        #self.model.itemChanged.connect(self.on_state_changed)
+        # self.model.itemChanged.connect(self.on_state_changed)
         self.setShowGrid(False)
 
-        delegate = GridCellDelegate()
+        delegate = GridCellDelegate(self.code_array)
         self.setItemDelegate(delegate)
-
 
     def on_grid_click(self, signal):
         row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
@@ -63,12 +70,10 @@ class GridItemModel(QAbstractTableModel):
         return self.code_array.shape[1]
 
     def data(self, index, role=Qt.DisplayRole):
-        #print 'Data Call'
-        #print index.column(), index.row()
         if role == Qt.DisplayRole:
             row = index.row()
             column = index.column()
-            #return QVariant(str(self.datatable.iget_value(i, j)))
+
             value = self.code_array[row-1, column-1, 0]
 
             if value is None:
@@ -76,17 +81,25 @@ class GridItemModel(QAbstractTableModel):
             else:
                 return str(value)
 
-        if role==Qt.BackgroundColorRole:
-            bgColor=QBrush(QColor(0, 0, 255), Qt.BDiagPattern)
-            return bgColor
+        if role == Qt.BackgroundColorRole:
+            row = index.row()
+            column = index.column()
+            key = row, column, 0
+            if False:
+                pattern_rgb = config["freeze_color"]
+                bg_color = QBrush(QColor(*pattern_rgb), Qt.BDiagPattern)
+            else:
+                bg_color_rgb = self.code_array.cell_attributes[key]["bgcolor"]
+                bg_color = QColor(*bg_color_rgb)
+            return bg_color
 
-        if role==Qt.TextColorRole:
+        if role == Qt.TextColorRole:
             return QColor(Qt.black)
 
-        if role==Qt.ToolTipRole:
+        if role == Qt.ToolTipRole:
             return "Tooltip"
 
-        if role==Qt.StatusTipRole:
+        if role == Qt.StatusTipRole:
             return "Statustip"
 
         return QVariant()
@@ -111,26 +124,48 @@ class GridItemModel(QAbstractTableModel):
 
 
 class GridCellDelegate(QStyledItemDelegate):
+
+    def __init__(self, code_array):
+        super().__init__()
+
+        self.code_array = code_array
+
+    def _paint_border_lines(self, rect, painter, index):
+        """Paint bottom and right border lines around the cell"""
+
+        key = index.row, index.column, 0
+
+        cell_attributes = self.code_array.cell_attributes
+
+        width = rect.width() - 1
+        height = rect.height() - 1
+
+        border_bottom = (0, height, width, height)
+        border_right = (width, 0, width, height)
+
+        bordercolor_bottom = cell_attributes[key]["bordercolor_bottom"]
+        bordercolor_right = cell_attributes[key]["bordercolor_right"]
+
+        borderwidth_bottom = cell_attributes[key]["borderwidth_bottom"]
+        borderwidth_right = cell_attributes[key]["borderwidth_right"]
+
+        painter.save()
+        painter.translate(rect.topLeft())
+
+        painter.setPen(QPen(QBrush(QColor(*bordercolor_bottom)),
+                            borderwidth_bottom))
+        painter.drawLine(*border_bottom)
+
+        painter.setPen(QPen(QBrush(QColor(*bordercolor_right)),
+                            borderwidth_right))
+        painter.drawLine(*border_right)
+
+        painter.restore()
+
     def paint(self, painter, option, index):
         QStyledItemDelegate.paint(self, painter, option, index)
 
-        width = option.rect.width()
-        height = option.rect.height()
-
-        # Border lines
-        top_line = (0, 0, width, 0)
-        bottom_line = (0, height, width, height)
-        left_line = (0, 0, 0, height)
-        right_line = (width, 0, width, height)
-
-        painter.save()
-        painter.translate(option.rect.topLeft())
-        painter.setPen(QPen(QBrush(Qt.red), 1))
-        painter.drawLine(*top_line)
-        painter.drawLine(*bottom_line)
-        painter.drawLine(*left_line)
-        painter.drawLine(*right_line)
-        painter.restore()
+        self._paint_border_lines(option.rect, painter, index)
 
 #    def createEditor(self, parent, option, index):
 #        editor = QSpinBox(parent)

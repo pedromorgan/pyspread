@@ -42,7 +42,7 @@ class DefaultConfig(object):
 
         # Cell calculation timeout in s
         # -----------------------------
-        self.timeout = repr(10)
+        self.timeout = 10
 
         # User defined paths
         # ------------------
@@ -53,27 +53,27 @@ class DefaultConfig(object):
         # UI language
         # -----------
 
-        self.ui_language = "'en'"  # 'system' for system locale
+        self.ui_language = 'en'  # 'system' for system locale
 
         # Spell checking lamguage
         # -----------------------
 
-        self.check_spelling = "False"
-        self.spell_lang = "'en_US'"
+        self.check_spelling = False
+        self.spell_lang = 'en_US'
 
         # Default filetypes
         # -----------------
 
-        self.default_open_filetype = "'pys'"
-        self.default_save_filetype = "'pys'"
+        self.default_open_filetype = 'pys'
+        self.default_save_filetype = 'pys'
 
         # Window configuration
         # --------------------
 
-        self.window_position = "(10, 10)"
+        self.window_position = (10, 10)
         self.window_size = (800, 600)
-        self.window_layout = "''"
-        self.icon_theme = "'Tango'"
+        self.window_layout = ''
+        self.icon_theme = 'Tango'
 
         self.help_window_position = (50, 50)
         self.help_window_size = (600, 400)
@@ -81,59 +81,57 @@ class DefaultConfig(object):
         # Grid configuration
         # ------------------
 
-        self.grid_rows = "1000"
-        self.grid_columns = "100"
-        self.grid_tables = "3"
+        self.grid_rows = 1000
+        self.grid_columns = 100
+        self.grid_tables = 3
 
-        self.max_unredo = "5000"
+        self.max_unredo = 5000
 
-        self.timer_interval = "1000"
+        self.timer_interval = 1000
 
         # Default row height and col width e.g. for Cairo rendering
-        self.default_row_height = "23"
-        self.default_col_width = "80"
+        self.default_row_height = 23
+        self.default_col_width = 80
 
         # Maximum result length in a cell in characters
-        self.max_result_length = "100000"
+        self.max_result_length = 100000
 
         # Colors
-        self.grid_color = "None"
-        self.selection_color = "None"
-        self.background_color = "None"
-        self.text_color = "None"
-        self.freeze_color = "None"
+        self.grid_color = (192, 192, 192)
+        self.background_color = (255, 255, 255)
+        self.text_color = (0, 0, 0)
+        self.freeze_color = (0, 0, 255)
 
         # Fonts
 
-        self.font = "None"
+        self.font = "Sans"
         self.font_save_enabled = "False"
 
         # Default cell font size
 
-        self.font_default_sizes = "[6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32]"
+        self.font_default_sizes = [6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32]
 
         # Zoom
 
-        self.minimum_zoom = "0.25"
-        self.maximum_zoom = "8.0"
+        self.minimum_zoom = 0.25
+        self.maximum_zoom = 8.0
 
         # Increase and decrease factor on zoom in and zoom out
-        self.zoom_factor = "0.05"
+        self.zoom_factor = 0.05
 
         # GPG parameters
         # --------------
 
-        #self.gpg_key_uid = repr('')  # Deprecated
-        self.gpg_key_fingerprint = repr('')
+        self.gpg_key_fingerprint = ''
 
         # CSV parameters for import and export
         # ------------------------------------
 
         # Number of bytes for the sniffer (should be larger than 1st+2nd line)
-        self.sniff_size = "65536"
+        self.sniff_size = 65536
 
         # Maximum number of characters in wx.TextCtrl
-        self.max_textctrl_length = "65534"
+        self.max_textctrl_length = 65534
 
 
 class Config(object):
@@ -155,7 +153,7 @@ class Config(object):
 
         self.data = DefaultConfig()
 
-        self.cfg_file = "None"
+        self.cfg_file = None
 
         # Config keys to be resetted to default value on version upgrades
         self.reset_on_version_change = ["window_layout"]
@@ -169,13 +167,13 @@ class Config(object):
             return self.version
 
         try:
-            return literal_eval(getattr(self.data, key))
+            return getattr(self.data, key)
 
         except KeyError:
             # Probably, there is a problem with the config file --> use default
             setattr(self.data, key, getattr(DefaultConfig(), key))
 
-            return literal_eval(getattr(self.data, key))
+            return getattr(self.data, key)
 
         except SyntaxError:
             # May happen if a file is not present any more
