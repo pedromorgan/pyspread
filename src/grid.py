@@ -8,9 +8,9 @@ Created on Sun Oct 21 22:48:45 2018
 
 import random
 
-from PyQt5.QtWidgets import QTableView
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5 import QtCore
+from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
+from PyQt5.QtGui import QColor, QBrush, QPen
+from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 
 from model.model import CodeArray
 
@@ -27,27 +27,11 @@ class Grid(QTableView):
         #grid.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.doubleClicked.connect(self.on_grid_click)
         #self.model.itemChanged.connect(self.on_state_changed)
-#
-#        self.populate()
-#
-#    def populate(self):
-#        # GENERATE A 4x10 GRID OF RANDOM NUMBERS.
-#        # VALUES WILL CONTAIN A LIST OF INT.
-#        # MODEL ONLY ACCEPTS STRINGS - MUST CONVERT.
-#        values = []
-#        for i in range(10):
-#            sub_values = []
-#            for i in range(4):
-#                value = random.randrange(1, 100)
-#                sub_values.append(value)
-#            values.append(sub_values)
-#
-#        for value in values:
-#            row = []
-#            for item in value:
-#                cell = QStandardItem(str(item))
-#                row.append(cell)
-#            self.model.appendRow(row)
+        self.setShowGrid(False)
+
+        delegate = GridCellDelegate()
+        self.setItemDelegate(delegate)
+
 
     def on_grid_click(self, signal):
         row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
@@ -66,38 +50,51 @@ class Grid(QTableView):
         print(signal.row(), signal.column(), signal.text())
 
 
-class GridItemModel(QtCore.QAbstractTableModel):
+class GridItemModel(QAbstractTableModel):
     def __init__(self, code_array):
         super().__init__()
 
         self.code_array = code_array
 
-    def rowCount(self, parent=QtCore.QModelIndex()):
+    def rowCount(self, parent=QModelIndex()):
         return self.code_array.shape[0]
 
-    def columnCount(self, parent=QtCore.QModelIndex()):
+    def columnCount(self, parent=QModelIndex()):
         return self.code_array.shape[1]
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=Qt.DisplayRole):
         #print 'Data Call'
         #print index.column(), index.row()
-        if role == QtCore.Qt.DisplayRole:
+        if role == Qt.DisplayRole:
             row = index.row()
             column = index.column()
-            #return QtCore.QVariant(str(self.datatable.iget_value(i, j)))
+            #return QVariant(str(self.datatable.iget_value(i, j)))
             value = self.code_array[row-1, column-1, 0]
 
             if value is None:
                 return ""
             else:
                 return str(value)
-        else:
-            return QtCore.QVariant()
+
+        if role==Qt.BackgroundColorRole:
+            bgColor=QBrush(QColor(0, 0, 255), Qt.BDiagPattern)
+            return bgColor
+
+        if role==Qt.TextColorRole:
+            return QColor(Qt.black)
+
+        if role==Qt.ToolTipRole:
+            return "Tooltip"
+
+        if role==Qt.StatusTipRole:
+            return "Statustip"
+
+        return QVariant()
 
     def setData(self, index, value, role):
 #        if not index.isValid():
 #            return False
-#        elif role != QtCore.Qt.DisplayRole:
+#        elif role != Qt.DisplayRole:
 #            return False
         row = index.row()
         column = index.column()
@@ -106,5 +103,53 @@ class GridItemModel(QtCore.QAbstractTableModel):
         return True
 
     def flags(self, index):
-        return QtCore.QAbstractTableModel.flags(self, index) | \
-               QtCore.Qt.ItemIsEditable
+        return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable
+
+    def headerData(self, idx, orientation, role):
+        if role == Qt.DisplayRole:
+            return str(idx)
+
+
+class GridCellDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        QStyledItemDelegate.paint(self, painter, option, index)
+
+        width = option.rect.width()
+        height = option.rect.height()
+
+        # Border lines
+        top_line = (0, 0, width, 0)
+        bottom_line = (0, height, width, height)
+        left_line = (0, 0, 0, height)
+        right_line = (width, 0, width, height)
+
+        painter.save()
+        painter.translate(option.rect.topLeft())
+        painter.setPen(QPen(QBrush(Qt.red), 1))
+        painter.drawLine(*top_line)
+        painter.drawLine(*bottom_line)
+        painter.drawLine(*left_line)
+        painter.drawLine(*right_line)
+        painter.restore()
+
+#    def createEditor(self, parent, option, index):
+#        editor = QSpinBox(parent)
+#        editor.setFrame(False)
+#        editor.setMinimum(0)
+#        editor.setMaximum(100)
+#
+#        return editor
+#
+#    def setEditorData(self, spinBox, index):
+#        value = index.model().data(index, Qt.EditRole)
+#
+#        spinBox.setValue(value)
+#
+#    def setModelData(self, spinBox, model, index):
+#        spinBox.interpretText()
+#        value = spinBox.value()
+#
+#        model.setData(index, value, Qt.EditRole)
+#
+#    def updateEditorGeometry(self, editor, option, index):
+#        editor.setGeometry(option.rect)
