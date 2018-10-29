@@ -192,10 +192,12 @@ class GridCellDelegate(QStyledItemDelegate):
 #
 #        return editor
 #
-#    def setEditorData(self, spinBox, index):
-#        value = index.model().data(index, Qt.EditRole)
-#
-#        spinBox.setValue(value)
+    def setEditorData(self, editor, index):
+        row = index.row()
+        column = index.column()
+
+        value = self.code_array((row, column, 0))
+        editor.setText(value)
 #
 #    def setModelData(self, spinBox, model, index):
 #        spinBox.interpretText()
@@ -203,5 +205,5 @@ class GridCellDelegate(QStyledItemDelegate):
 #
 #        model.setData(index, value, Qt.EditRole)
 #
-#    def updateEditorGeometry(self, editor, option, index):
-#        editor.setGeometry(option.rect)
+    def updateEditorGeometry(self, editor, option, index):
+        editor.setGeometry(option.rect)
