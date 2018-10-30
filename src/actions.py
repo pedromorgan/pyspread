@@ -1,9 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Sep 28 19:15:35 2018
 
-@author: mn
+# Copyright Martin Manns
+# Distributed under the terms of the GNU General Public License
+
+# --------------------------------------------------------------------
+# pyspread is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# pyspread is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
+
+"""
+Pyspread actions
+----------------
+
+Provides QT QActions.
+For actions that alter the grid / model see grid_actions.py.
+
 """
 
 from PyQt5.QtWidgets import QAction
@@ -57,7 +79,7 @@ class MainWindowActions(dict):
                              shortcut='Ctrl+n',
                              statustip='Create a new, empty spreadsheet')
 
-        self["open"] = Action(self.parent, "&Open", self.parent.close,
+        self["open"] = Action(self.parent, "&Open", self.parent.on_open,
                               icon=Icon("open"),
                               statustip='Open spreadsheet from file')
 
@@ -197,12 +219,12 @@ class MainWindowActions(dict):
                                                   'all if none selected) in '
                                                   'ascending order')
 
-        self["sort_decending"] = Action(self.parent, "Sort descending",
-                                        self.parent.close,
-                                        icon=Icon("sort_descending"),
-                                        statustip='Sort selected columns (or '
-                                                  'all if none selected) in '
-                                                  'descending order')
+        self["sort_descending"] = Action(self.parent, "Sort descending",
+                                         self.parent.close,
+                                         icon=Icon("sort_descending"),
+                                         statustip='Sort selected columns (or '
+                                                   'all if none selected) in '
+                                                   'descending order')
 
         self["insert_rows"] = Action(self.parent, "Insert rows",
                                      self.parent.close,
@@ -308,7 +330,7 @@ class MainWindowActions(dict):
                                              'view')
 
         self["check_spelling"] = Action(self.parent, "Check spelling",
-                                        self.parent.nothing,
+                                        self.parent.on_nothing,
                                         icon=Icon("check_spelling"),
                                         checkable=True,
                                         statustip='Turn spell checker on/off')
@@ -344,13 +366,14 @@ class MainWindowActions(dict):
                                                  'when frozen')
 
         self["toggle_periodic_updates"] = \
-            Action(self.parent, "Toggle periodic updates", self.parent.nothing,
+            Action(self.parent, "Toggle periodic updates",
+                   self.parent.on_nothing,
                    icon=Icon("toggle_periodic_updates"),
                    checkable=True,
                    statustip='Toggles periodic updates for frozen cells')
 
         self["show_frozen"] = Action(self.parent, "Show frozen",
-                                     self.parent.nothing,
+                                     self.parent.on_nothing,
                                      icon=Icon("show_frozen"),
                                      checkable=True,
                                      statustip='Indicates frozen cells with a '

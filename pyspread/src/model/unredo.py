@@ -29,7 +29,7 @@ UnRedo contains the UnRedo class that manages undo and redo operations.
 """
 from builtins import object
 
-from src.config import config
+from config import config
 
 
 class UnRedo(object):

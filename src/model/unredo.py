@@ -27,12 +27,11 @@ UnRedo
 UnRedo contains the UnRedo class that manages undo and redo operations.
 
 """
-from builtins import object
 
 from config import config
 
 
-class UnRedo(object):
+class UnRedo:
     """Undo/Redo framework class.
 
     For each undo-able operation, the undo/redo framework stores the
