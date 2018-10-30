@@ -34,8 +34,6 @@ Layer 0: KeyValueStore
 
 """
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
 from builtins import filter
 from builtins import str
 from builtins import zip
@@ -46,7 +44,6 @@ import ast
 import base64
 import bz2
 from copy import copy
-import io
 import datetime
 from itertools import product
 import re
@@ -54,14 +51,10 @@ import sys
 
 import numpy
 
-import wx
-
 from config import config
 
 from lib.typechecks import is_slice_like, is_string_like, is_generator_like
 from lib.selection import Selection
-
-#from src.sysvars import get_color, get_font_string
 
 from .unredo import UnRedo
 
@@ -1308,7 +1301,7 @@ class CodeArray(DataArray):
                 signal.signal(signal.SIGALRM, self.handler)
                 signal.alarm(config["timeout"])
 
-            except:
+            except Exception:
                 # No POSIX system
                 pass
 
@@ -1328,7 +1321,7 @@ class CodeArray(DataArray):
             finally:
                 try:
                     signal.alarm(0)
-                except:
+                except Exception:
                     # No POSIX system
                     pass
 
@@ -1421,7 +1414,7 @@ class CodeArray(DataArray):
             signal.signal(signal.SIGALRM, self.handler)
             signal.alarm(config["timeout"])
 
-        except:
+        except Exception:
             # No POSIX system
             pass
 
@@ -1429,7 +1422,7 @@ class CodeArray(DataArray):
             exec(self.macros, globals())
             try:
                 signal.alarm(0)
-            except:
+            except Exception:
                 # No POSIX system
                 pass
 
@@ -1475,11 +1468,15 @@ class CodeArray(DataArray):
 
         """
 
-        tuple_key = lambda t: t[::-1]
+        def tuple_key(t):
+            return t[::-1]
+
         if reverse:
-            tuple_cmp = lambda t: t[::-1] > startkey[::-1]
+            def tuple_cmp(t):
+                return t[::-1] > startkey[::-1]
         else:
-            tuple_cmp = lambda t: t[::-1] < startkey[::-1]
+            def tuple_cmp(t):
+                return t[::-1] < startkey[::-1]
 
         searchkeys = sorted(keys, key=tuple_key, reverse=reverse)
         searchpos = sum(1 for _ in filter(tuple_cmp, searchkeys))
@@ -1569,7 +1566,8 @@ class CodeArray(DataArray):
 
         reverse = "UP" in flags
 
-        for key in self._sorted_keys(list(self.keys()), startkey, reverse=reverse):
+        for key in self._sorted_keys(list(self.keys()), startkey,
+                                     reverse=reverse):
             try:
                 if is_matching(key, find_string, flags):
                     return key
