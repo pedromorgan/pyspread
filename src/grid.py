@@ -120,6 +120,7 @@ class GridItemModel(QAbstractTableModel):
         row = index.row()
         column = index.column()
         self.code_array[row, column, 0] = "{}".format(value)
+        self.dataChanged.emit(index, index)
 
         return True
 

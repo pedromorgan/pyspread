@@ -51,6 +51,18 @@ from toolbar import WidgetToolbar
 from actions import MainWindowActions
 
 
+class ApplicationStates:
+    """Holds all global application states"""
+
+    changed_since_save = False
+
+    def __setattr__(self, key, value):
+        if not hasattr(self, key):
+            raise AttributeError("{self} has no attribute {key}.".format(
+                                 self=self, key=key))
+        object.__setattr__(self, key, value)
+
+
 class MainWindow(QMainWindow):
     """Pyspread main window"""
 
@@ -58,6 +70,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.actions = MainWindowActions(self)
+        self.application_states = ApplicationStates()
         self.init_ui()
 
     def init_ui(self):
@@ -90,6 +103,10 @@ class MainWindow(QMainWindow):
 
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('Pyspread')
+
+        self.grid.grid_item_model.dataChanged.connect(
+                self.on_changed_since_save)
+
         self.show()
 
     def on_open(self):
@@ -111,6 +128,13 @@ class MainWindow(QMainWindow):
         """Dummy action that does nothing"""
 
         pass
+
+    def on_changed_since_save(self):
+        """Event handler that stores changed state"""
+
+        if not self.application_states.changed_since_save:
+            self.application_states.changed_since_save = True
+            self.setWindowTitle("* " + self.windowTitle())
 
 
 def main():
