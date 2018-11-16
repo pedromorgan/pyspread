@@ -37,6 +37,7 @@ Provides
 
 """
 
+from pathlib import Path
 import sys
 
 from PyQt5.QtCore import Qt
@@ -49,12 +50,15 @@ from menubar import MenuBar
 from toolbar import MainToolBar, FindToolbar, AttributesToolbar, MacroToolbar
 from toolbar import WidgetToolbar
 from actions import MainWindowActions
+from workflows import Workflows
 
 
 class ApplicationStates:
     """Holds all global application states"""
 
     changed_since_save = False
+    last_file_input_directory = Path.home()
+    last_file_output_directory = Path.home()
 
     def __setattr__(self, key, value):
         if not hasattr(self, key):
@@ -71,6 +75,7 @@ class MainWindow(QMainWindow):
 
         self.actions = MainWindowActions(self)
         self.application_states = ApplicationStates()
+        self.workflows = Workflows(self)
         self.init_ui()
 
     def init_ui(self):
@@ -112,17 +117,7 @@ class MainWindow(QMainWindow):
     def on_open(self):
         """File open event handler"""
 
-        print("Open")
-
-        # If changes have taken place save of old grid
-
-        # Get filepath from user
-
-        # Change the main window filepath state
-
-        # Load file into grid
-
-        # Mark content as unchanged
+        self.workflows.file_open()
 
     def on_nothing(self):
         """Dummy action that does nothing"""

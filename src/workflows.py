@@ -28,7 +28,7 @@ Workflows for pyspread
 
 """
 
-import lib.filetypes as filetypes
+from modal_dialogs import DiscardChangesDialog, FileOpenDialog
 
 
 class Workflows:
@@ -40,48 +40,34 @@ class Workflows:
         """File open workflow"""
 
         # If changes have taken place save of old grid
-        if self.application_states.changed_since_save and \
-           not self._get_unsaved_changes_approval():
-            return
+        if self.application_states.changed_since_save:
+            discard = DiscardChangesDialog(self.main_window).discard
+            if discard is None:
+                return
+            elif not discard:
+                self.file_save()
 
         # Get filepath from user
-
-        # Change the main window filepath state
+        file_open_dialog = FileOpenDialog(self.main_window)
+        filepath = file_open_dialog.filepath
+        chosen_filter = file_open_dialog.chosen_filter
+        if filepath is None or chosen_filter is None:
+            return
 
         # Load file into grid
 
-        # Mark content as unchanged
 
-    def _get_unsaved_changes_approval(self):
-        """User alert dialog for proceeding though unsaved changes exist
+        # Change the main window filepath state
+        self.application_states.changed_since_save = False
 
-        Returns True iif the user confirms in a user dialog that unsaved
-        changes will be lost if conformed.
+        # Change the main window last input directory state
+        self.application_states.last_file_input_directory = filepath
 
-        """
+        # Change the main window title
+        window_title = "{filename} - pyspread".format(filename=filepath.name)
+        self.main_window.setWindowTitle(window_title)
 
-        raise NotImplementedError
-
-    def _get_file_path(self, title, filetype):
-        """User dialog that asks if unsaved changes shall be lost
-
-        Parameters
-        ----------
-        * filetype: String from available filetypes
-        \tSpecifies the filetype.
-
-        Wildcards
-        ---------
-         * pys:
-         * pysu
-         * csv
-         * svg
-         * xls
-
-        """
-
-        ft2wildcards = filetypes.get_filetypes2wildcards([filetype])
-
-        wildcards = ft2wildcards[filetype]
+    def file_save(self):
+        """File save workflow"""
 
         raise NotImplementedError
