@@ -28,8 +28,10 @@ from model.model import CodeArray
 
 
 class Grid(QTableView):
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, main_window):
+        super().__init__(main_window)
+
+        self.main_window = main_window
 
         dimensions = (config["grid_rows"],
                       config["grid_columns"],
@@ -41,52 +43,67 @@ class Grid(QTableView):
         self.setGeometry(*window_position, *window_size)
 
         self.code_array = CodeArray(dimensions)
-        self.grid_item_model = GridItemModel(self.code_array)
-        self.setModel(self.grid_item_model)  # SETTING THE MODEL
+        self.model = GridItemModel(main_window, self.code_array)
+        self.setModel(self.model)
 
-        self.doubleClicked.connect(self.on_grid_click)
-        # self.model.itemChanged.connect(self.on_state_changed)
+        self.model.dataChanged.connect(self.on_data_changed)
+        self.selectionModel().currentChanged.connect(self.on_current_changed)
 
         self.setShowGrid(False)
 
-        delegate = GridCellDelegate(self.code_array)
+        delegate = GridCellDelegate(main_window, self.code_array)
         self.setItemDelegate(delegate)
 
-    def on_grid_click(self, signal):
-        row = signal.row()
-        column = signal.column()
-        cell_dict = self.grid_item_model.itemData(signal)
-        cell_value = cell_dict.get(0)
+    def on_data_changed(self):
+        """Event handler for data changes"""
 
-        index = signal.sibling(row, 0)
-        index_dict = self.grid_item_model.itemData(index)
-        index_value = index_dict.get(0)
+        row = self.currentIndex().row()
+        column = self.currentIndex().column()
+        table = self.main_window.table
+        code = self.code_array((row, column, table))
+        self.main_window.entry_line.setText(code)
 
-        print('Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.
-              format(row, column, cell_value, index_value))
+        if not self.main_window.application_states.changed_since_save:
+            self.main_window.application_states.changed_since_save = True
+            main_window_title = "* " + self.main_window.windowTitle()
+            self.main_window.setWindowTitle(main_window_title)
 
-    def on_state_changed(self, signal):
-        print(signal.row(), signal.column(), signal.text())
+    def on_current_changed(self, current, previous):
+        """Event handler for change of current cell"""
+
+        row = current.row()
+        column = current.column()
+        table = self.main_window.table
+        code = self.code_array((row, column, table))
+        self.main_window.entry_line.setText(code)
 
 
 class GridItemModel(QAbstractTableModel):
-    def __init__(self, code_array):
+    def __init__(self, main_window, code_array):
         super().__init__()
 
+        self.main_window = main_window
         self.code_array = code_array
 
     def rowCount(self, parent=QModelIndex()):
+        """Overloaded rowCount for code_array backend"""
+
         return self.code_array.shape[0]
 
     def columnCount(self, parent=QModelIndex()):
+        """Overloaded columnCount for code_array backend"""
+
         return self.code_array.shape[1]
 
     def data(self, index, role=Qt.DisplayRole):
+        """Overloaded data for code_array backend"""
+
         if role == Qt.DisplayRole:
             row = index.row()
             column = index.column()
+            table = self.main_window.table
 
-            value = self.code_array[row, column, 0]
+            value = self.code_array[row, column, table]
 
             if value is None:
                 return ""
@@ -96,7 +113,8 @@ class GridItemModel(QAbstractTableModel):
         if role == Qt.BackgroundColorRole:
             row = index.row()
             column = index.column()
-            key = row, column, 0
+            table = self.main_window.table
+            key = row, column, table
             if False:
                 pattern_rgb = config["freeze_color"]
                 bg_color = QBrush(QColor(*pattern_rgb), Qt.BDiagPattern)
@@ -111,15 +129,19 @@ class GridItemModel(QAbstractTableModel):
         if role == Qt.ToolTipRole:
             row = index.row()
             column = index.column()
+            table = self.main_window.table
 
-            return self.code_array((row, column, 0))
+            return self.code_array((row, column, table))
 
         return QVariant()
 
     def setData(self, index, value, role):
+        """Overloaded setData for code_array backend"""
+
         row = index.row()
         column = index.column()
-        self.code_array[row, column, 0] = "{}".format(value)
+        table = self.main_window.table
+        self.code_array[row, column, table] = "{}".format(value)
         self.dataChanged.emit(index, index)
 
         return True
@@ -134,9 +156,10 @@ class GridItemModel(QAbstractTableModel):
 
 class GridCellDelegate(QStyledItemDelegate):
 
-    def __init__(self, code_array):
+    def __init__(self, main_window, code_array):
         super().__init__()
 
+        self.main_window = main_window
         self.code_array = code_array
         self.cell_attributes = self.code_array.cell_attributes
 
@@ -176,20 +199,24 @@ class GridCellDelegate(QStyledItemDelegate):
         width = rect.width()
         height = rect.height()
 
+        row = index.row()
+        column = index.column()
+        table = self.main_window.table
+
         # Paint bottom and right border lines of the current cell
-        key = index.row(), index.column(), 0
+        key = row, column, table
         self._paint_bl_border_lines(x, y, width, height, painter, key)
 
         # Paint bottom and right border lines of the cell above
-        key = index.row() - 1, index.column(), 0
+        key = row - 1, column, table
         self._paint_bl_border_lines(x, y - height, width, height, painter, key)
 
         # Paint bottom and right border lines of the cell left
-        key = index.row(), index.column() - 1, 0
+        key = row, column - 1, table
         self._paint_bl_border_lines(x - width, y, width, height, painter, key)
 
         # Paint bottom and right border lines of the current cell
-        key = index.row() - 1, index.column() - 1, 0
+        key = row - 1, column - 1, table
         self._paint_bl_border_lines(x - width, y - height, width, height,
                                     painter, key)
 
@@ -209,8 +236,9 @@ class GridCellDelegate(QStyledItemDelegate):
     def setEditorData(self, editor, index):
         row = index.row()
         column = index.column()
+        table = self.main_window.table
 
-        value = self.code_array((row, column, 0))
+        value = self.code_array((row, column, table))
         editor.setText(value)
 #
 #    def setModelData(self, spinBox, model, index):

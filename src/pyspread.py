@@ -40,9 +40,9 @@ Provides
 from pathlib import Path
 import sys
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPlainTextEdit
-from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtCore import Qt, QModelIndex
+from PyQt5.QtWidgets import QMainWindow, QApplication, QTextEdit, QSplitter
+from PyQt5.QtWidgets import QTabBar
 from icons import Icon
 
 from grid import Grid
@@ -73,31 +73,53 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.actions = MainWindowActions(self)
         self.application_states = ApplicationStates()
         self.workflows = Workflows(self)
-        self.init_ui()
+        self.actions = MainWindowActions(self)
 
-    def init_ui(self):
+        self._init_window()
+        self._init_widgets()
+        self._init_toolbars()
+
+        self.show()
+
+    def _init_window(self):
+        """Initialize main window components"""
 
         self.setWindowIcon(Icon("pyspread"))
 
-        self.entry_line = QPlainTextEdit(self)
+        self.statusBar()
+        self.setMenuBar(MenuBar(self))
+
+        self.setGeometry(100, 100, 800, 600)
+        self.setWindowTitle('Pyspread')
+
+    def _init_widgets(self):
+        """Initialize widgets"""
+
+        self.entry_line = QTextEdit(self)
         entry_line_min_height = \
             self.entry_line.cursorRect().y() + \
-            self.entry_line.cursorRect().height() + 10
+            self.entry_line.cursorRect().height() + 20
         self.entry_line.setMinimumHeight(entry_line_min_height)
         self.grid = Grid(self)
+        self.table_choice = QTabBar(self, shape=QTabBar.RoundedSouth)
+        self.table_choice.setExpanding(False)
+        for i in range(self.grid.code_array.shape[2]):
+            self.table_choice.addTab(str(i))
 
         main_splitter = QSplitter(Qt.Vertical, self)
         self.setCentralWidget(main_splitter)
 
         main_splitter.addWidget(self.entry_line)
         main_splitter.addWidget(self.grid)
-        main_splitter.setSizes([entry_line_min_height, 9999])
+        main_splitter.addWidget(self.table_choice)
+        main_splitter.setSizes([entry_line_min_height, 9999, 20])
 
-        self.statusBar()
-        self.setMenuBar(MenuBar(self))
+        self.table_choice.currentChanged.connect(self.on_table_changed)
+
+    def _init_toolbars(self):
+        """Initialize the main window toolbars"""
 
         self.addToolBar(MainToolBar(self))
         self.addToolBar(FindToolbar(self))
@@ -106,30 +128,21 @@ class MainWindow(QMainWindow):
         self.addToolBar(MacroToolbar(self))
         self.addToolBar(WidgetToolbar(self))
 
-        self.setGeometry(100, 100, 800, 600)
-        self.setWindowTitle('Pyspread')
-
-        self.grid.grid_item_model.dataChanged.connect(
-                self.on_changed_since_save)
-
-        self.show()
-
-    def on_open(self):
-        """File open event handler"""
-
-        self.workflows.file_open()
-
     def on_nothing(self):
         """Dummy action that does nothing"""
 
         pass
 
-    def on_changed_since_save(self):
-        """Event handler that stores changed state"""
+    @property
+    def table(self):
+        """Returns current table from table_choice that is displayed"""
 
-        if not self.application_states.changed_since_save:
-            self.application_states.changed_since_save = True
-            self.setWindowTitle("* " + self.windowTitle())
+        return self.table_choice.currentIndex()
+
+    def on_table_changed(self, current):
+        """Event handler for table changes"""
+
+        self.grid.model.dataChanged.emit(QModelIndex(), QModelIndex())
 
 
 def main():

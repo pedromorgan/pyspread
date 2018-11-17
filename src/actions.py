@@ -79,7 +79,8 @@ class MainWindowActions(dict):
                              shortcut='Ctrl+n',
                              statustip='Create a new, empty spreadsheet')
 
-        self["open"] = Action(self.parent, "&Open", self.parent.on_open,
+        self["open"] = Action(self.parent, "&Open",
+                              self.parent.workflows.file_open,
                               icon=Icon("open"),
                               statustip='Open spreadsheet from file')
 
