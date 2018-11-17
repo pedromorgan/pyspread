@@ -19,7 +19,6 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from collections import OrderedDict
 
 from PyQt5.QtWidgets import QToolBar
 
