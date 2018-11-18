@@ -41,11 +41,12 @@ from pathlib import Path
 import sys
 
 from PyQt5.QtCore import Qt, QModelIndex
-from PyQt5.QtWidgets import QMainWindow, QApplication, QTextEdit, QSplitter
+from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
 from PyQt5.QtWidgets import QTabBar
 from icons import Icon
 
 from grid import Grid
+from entryline import Entryline
 from menubar import MenuBar
 from toolbar import MainToolBar, FindToolbar, AttributesToolbar, MacroToolbar
 from toolbar import WidgetToolbar
@@ -97,11 +98,7 @@ class MainWindow(QMainWindow):
     def _init_widgets(self):
         """Initialize widgets"""
 
-        self.entry_line = QTextEdit(self)
-        entry_line_min_height = \
-            self.entry_line.cursorRect().y() + \
-            self.entry_line.cursorRect().height() + 20
-        self.entry_line.setMinimumHeight(entry_line_min_height)
+        self.entry_line = Entryline(self)
         self.grid = Grid(self)
         self.table_choice = QTabBar(self, shape=QTabBar.RoundedSouth)
         self.table_choice.setExpanding(False)
@@ -114,7 +111,7 @@ class MainWindow(QMainWindow):
         main_splitter.addWidget(self.entry_line)
         main_splitter.addWidget(self.grid)
         main_splitter.addWidget(self.table_choice)
-        main_splitter.setSizes([entry_line_min_height, 9999, 20])
+        main_splitter.setSizes([self.entry_line.minimumHeight(), 9999, 20])
 
         self.table_choice.currentChanged.connect(self.on_table_changed)
 
