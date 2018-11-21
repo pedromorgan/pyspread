@@ -49,6 +49,9 @@ class Grid(QTableView):
         self.model.dataChanged.connect(self.on_data_changed)
         self.selectionModel().currentChanged.connect(self.on_current_changed)
 
+        self.verticalHeader().sectionResized.connect(self.on_row_resized)
+        self.horizontalHeader().sectionResized.connect(self.on_column_resized)
+
         self.setShowGrid(False)
 
         delegate = GridCellDelegate(main_window, self.code_array)
@@ -57,9 +60,10 @@ class Grid(QTableView):
     def set_current_index(self, row, column):
         """Sets the current index to row, column"""
 
-        index = self.model.index(row, column, QModelIndex())
-        no_rows, no_columns, _ = self.model.code_array.shape
-        if 0 <= row < no_rows and 0 <= column < no_columns:
+        row_count = self.model.rowCount()
+        column_count = self.model.rowCount()
+        if 0 <= row < row_count and 0 <= column < column_count:
+            index = self.model.index(row, column, QModelIndex())
             self.setCurrentIndex(index)
 
     def on_data_changed(self):
@@ -84,6 +88,18 @@ class Grid(QTableView):
         table = self.main_window.table
         code = self.code_array((row, column, table))
         self.main_window.entry_line.setText(code)
+
+    def on_row_resized(self, row, old_height, new_height):
+        """Row resized event handler"""
+
+        table = self.main_window.table
+        self.model.code_array.row_heights[(row, table)] = new_height
+
+    def on_column_resized(self, column, old_width, new_width):
+        """Row resized event handler"""
+
+        table = self.main_window.table
+        self.model.code_array.col_widths[(column, table)] = new_width
 
 
 class GridItemModel(QAbstractTableModel):
