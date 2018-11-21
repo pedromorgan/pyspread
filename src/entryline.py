@@ -41,9 +41,10 @@ class Entryline(QTextEdit):
         """Key press event filter"""
 
         if event.key() in (Qt.Key_Enter, Qt.Key_Return):
-            idx = self.main_window.grid.currentIndex()
-            self.main_window.grid.model.setData(idx, self.toPlainText(),
+            index = self.main_window.grid.currentIndex()
+            self.main_window.grid.model.setData(index, self.toPlainText(),
                                                 Qt.EditRole)
-
+            row, column = index.row(), index.column()
+            self.main_window.grid.set_current_index(row+1, column)
         else:
             QTextEdit.keyPressEvent(self, event)

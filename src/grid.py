@@ -54,6 +54,14 @@ class Grid(QTableView):
         delegate = GridCellDelegate(main_window, self.code_array)
         self.setItemDelegate(delegate)
 
+    def set_current_index(self, row, column):
+        """Sets the current index to row, column"""
+
+        index = self.model.index(row, column, QModelIndex())
+        no_rows, no_columns, _ = self.model.code_array.shape
+        if 0 <= row < no_rows and 0 <= column < no_columns:
+            self.setCurrentIndex(index)
+
     def on_data_changed(self):
         """Event handler for data changes"""
 
