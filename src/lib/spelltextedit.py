@@ -57,6 +57,7 @@ except ImportError:  # Older versions of PyEnchant as on *buntu 14.04
         """
         return suggs[:maxlen]
 
+
 class SpellTextEdit(QPlainTextEdit):
     """QPlainTextEdit subclass which does spell-checking using PyEnchant"""
 
@@ -207,6 +208,7 @@ class SpellTextEdit(QPlainTextEdit):
         self.highlighter.setChunkers(chunkers)
         # TODO: Emit an event so this menu can trigger other things
 
+
 class EnchantHighlighter(QSyntaxHighlighter):
     """QSyntaxHighlighter subclass which consults a PyEnchant dictionary"""
     tokenizer = None
@@ -244,7 +246,8 @@ class EnchantHighlighter(QSyntaxHighlighter):
         """Sets the spelling dictionary to be used"""
         try:
             self.tokenizer = tokenize.get_tokenizer(sp_dict.tag,
-                chunkers=self._chunkers, filters=self.token_filters)
+                                                    chunkers=self._chunkers,
+                                                    filters=self.token_filters)
         except TokenizerNotFoundError:
             # Fall back to the "good for most euro languages" English tokenizer
             self.tokenizer = tokenize.get_tokenizer(
@@ -270,6 +273,7 @@ class EnchantHighlighter(QSyntaxHighlighter):
         data = QTextBlockUserData()
         data.misspelled = misspellings
         self.setCurrentBlockUserData(data)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -127,7 +127,7 @@ class MenuBar(QMenuBar):
         view_menu.addSeparator()
         view_menu.addAction(self.actions["goto_cell"])
         view_menu.addSeparator()
-        view_menu.addAction(self.actions["check_spelling"])
+        view_menu.addAction(self.actions["toggle_spell_checker"])
         view_menu.addSeparator()
         view_menu.addAction(self.actions["zoom_in"])
         view_menu.addAction(self.actions["zoom_out"])

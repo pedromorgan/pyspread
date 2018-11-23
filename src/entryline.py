@@ -22,7 +22,17 @@
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextEdit
-from lib.spelltextedit import SpellTextEdit
+
+try:
+    import enchant
+except ImportError:
+    enchant = None
+
+if enchant is None:
+    # We do not enable the spell checker
+    SpellTextEdit = object
+else:
+    from lib.spelltextedit import SpellTextEdit
 
 
 class Entryline(QTextEdit, SpellTextEdit):
@@ -38,6 +48,8 @@ class Entryline(QTextEdit, SpellTextEdit):
 
         self.setLineWrapMode(self.WidgetWidth)
 
+        self.highlighter.setDocument(None)
+
     def keyPressEvent(self, event):
         """Key press event filter"""
 
@@ -49,3 +61,14 @@ class Entryline(QTextEdit, SpellTextEdit):
             self.main_window.grid.set_current_index(row+1, column)
         else:
             QTextEdit.keyPressEvent(self, event)
+
+    def on_toggle_spell_check(self, signal):
+        """Spell check toggle event handler"""
+
+        if enchant is None:
+            return
+
+        if signal:
+            self.highlighter.setDocument(self.document())
+        else:
+            self.highlighter.setDocument(None)

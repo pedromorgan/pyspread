@@ -42,7 +42,7 @@ class MainToolBar(QToolBar):
         self.addAction(actions["undo"])
         self.addAction(actions["redo"])
         self.addSeparator()
-        self.addAction(actions["check_spelling"])
+        self.addAction(actions["toggle_spell_checker"])
         self.addSeparator()
         self.addAction(actions["find"])
         self.addAction(actions["replace"])

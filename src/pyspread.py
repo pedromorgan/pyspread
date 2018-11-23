@@ -76,10 +76,12 @@ class MainWindow(QMainWindow):
 
         self.application_states = ApplicationStates()
         self.workflows = Workflows(self)
+
+        self._init_widgets()
+
         self.actions = MainWindowActions(self)
 
         self._init_window()
-        self._init_widgets()
         self._init_toolbars()
 
         self.show()

@@ -31,6 +31,7 @@ For actions that alter the grid / model see grid_actions.py.
 from PyQt5.QtWidgets import QAction
 
 from icons import Icon
+from lib.dependencies import get_enchant_version
 
 
 class Action(QAction):
@@ -70,6 +71,8 @@ class MainWindowActions(dict):
         self._add_format_actions()
         self._add_macro_actions()
         self._add_help_actions()
+
+        self.disable_unavailable()
 
     def _add_file_actions(self):
         """Adds actions for File menu"""
@@ -330,11 +333,12 @@ class MainWindowActions(dict):
                                    statustip='Select a cell and put it into '
                                              'view')
 
-        self["check_spelling"] = Action(self.parent, "Check spelling",
-                                        self.parent.on_nothing,
-                                        icon=Icon("check_spelling"),
-                                        checkable=True,
-                                        statustip='Turn spell checker on/off')
+        self["toggle_spell_checker"] = \
+            Action(self.parent, "Toggle spell checker",
+                   self.parent.entry_line.on_toggle_spell_check,
+                   icon=Icon("check_spelling"),
+                   checkable=True,
+                   statustip='Turn the spell checker in the entry line on/off')
 
         self["zoom_in"] = Action(self.parent, "Zoom in", self.parent.close,
                                  icon=Icon("zoom_in"),
@@ -571,3 +575,9 @@ class MainWindowActions(dict):
                                self.parent.close,
                                icon=Icon("pyspread"),
                                statustip='About pyspread')
+
+    def disable_unavailable(self):
+        """Disables unavailable menu items e.g. due to missing dependencies"""
+
+        if get_enchant_version() is None:
+            self["toggle_spell_checker"].setEnabled(False)
