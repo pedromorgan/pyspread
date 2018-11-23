@@ -82,6 +82,7 @@ except ImportError:
     Ods = None
 
 try:
+    import gnupg
     from src.lib.gpg import sign, verify
     GPG_PRESENT = True
 

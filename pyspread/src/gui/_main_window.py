@@ -42,6 +42,11 @@ except ImportError:
     Figure = None
 
 try:
+    import gnupg
+except ImportError:
+    gnupg = None
+
+try:
     from src.lib.gpg import genkey
 except ImportError:
     genkey = None
@@ -612,6 +617,9 @@ class MainWindowEventHandlers(EventMixin):
         Launches GPG choice and creation dialog
 
         """
+
+        if gnupg is None:
+            return
 
         if genkey is None:
             # gnupg is not present

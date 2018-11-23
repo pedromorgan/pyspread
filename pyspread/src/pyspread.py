@@ -46,6 +46,11 @@ __ = wx.App(False)  # Windows Hack
 from sysvars import get_program_path
 import lib.i18n as i18n
 
+try:
+    import gnupg
+except ImportError:
+    gnupg = None
+
 
 # Use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -194,7 +199,7 @@ class MainApplication(wx.App, GridActionEventMixin):
 
         # Initialize file loading via event
 
-        if options.new_gpgkey:
+        if gnupg is not None and options.new_gpgkey:
             # Create GPG key if not present
 
             try:

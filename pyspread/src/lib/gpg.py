@@ -36,7 +36,11 @@ Provides
 """
 
 import wx
-import gnupg
+
+try:
+    import gnupg
+except ImportError:
+    gnupg = None
 
 import src.lib.i18n as i18n
 from src.config import config
@@ -106,6 +110,9 @@ def _register_key(fingerprint, gpg):
 def has_no_password(gpg_secret_keyid):
     """Returns True iif gpg_secret_key has a password"""
 
+    if gnupg is None:
+        return False
+
     gpg = gnupg.GPG()
     s = gpg.sign("", keyid=gpg_secret_keyid, passphrase="")
 
@@ -127,6 +134,9 @@ def genkey(key_name=None):
     \tIf True, then a new key is created when required without user interaction
 
     """
+
+    if gnupg is None:
+        return
 
     gpg_key_param_list = [
         ('key_type', 'DSA'),
@@ -214,6 +224,9 @@ def genkey(key_name=None):
 def fingerprint2keyid(fingerprint):
     """Returns keyid from fingerprint for private keys"""
 
+    if gnupg is None:
+        return
+
     gpg = gnupg.GPG()
     private_keys = gpg.list_keys(True)
 
@@ -228,6 +241,9 @@ def fingerprint2keyid(fingerprint):
 
 def sign(filename):
     """Returns detached signature for file"""
+
+    if gnupg is None:
+        return
 
     gpg = gnupg.GPG()
 
@@ -245,6 +261,9 @@ def sign(filename):
 
 def verify(sigfilename, filefilename=None):
     """Verifies a signature, returns True if successful else False."""
+
+    if gnupg is None:
+        return False
 
     gpg = gnupg.GPG()
 
