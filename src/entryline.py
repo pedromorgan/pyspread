@@ -22,9 +22,10 @@
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextEdit
+from lib.spelltextedit import SpellTextEdit
 
 
-class Entryline(QTextEdit):
+class Entryline(QTextEdit, SpellTextEdit):
     """The entry line for pyspread"""
 
     def __init__(self, main_window):

@@ -19,12 +19,13 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
+from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTextEdit
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 
 from config import config
 from model.model import CodeArray
+from lib.spelltextedit import SpellTextEdit
 
 
 class Grid(QTableView):
@@ -275,15 +276,13 @@ class GridCellDelegate(QStyledItemDelegate):
         self._paint_text(option.rect, painter, option, index)
         self._paint_border_lines(option.rect, painter, index)
 
-
 #    def createEditor(self, parent, option, index):
-#        editor = QSpinBox(parent)
-#        editor.setFrame(False)
-#        editor.setMinimum(0)
-#        editor.setMaximum(100)
+#        class CellEditor(QTextEdit, SpellTextEdit):
+#            pass
 #
+#        editor = CellEditor(parent)
 #        return editor
-#
+
     def setEditorData(self, editor, index):
         row = index.row()
         column = index.column()
