@@ -437,16 +437,21 @@ class MainWindowActions(dict):
                                 statustip='Show cell results as markup '
                                           '(allows partly formatted output)')
 
-        self["text_color"] = Action(self.parent, "Text color...",
-                                    self.parent.close,
-                                    icon=Icon("text_color"),
-                                    statustip='Lauch text color dialog')
+        self["text_color"] = Action(
+            self.parent, "Text color...",
+            self.parent.widgets.text_color_button.on_pressed,
+            icon=Icon("text_color"), statustip='Lauch text color dialog')
 
-        self["background_color"] = Action(self.parent, "Background color...",
-                                          self.parent.close,
-                                          icon=Icon("background_color"),
-                                          statustip='Lauch background color '
-                                                    'dialog')
+        self["line_color"] = Action(
+            self.parent, "Line color...",
+            self.parent.widgets.line_color_button.on_pressed,
+            icon=Icon("line_color"), statustip='Lauch line color dialog')
+
+        self["background_color"] = Action(
+            self.parent, "Background color...",
+            self.parent.widgets.background_color_button.on_pressed,
+            icon=Icon("background_color"),
+            statustip='Lauch background color dialog')
 
         self["justify_left"] = Action(self.parent, "Left", self.parent.close,
                                       icon=Icon("justify_left"),

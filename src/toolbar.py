@@ -59,7 +59,6 @@ class MainToolBar(QToolBar):
         self.addAction(actions["print"])
 
 
-
 class FindToolbar(QToolBar):
     """The find toolbar for pyspread"""
 
@@ -79,7 +78,7 @@ class AttributesToolbar(QToolBar):
 
     def __init__(self, main_window):
         super().__init__()
-
+        self.main_window = main_window
         self._create_toolbar(main_window.actions)
 
     def _create_toolbar(self, actions):
@@ -91,6 +90,20 @@ class AttributesToolbar(QToolBar):
         self.addAction(actions["strikethrough"])
         self.addAction(actions["freeze_cell"])
         self.addAction(actions["lock_cell"])
+
+        text_color_button = self.main_window.widgets.text_color_button
+        text_color_button.set_max_size(self.iconSize())
+        self.addWidget(text_color_button)
+
+        line_color_button = self.main_window.widgets.line_color_button
+        line_color_button.set_max_size(self.iconSize())
+        self.addWidget(line_color_button)
+
+        background_color_button = \
+            self.main_window.widgets.background_color_button
+        background_color_button.set_max_size(self.iconSize())
+        self.addWidget(background_color_button)
+
         self.addAction(actions["merge_cells"])
 
 

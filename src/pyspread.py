@@ -43,8 +43,9 @@ import sys
 from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
 from PyQt5.QtWidgets import QTabBar
-from icons import Icon
+from PyQt5.QtGui import QColor
 
+from icons import Icon
 from grid import Grid
 from entryline import Entryline
 from menubar import MenuBar
@@ -52,6 +53,7 @@ from toolbar import MainToolBar, FindToolbar, AttributesToolbar, MacroToolbar
 from toolbar import WidgetToolbar
 from actions import MainWindowActions
 from workflows import Workflows
+from widgets import Widgets
 
 
 class ApplicationStates:
@@ -99,6 +101,8 @@ class MainWindow(QMainWindow):
 
     def _init_widgets(self):
         """Initialize widgets"""
+
+        self.widgets = Widgets()
 
         self.entry_line = Entryline(self)
         self.grid = Grid(self)

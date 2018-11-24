@@ -156,6 +156,7 @@ class MenuBar(QMenuBar):
         format_menu.addAction(self.actions["strikethrough"])
         format_menu.addSeparator()
         format_menu.addAction(self.actions["text_color"])
+        format_menu.addAction(self.actions["line_color"])
         format_menu.addAction(self.actions["background_color"])
         format_menu.addSeparator()
         format_menu.addAction(self.actions["markup"])

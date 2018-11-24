@@ -92,6 +92,7 @@ class Icon(QIcon):
         "underline": str(ACTION_PATH / 'format-text-underline.svg'),
         "strikethrough": str(ACTION_PATH / 'format-text-strikethrough.svg'),
         "markup": str(ACTION_PATH / 'format-text-markup.svg'),
+        "line_color": str(ACTION_PATH / 'format-line-color.svg'),
         "text_color": str(ACTION_PATH / 'format-text-color.svg'),
         "background_color": str(ACTION_PATH / 'format-background-color.svg'),
         "justify_left": str(ACTION_PATH / 'format-justify-left.svg'),
