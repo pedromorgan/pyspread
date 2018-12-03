@@ -66,6 +66,21 @@ def wxcolor2rgb(wxcolor):
     return red, green, blue
 
 
+wx2qt_fontweights = {
+    90: 50,  # wx.FONTWEIGHT_NORMAL
+    91: 25,  # wx.FONTWEIGHT_LIGHT
+    92: 75,  # wx.FONTWEIGHT_BOLD
+    93: 87,  # wx.FONTWEIGHT_MAX
+    }
+
+wx2qt_fontstyles = {
+    90: 0,  # wx.FONTSTYLE_NORMAL
+    93: 1,  # wx.FONTSTYLE_ITALIC
+    94: 1,  # wx.FONTSTYLE_SLANT
+    95: 2,  # wx.FONTSTYLE_MAX
+    }
+
+
 class Pys(object):
     """Interface between code_array and pys file
 
@@ -249,6 +264,12 @@ class Pys(object):
                                    "bgcolor", "textcolor"]
                     if key in color_attrs:
                         value = wxcolor2rgb(value)
+
+                    elif key == "fontweight":
+                        value = wx2qt_fontweights[value]
+
+                    elif key == "fontstyle":
+                        value = wx2qt_fontstyles[value]
 
                 attrs[key] = value
 

@@ -205,31 +205,34 @@ class GridItemModel(QAbstractTableModel):
     def data(self, index, role=Qt.DisplayRole):
         """Overloaded data for code_array backend"""
 
-        if role == Qt.DisplayRole:
-            value = self.code_array[self.current(index)]
+        key = self.current(index)
 
-            if value is None:
-                return ""
-            else:
-                return str(value)
+        if role == Qt.DisplayRole:
+            value = self.code_array[key]
+            return str(value) if value is not None else ""
+
+        if role == Qt.ToolTipRole:
+            return self.code_array(self.current(index))
 
         if role == Qt.BackgroundColorRole:
-            if False:
+            if self.code_array.cell_attributes[key]["frozen"]:
                 pattern_rgb = config["freeze_color"]
                 bg_color = QBrush(QColor(*pattern_rgb), Qt.BDiagPattern)
             else:
-                key = self.current(index)
                 bg_color_rgb = self.code_array.cell_attributes[key]["bgcolor"]
                 bg_color = QColor(*bg_color_rgb)
             return bg_color
 
         if role == Qt.TextColorRole:
-            key = self.current(index)
             text_color_rgb = self.code_array.cell_attributes[key]["textcolor"]
             return QColor(*text_color_rgb)
 
-        if role == Qt.ToolTipRole:
-            return self.code_array(self.current(index))
+        if role == Qt.FontRole:
+            text_font = self.code_array.cell_attributes[key]["textfont"]
+            pointsize = self.code_array.cell_attributes[key]["pointsize"]
+            fontweight = self.code_array.cell_attributes[key]["fontweight"]
+            italic = self.code_array.cell_attributes[key]["fontstyle"]
+            return QFont(text_font, pointsize, fontweight, italic)
 
         return QVariant()
 
@@ -317,10 +320,9 @@ class GridCellDelegate(QStyledItemDelegate):
                                     painter, key)
 
     def paint(self, painter, option, index):
+        """Overloads QStyledItemDelegate to add cell border painting"""
+
         QStyledItemDelegate.paint(self, painter, option, index)
-
-
-#        self._paint_text(option.rect, painter, option, index)
         self._paint_border_lines(option.rect, painter, index)
 
     def setEditorData(self, editor, index):
@@ -336,6 +338,6 @@ class GridCellDelegate(QStyledItemDelegate):
 #        value = spinBox.value()
 #
 #        model.setData(index, value, Qt.EditRole)
-#
+
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
