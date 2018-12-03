@@ -166,17 +166,18 @@ class Grid(QTableView):
         """Line color change event handler"""
 
         #TODO: selection =
+        #TODO: Get selected borders to be set
         line_color = self.main_window.widgets.line_color_button.color
         line_color_rgb = line_color.getRgb()
 
     def on_background_color_changed(self):
         """Background color change event handler"""
 
-        #TODO: selection =
+        bg_color = self.main_window.widgets.background_color_button.color
+        bg_color_rgb = bg_color.getRgb()
 
-        background_color = \
-            self.main_window.widgets.backgorund_color_button.color
-        background_color_rgb = background_color.getRgb()
+        attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
+        self.code_array.cell_attributes.undoable_append(attr)
 
 
 class GridItemModel(QAbstractTableModel):
@@ -223,7 +224,9 @@ class GridItemModel(QAbstractTableModel):
             return bg_color
 
         if role == Qt.TextColorRole:
-            return QColor(Qt.black)
+            key = self.current(index)
+            text_color_rgb = self.code_array.cell_attributes[key]["textcolor"]
+            return QColor(*text_color_rgb)
 
         if role == Qt.ToolTipRole:
             return self.code_array(self.current(index))
@@ -255,30 +258,6 @@ class GridCellDelegate(QStyledItemDelegate):
         self.main_window = main_window
         self.code_array = code_array
         self.cell_attributes = self.code_array.cell_attributes
-
-    def _paint_text(self, rect, painter, option, index):
-        """Paint text in cell"""
-
-        row = index.row()
-        column = index.column()
-        table = self.main_window.table
-        key = row, column, table
-
-        res = self.code_array[key]
-        if res is None:
-            # Do not paint None values
-            return
-
-        textcolor_rgb = self.code_array.cell_attributes[key]["textcolor"]
-        textcolor = QColor(*textcolor_rgb)
-        painter.setPen(textcolor)
-
-        textfont_name = self.code_array.cell_attributes[key]["textfont"]
-        textfont_pointsize = self.code_array.cell_attributes[key]["pointsize"]
-        textfont = QFont(textfont_name, textfont_pointsize)
-        painter.setFont(textfont)
-
-        painter.drawText(rect, Qt.AlignLeft, str(res))
 
     def _paint_bl_border_lines(self, x, y, width, height, painter, key):
         """Paint the bottom and the left border line of the cell"""
@@ -338,9 +317,10 @@ class GridCellDelegate(QStyledItemDelegate):
                                     painter, key)
 
     def paint(self, painter, option, index):
-#        QStyledItemDelegate.paint(self, painter, option, index)
+        QStyledItemDelegate.paint(self, painter, option, index)
 
-        self._paint_text(option.rect, painter, option, index)
+
+#        self._paint_text(option.rect, painter, option, index)
         self._paint_border_lines(option.rect, painter, index)
 
     def setEditorData(self, editor, index):
