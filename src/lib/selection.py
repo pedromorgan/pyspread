@@ -31,8 +31,6 @@ from builtins import range
 from builtins import object
 
 
-
-
 class Selection(object):
     """Represents grid selection
 

@@ -19,16 +19,18 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTextEdit
+from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 
 from config import config
 from model.model import CodeArray
-from lib.spelltextedit import SpellTextEdit
+from lib.selection import Selection
 
 
 class Grid(QTableView):
+    """The main grid of pyspread"""
+
     def __init__(self, main_window):
         super().__init__(main_window)
 
@@ -47,8 +49,15 @@ class Grid(QTableView):
         self.model = GridItemModel(main_window, self.code_array)
         self.setModel(self.model)
 
+        # Signals
         self.model.dataChanged.connect(self.on_data_changed)
         self.selectionModel().currentChanged.connect(self.on_current_changed)
+        self.main_window.widgets.text_color_button.colorChanged.connect(
+                self.on_text_color_changed)
+        self.main_window.widgets.background_color_button.colorChanged.connect(
+                self.on_background_color_changed)
+        self.main_window.widgets.line_color_button.colorChanged.connect(
+                self.on_line_color_changed)
 
         self.verticalHeader().sectionResized.connect(self.on_row_resized)
         self.horizontalHeader().sectionResized.connect(self.on_column_resized)
@@ -57,6 +66,56 @@ class Grid(QTableView):
 
         delegate = GridCellDelegate(main_window, self.code_array)
         self.setItemDelegate(delegate)
+
+    @property
+    def row(self):
+        """Current row"""
+
+        return self.currentIndex().row()
+
+    @property
+    def column(self):
+        """Current column"""
+
+        return self.currentIndex().column()
+
+    @property
+    def table(self):
+        """Current table"""
+
+        return self.main_window.table
+
+    @property
+    def current(self):
+        """Tuple of row, column, table of the current index"""
+
+        return self.row, self.column, self.table
+
+    @property
+    def selection(self):
+        """Pyspread selection based on self's QSelectionModel"""
+
+        selection = self.selectionModel().selection()
+
+        block_top_left = []
+        block_bottom_right = []
+        cells = []
+
+        # Selection are made of selection ranges that we call span
+
+        for span in selection:
+            top, bottom = span.top(), span.bottom()
+            left, right = span.left(), span.right()
+
+            # If the span is a single cell then append it
+            if top == bottom and left == right:
+                cells.append((top, right))
+            else:
+                # Otherwise append a block
+                block_top_left.append((top, left))
+                block_bottom_right.append((bottom, right))
+
+        return Selection(block_top_left, block_bottom_right, [], [], cells)
 
     def set_current_index(self, row, column):
         """Sets the current index to row, column"""
@@ -70,10 +129,7 @@ class Grid(QTableView):
     def on_data_changed(self):
         """Event handler for data changes"""
 
-        row = self.currentIndex().row()
-        column = self.currentIndex().column()
-        table = self.main_window.table
-        code = self.code_array((row, column, table))
+        code = self.code_array(self.current)
         self.main_window.entry_line.setText(code)
 
         if not self.main_window.application_states.changed_since_save:
@@ -84,23 +140,43 @@ class Grid(QTableView):
     def on_current_changed(self, current, previous):
         """Event handler for change of current cell"""
 
-        row = current.row()
-        column = current.column()
-        table = self.main_window.table
-        code = self.code_array((row, column, table))
+        code = self.code_array(self.current)
         self.main_window.entry_line.setText(code)
 
     def on_row_resized(self, row, old_height, new_height):
         """Row resized event handler"""
 
-        table = self.main_window.table
-        self.model.code_array.row_heights[(row, table)] = new_height
+        self.model.code_array.row_heights[(row, self.table)] = new_height
 
     def on_column_resized(self, column, old_width, new_width):
         """Row resized event handler"""
 
-        table = self.main_window.table
-        self.model.code_array.col_widths[(column, table)] = new_width
+        self.model.code_array.col_widths[(column, self.table)] = new_width
+
+    def on_text_color_changed(self):
+        """Text color change event handler"""
+
+        text_color = self.main_window.widgets.text_color_button.color
+        text_color_rgb = text_color.getRgb()
+
+        attr = self.selection, self.table, {"textcolor": text_color_rgb}
+        self.code_array.cell_attributes.undoable_append(attr)
+
+    def on_line_color_changed(self):
+        """Line color change event handler"""
+
+        #TODO: selection =
+        line_color = self.main_window.widgets.line_color_button.color
+        line_color_rgb = line_color.getRgb()
+
+    def on_background_color_changed(self):
+        """Background color change event handler"""
+
+        #TODO: selection =
+
+        background_color = \
+            self.main_window.widgets.backgorund_color_button.color
+        background_color_rgb = background_color.getRgb()
 
 
 class GridItemModel(QAbstractTableModel):
@@ -109,6 +185,11 @@ class GridItemModel(QAbstractTableModel):
 
         self.main_window = main_window
         self.code_array = code_array
+
+    def current(self, index):
+        """Tuple of row, column, table of given index"""
+
+        return index.row(), index.column(), self.main_window.table
 
     def rowCount(self, parent=QModelIndex()):
         """Overloaded rowCount for code_array backend"""
@@ -124,11 +205,7 @@ class GridItemModel(QAbstractTableModel):
         """Overloaded data for code_array backend"""
 
         if role == Qt.DisplayRole:
-            row = index.row()
-            column = index.column()
-            table = self.main_window.table
-
-            value = self.code_array[row, column, table]
+            value = self.code_array[self.current(index)]
 
             if value is None:
                 return ""
@@ -136,14 +213,11 @@ class GridItemModel(QAbstractTableModel):
                 return str(value)
 
         if role == Qt.BackgroundColorRole:
-            row = index.row()
-            column = index.column()
-            table = self.main_window.table
-            key = row, column, table
             if False:
                 pattern_rgb = config["freeze_color"]
                 bg_color = QBrush(QColor(*pattern_rgb), Qt.BDiagPattern)
             else:
+                key = self.current(index)
                 bg_color_rgb = self.code_array.cell_attributes[key]["bgcolor"]
                 bg_color = QColor(*bg_color_rgb)
             return bg_color
@@ -152,11 +226,7 @@ class GridItemModel(QAbstractTableModel):
             return QColor(Qt.black)
 
         if role == Qt.ToolTipRole:
-            row = index.row()
-            column = index.column()
-            table = self.main_window.table
-
-            return self.code_array((row, column, table))
+            return self.code_array(self.current(index))
 
         return QVariant()
 
@@ -164,10 +234,7 @@ class GridItemModel(QAbstractTableModel):
         """Overloaded setData for code_array backend"""
 
         if role == Qt.EditRole:
-            row = index.row()
-            column = index.column()
-            table = self.main_window.table
-            self.code_array[row, column, table] = "{}".format(value)
+            self.code_array[self.current(index)] = "{}".format(value)
             self.dataChanged.emit(index, index)
 
             return True
@@ -275,13 +342,6 @@ class GridCellDelegate(QStyledItemDelegate):
 
         self._paint_text(option.rect, painter, option, index)
         self._paint_border_lines(option.rect, painter, index)
-
-#    def createEditor(self, parent, option, index):
-#        class CellEditor(QTextEdit, SpellTextEdit):
-#            pass
-#
-#        editor = CellEditor(parent)
-#        return editor
 
     def setEditorData(self, editor, index):
         row = index.row()
