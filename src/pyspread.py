@@ -40,10 +40,9 @@ Provides
 from pathlib import Path
 import sys
 
-from PyQt5.QtCore import Qt, QModelIndex
+from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
 from PyQt5.QtWidgets import QTabBar
-from PyQt5.QtGui import QColor
 
 from icons import Icon
 from grid import Grid
@@ -72,6 +71,8 @@ class ApplicationStates:
 
 class MainWindow(QMainWindow):
     """Pyspread main window"""
+
+    gui_update = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -102,7 +103,7 @@ class MainWindow(QMainWindow):
     def _init_widgets(self):
         """Initialize widgets"""
 
-        self.widgets = Widgets()
+        self.widgets = Widgets(self)
 
         self.entry_line = Entryline(self)
         self.grid = Grid(self)

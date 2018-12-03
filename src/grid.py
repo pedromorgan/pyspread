@@ -143,6 +143,9 @@ class Grid(QTableView):
         code = self.code_array(self.current)
         self.main_window.entry_line.setText(code)
 
+        attributes = self.code_array.cell_attributes[self.current]
+        self.main_window.gui_update.emit(attributes)
+
     def on_row_resized(self, row, old_height, new_height):
         """Row resized event handler"""
 

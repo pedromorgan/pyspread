@@ -82,8 +82,6 @@ class ColorButton(QPushButton):
         self.setPalette(palette)
         self.update()
 
-        self.colorChanged.emit()
-
     def set_max_size(self, size):
         """Set the maximum size of the widget
 
@@ -108,6 +106,7 @@ class ColorButton(QPushButton):
 
         if dlg.exec_():
             self.color = dlg.currentColor()
+            self.colorChanged.emit()
 
 
 class TextColorButton(ColorButton):
@@ -144,7 +143,7 @@ class BackgroundColorButton(ColorButton):
 
 
 class Widgets:
-    def __init__(self):
+    def __init__(self, main_window):
         text_color = QColor(*config["text_color"])
         self.text_color_button = TextColorButton(text_color)
 
@@ -153,3 +152,15 @@ class Widgets:
 
         line_color = QColor(*config["grid_color"])
         self.line_color_button = LineColorButton(line_color)
+
+        main_window.gui_update.connect(self.on_gui_update)
+
+    def on_gui_update(self, attributes):
+        """GUI update event handler.
+
+        Emmitted on cell change. Attributes contains current cell_attributes.
+
+        """
+
+        self.text_color_button.color = QColor(*attributes["textcolor"])
+        self.background_color_button.color = QColor(*attributes["bgcolor"])
