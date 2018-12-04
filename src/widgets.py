@@ -260,3 +260,12 @@ class Widgets:
 
         is_bold = attributes["fontweight"] == QFont.Bold
         self.main_window.actions["bold"].setChecked(is_bold)
+
+        is_italic = attributes["fontstyle"] == QFont.StyleItalic
+        self.main_window.actions["italics"].setChecked(is_italic)
+
+        underline_action = self.main_window.actions["underline"]
+        underline_action.setChecked(attributes["underline"])
+
+        strikethrough_action = self.main_window.actions["strikethrough"]
+        strikethrough_action.setChecked(attributes["strikethrough"])

@@ -122,6 +122,11 @@ class Grid(QTableView):
 
         return Selection(block_top_left, block_bottom_right, [], [], cells)
 
+    @property
+    def selected_idx(self):
+        """Currently selected indices"""
+        return self.selectionModel().selectedIndexes()
+
     def set_current_index(self, row, column):
         """Sets the current index to row, column"""
 
@@ -168,8 +173,7 @@ class Grid(QTableView):
         text_color_rgb = text_color.getRgb()
 
         attr = self.selection, self.table, {"textcolor": text_color_rgb}
-        self.model.setData(self.selectionModel().selectedIndexes(), attr,
-                           Qt.DecorationRole)
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
     def on_line_color_changed(self):
         """Line color change event handler"""
@@ -186,8 +190,7 @@ class Grid(QTableView):
         bg_color_rgb = bg_color.getRgb()
 
         attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
-        self.model.setData(self.selectionModel().selectedIndexes(), attr,
-                           Qt.DecorationRole)
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
     def on_font_changed(self):
         """Font change event handler"""
@@ -195,8 +198,7 @@ class Grid(QTableView):
         font = self.main_window.widgets.font_combo.font
 
         attr = self.selection, self.table, {"textfont": font}
-        self.model.setData(self.selectionModel().selectedIndexes(), attr,
-                           Qt.DecorationRole)
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
     def on_font_size_changed(self):
         """Font size change event handler"""
@@ -204,8 +206,7 @@ class Grid(QTableView):
         size = self.main_window.widgets.font_size_combo.size
 
         attr = self.selection, self.table, {"pointsize": size}
-        self.model.setData(self.selectionModel().selectedIndexes(), attr,
-                           Qt.DecorationRole)
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
     def on_bold_pressed(self, toggled):
         """Bold button pressed event handler"""
@@ -213,8 +214,27 @@ class Grid(QTableView):
         fontweight = QFont.Bold if toggled else QFont.Normal
 
         attr = self.selection, self.table, {"fontweight": fontweight}
-        self.model.setData(self.selectionModel().selectedIndexes(), attr,
-                           Qt.DecorationRole)
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+
+    def on_italics_pressed(self, toggled):
+        """Italics button pressed event handler"""
+
+        fontstyle = QFont.StyleItalic if toggled else QFont.StyleNormal
+
+        attr = self.selection, self.table, {"fontstyle": fontstyle}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+
+    def on_underline_pressed(self, toggled):
+        """Underline button pressed event handler"""
+
+        attr = self.selection, self.table, {"underline": toggled}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+
+    def on_strikethrough_pressed(self, toggled):
+        """Strikethrough button pressed event handler"""
+
+        attr = self.selection, self.table, {"strikethrough": toggled}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
 
 class GridItemModel(QAbstractTableModel):
@@ -265,11 +285,17 @@ class GridItemModel(QAbstractTableModel):
             return QColor(*text_color_rgb)
 
         if role == Qt.FontRole:
-            text_font = self.code_array.cell_attributes[key]["textfont"]
-            pointsize = self.code_array.cell_attributes[key]["pointsize"]
-            fontweight = self.code_array.cell_attributes[key]["fontweight"]
-            italic = self.code_array.cell_attributes[key]["fontstyle"]
-            return QFont(text_font, pointsize, fontweight, italic)
+            attr = self.code_array.cell_attributes[key]
+            text_font = attr["textfont"]
+            pointsize = attr["pointsize"]
+            fontweight = attr["fontweight"]
+            italic = attr["fontstyle"]
+            underline = attr["underline"]
+            strikethrough = attr["strikethrough"]
+            font = QFont(text_font, pointsize, fontweight, italic)
+            font.setUnderline(underline)
+            font.setStrikeOut(strikethrough)
+            return font
 
         return QVariant()
 

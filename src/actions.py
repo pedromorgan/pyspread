@@ -415,7 +415,8 @@ class MainWindowActions(dict):
                               statustip='Toggle bold font weight for the '
                                         'selected cells')
 
-        self["italics"] = Action(self.parent, "&Italics", self.parent.close,
+        self["italics"] = Action(self.parent, "&Italics",
+                                 self.parent.grid.on_italics_pressed,
                                  icon=Icon("italics"),
                                  shortcut='Ctrl+i',
                                  checkable=True,
@@ -423,19 +424,18 @@ class MainWindowActions(dict):
                                            'selected cells')
 
         self["underline"] = Action(self.parent, "&Underline",
-                                   self.parent.close,
+                                   self.parent.grid.on_underline_pressed,
                                    icon=Icon("underline"),
                                    shortcut='Ctrl+u',
                                    checkable=True,
                                    statustip='Toggle underline for the '
                                              'selected cells')
 
-        self["strikethrough"] = Action(self.parent, "&Strikethrough",
-                                       self.parent.close,
-                                       icon=Icon("strikethrough"),
-                                       checkable=True,
-                                       statustip='Toggle strikethrough for '
-                                                 'the selected cells')
+        self["strikethrough"] = \
+            Action(self.parent, "&Strikethrough",
+                   self.parent.grid.on_strikethrough_pressed,
+                   icon=Icon("strikethrough"), checkable=True,
+                   statustip='Toggle strikethrough for the selected cells')
 
         self["markup"] = Action(self.parent, "Markup", self.parent.close,
                                 icon=Icon("markup"),
