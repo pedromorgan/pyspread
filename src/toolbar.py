@@ -84,6 +84,9 @@ class AttributesToolbar(QToolBar):
     def _create_toolbar(self, actions):
         """Fills the attributes toolbar with QActions"""
 
+        self.addWidget(self.main_window.widgets.font_combo)
+        self.addWidget(self.main_window.widgets.font_size_combo)
+
         self.addAction(actions["bold"])
         self.addAction(actions["italics"])
         self.addAction(actions["underline"])

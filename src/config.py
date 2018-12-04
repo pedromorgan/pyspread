@@ -109,6 +109,7 @@ class DefaultConfig(object):
 
         # Default cell font size
 
+        self.font_default_size = 10
         self.font_default_sizes = [6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32]
 
         # Zoom

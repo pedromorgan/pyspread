@@ -21,8 +21,8 @@
 
 
 from PyQt5.QtCore import pyqtSignal, QSize
-from PyQt5.QtWidgets import QPushButton, QColorDialog
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import QPushButton, QColorDialog, QFontComboBox, QComboBox
+from PyQt5.QtGui import QPalette, QColor, QFont, QIntValidator
 
 from icons import Icon
 
@@ -142,8 +142,89 @@ class BackgroundColorButton(ColorButton):
         self.setStatusTip("Cell background color")
 
 
+class FontChoiceCombo(QFontComboBox):
+    """Font choice combo box"""
+
+    fontChanged = pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+        self.setMaximumWidth(150)
+
+        # Set default font
+        self.setFont(QFont(config["font"]))
+
+        self.currentFontChanged.connect(self.on_font)
+
+    @property
+    def font(self):
+        return self.currentFont().family()
+
+    @font.setter
+    def font(self, font):
+        self.setFont(QFont(font))
+
+    def on_font(self, font):
+        """Font choice event handler"""
+
+        self.fontChanged.emit()
+
+
+class FontSizeCombo(QComboBox):
+    """Font choice combo box"""
+
+    fontSizeChanged = pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+        self.setEditable(True)
+
+        for size in config["font_default_sizes"]:
+            self.addItem(str(size))
+
+        idx = self.findText(str(config["font_default_size"]))
+        if idx >= 0:
+            self.setCurrentIndex(idx)
+
+        validator = QIntValidator(1, 128, self)
+        self.setValidator(validator)
+
+        self.currentTextChanged.connect(self.on_text)
+
+    @property
+    def size(self):
+        return int(self.currentText())
+
+    @size.setter
+    def size(self, size):
+        self.setCurrentText(str(size))
+
+    def on_text(self, size):
+        """Font size choice event handler"""
+
+        try:
+            value = int(self.currentText())
+        except ValueError:
+            value = 1
+            self.setCurrentText("1")
+
+        if value < 1:
+            self.setCurrentText("1")
+        if value > 128:
+            self.setCurrentText("128")
+
+        self.fontSizeChanged.emit()
+
+
 class Widgets:
     def __init__(self, main_window):
+
+        self.font_combo = FontChoiceCombo()
+
+        self.font_size_combo = FontSizeCombo()
+
         text_color = QColor(*config["text_color"])
         self.text_color_button = TextColorButton(text_color)
 

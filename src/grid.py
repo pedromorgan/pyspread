@@ -52,12 +52,17 @@ class Grid(QTableView):
         # Signals
         self.model.dataChanged.connect(self.on_data_changed)
         self.selectionModel().currentChanged.connect(self.on_current_changed)
+
         self.main_window.widgets.text_color_button.colorChanged.connect(
                 self.on_text_color_changed)
         self.main_window.widgets.background_color_button.colorChanged.connect(
                 self.on_background_color_changed)
         self.main_window.widgets.line_color_button.colorChanged.connect(
                 self.on_line_color_changed)
+        self.main_window.widgets.font_combo.fontChanged.connect(
+                self.on_font_changed)
+        self.main_window.widgets.font_size_combo.fontSizeChanged.connect(
+                self.on_font_size_changed)
 
         self.verticalHeader().sectionResized.connect(self.on_row_resized)
         self.horizontalHeader().sectionResized.connect(self.on_column_resized)
@@ -163,7 +168,7 @@ class Grid(QTableView):
         text_color_rgb = text_color.getRgb()
 
         attr = self.selection, self.table, {"textcolor": text_color_rgb}
-        self.code_array.cell_attributes.undoable_append(attr)
+        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
 
     def on_line_color_changed(self):
         """Line color change event handler"""
@@ -180,7 +185,23 @@ class Grid(QTableView):
         bg_color_rgb = bg_color.getRgb()
 
         attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
-        self.code_array.cell_attributes.undoable_append(attr)
+        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
+
+    def on_font_changed(self):
+        """Font change event handler"""
+
+        font = self.main_window.widgets.font_combo.font
+
+        attr = self.selection, self.table, {"textfont": font}
+        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
+
+    def on_font_size_changed(self):
+        """Font size change event handler"""
+
+        size = self.main_window.widgets.font_size_combo.size
+
+        attr = self.selection, self.table, {"pointsize": size}
+        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
 
 
 class GridItemModel(QAbstractTableModel):
@@ -244,6 +265,12 @@ class GridItemModel(QAbstractTableModel):
 
         if role == Qt.EditRole:
             self.code_array[self.current(index)] = "{}".format(value)
+            self.dataChanged.emit(index, index)
+
+            return True
+
+        if role == Qt.DecorationRole:
+            self.code_array.cell_attributes.undoable_append(value)
             self.dataChanged.emit(index, index)
 
             return True
