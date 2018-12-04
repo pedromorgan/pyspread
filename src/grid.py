@@ -207,6 +207,15 @@ class Grid(QTableView):
         self.model.setData(self.selectionModel().selectedIndexes(), attr,
                            Qt.DecorationRole)
 
+    def on_bold_pressed(self, toggled):
+        """Bold button pressed event handler"""
+
+        fontweight = QFont.Bold if toggled else QFont.Normal
+
+        attr = self.selection, self.table, {"fontweight": fontweight}
+        self.model.setData(self.selectionModel().selectedIndexes(), attr,
+                           Qt.DecorationRole)
+
 
 class GridItemModel(QAbstractTableModel):
     def __init__(self, main_window, code_array):

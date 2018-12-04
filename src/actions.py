@@ -407,15 +407,18 @@ class MainWindowActions(dict):
                               shortcut='Ctrl+n',
                               statustip='Lauch font dialog')
 
-        self["bold"] = Action(self.parent, "&Bold", self.parent.close,
+        self["bold"] = Action(self.parent, "&Bold",
+                              self.parent.grid.on_bold_pressed,
                               icon=Icon("bold"),
                               shortcut='Ctrl+b',
+                              checkable=True,
                               statustip='Toggle bold font weight for the '
                                         'selected cells')
 
         self["italics"] = Action(self.parent, "&Italics", self.parent.close,
                                  icon=Icon("italics"),
                                  shortcut='Ctrl+i',
+                                 checkable=True,
                                  statustip='Toggle italics font style for the '
                                            'selected cells')
 
@@ -423,17 +426,20 @@ class MainWindowActions(dict):
                                    self.parent.close,
                                    icon=Icon("underline"),
                                    shortcut='Ctrl+u',
+                                   checkable=True,
                                    statustip='Toggle underline for the '
                                              'selected cells')
 
         self["strikethrough"] = Action(self.parent, "&Strikethrough",
                                        self.parent.close,
                                        icon=Icon("strikethrough"),
+                                       checkable=True,
                                        statustip='Toggle strikethrough for '
                                                  'the selected cells')
 
         self["markup"] = Action(self.parent, "Markup", self.parent.close,
                                 icon=Icon("markup"),
+                                checkable=True,
                                 statustip='Show cell results as markup '
                                           '(allows partly formatted output)')
 

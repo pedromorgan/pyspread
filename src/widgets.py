@@ -229,6 +229,8 @@ class FontSizeCombo(QComboBox):
 class Widgets:
     def __init__(self, main_window):
 
+        self.main_window = main_window
+
         self.font_combo = FontChoiceCombo()
 
         self.font_size_combo = FontSizeCombo()
@@ -255,3 +257,6 @@ class Widgets:
         self.background_color_button.color = QColor(*attributes["bgcolor"])
         self.font_combo.font = attributes["textfont"]
         self.font_size_combo.size = attributes["pointsize"]
+
+        is_bold = attributes["fontweight"] == QFont.Bold
+        self.main_window.actions["bold"].setChecked(is_bold)
