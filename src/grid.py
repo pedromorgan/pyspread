@@ -168,7 +168,8 @@ class Grid(QTableView):
         text_color_rgb = text_color.getRgb()
 
         attr = self.selection, self.table, {"textcolor": text_color_rgb}
-        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
+        self.model.setData(self.selectionModel().selectedIndexes(), attr,
+                           Qt.DecorationRole)
 
     def on_line_color_changed(self):
         """Line color change event handler"""
@@ -185,7 +186,8 @@ class Grid(QTableView):
         bg_color_rgb = bg_color.getRgb()
 
         attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
-        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
+        self.model.setData(self.selectionModel().selectedIndexes(), attr,
+                           Qt.DecorationRole)
 
     def on_font_changed(self):
         """Font change event handler"""
@@ -193,7 +195,8 @@ class Grid(QTableView):
         font = self.main_window.widgets.font_combo.font
 
         attr = self.selection, self.table, {"textfont": font}
-        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
+        self.model.setData(self.selectionModel().selectedIndexes(), attr,
+                           Qt.DecorationRole)
 
     def on_font_size_changed(self):
         """Font size change event handler"""
@@ -201,7 +204,8 @@ class Grid(QTableView):
         size = self.main_window.widgets.font_size_combo.size
 
         attr = self.selection, self.table, {"pointsize": size}
-        self.model.setData(self.currentIndex(), attr, Qt.DecorationRole)
+        self.model.setData(self.selectionModel().selectedIndexes(), attr,
+                           Qt.DecorationRole)
 
 
 class GridItemModel(QAbstractTableModel):
@@ -271,7 +275,9 @@ class GridItemModel(QAbstractTableModel):
 
         if role == Qt.DecorationRole:
             self.code_array.cell_attributes.undoable_append(value)
-            self.dataChanged.emit(index, index)
+            # We have a selection and no single cell
+            for idx in index:
+                self.dataChanged.emit(idx, idx)
 
             return True
 

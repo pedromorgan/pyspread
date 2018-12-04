@@ -163,7 +163,10 @@ class FontChoiceCombo(QFontComboBox):
 
     @font.setter
     def font(self, font):
-        self.setFont(QFont(font))
+        if hasattr(self, "_font") and self._font == font:
+            return
+        self._font = font
+        self.setCurrentFont(QFont(font))
 
     def on_font(self, font):
         """Font choice event handler"""
@@ -199,6 +202,9 @@ class FontSizeCombo(QComboBox):
 
     @size.setter
     def size(self, size):
+        if hasattr(self, "_size") and self._size == size:
+            return
+        self._size = size
         self.setCurrentText(str(size))
 
     def on_text(self, size):
@@ -245,3 +251,5 @@ class Widgets:
 
         self.text_color_button.color = QColor(*attributes["textcolor"])
         self.background_color_button.color = QColor(*attributes["bgcolor"])
+        #self.font_combo.font = attributes["textfont"]
+        #self.font_size_combo.size = attributes["pointsize"]
