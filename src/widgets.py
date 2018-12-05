@@ -21,7 +21,7 @@
 
 
 from PyQt5.QtCore import pyqtSignal, QSize, QStateMachine, QState
-from PyQt5.QtWidgets import QPushButton, QColorDialog, QFontComboBox, QComboBox
+from PyQt5.QtWidgets import QToolButton, QColorDialog, QFontComboBox, QComboBox
 from PyQt5.QtGui import QPalette, QColor, QFont, QIntValidator, QIcon
 
 from icons import Icon
@@ -29,7 +29,7 @@ from icons import Icon
 from config import config
 
 
-class MultiStateBitmapButton(QPushButton):
+class MultiStateBitmapButton(QToolButton):
     """QPushbutton that cycles through arbitrary states
 
     The states are defined by an iterable of QIcons
@@ -43,14 +43,12 @@ class MultiStateBitmapButton(QPushButton):
     """
 
     state = 0
-    states = []
 
     def __init__(self, icons):
         super().__init__()
 
-        self.setFlat(True)
-
         self.statemachine = QStateMachine(self)
+        self.states = []
 
         for state_number, icon in enumerate(icons):
             state = QState()
@@ -60,7 +58,7 @@ class MultiStateBitmapButton(QPushButton):
             state.assignProperty(self, 'state', state_number)
 
         # Connect states to a cycle
-        for state1, state2 in self.states[:-1], self.states[1:]:
+        for state1, state2 in zip(self.states[:-1], self.states[1:]):
             state1.addTransition(self.clicked, state2)
         self.states[-1].addTransition(self.clicked, self.states[0])
 
@@ -68,7 +66,7 @@ class MultiStateBitmapButton(QPushButton):
         self.statemachine.start()
 
 
-class ColorButton(QPushButton):
+class ColorButton(QToolButton):
     """Color button widget
 
     Parameters
