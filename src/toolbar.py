@@ -22,6 +22,9 @@
 
 from PyQt5.QtWidgets import QToolBar
 
+from widgets import MultiStateBitmapButton
+from icons import Icon
+
 
 class MainToolBar(QToolBar):
     """The main toolbar for pyspread"""
@@ -93,6 +96,14 @@ class AttributesToolbar(QToolBar):
         self.addAction(actions["strikethrough"])
         self.addAction(actions["freeze_cell"])
         self.addAction(actions["lock_cell"])
+        self.addAction(actions["markup"])
+
+        icons = [Icon("justify_left"),
+                 Icon("justify_center"),
+                 Icon("justify_right"),
+                 ]
+        rotate_button = MultiStateBitmapButton(icons)
+        self.addWidget(rotate_button)
 
         text_color_button = self.main_window.widgets.text_color_button
         text_color_button.set_max_size(self.iconSize())

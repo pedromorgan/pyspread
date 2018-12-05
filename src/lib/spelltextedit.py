@@ -351,7 +351,6 @@ class PythonEnchantHighlighter(QSyntaxHighlighter):
         '\{', '\}', '\(', '\)', '\[', '\]',
     ]
 
-
     def __init__(self, *args):
         QSyntaxHighlighter.__init__(self, *args)
 
@@ -399,7 +398,7 @@ class PythonEnchantHighlighter(QSyntaxHighlighter):
 
         # Build a QRegExp for each pattern
         self.rules = [(QRegExp(pat), index, fmt)
-            for (pat, index, fmt) in rules]
+                      for (pat, index, fmt) in rules]
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a
