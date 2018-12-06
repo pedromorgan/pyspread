@@ -20,8 +20,10 @@
 # --------------------------------------------------------------------
 
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
+from PyQt5.QtWidgets import QStyleOptionViewItem
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
+from PyQt5.QtCore import QPointF, QRectF
 
 from config import config
 from model.model import CodeArray
@@ -263,10 +265,40 @@ class Grid(QTableView):
         attr = self.selection, self.table, {"strikethrough": toggled}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
+    def on_rotate_0(self, toggled):
+        """Rotate by 0° left button pressed event handler"""
+
+        attr = self.selection, self.table, {"angle": 0.0}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_rotate_90(self, toggled):
+        """Rotate by 0° left button pressed event handler"""
+
+        attr = self.selection, self.table, {"angle": 90.0}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_rotate_180(self, toggled):
+        """Rotate by 0° left button pressed event handler"""
+
+        attr = self.selection, self.table, {"angle": 180.0}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_rotate_270(self, toggled):
+        """Rotate by 0° left button pressed event handler"""
+
+        attr = self.selection, self.table, {"angle": 270.0}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
     def on_justify_left(self, toggled):
         """Justify left button pressed event handler"""
 
         attr = self.selection, self.table, {"justification": "left"}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_justify_fill(self, toggled):
+        """Justify fill button pressed event handler"""
+
+        attr = self.selection, self.table, {"justification": "fill"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
     def on_justify_center(self, toggled):
@@ -365,7 +397,7 @@ class GridItemModel(QAbstractTableModel):
                 "left": Qt.AlignLeft,
                 "center": Qt.AlignHCenter,
                 "right": Qt.AlignRight,
-                "justify": Qt.AlignJustify,
+                "fill": Qt.AlignJustify,
                 "top": Qt.AlignTop,
                 "middle": Qt.AlignVCenter,
                 "bottom": Qt.AlignBottom,
@@ -469,10 +501,37 @@ class GridCellDelegate(QStyledItemDelegate):
         self._paint_bl_border_lines(x - width, y - height, width, height,
                                     painter, key)
 
+    def _rotated_paint(self, painter, option, index):
+        """Paint cell contents for rotated cells"""
+
+        # Get rotation angle
+        key = index.row(), index.column(), self.main_window.table
+        angle = self.cell_attributes[key]["angle"]
+
+        # Rotate evryting by 90 degree
+
+        optionCopy = QStyleOptionViewItem(option)
+        rectCenter = QPointF(QRectF(option.rect).center())
+        painter.save()
+        painter.translate(rectCenter.x(), rectCenter.y())
+        painter.rotate(angle)
+        painter.translate(-rectCenter.x(), -rectCenter.y())
+        optionCopy.rect = painter.worldTransform().mapRect(option.rect)
+
+        # Call the base class implementation
+        super(GridCellDelegate, self).paint(painter, optionCopy, index)
+
+        painter.restore()
+
     def paint(self, painter, option, index):
         """Overloads QStyledItemDelegate to add cell border painting"""
+        key = index.row(), index.column(), self.main_window.table
+        if abs(self.cell_attributes[key]["angle"]) < 0.001:
+            # No rotation
+            QStyledItemDelegate.paint(self, painter, option, index)
+        else:
+            self._rotated_paint(painter, option, index)
 
-        QStyledItemDelegate.paint(self, painter, option, index)
         self._paint_border_lines(option.rect, painter, index)
 
     def setEditorData(self, editor, index):

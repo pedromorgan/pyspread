@@ -96,6 +96,7 @@ class Icon(QIcon):
         "text_color": str(ACTION_PATH / 'format-text-color.svg'),
         "background_color": str(ACTION_PATH / 'format-background-color.svg'),
         "justify_left": str(ACTION_PATH / 'format-justify-left.svg'),
+        "justify_fill": str(ACTION_PATH / 'format-justify-fill'),
         "justify_center": str(ACTION_PATH / 'format-justify-center.svg'),
         "justify_right": str(ACTION_PATH / 'format-justify-right.svg'),
         "align_top": str(ACTION_PATH / 'format-text-align-top.svg'),

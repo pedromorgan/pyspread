@@ -82,7 +82,7 @@ class MultiStateBitmapButton(QToolButton):
 class RotationButton(MultiStateBitmapButton):
     """Rotation button for the format toolbar"""
 
-    actions = ("rotate_0", "rotate_90", "rotate_180", "rotate_270")
+    actions = "rotate_0", "rotate_90", "rotate_180", "rotate_270"
 
     def __init__(self, main_window):
         self.main_window = main_window
@@ -95,7 +95,7 @@ class RotationButton(MultiStateBitmapButton):
 class JustificationButton(MultiStateBitmapButton):
     """Justification button for the format toolbar"""
 
-    actions = ("justify_left", "justify_center", "justify_right")
+    actions = "justify_left", "justify_fill", "justify_center", "justify_right"
 
     def __init__(self, main_window):
         self.main_window = main_window
@@ -108,7 +108,7 @@ class JustificationButton(MultiStateBitmapButton):
 class AlignmentButton(MultiStateBitmapButton):
     """Alignment button for the format toolbar"""
 
-    actions = ("align_top", "align_center", "align_bottom")
+    actions = "align_top", "align_center", "align_bottom"
 
     def __init__(self, main_window):
         self.main_window = main_window

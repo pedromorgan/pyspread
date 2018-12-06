@@ -466,6 +466,13 @@ class MainWindowActions(dict):
                                       statustip='Display cell result text '
                                                 'left justified')
 
+        self["justify_fill"] = Action(self.parent, "Fill",
+                                      self.parent.grid.on_justify_fill,
+                                      icon=Icon("justify_fill"),
+                                      checkable=True,
+                                      statustip='Display cell result text '
+                                                'filled into the cell')
+
         self["justify_center"] = Action(self.parent, "Center",
                                         self.parent.grid.on_justify_center,
                                         checkable=True,
@@ -500,22 +507,26 @@ class MainWindowActions(dict):
                                       statustip='Align cell result at the '
                                                 'bottom of the cell')
 
-        self["rotate_0"] = Action(self.parent, "0°", self.parent.on_nothing,
+        self["rotate_0"] = Action(self.parent, "0°",
+                                  self.parent.grid.on_rotate_0,
                                   icon=Icon("rotate_0"),
                                   checkable=True,
                                   statustip='Set text rotation to 0°')
 
-        self["rotate_90"] = Action(self.parent, "90°", self.parent.on_nothing,
+        self["rotate_90"] = Action(self.parent, "90°",
+                                   self.parent.grid.on_rotate_90,
                                    icon=Icon("rotate_90"),
                                    checkable=True,
                                    statustip='Set text rotation to 90°')
 
-        self["rotate_180"] = Action(self.parent, "180°", self.parent.on_nothing,
+        self["rotate_180"] = Action(self.parent, "180°",
+                                    self.parent.grid.on_rotate_180,
                                     icon=Icon("rotate_180"),
                                     checkable=True,
                                     statustip='Set text rotation to 180°')
 
-        self["rotate_270"] = Action(self.parent, "270°", self.parent.on_nothing,
+        self["rotate_270"] = Action(self.parent, "270°",
+                                    self.parent.grid.on_rotate_270,
                                     icon=Icon("rotate_270"),
                                     checkable=True,
                                     statustip='Set text rotation to 270°')
