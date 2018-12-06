@@ -263,6 +263,42 @@ class Grid(QTableView):
         attr = self.selection, self.table, {"strikethrough": toggled}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
+    def on_justify_left(self, toggled):
+        """Justify left button pressed event handler"""
+
+        attr = self.selection, self.table, {"justification": "left"}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_justify_center(self, toggled):
+        """Justify center button pressed event handler"""
+
+        attr = self.selection, self.table, {"justification": "center"}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_justify_right(self, toggled):
+        """Justify right button pressed event handler"""
+
+        attr = self.selection, self.table, {"justification": "right"}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_align_top(self, toggled):
+        """Align top button pressed event handler"""
+
+        attr = self.selection, self.table, {"vertical_align": "top"}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_align_middle(self, toggled):
+        """Justify left button pressed event handler"""
+
+        attr = self.selection, self.table, {"vertical_align": "middle"}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
+    def on_align_bottom(self, toggled):
+        """Justify left button pressed event handler"""
+
+        attr = self.selection, self.table, {"vertical_align": "bottom"}
+        self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+
 
 class GridItemModel(QAbstractTableModel):
     def __init__(self, main_window, code_array):
@@ -324,6 +360,22 @@ class GridItemModel(QAbstractTableModel):
             font.setStrikeOut(strikethrough)
             return font
 
+        if role == Qt.TextAlignmentRole:
+            pys2qt = {
+                "left": Qt.AlignLeft,
+                "center": Qt.AlignHCenter,
+                "right": Qt.AlignRight,
+                "justify": Qt.AlignJustify,
+                "top": Qt.AlignTop,
+                "middle": Qt.AlignVCenter,
+                "bottom": Qt.AlignBottom,
+            }
+            attr = self.code_array.cell_attributes[key]
+            alignment = pys2qt[attr["vertical_align"]]
+            justification = pys2qt[attr["justification"]]
+            alignment |= justification
+            return alignment
+
         return QVariant()
 
     def setData(self, index, value, role):
@@ -335,7 +387,7 @@ class GridItemModel(QAbstractTableModel):
 
             return True
 
-        if role == Qt.DecorationRole:
+        if role == Qt.DecorationRole or role == Qt.TextAlignmentRole:
             self.code_array.cell_attributes.undoable_append(value)
             # We have a selection and no single cell
             for idx in index:

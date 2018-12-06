@@ -459,37 +459,42 @@ class MainWindowActions(dict):
             icon=Icon("background_color"),
             statustip='Lauch background color dialog')
 
-        self["justify_left"] = Action(self.parent, "Left", self.parent.on_nothing,
+        self["justify_left"] = Action(self.parent, "Left",
+                                      self.parent.grid.on_justify_left,
                                       icon=Icon("justify_left"),
                                       checkable=True,
                                       statustip='Display cell result text '
                                                 'left justified')
 
         self["justify_center"] = Action(self.parent, "Center",
-                                        self.parent.on_nothing,
+                                        self.parent.grid.on_justify_center,
                                         checkable=True,
                                         icon=Icon("justify_center"),
                                         statustip='Display cell result text '
                                                   'centered')
 
-        self["justify_right"] = Action(self.parent, "Right", self.parent.on_nothing,
+        self["justify_right"] = Action(self.parent, "Right",
+                                       self.parent.grid.on_justify_right,
                                        icon=Icon("justify_right"),
                                        statustip='Display cell result text '
                                                  'right justified')
 
-        self["align_top"] = Action(self.parent, "Top", self.parent.on_nothing,
+        self["align_top"] = Action(self.parent, "Top",
+                                   self.parent.grid.on_align_top,
                                    icon=Icon("align_top"),
                                    checkable=True,
                                    statustip='Align cell result at the top of '
                                              'the cell')
 
-        self["align_center"] = Action(self.parent, "Center", self.parent.on_nothing,
+        self["align_center"] = Action(self.parent, "Center",
+                                      self.parent.grid.on_align_middle,
                                       icon=Icon("align_center"),
                                       checkable=True,
                                       statustip='Center cell result within '
                                                 'the cell')
 
-        self["align_bottom"] = Action(self.parent, "Bottom", self.parent.on_nothing,
+        self["align_bottom"] = Action(self.parent, "Bottom",
+                                      self.parent.grid.on_align_bottom,
                                       icon=Icon("align_bottom"),
                                       checkable=True,
                                       statustip='Align cell result at the '
