@@ -459,67 +459,79 @@ class MainWindowActions(dict):
             icon=Icon("background_color"),
             statustip='Lauch background color dialog')
 
-        self["justify_left"] = Action(self.parent, "Left", self.parent.close,
+        self["justify_left"] = Action(self.parent, "Left", self.parent.on_nothing,
                                       icon=Icon("justify_left"),
+                                      checkable=True,
                                       statustip='Display cell result text '
                                                 'left justified')
 
         self["justify_center"] = Action(self.parent, "Center",
-                                        self.parent.close,
+                                        self.parent.on_nothing,
+                                        checkable=True,
                                         icon=Icon("justify_center"),
                                         statustip='Display cell result text '
                                                   'centered')
 
-        self["justify_right"] = Action(self.parent, "Right", self.parent.close,
+        self["justify_right"] = Action(self.parent, "Right", self.parent.on_nothing,
                                        icon=Icon("justify_right"),
                                        statustip='Display cell result text '
                                                  'right justified')
 
-        self["align_top"] = Action(self.parent, "Top", self.parent.close,
+        self["align_top"] = Action(self.parent, "Top", self.parent.on_nothing,
                                    icon=Icon("align_top"),
+                                   checkable=True,
                                    statustip='Align cell result at the top of '
                                              'the cell')
 
-        self["align_center"] = Action(self.parent, "Center", self.parent.close,
+        self["align_center"] = Action(self.parent, "Center", self.parent.on_nothing,
                                       icon=Icon("align_center"),
+                                      checkable=True,
                                       statustip='Center cell result within '
                                                 'the cell')
 
-        self["align_bottom"] = Action(self.parent, "Bottom", self.parent.close,
+        self["align_bottom"] = Action(self.parent, "Bottom", self.parent.on_nothing,
                                       icon=Icon("align_bottom"),
+                                      checkable=True,
                                       statustip='Align cell result at the '
                                                 'bottom of the cell')
 
-        self["rotate_0"] = Action(self.parent, "0°", self.parent.close,
+        self["rotate_0"] = Action(self.parent, "0°", self.parent.on_nothing,
                                   icon=Icon("rotate_0"),
+                                  checkable=True,
                                   statustip='Set text rotation to 0°')
 
-        self["rotate_90"] = Action(self.parent, "90°", self.parent.close,
+        self["rotate_90"] = Action(self.parent, "90°", self.parent.on_nothing,
                                    icon=Icon("rotate_90"),
+                                   checkable=True,
                                    statustip='Set text rotation to 90°')
 
-        self["rotate_180"] = Action(self.parent, "180°", self.parent.close,
+        self["rotate_180"] = Action(self.parent, "180°", self.parent.on_nothing,
                                     icon=Icon("rotate_180"),
+                                    checkable=True,
                                     statustip='Set text rotation to 180°')
 
-        self["rotate_270"] = Action(self.parent, "270°", self.parent.close,
+        self["rotate_270"] = Action(self.parent, "270°", self.parent.on_nothing,
                                     icon=Icon("rotate_270"),
+                                    checkable=True,
                                     statustip='Set text rotation to 270°')
 
         self["freeze_cell"] = Action(self.parent, "Freeze cell",
                                      self.parent.close,
                                      icon=Icon("freeze"),
+                                     checkable=True,
                                      statustip='Freeze the selected cell so '
                                                'that is is only updated when '
                                                '<F5> is pressed')
 
         self["lock_cell"] = Action(self.parent, "Lock cell", self.parent.close,
                                    icon=Icon("lock"),
+                                   checkable=True,
                                    statustip='Lock cell so that its code '
                                              'cannot be changed')
 
         self["merge_cells"] = Action(self.parent, "Merge cells",
                                      self.parent.close,
+                                     checkable=True,
                                      icon=Icon("merge_cells"),
                                      statustip='Merge/unmerge selected cells')
 

@@ -37,41 +37,85 @@ class MultiStateBitmapButton(QToolButton):
     Parameters
     ----------
 
-    * icons: List of QIcons
+    * actions: List of QIcons
     \tThe list of icons to be cycled through
 
     """
 
-    state = 0
-    stateChanged = pyqtSignal(int)
-
-    def __init__(self, icons):
+    def __init__(self, actions):
         super().__init__()
 
+        self.actions = actions
         self.statemachine = QStateMachine(self)
-        self.states = []
 
-        for state_number, icon in enumerate(icons):
+        states = []
+        for action in actions:
             state = QState()
+            state.action = action
+            state.assignProperty(self, 'icon', QIcon(Icon(action)))
+            states.append(state)
             self.statemachine.addState(state)
-            self.states.append(state)
-            state.assignProperty(self, 'icon', QIcon(icon))
-            state.assignProperty(self, 'state', state_number)
 
         # Connect states to a cycle
-        for state1, state2 in zip(self.states[:-1], self.states[1:]):
-            state1.addTransition(self.clicked, state2)
-        self.states[-1].addTransition(self.clicked, self.states[0])
+        for state1, state2 in zip(states[:-1], states[1:]):
+            state1.addTransition(self.pressed, state2)
+        states[-1].addTransition(self.pressed, states[0])
 
-        self.statemachine.setInitialState(self.states[0])
+        self.statemachine.setInitialState(states[0])
         self.statemachine.start()
 
-        self.pressed.connect(self.on_pressed)
+        self.clicked.connect(self.on_clicked)
 
-    def on_pressed(self):
-        """Button pressed event handler. Emits stateChanged signal."""
+    def on_clicked(self):
+        """Button clicked event handler. Chechs corresponding menu item"""
 
-        self.stateChanged.emit(self.state)
+        state = next(iter(self.statemachine.configuration()), None)
+
+        for action in self.actions:
+            enabled = action == state.action
+            if enabled:
+                self.main_window.actions[action].trigger()
+            else:
+                self.main_window.actions[action].setChecked(False)
+
+
+class RotationButton(MultiStateBitmapButton):
+    """Rotation button for the format toolbar"""
+
+    actions = ("rotate_0", "rotate_90", "rotate_180", "rotate_270")
+
+    def __init__(self, main_window):
+        self.main_window = main_window
+
+        super().__init__(self.actions)
+        self.setStatusTip("Text rotation")
+        self.setToolTip("Text rotation")
+
+
+class JustificationButton(MultiStateBitmapButton):
+    """Justification button for the format toolbar"""
+
+    actions = ("justify_left", "justify_center", "justify_right")
+
+    def __init__(self, main_window):
+        self.main_window = main_window
+
+        super().__init__(self.actions)
+        self.setStatusTip("Text justification")
+        self.setToolTip("Text justification")
+
+
+class AlignmentButton(MultiStateBitmapButton):
+    """Alignment button for the format toolbar"""
+
+    actions = ("align_top", "align_center", "align_bottom")
+
+    def __init__(self, main_window):
+        self.main_window = main_window
+
+        super().__init__(self.actions)
+        self.setStatusTip("Text alignment")
+        self.setToolTip("Text alignment")
 
 
 class ColorButton(QToolButton):
@@ -163,6 +207,7 @@ class TextColorButton(ColorButton):
 
         self.title = "Select text color"
         self.setStatusTip("Text color")
+        self.setToolTip("Text color")
 
 
 class LineColorButton(ColorButton):
@@ -174,6 +219,7 @@ class LineColorButton(ColorButton):
 
         self.title = "Select cell border line color"
         self.setStatusTip("Cell border line color")
+        self.setToolTip("Cell border line color")
 
 
 class BackgroundColorButton(ColorButton):
@@ -185,6 +231,7 @@ class BackgroundColorButton(ColorButton):
 
         self.title = "Select cell background color"
         self.setStatusTip("Cell background color")
+        self.setToolTip("Cell background color")
 
 
 class FontChoiceCombo(QFontComboBox):
@@ -293,19 +340,9 @@ class Widgets:
         line_color = QColor(*config["grid_color"])
         self.line_color_button = LineColorButton(line_color)
 
-        icons = [Icon("rotate_0"), Icon("rotate_90"), Icon("rotate_180"),
-                 Icon("rotate_270")]
-        self.rotate_button = MultiStateBitmapButton(icons)
-        self.rotate_button.setStatusTip("Text rotation")
-
-        icons = [Icon("justify_left"), Icon("justify_center"),
-                 Icon("justify_right")]
-        self.justify_button = MultiStateBitmapButton(icons)
-        self.justify_button.setStatusTip("Text justification")
-
-        icons = [Icon("align_top"), Icon("align_center"), Icon("align_bottom")]
-        self.align_button = MultiStateBitmapButton(icons)
-        self.align_button.setStatusTip("Text alignment")
+        self.rotate_button = RotationButton(main_window)
+        self.justify_button = JustificationButton(main_window)
+        self.align_button = AlignmentButton(main_window)
 
     def on_gui_update(self, attributes):
         """GUI update event handler.

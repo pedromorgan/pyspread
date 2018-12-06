@@ -143,6 +143,12 @@ class MainWindow(QMainWindow):
 
         return self.table_choice.currentIndex()
 
+    @table.setter
+    def table(self, value):
+        """Sets a new table to be displayed"""
+
+        self.table_choice.setCurrentIndex(value)
+
     def on_table_changed(self, current):
         """Event handler for table changes"""
 

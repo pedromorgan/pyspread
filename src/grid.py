@@ -82,7 +82,7 @@ class Grid(QTableView):
     def row(self, value):
         """Sets current row to value"""
 
-        self.set_current_index(value, self.column)
+        self.current = value, self.column
 
     @property
     def column(self):
@@ -94,7 +94,7 @@ class Grid(QTableView):
     def column(self, value):
         """Sets current column to value"""
 
-        self.set_current_index(self.row, value)
+        self.current = self.row, value
 
     @property
     def table(self):
@@ -102,11 +102,35 @@ class Grid(QTableView):
 
         return self.main_window.table
 
+    @table.setter
+    def table(self, value):
+        """Sets current table"""
+
+        self.main_window.table = value
+
     @property
     def current(self):
         """Tuple of row, column, table of the current index"""
 
         return self.row, self.column, self.table
+
+    @current.setter
+    def current(self, value):
+        """Sets the current index to row, column and if given table"""
+
+        if len(value) == 2:
+            row, column = value
+
+        elif len(value) == 3:
+            row, column, self.table = value
+
+        else:
+            msg = "Current cell must be defined with a tuple " + \
+                  "(row, column) or (rol, column, table)."
+            raise ValueError(msg)
+
+        index = self.model.index(row, column, QModelIndex())
+        self.setCurrentIndex(index)
 
     @property
     def selection(self):
@@ -138,15 +162,6 @@ class Grid(QTableView):
     def selected_idx(self):
         """Currently selected indices"""
         return self.selectionModel().selectedIndexes()
-
-    def set_current_index(self, row, column):
-        """Sets the current index to row, column"""
-
-        row_count = self.model.rowCount()
-        column_count = self.model.rowCount()
-        if 0 <= row < row_count and 0 <= column < column_count:
-            index = self.model.index(row, column, QModelIndex())
-            self.setCurrentIndex(index)
 
     def on_data_changed(self):
         """Event handler for data changes"""
