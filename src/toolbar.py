@@ -98,30 +98,9 @@ class AttributesToolbar(QToolBar):
         self.addAction(actions["lock_cell"])
         self.addAction(actions["markup"])
 
-        icons = [Icon("rotate_0"),
-                 Icon("rotate_90"),
-                 Icon("rotate_180"),
-                 Icon("rotate_270"),
-                 ]
-        rotate_button = MultiStateBitmapButton(icons)
-        rotate_button.setStatusTip("Text rotation")
-        self.addWidget(rotate_button)
-
-        icons = [Icon("justify_left"),
-                 Icon("justify_center"),
-                 Icon("justify_right"),
-                 ]
-        justify_button = MultiStateBitmapButton(icons)
-        justify_button.setStatusTip("Text justification")
-        self.addWidget(justify_button)
-
-        icons = [Icon("align_top"),
-                 Icon("align_center"),
-                 Icon("align_bottom"),
-                 ]
-        align_button = MultiStateBitmapButton(icons)
-        align_button.setStatusTip("Text alignment")
-        self.addWidget(align_button)
+        self.addWidget(self.main_window.widgets.rotate_button)
+        self.addWidget(self.main_window.widgets.justify_button)
+        self.addWidget(self.main_window.widgets.align_button)
 
         text_color_button = self.main_window.widgets.text_color_button
         text_color_button.set_max_size(self.iconSize())

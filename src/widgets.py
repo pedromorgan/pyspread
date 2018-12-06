@@ -43,6 +43,7 @@ class MultiStateBitmapButton(QToolButton):
     """
 
     state = 0
+    stateChanged = pyqtSignal(int)
 
     def __init__(self, icons):
         super().__init__()
@@ -64,6 +65,13 @@ class MultiStateBitmapButton(QToolButton):
 
         self.statemachine.setInitialState(self.states[0])
         self.statemachine.start()
+
+        self.pressed.connect(self.on_pressed)
+
+    def on_pressed(self):
+        """Button pressed event handler. Emits stateChanged signal."""
+
+        self.stateChanged.emit(self.state)
 
 
 class ColorButton(QToolButton):
@@ -268,6 +276,10 @@ class Widgets:
 
         self.main_window = main_window
 
+        main_window.gui_update.connect(self.on_gui_update)
+
+        # Format toolbar widgets
+
         self.font_combo = FontChoiceCombo()
 
         self.font_size_combo = FontSizeCombo()
@@ -281,7 +293,19 @@ class Widgets:
         line_color = QColor(*config["grid_color"])
         self.line_color_button = LineColorButton(line_color)
 
-        main_window.gui_update.connect(self.on_gui_update)
+        icons = [Icon("rotate_0"), Icon("rotate_90"), Icon("rotate_180"),
+                 Icon("rotate_270")]
+        self.rotate_button = MultiStateBitmapButton(icons)
+        self.rotate_button.setStatusTip("Text rotation")
+
+        icons = [Icon("justify_left"), Icon("justify_center"),
+                 Icon("justify_right")]
+        self.justify_button = MultiStateBitmapButton(icons)
+        self.justify_button.setStatusTip("Text justification")
+
+        icons = [Icon("align_top"), Icon("align_center"), Icon("align_bottom")]
+        self.align_button = MultiStateBitmapButton(icons)
+        self.align_button.setStatusTip("Text alignment")
 
     def on_gui_update(self, attributes):
         """GUI update event handler.

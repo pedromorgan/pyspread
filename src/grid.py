@@ -78,11 +78,23 @@ class Grid(QTableView):
 
         return self.currentIndex().row()
 
+    @row.setter
+    def row(self, value):
+        """Sets current row to value"""
+
+        self.set_current_index(value, self.column)
+
     @property
     def column(self):
         """Current column"""
 
         return self.currentIndex().column()
+
+    @column.setter
+    def column(self, value):
+        """Sets current column to value"""
+
+        self.set_current_index(self.row, value)
 
     @property
     def table(self):

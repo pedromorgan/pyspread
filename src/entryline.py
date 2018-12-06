@@ -45,13 +45,17 @@ class Entryline(QTextEdit, SpellTextEdit):
         """Key press event filter"""
 
         if event.key() in (Qt.Key_Enter, Qt.Key_Return):
-            index = self.main_window.grid.currentIndex()
-            self.main_window.grid.model.setData(index, self.toPlainText(),
-                                                Qt.EditRole)
-            row, column = index.row(), index.column()
-            self.main_window.grid.set_current_index(row+1, column)
+            self.store_data()
+            self.main_window.grid.row += 1
         else:
             QTextEdit.keyPressEvent(self, event)
+
+    def store_data(self):
+        """Stores current entry line data in grid model"""
+
+        index = self.main_window.grid.currentIndex()
+        self.main_window.grid.model.setData(index, self.toPlainText(),
+                                            Qt.EditRole)
 
     def on_toggle_spell_check(self, signal):
         """Spell check toggle event handler"""

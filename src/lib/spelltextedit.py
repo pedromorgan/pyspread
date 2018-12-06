@@ -518,11 +518,10 @@ class PythonEnchantHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, text):
         """Overridden QSyntaxHighlighter method to apply the highlight"""
 
-        if enchant is not None and self.enable_enchant:
-            self.highlightBlock_enchant(text)
-
         self.highlightBlock_python(text)
 
+        if enchant is not None and self.enable_enchant:
+            self.highlightBlock_enchant(text)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
