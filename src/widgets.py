@@ -19,8 +19,7 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-
-from PyQt5.QtCore import pyqtSignal, QSize, QStateMachine, QState
+from PyQt5.QtCore import pyqtSignal, QSize
 from PyQt5.QtWidgets import QToolButton, QColorDialog, QFontComboBox, QComboBox
 from PyQt5.QtGui import QPalette, QColor, QFont, QIntValidator, QIcon
 
@@ -46,37 +45,51 @@ class MultiStateBitmapButton(QToolButton):
         super().__init__()
 
         self.actions = actions
-        self.statemachine = QStateMachine(self)
+        self._current_action_idx = 0
 
-        states = []
-        for action in actions:
-            state = QState()
-            state.action = action
-            state.assignProperty(self, 'icon', QIcon(Icon(action)))
-            states.append(state)
-            self.statemachine.addState(state)
-
-        # Connect states to a cycle
-        for state1, state2 in zip(states[:-1], states[1:]):
-            state1.addTransition(self.pressed, state2)
-        states[-1].addTransition(self.pressed, states[0])
-
-        self.statemachine.setInitialState(states[0])
-        self.statemachine.start()
+        self.setIcon(QIcon(Icon(self.actions[0])))
 
         self.clicked.connect(self.on_clicked)
 
-    def on_clicked(self):
-        """Button clicked event handler. Chechs corresponding menu item"""
+    @property
+    def current_action_idx(self):
+        return self._current_action_idx
 
-        state = next(iter(self.statemachine.configuration()), None)
+    @current_action_idx.setter
+    def current_action_idx(self, value):
+        """Sets current action index and triggers events in menus"""
 
+        self._current_action_idx = value
+        self.setIcon(QIcon(Icon(self.actions[value])))
+
+        # Trigger main menu action
+        current_action = self.actions[value]
         for action in self.actions:
-            enabled = action == state.action
+            enabled = action == current_action
             if enabled:
                 self.main_window.actions[action].trigger()
             else:
                 self.main_window.actions[action].setChecked(False)
+
+    def set_current_action(self, action):
+        """Sets current action and triggers events in menu"""
+
+        self.current_action_idx = self.actions.index(action)
+
+    def next(self):
+        """Advances current_action_idx and returns current action"""
+
+        if self.current_action_idx >= len(self.actions) - 1:
+            self.current_action_idx = 0
+        else:
+            self.current_action_idx += 1
+
+        return self.actions[self.current_action_idx]
+
+    def on_clicked(self):
+        """Button clicked event handler. Chechs corresponding menu item"""
+
+        self.next()
 
 
 class RotationButton(MultiStateBitmapButton):
@@ -95,7 +108,7 @@ class RotationButton(MultiStateBitmapButton):
 class JustificationButton(MultiStateBitmapButton):
     """Justification button for the format toolbar"""
 
-    actions = "justify_left", "justify_fill", "justify_center", "justify_right"
+    actions = "justify_left", "justify_center", "justify_right", "justify_fill"
 
     def __init__(self, main_window):
         self.main_window = main_window
@@ -350,6 +363,11 @@ class Widgets:
         Emmitted on cell change. Attributes contains current cell_attributes.
 
         """
+
+        rotation = "rotate_{angle}".format(angle=int(attributes["angle"]))
+        self.rotate_button.set_current_action(rotation)
+        self.justify_button.set_current_action(attributes["justification"])
+        self.align_button.set_current_action(attributes["vertical_align"])
 
         self.text_color_button.color = QColor(*attributes["textcolor"])
         self.background_color_button.color = QColor(*attributes["bgcolor"])

@@ -292,43 +292,43 @@ class Grid(QTableView):
     def on_justify_left(self, toggled):
         """Justify left button pressed event handler"""
 
-        attr = self.selection, self.table, {"justification": "left"}
+        attr = self.selection, self.table, {"justification": "justify_left"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
     def on_justify_fill(self, toggled):
         """Justify fill button pressed event handler"""
 
-        attr = self.selection, self.table, {"justification": "fill"}
+        attr = self.selection, self.table, {"justification": "justify_fill"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
     def on_justify_center(self, toggled):
         """Justify center button pressed event handler"""
 
-        attr = self.selection, self.table, {"justification": "center"}
+        attr = self.selection, self.table, {"justification": "justify_center"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
     def on_justify_right(self, toggled):
         """Justify right button pressed event handler"""
 
-        attr = self.selection, self.table, {"justification": "right"}
+        attr = self.selection, self.table, {"justification": "justify_right"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
     def on_align_top(self, toggled):
         """Align top button pressed event handler"""
 
-        attr = self.selection, self.table, {"vertical_align": "top"}
+        attr = self.selection, self.table, {"vertical_align": "align_top"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
     def on_align_middle(self, toggled):
         """Justify left button pressed event handler"""
 
-        attr = self.selection, self.table, {"vertical_align": "middle"}
+        attr = self.selection, self.table, {"vertical_align": "align_center"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
     def on_align_bottom(self, toggled):
         """Justify left button pressed event handler"""
 
-        attr = self.selection, self.table, {"vertical_align": "bottom"}
+        attr = self.selection, self.table, {"vertical_align": "align_bottom"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
 
 
@@ -394,13 +394,13 @@ class GridItemModel(QAbstractTableModel):
 
         if role == Qt.TextAlignmentRole:
             pys2qt = {
-                "left": Qt.AlignLeft,
-                "center": Qt.AlignHCenter,
-                "right": Qt.AlignRight,
-                "fill": Qt.AlignJustify,
-                "top": Qt.AlignTop,
-                "middle": Qt.AlignVCenter,
-                "bottom": Qt.AlignBottom,
+                "justify_left": Qt.AlignLeft,
+                "justify_center": Qt.AlignHCenter,
+                "justify_right": Qt.AlignRight,
+                "justify_fill": Qt.AlignJustify,
+                "align_top": Qt.AlignTop,
+                "align_center": Qt.AlignVCenter,
+                "align_bottom": Qt.AlignBottom,
             }
             attr = self.code_array.cell_attributes[key]
             alignment = pys2qt[attr["vertical_align"]]
@@ -501,12 +501,8 @@ class GridCellDelegate(QStyledItemDelegate):
         self._paint_bl_border_lines(x - width, y - height, width, height,
                                     painter, key)
 
-    def _rotated_paint(self, painter, option, index):
+    def _rotated_paint(self, painter, option, index, angle):
         """Paint cell contents for rotated cells"""
-
-        # Get rotation angle
-        key = index.row(), index.column(), self.main_window.table
-        angle = self.cell_attributes[key]["angle"]
 
         # Rotate evryting by 90 degree
 
@@ -518,7 +514,7 @@ class GridCellDelegate(QStyledItemDelegate):
         painter.translate(-rectCenter.x(), -rectCenter.y())
         optionCopy.rect = painter.worldTransform().mapRect(option.rect)
 
-        # Call the base class implementation
+        # Call the base class paint method
         super(GridCellDelegate, self).paint(painter, optionCopy, index)
 
         painter.restore()
@@ -526,11 +522,12 @@ class GridCellDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         """Overloads QStyledItemDelegate to add cell border painting"""
         key = index.row(), index.column(), self.main_window.table
-        if abs(self.cell_attributes[key]["angle"]) < 0.001:
-            # No rotation
-            QStyledItemDelegate.paint(self, painter, option, index)
+        angle = self.cell_attributes[key]["angle"]
+        if abs(angle) < 0.001:
+            # No rotation --> call the base class paint method
+            super(GridCellDelegate, self).paint(painter, option, index)
         else:
-            self._rotated_paint(painter, option, index)
+            self._rotated_paint(painter, option, index, angle)
 
         self._paint_border_lines(option.rect, painter, index)
 

@@ -271,6 +271,18 @@ class Pys(object):
                     elif key == "fontstyle":
                         value = wx2qt_fontstyles[value]
 
+                    # Update justifiaction and alignment values
+                    elif key in ["vertical_align", "justification"]:
+                        just_align_value_tansitions = {
+                                "left": "justify_left",
+                                "center": "justify_center",
+                                "right": "justify_right",
+                                "top": "align_top",
+                                "middle": "align_center",
+                                "bottom": "align_bottom",
+                        }
+                        value = just_align_value_tansitions[value]
+
                 attrs[key] = value
 
         self.code_array.cell_attributes.append((selection, tab, attrs))

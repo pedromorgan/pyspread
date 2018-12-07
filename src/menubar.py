@@ -164,9 +164,9 @@ class MenuBar(QMenuBar):
 
         justification_submenu = format_menu.addMenu('Justification')
         justification_submenu.addAction(self.actions["justify_left"])
-        justification_submenu.addAction(self.actions["justify_fill"])
         justification_submenu.addAction(self.actions["justify_center"])
         justification_submenu.addAction(self.actions["justify_right"])
+        justification_submenu.addAction(self.actions["justify_fill"])
 
         alignment_submenu = format_menu.addMenu('Alignment')
         alignment_submenu.addAction(self.actions["align_top"])
