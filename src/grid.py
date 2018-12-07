@@ -20,10 +20,11 @@
 # --------------------------------------------------------------------
 
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
-from PyQt5.QtWidgets import QStyleOptionViewItem
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont
+from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication,QStyle
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPalette
+from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
-from PyQt5.QtCore import QPointF, QRectF
+from PyQt5.QtCore import QPointF, QRectF, QSize
 
 from config import config
 from model.model import CodeArray
@@ -175,7 +176,7 @@ class Grid(QTableView):
         """Event handler for data changes"""
 
         code = self.code_array(self.current)
-        self.main_window.entry_line.setText(code)
+        self.main_window.entry_line.setPlainText(code)
 
         if not self.main_window.application_states.changed_since_save:
             self.main_window.application_states.changed_since_save = True
@@ -186,7 +187,7 @@ class Grid(QTableView):
         """Event handler for change of current cell"""
 
         code = self.code_array(self.current)
-        self.main_window.entry_line.setText(code)
+        self.main_window.entry_line.setPlainText(code)
         self.gui_update()
 
     def on_row_resized(self, row, old_height, new_height):
@@ -277,6 +278,13 @@ class Grid(QTableView):
         """Strikethrough button pressed event handler"""
 
         attr = self.selection, self.table, {"strikethrough": toggled}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
+
+    def on_markup_pressed(self, toggled):
+        """Markup button pressed event handler"""
+
+        attr = self.selection, self.table, {"markup": toggled}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         self.gui_update()
 
@@ -533,6 +541,58 @@ class GridCellDelegate(QStyledItemDelegate):
         self._paint_bl_border_lines(x - width, y - height, width, height,
                                     painter, key)
 
+    def __paint(self, painter, option, index):
+        """Calls the overloaded paint function or creates html delegate"""
+
+        key = index.row(), index.column(), self.main_window.table
+        if not self.cell_attributes[key]["markup"]:
+            return super(GridCellDelegate, self).paint(painter, option, index)
+
+        # HTML
+
+        options = QStyleOptionViewItem(option)
+        self.initStyleOption(options, index)
+
+        if options.widget is None:
+            style = QApplication.style()
+        else:
+            style = options.widget.style()
+
+        doc = QTextDocument()
+        doc.setHtml(options.text)
+        doc.setTextWidth(options.rect.width())
+
+        options.text = ""
+        style.drawControl(QStyle.CE_ItemViewItem, options, painter,
+                          options.widget)
+
+        ctx = QAbstractTextDocumentLayout.PaintContext()
+
+        html_rect = style.subElementRect(QStyle.SE_ItemViewItemText, options,
+                                         options.widget)
+        painter.save()
+        painter.translate(html_rect.topLeft())
+        painter.setClipRect(html_rect.translated(-html_rect.topLeft()))
+        doc.documentLayout().draw(painter, ctx)
+
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        """Overloads SizeHint"""
+
+        key = index.row(), index.column(), self.main_window.table
+        if not self.cell_attributes[key]["markup"]:
+            return super(GridCellDelegate, self).sizeHint(option, index)
+
+        # HTML
+        options = QStyleOptionViewItem(option)
+        self.initStyleOption(options, index)
+
+        doc = QTextDocument()
+        doc.setHtml(options.text)
+        doc.setTextWidth(options.rect.width())
+        return QSize(doc.idealWidth(), doc.size().height())
+
     def _rotated_paint(self, painter, option, index, angle):
         """Paint cell contents for rotated cells"""
 
@@ -547,7 +607,7 @@ class GridCellDelegate(QStyledItemDelegate):
         optionCopy.rect = painter.worldTransform().mapRect(option.rect)
 
         # Call the base class paint method
-        super(GridCellDelegate, self).paint(painter, optionCopy, index)
+        self.__paint(painter, optionCopy, index)
 
         painter.restore()
 
@@ -558,7 +618,7 @@ class GridCellDelegate(QStyledItemDelegate):
         angle = self.cell_attributes[key]["angle"]
         if abs(angle) < 0.001:
             # No rotation --> call the base class paint method
-            super(GridCellDelegate, self).paint(painter, option, index)
+            self.__paint(painter, option, index)
         else:
             self._rotated_paint(painter, option, index, angle)
 

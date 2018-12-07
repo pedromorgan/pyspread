@@ -151,8 +151,9 @@ class SpellTextEdit(QPlainTextEdit):
     # into a second column.
     max_suggestions = 20
 
-    def __init__(self, *args):
-        QPlainTextEdit.__init__(self, *args)
+    def __init__(self):
+
+        super().__init__()
 
         # Start with a default dictionary based on the current locale.
         self.highlighter = PythonEnchantHighlighter(self.document())

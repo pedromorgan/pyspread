@@ -437,7 +437,8 @@ class MainWindowActions(dict):
                    icon=Icon("strikethrough"), checkable=True,
                    statustip='Toggle strikethrough for the selected cells')
 
-        self["markup"] = Action(self.parent, "Markup", self.parent.close,
+        self["markup"] = Action(self.parent, "Markup",
+                                self.parent.grid.on_markup_pressed,
                                 icon=Icon("markup"),
                                 checkable=True,
                                 statustip='Show cell results as markup '
