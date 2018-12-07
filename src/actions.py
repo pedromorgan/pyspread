@@ -540,7 +540,8 @@ class MainWindowActions(dict):
                                                'that is is only updated when '
                                                '<F5> is pressed')
 
-        self["lock_cell"] = Action(self.parent, "Lock cell", self.parent.close,
+        self["lock_cell"] = Action(self.parent, "Lock cell",
+                                   self.parent.grid.on_lock_pressed,
                                    icon=Icon("lock"),
                                    checkable=True,
                                    statustip='Lock cell so that its code '

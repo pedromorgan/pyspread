@@ -166,6 +166,22 @@ class MainWindow(QMainWindow):
 
         widgets = self.widgets
 
+        is_bold = attributes["fontweight"] == QFont.Bold
+        self.actions["bold"].setChecked(is_bold)
+
+        is_italic = attributes["fontstyle"] == QFont.StyleItalic
+        self.actions["italics"].setChecked(is_italic)
+
+        underline_action = self.actions["underline"]
+        underline_action.setChecked(attributes["underline"])
+
+        strikethrough_action = self.actions["strikethrough"]
+        strikethrough_action.setChecked(attributes["strikethrough"])
+
+        lock_action = self.actions["lock_cell"]
+        lock_action.setChecked(attributes["locked"])
+        self.entry_line.setReadOnly(attributes["locked"])
+
         rotation = "rotate_{angle}".format(angle=int(attributes["angle"]))
         widgets.rotate_button.set_current_action(rotation)
         widgets.rotate_button.set_menu_checked(rotation)
@@ -179,17 +195,6 @@ class MainWindow(QMainWindow):
         widgets.font_combo.font = attributes["textfont"]
         widgets.font_size_combo.size = attributes["pointsize"]
 
-        is_bold = attributes["fontweight"] == QFont.Bold
-        self.actions["bold"].setChecked(is_bold)
-
-        is_italic = attributes["fontstyle"] == QFont.StyleItalic
-        self.actions["italics"].setChecked(is_italic)
-
-        underline_action = self.actions["underline"]
-        underline_action.setChecked(attributes["underline"])
-
-        strikethrough_action = self.actions["strikethrough"]
-        strikethrough_action.setChecked(attributes["strikethrough"])
 
 
 def main():

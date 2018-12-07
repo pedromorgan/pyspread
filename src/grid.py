@@ -280,6 +280,13 @@ class Grid(QTableView):
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         self.gui_update()
 
+    def on_lock_pressed(self, toggled):
+        """Lock button pressed event handler"""
+
+        attr = self.selection, self.table, {"locked": toggled}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
+
     def on_rotate_0(self, toggled):
         """Rotate by 0° left button pressed event handler"""
 
@@ -556,6 +563,14 @@ class GridCellDelegate(QStyledItemDelegate):
             self._rotated_paint(painter, option, index, angle)
 
         self._paint_border_lines(option.rect, painter, index)
+
+    def createEditor(self, parent, option, index):
+        """Overloads QStyledItemDelegate to disable editor in frozen cells"""
+
+        key = index.row(), index.column(), self.main_window.table
+        if not self.cell_attributes[key]["locked"]:
+            return super(GridCellDelegate, self).createEditor(parent, option,
+                                                              index)
 
     def setEditorData(self, editor, index):
         row = index.row()
