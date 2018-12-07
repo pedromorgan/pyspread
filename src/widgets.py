@@ -57,22 +57,14 @@ class MultiStateBitmapButton(QToolButton):
 
     @current_action_idx.setter
     def current_action_idx(self, value):
-        """Sets current action index and triggers events in menus"""
+        """Sets current action index and updates button and menu"""
 
         self._current_action_idx = value
-        self.setIcon(QIcon(Icon(self.actions[value])))
-
-        # Trigger main menu action
-        current_action = self.actions[value]
-        for action in self.actions:
-            enabled = action == current_action
-            if enabled:
-                self.main_window.actions[action].trigger()
-            else:
-                self.main_window.actions[action].setChecked(False)
+        action = self.actions[value]
+        self.setIcon(QIcon(Icon(action)))
 
     def set_current_action(self, action):
-        """Sets current action and triggers events in menu"""
+        """Sets current action"""
 
         self.current_action_idx = self.actions.index(action)
 
@@ -86,10 +78,25 @@ class MultiStateBitmapButton(QToolButton):
 
         return self.actions[self.current_action_idx]
 
+    def trigger_menu(self, action):
+        """Trigger main menu actions"""
+
+        for __action in self.actions:
+            if action == __action:
+                self.main_window.actions[__action].trigger()
+
+    def set_menu_checked(self, action):
+        """Sets checked status of menu"""
+
+        for __action in self.actions:
+            self.main_window.actions[__action].setChecked(action == __action)
+
     def on_clicked(self):
         """Button clicked event handler. Chechs corresponding menu item"""
 
-        self.next()
+        next_action = self.next()
+        self.trigger_menu(next_action)
+        self.set_menu_checked(next_action)
 
 
 class RotationButton(MultiStateBitmapButton):
@@ -336,8 +343,6 @@ class Widgets:
 
         self.main_window = main_window
 
-        main_window.gui_update.connect(self.on_gui_update)
-
         # Format toolbar widgets
 
         self.font_combo = FontChoiceCombo()
@@ -357,31 +362,3 @@ class Widgets:
         self.justify_button = JustificationButton(main_window)
         self.align_button = AlignmentButton(main_window)
 
-    def on_gui_update(self, attributes):
-        """GUI update event handler.
-
-        Emmitted on cell change. Attributes contains current cell_attributes.
-
-        """
-
-        rotation = "rotate_{angle}".format(angle=int(attributes["angle"]))
-        self.rotate_button.set_current_action(rotation)
-        self.justify_button.set_current_action(attributes["justification"])
-        self.align_button.set_current_action(attributes["vertical_align"])
-
-        self.text_color_button.color = QColor(*attributes["textcolor"])
-        self.background_color_button.color = QColor(*attributes["bgcolor"])
-        self.font_combo.font = attributes["textfont"]
-        self.font_size_combo.size = attributes["pointsize"]
-
-        is_bold = attributes["fontweight"] == QFont.Bold
-        self.main_window.actions["bold"].setChecked(is_bold)
-
-        is_italic = attributes["fontstyle"] == QFont.StyleItalic
-        self.main_window.actions["italics"].setChecked(is_italic)
-
-        underline_action = self.main_window.actions["underline"]
-        underline_action.setChecked(attributes["underline"])
-
-        strikethrough_action = self.main_window.actions["strikethrough"]
-        strikethrough_action.setChecked(attributes["strikethrough"])

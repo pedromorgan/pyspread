@@ -43,6 +43,7 @@ import sys
 from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
 from PyQt5.QtWidgets import QTabBar
+from PyQt5.QtGui import QColor, QFont
 
 from icons import Icon
 from grid import Grid
@@ -122,6 +123,8 @@ class MainWindow(QMainWindow):
 
         self.table_choice.currentChanged.connect(self.on_table_changed)
 
+        self.gui_update.connect(self.on_gui_update)
+
     def _init_toolbars(self):
         """Initialize the main window toolbars"""
 
@@ -153,6 +156,40 @@ class MainWindow(QMainWindow):
         """Event handler for table changes"""
 
         self.grid.model.dataChanged.emit(QModelIndex(), QModelIndex())
+
+    def on_gui_update(self, attributes):
+        """GUI update event handler.
+
+        Emmitted on cell change. Attributes contains current cell_attributes.
+
+        """
+
+        widgets = self.widgets
+
+        rotation = "rotate_{angle}".format(angle=int(attributes["angle"]))
+        widgets.rotate_button.set_current_action(rotation)
+        widgets.rotate_button.set_menu_checked(rotation)
+        widgets.justify_button.set_current_action(attributes["justification"])
+        widgets.justify_button.set_menu_checked(attributes["justification"])
+        widgets.align_button.set_current_action(attributes["vertical_align"])
+        widgets.align_button.set_menu_checked(attributes["vertical_align"])
+
+        widgets.text_color_button.color = QColor(*attributes["textcolor"])
+        widgets.background_color_button.color = QColor(*attributes["bgcolor"])
+        widgets.font_combo.font = attributes["textfont"]
+        widgets.font_size_combo.size = attributes["pointsize"]
+
+        is_bold = attributes["fontweight"] == QFont.Bold
+        self.actions["bold"].setChecked(is_bold)
+
+        is_italic = attributes["fontstyle"] == QFont.StyleItalic
+        self.actions["italics"].setChecked(is_italic)
+
+        underline_action = self.actions["underline"]
+        underline_action.setChecked(attributes["underline"])
+
+        strikethrough_action = self.actions["strikethrough"]
+        strikethrough_action.setChecked(attributes["strikethrough"])
 
 
 def main():

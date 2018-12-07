@@ -482,6 +482,7 @@ class MainWindowActions(dict):
 
         self["justify_right"] = Action(self.parent, "Right",
                                        self.parent.grid.on_justify_right,
+                                       checkable=True,
                                        icon=Icon("justify_right"),
                                        statustip='Display cell result text '
                                                  'right justified')

@@ -165,6 +165,12 @@ class Grid(QTableView):
         """Currently selected indices"""
         return self.selectionModel().selectedIndexes()
 
+    def gui_update(self):
+        """Emits gui update signal"""
+
+        attributes = self.code_array.cell_attributes[self.current]
+        self.main_window.gui_update.emit(attributes)
+
     def on_data_changed(self):
         """Event handler for data changes"""
 
@@ -181,25 +187,26 @@ class Grid(QTableView):
 
         code = self.code_array(self.current)
         self.main_window.entry_line.setText(code)
-
-        attributes = self.code_array.cell_attributes[self.current]
-        self.main_window.gui_update.emit(attributes)
+        self.gui_update()
 
     def on_row_resized(self, row, old_height, new_height):
         """Row resized event handler"""
 
         self.model.code_array.row_heights[(row, self.table)] = new_height
+        self.gui_update()
 
     def on_column_resized(self, column, old_width, new_width):
         """Row resized event handler"""
 
         self.model.code_array.col_widths[(column, self.table)] = new_width
+        self.gui_update()
 
     def on_text_color_changed(self):
         """Text color change event handler"""
 
         text_color = self.main_window.widgets.text_color_button.color
         text_color_rgb = text_color.getRgb()
+        self.gui_update()
 
         attr = self.selection, self.table, {"textcolor": text_color_rgb}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
@@ -211,6 +218,7 @@ class Grid(QTableView):
         #TODO: Get selected borders to be set
         line_color = self.main_window.widgets.line_color_button.color
         line_color_rgb = line_color.getRgb()
+        self.gui_update()
 
     def on_background_color_changed(self):
         """Background color change event handler"""
@@ -220,6 +228,7 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
 
     def on_font_changed(self):
         """Font change event handler"""
@@ -228,6 +237,7 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"textfont": font}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
 
     def on_font_size_changed(self):
         """Font size change event handler"""
@@ -236,6 +246,7 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"pointsize": size}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
 
     def on_bold_pressed(self, toggled):
         """Bold button pressed event handler"""
@@ -244,6 +255,7 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"fontweight": fontweight}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
 
     def on_italics_pressed(self, toggled):
         """Italics button pressed event handler"""
@@ -252,36 +264,42 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"fontstyle": fontstyle}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
 
     def on_underline_pressed(self, toggled):
         """Underline button pressed event handler"""
 
         attr = self.selection, self.table, {"underline": toggled}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
 
     def on_strikethrough_pressed(self, toggled):
         """Strikethrough button pressed event handler"""
 
         attr = self.selection, self.table, {"strikethrough": toggled}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
 
     def on_rotate_0(self, toggled):
         """Rotate by 0° left button pressed event handler"""
 
         attr = self.selection, self.table, {"angle": 0.0}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_rotate_90(self, toggled):
         """Rotate by 0° left button pressed event handler"""
 
         attr = self.selection, self.table, {"angle": 90.0}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_rotate_180(self, toggled):
         """Rotate by 0° left button pressed event handler"""
 
         attr = self.selection, self.table, {"angle": 180.0}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_rotate_270(self, toggled):
         """Rotate by 0° left button pressed event handler"""
@@ -294,42 +312,49 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"justification": "justify_left"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_justify_fill(self, toggled):
         """Justify fill button pressed event handler"""
 
         attr = self.selection, self.table, {"justification": "justify_fill"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_justify_center(self, toggled):
         """Justify center button pressed event handler"""
 
         attr = self.selection, self.table, {"justification": "justify_center"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_justify_right(self, toggled):
         """Justify right button pressed event handler"""
 
         attr = self.selection, self.table, {"justification": "justify_right"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_align_top(self, toggled):
         """Align top button pressed event handler"""
 
         attr = self.selection, self.table, {"vertical_align": "align_top"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_align_middle(self, toggled):
         """Justify left button pressed event handler"""
 
         attr = self.selection, self.table, {"vertical_align": "align_center"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
     def on_align_bottom(self, toggled):
         """Justify left button pressed event handler"""
 
         attr = self.selection, self.table, {"vertical_align": "align_bottom"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
+        self.gui_update()
 
 
 class GridItemModel(QAbstractTableModel):
@@ -521,6 +546,7 @@ class GridCellDelegate(QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         """Overloads QStyledItemDelegate to add cell border painting"""
+
         key = index.row(), index.column(), self.main_window.table
         angle = self.cell_attributes[key]["angle"]
         if abs(angle) < 0.001:
