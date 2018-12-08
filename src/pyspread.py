@@ -198,6 +198,8 @@ class MainWindow(QMainWindow):
         widgets.font_combo.font = attributes["textfont"]
         widgets.font_size_combo.size = attributes["pointsize"]
 
+        merge_cells_action = self.actions["merge_cells"]
+        merge_cells_action.setChecked(attributes["merge_area"] is not None)
 
 
 def main():

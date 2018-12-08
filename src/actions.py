@@ -549,9 +549,9 @@ class MainWindowActions(dict):
                                              'cannot be changed')
 
         self["merge_cells"] = Action(self.parent, "Merge cells",
-                                     self.parent.close,
-                                     checkable=True,
+                                     self.parent.grid.on_merge_pressed,
                                      icon=Icon("merge_cells"),
+                                     checkable=True,
                                      statustip='Merge/unmerge selected cells')
 
     def _add_macro_actions(self):

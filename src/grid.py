@@ -203,35 +203,6 @@ class Grid(QTableView):
         self.model.code_array.col_widths[(column, self.table)] = new_width
         self.gui_update()
 
-    def on_text_color_changed(self):
-        """Text color change event handler"""
-
-        text_color = self.main_window.widgets.text_color_button.color
-        text_color_rgb = text_color.getRgb()
-        self.gui_update()
-
-        attr = self.selection, self.table, {"textcolor": text_color_rgb}
-        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
-
-    def on_line_color_changed(self):
-        """Line color change event handler"""
-
-        #TODO: selection =
-        #TODO: Get selected borders to be set
-        line_color = self.main_window.widgets.line_color_button.color
-        line_color_rgb = line_color.getRgb()
-        self.gui_update()
-
-    def on_background_color_changed(self):
-        """Background color change event handler"""
-
-        bg_color = self.main_window.widgets.background_color_button.color
-        bg_color_rgb = bg_color.getRgb()
-
-        attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
-        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
-        self.gui_update()
-
     def on_font_changed(self):
         """Font change event handler"""
 
@@ -371,6 +342,62 @@ class Grid(QTableView):
         attr = self.selection, self.table, {"vertical_align": "align_bottom"}
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
         self.gui_update()
+
+    def on_text_color_changed(self):
+        """Text color change event handler"""
+
+        text_color = self.main_window.widgets.text_color_button.color
+        text_color_rgb = text_color.getRgb()
+        self.gui_update()
+
+        attr = self.selection, self.table, {"textcolor": text_color_rgb}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+
+    def on_line_color_changed(self):
+        """Line color change event handler"""
+
+        #TODO: selection =
+        #TODO: Get selected borders to be set
+        line_color = self.main_window.widgets.line_color_button.color
+        line_color_rgb = line_color.getRgb()
+        self.gui_update()
+
+    def on_background_color_changed(self):
+        """Background color change event handler"""
+
+        bg_color = self.main_window.widgets.background_color_button.color
+        bg_color_rgb = bg_color.getRgb()
+
+        attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
+
+    def on_merge_pressed(self):
+        """Merge cells button pressed event handler"""
+
+        # This is not done in the model because setSpan does not work there
+
+        bbox = self.selection.get_grid_bbox(self.code_array.shape)
+        (top, left), (bottom, right) = bbox
+
+        # Check if current cell is already merged
+        if self.columnSpan(top, left) > 1 or self.rowSpan(top, left) > 1:
+            self.setSpan(top, left, 1, 1)
+            selection = Selection([], [], [], [], [(top, left)])
+            attr = selection, self.table, {"merge_area": None}
+        elif self.columnSpan(self.row, self.column) > 1 \
+                or self.rowSpan(self.row, self.column) > 1:
+            # Unmerge the cell that merges the current cell (!)
+            self.setSpan(self.row, self.column, 1, 1)
+            selection = Selection([], [], [], [], [(self.row, self.column)])
+            attr = selection, self.table, {"merge_area": None}
+        else:
+            # Merge and store the current selection (!)
+            self.setSpan(top, left, bottom-top+1, right-left+1)
+            merging_selection = Selection([], [], [], [], [(top, left)])
+            attr = merging_selection, self.table, {"merge_area":
+                                                   (top, left, bottom, right)}
+        self.code_array.cell_attributes.undoable_append(attr)
 
 
 class GridItemModel(QAbstractTableModel):
