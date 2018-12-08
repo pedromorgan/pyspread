@@ -20,8 +20,8 @@
 # --------------------------------------------------------------------
 
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
-from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication,QStyle
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPalette
+from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtCore import QPointF, QRectF, QSize
