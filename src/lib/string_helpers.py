@@ -60,7 +60,7 @@ def quote(code):
         return code
 
 
-def wrap_text(text, width=80, maxlen=1000):
+def wrap_text(text, width=80, maxlen=2000):
     """Returns wrapped text
 
     Parameters
@@ -70,7 +70,7 @@ def wrap_text(text, width=80, maxlen=1000):
     \tThe text to bewrapped
     * width: Integer, defaulys to 80
     \tWidth of the text to be wrapped
-    * maxlen, defaults to 1000
+    * maxlen, defaults to 2000
     \tMaximum total text length before text in truncated and extended by [...]
 
     """

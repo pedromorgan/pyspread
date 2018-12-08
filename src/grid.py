@@ -29,6 +29,7 @@ from PyQt5.QtCore import QPointF, QRectF, QSize
 from config import config
 from model.model import CodeArray
 from lib.selection import Selection
+from lib.string_helpers import wrap_text
 
 
 class Grid(QTableView):
@@ -404,7 +405,8 @@ class GridItemModel(QAbstractTableModel):
             return str(value) if value is not None else ""
 
         if role == Qt.ToolTipRole:
-            return self.code_array(self.current(index))
+            value = self.code_array[key]
+            return wrap_text(str(value) if value is not None else "")
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:
