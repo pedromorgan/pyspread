@@ -20,9 +20,9 @@
 # --------------------------------------------------------------------
 
 
-from PyQt5.QtWidgets import QToolBar
+from PyQt5.QtWidgets import QToolBar, QToolButton
 
-from widgets import MultiStateBitmapButton
+from menubar import BorderChoiceMenu
 from icons import Icon
 
 
@@ -116,6 +116,13 @@ class AttributesToolbar(QToolBar):
         self.addWidget(background_color_button)
 
         self.addAction(actions["merge_cells"])
+
+        border_menu_button = QToolButton(self)
+        border_menu_button.setMenu(self.main_window.menuBar().border_submenu)
+        border_menu_button.setIcon(Icon("border_menu"))
+        self.addWidget(border_menu_button)
+        border_menu_button.setPopupMode(
+            QToolButton.ToolButtonPopupMode.InstantPopup)
 
 
 class MacroToolbar(QToolBar):

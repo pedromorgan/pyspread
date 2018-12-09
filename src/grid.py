@@ -19,6 +19,22 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+"""
+
+grid
+====
+
+Main grid for pyspread
+
+Provides
+--------
+
+* Grid: QTableView of the main grid
+* GridItemModel: QAbstractTableModel linking the view to the code_array backend
+* GridCellDelegate: QStyledItemDelegate handling custom painting and editors
+
+"""
+
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont

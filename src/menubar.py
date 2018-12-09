@@ -19,7 +19,24 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from PyQt5.QtWidgets import QMenuBar
+"""
+
+menubar
+=======
+
+Main menu for pyspread
+
+Provides
+--------
+
+* MenuBar: QMenuBar, the main menubar for pyspread
+* BorderChoiceMenu: QMenu for choosing cell borders that shall be manipulated
+
+"""
+
+from PyQt5.QtWidgets import QMenuBar, QMenu
+
+from icons import Icon
 
 
 class MenuBar(QMenuBar):
@@ -162,6 +179,12 @@ class MenuBar(QMenuBar):
         format_menu.addAction(self.actions["markup"])
         format_menu.addSeparator()
 
+        rotation_submenu = format_menu.addMenu('Rotation')
+        rotation_submenu.addAction(self.actions["rotate_0"])
+        rotation_submenu.addAction(self.actions["rotate_90"])
+        rotation_submenu.addAction(self.actions["rotate_180"])
+        rotation_submenu.addAction(self.actions["rotate_270"])
+
         justification_submenu = format_menu.addMenu('Justification')
         justification_submenu.addAction(self.actions["justify_left"])
         justification_submenu.addAction(self.actions["justify_center"])
@@ -173,11 +196,8 @@ class MenuBar(QMenuBar):
         alignment_submenu.addAction(self.actions["align_center"])
         alignment_submenu.addAction(self.actions["align_bottom"])
 
-        rotation_submenu = format_menu.addMenu('Rotation')
-        rotation_submenu.addAction(self.actions["rotate_0"])
-        rotation_submenu.addAction(self.actions["rotate_90"])
-        rotation_submenu.addAction(self.actions["rotate_180"])
-        rotation_submenu.addAction(self.actions["rotate_270"])
+        self.border_submenu = BorderChoiceMenu(self.actions)
+        format_menu.addMenu(self.border_submenu)
 
         format_menu.addSeparator()
         format_menu.addAction(self.actions["freeze_cell"])
@@ -214,3 +234,22 @@ class MenuBar(QMenuBar):
         help_menu.addAction(self.actions["about"])
 
         return help_menu
+
+
+class BorderChoiceMenu(QMenu):
+    """QMenu for choosing cell borders that shall be manipulated"""
+
+    def __init__(self, actions):
+        super().__init__()
+
+        self.setTitle("Formatted borders")
+        self.setIcon(Icon("border_menu"))
+
+        self.addAction(actions["format_borders_all"])
+        self.addAction(actions["format_borders_top"])
+        self.addAction(actions["format_borders_bottom"])
+        self.addAction(actions["format_borders_left"])
+        self.addAction(actions["format_borders_right"])
+        self.addAction(actions["format_borders_outer"])
+        self.addAction(actions["format_borders_inner"])
+        self.addAction(actions["format_borders_top_bottom"])

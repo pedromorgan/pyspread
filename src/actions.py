@@ -460,6 +460,52 @@ class MainWindowActions(dict):
             icon=Icon("background_color"),
             statustip='Lauch background color dialog')
 
+
+        self["freeze_cell"] = Action(self.parent, "Freeze cell",
+                                     self.parent.close,
+                                     icon=Icon("freeze"),
+                                     checkable=True,
+                                     statustip='Freeze the selected cell so '
+                                               'that is is only updated when '
+                                               '<F5> is pressed')
+
+        self["lock_cell"] = Action(self.parent, "Lock cell",
+                                   self.parent.grid.on_lock_pressed,
+                                   icon=Icon("lock"),
+                                   checkable=True,
+                                   statustip='Lock cell so that its code '
+                                             'cannot be changed')
+
+        self["merge_cells"] = Action(self.parent, "Merge cells",
+                                     self.parent.grid.on_merge_pressed,
+                                     icon=Icon("merge_cells"),
+                                     checkable=True,
+                                     statustip='Merge/unmerge selected cells')
+
+        self["rotate_0"] = Action(self.parent, "0°",
+                                  self.parent.grid.on_rotate_0,
+                                  icon=Icon("rotate_0"),
+                                  checkable=True,
+                                  statustip='Set text rotation to 0°')
+
+        self["rotate_90"] = Action(self.parent, "90°",
+                                   self.parent.grid.on_rotate_90,
+                                   icon=Icon("rotate_90"),
+                                   checkable=True,
+                                   statustip='Set text rotation to 90°')
+
+        self["rotate_180"] = Action(self.parent, "180°",
+                                    self.parent.grid.on_rotate_180,
+                                    icon=Icon("rotate_180"),
+                                    checkable=True,
+                                    statustip='Set text rotation to 180°')
+
+        self["rotate_270"] = Action(self.parent, "270°",
+                                    self.parent.grid.on_rotate_270,
+                                    icon=Icon("rotate_270"),
+                                    checkable=True,
+                                    statustip='Set text rotation to 270°')
+
         self["justify_left"] = Action(self.parent, "Left",
                                       self.parent.grid.on_justify_left,
                                       icon=Icon("justify_left"),
@@ -509,50 +555,46 @@ class MainWindowActions(dict):
                                       statustip='Align cell result at the '
                                                 'bottom of the cell')
 
-        self["rotate_0"] = Action(self.parent, "0°",
-                                  self.parent.grid.on_rotate_0,
-                                  icon=Icon("rotate_0"),
-                                  checkable=True,
-                                  statustip='Set text rotation to 0°')
+        self["format_borders_all"] = \
+            Action(self.parent, "All borders", self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_all"), checkable=True,
+                   statustip='Format all borders of selection')
 
-        self["rotate_90"] = Action(self.parent, "90°",
-                                   self.parent.grid.on_rotate_90,
-                                   icon=Icon("rotate_90"),
-                                   checkable=True,
-                                   statustip='Set text rotation to 90°')
+        self["format_borders_top"] = \
+            Action(self.parent, "Top border", self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_top"), checkable=True,
+                   statustip='Format top border of selection')
 
-        self["rotate_180"] = Action(self.parent, "180°",
-                                    self.parent.grid.on_rotate_180,
-                                    icon=Icon("rotate_180"),
-                                    checkable=True,
-                                    statustip='Set text rotation to 180°')
+        self["format_borders_bottom"] = \
+            Action(self.parent, "Bottom border", self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_bottom"), checkable=True,
+                   statustip='Format bottom border of selection')
 
-        self["rotate_270"] = Action(self.parent, "270°",
-                                    self.parent.grid.on_rotate_270,
-                                    icon=Icon("rotate_270"),
-                                    checkable=True,
-                                    statustip='Set text rotation to 270°')
+        self["format_borders_left"] = \
+            Action(self.parent, "Left border", self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_left"), checkable=True,
+                   statustip='Format left border of selection')
 
-        self["freeze_cell"] = Action(self.parent, "Freeze cell",
-                                     self.parent.close,
-                                     icon=Icon("freeze"),
-                                     checkable=True,
-                                     statustip='Freeze the selected cell so '
-                                               'that is is only updated when '
-                                               '<F5> is pressed')
+        self["format_borders_right"] = \
+            Action(self.parent, "Right border", self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_right"), checkable=True,
+                   statustip='Format right border of selection')
 
-        self["lock_cell"] = Action(self.parent, "Lock cell",
-                                   self.parent.grid.on_lock_pressed,
-                                   icon=Icon("lock"),
-                                   checkable=True,
-                                   statustip='Lock cell so that its code '
-                                             'cannot be changed')
+        self["format_borders_outer"] = \
+            Action(self.parent, "Outer borders", self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_outer"), checkable=True,
+                   statustip='Format outer borders of selection')
 
-        self["merge_cells"] = Action(self.parent, "Merge cells",
-                                     self.parent.grid.on_merge_pressed,
-                                     icon=Icon("merge_cells"),
-                                     checkable=True,
-                                     statustip='Merge/unmerge selected cells')
+        self["format_borders_inner"] = \
+            Action(self.parent, "Inner borders", self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_inner"), checkable=True,
+                   statustip='Format inner borders of selection')
+
+        self["format_borders_top_bottom"] = \
+            Action(self.parent, "Top and bottom borders",
+                   self.parent.grid.on_align_top,
+                   icon=Icon("format_borders_top_bottom"), checkable=True,
+                   statustip='Format top and bottom borders of selection')
 
     def _add_macro_actions(self):
         """Adds actions for Macro menu"""
