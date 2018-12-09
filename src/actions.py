@@ -596,6 +596,52 @@ class MainWindowActions(dict):
                    icon=Icon("format_borders_top_bottom"), checkable=True,
                    statustip='Format top and bottom borders of selection')
 
+        self["format_borders_0"] = Action(self.parent, "Border width 0",
+                                          self.parent.grid.on_align_top,
+                                          icon=Icon("format_borders_0"),
+                                          checkable=True,
+                                          statustip='Set border width to 0')
+
+        self["format_borders_1"] = Action(self.parent, "Border width 1",
+                                          self.parent.grid.on_align_top,
+                                          icon=Icon("format_borders_1"),
+                                          checkable=True,
+                                          statustip='Set border width to 1')
+
+        self["format_borders_2"] = Action(self.parent, "Border width 2",
+                                          self.parent.grid.on_align_top,
+                                          icon=Icon("format_borders_2"),
+                                          checkable=True,
+                                          statustip='Set border width to 2')
+
+        self["format_borders_4"] = Action(self.parent, "Border width 4",
+                                          self.parent.grid.on_align_top,
+                                          icon=Icon("format_borders_4"),
+                                          checkable=True,
+                                          statustip='Set border width to 4')
+
+        self["format_borders_8"] = Action(self.parent, "Border width 8",
+                                          self.parent.grid.on_align_top,
+                                          icon=Icon("format_borders_8"),
+                                          checkable=True,
+                                          statustip='Set border width to 8')
+        self["format_borders_16"] = Action(self.parent, "Border width 16",
+                                           self.parent.grid.on_align_top,
+                                           icon=Icon("format_borders_16"),
+                                           checkable=True,
+                                           statustip='Set border width to 16')
+        self["format_borders_32"] = Action(self.parent, "Border width 32",
+                                           self.parent.grid.on_align_top,
+                                           icon=Icon("format_borders_32"),
+                                           checkable=True,
+                                           statustip='Set border width to 32')
+
+        self["format_borders_64"] = Action(self.parent, "Border width 64",
+                                           self.parent.grid.on_align_top,
+                                           icon=Icon("format_borders_64"),
+                                           checkable=True,
+                                           statustip='Set border width to 64')
+
     def _add_macro_actions(self):
         """Adds actions for Macro menu"""
 

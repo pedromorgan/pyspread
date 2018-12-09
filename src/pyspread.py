@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         self.statusBar()
         self.setMenuBar(MenuBar(self))
 
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 1000, 700)
         self.setWindowTitle('Pyspread')
 
     def _init_widgets(self):

@@ -117,6 +117,15 @@ class Icon(QIcon):
         "format_borders_inner": str(ACTION_PATH / 'format-borders-inner.svg'),
         "format_borders_top_bottom": str(ACTION_PATH
                                          / 'format-borders-top-bottom.svg'),
+        "format_borders": str(ACTION_PATH / 'format-borders-4.svg'),
+        "format_borders_0": str(ACTION_PATH / 'format-borders-0.svg'),
+        "format_borders_1": str(ACTION_PATH / 'format-borders-1.svg'),
+        "format_borders_2": str(ACTION_PATH / 'format-borders-2.svg'),
+        "format_borders_4": str(ACTION_PATH / 'format-borders-4.svg'),
+        "format_borders_8": str(ACTION_PATH / 'format-borders-8.svg'),
+        "format_borders_16": str(ACTION_PATH / 'format-borders-16.svg'),
+        "format_borders_32": str(ACTION_PATH / 'format-borders-32.svg'),
+        "format_borders_64": str(ACTION_PATH / 'format-borders-64.svg'),
 
         "freeze": str(ACTION_PATH / 'format-freeze.svg'),
         "lock": str(ACTION_PATH / 'format-lock.svg'),

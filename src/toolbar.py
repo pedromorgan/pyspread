@@ -94,13 +94,39 @@ class AttributesToolbar(QToolBar):
         self.addAction(actions["italics"])
         self.addAction(actions["underline"])
         self.addAction(actions["strikethrough"])
+
+        self.addSeparator()
+
+        self.addAction(actions["markup"])
         self.addAction(actions["freeze_cell"])
         self.addAction(actions["lock_cell"])
-        self.addAction(actions["markup"])
+        self.addAction(actions["merge_cells"])
+
+        self.addSeparator()
 
         self.addWidget(self.main_window.widgets.rotate_button)
         self.addWidget(self.main_window.widgets.justify_button)
         self.addWidget(self.main_window.widgets.align_button)
+
+        self.addSeparator()
+
+        border_menu_button = QToolButton(self)
+        border_submenu = self.main_window.menuBar().border_submenu
+        border_menu_button.setMenu(border_submenu)
+        border_menu_button.setIcon(Icon("border_menu"))
+        self.addWidget(border_menu_button)
+        border_menu_button.setPopupMode(
+            QToolButton.ToolButtonPopupMode.InstantPopup)
+
+        line_width_button = QToolButton(self)
+        line_width_submenu = self.main_window.menuBar().line_width_submenu
+        line_width_button.setMenu(line_width_submenu)
+        line_width_button.setIcon(Icon("format_borders"))
+        self.addWidget(line_width_button)
+        line_width_button.setPopupMode(
+            QToolButton.ToolButtonPopupMode.InstantPopup)
+
+        self.addSeparator()
 
         text_color_button = self.main_window.widgets.text_color_button
         text_color_button.set_max_size(self.iconSize())
@@ -115,14 +141,10 @@ class AttributesToolbar(QToolBar):
         background_color_button.set_max_size(self.iconSize())
         self.addWidget(background_color_button)
 
-        self.addAction(actions["merge_cells"])
+        self.addSeparator()
 
-        border_menu_button = QToolButton(self)
-        border_menu_button.setMenu(self.main_window.menuBar().border_submenu)
-        border_menu_button.setIcon(Icon("border_menu"))
-        self.addWidget(border_menu_button)
-        border_menu_button.setPopupMode(
-            QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.addAction(actions["copy_format"])
+        self.addAction(actions["paste_format"])
 
 
 class MacroToolbar(QToolBar):

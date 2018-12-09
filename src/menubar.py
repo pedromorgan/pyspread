@@ -31,6 +31,7 @@ Provides
 
 * MenuBar: QMenuBar, the main menubar for pyspread
 * BorderChoiceMenu: QMenu for choosing cell borders that shall be manipulated
+* BorderWidthMenu: QMenu for choosing the cell border width
 
 """
 
@@ -172,11 +173,10 @@ class MenuBar(QMenuBar):
         format_menu.addAction(self.actions["underline"])
         format_menu.addAction(self.actions["strikethrough"])
         format_menu.addSeparator()
-        format_menu.addAction(self.actions["text_color"])
-        format_menu.addAction(self.actions["line_color"])
-        format_menu.addAction(self.actions["background_color"])
-        format_menu.addSeparator()
         format_menu.addAction(self.actions["markup"])
+        format_menu.addAction(self.actions["freeze_cell"])
+        format_menu.addAction(self.actions["lock_cell"])
+        format_menu.addAction(self.actions["merge_cells"])
         format_menu.addSeparator()
 
         rotation_submenu = format_menu.addMenu('Rotation')
@@ -196,13 +196,18 @@ class MenuBar(QMenuBar):
         alignment_submenu.addAction(self.actions["align_center"])
         alignment_submenu.addAction(self.actions["align_bottom"])
 
+        format_menu.addSeparator()
+
         self.border_submenu = BorderChoiceMenu(self.actions)
         format_menu.addMenu(self.border_submenu)
 
+        self.line_width_submenu = BorderWidthMenu(self.actions)
+        format_menu.addMenu(self.line_width_submenu)
+
         format_menu.addSeparator()
-        format_menu.addAction(self.actions["freeze_cell"])
-        format_menu.addAction(self.actions["lock_cell"])
-        format_menu.addAction(self.actions["merge_cells"])
+        format_menu.addAction(self.actions["text_color"])
+        format_menu.addAction(self.actions["line_color"])
+        format_menu.addAction(self.actions["background_color"])
 
         return format_menu
 
@@ -253,3 +258,22 @@ class BorderChoiceMenu(QMenu):
         self.addAction(actions["format_borders_outer"])
         self.addAction(actions["format_borders_inner"])
         self.addAction(actions["format_borders_top_bottom"])
+
+
+class BorderWidthMenu(QMenu):
+    """QMenu for choosing the cell border width"""
+
+    def __init__(self, actions):
+        super().__init__()
+
+        self.setTitle("Border width")
+        self.setIcon(Icon("format_borders"))
+
+        self.addAction(actions["format_borders_0"])
+        self.addAction(actions["format_borders_1"])
+        self.addAction(actions["format_borders_2"])
+        self.addAction(actions["format_borders_4"])
+        self.addAction(actions["format_borders_8"])
+        self.addAction(actions["format_borders_16"])
+        self.addAction(actions["format_borders_32"])
+        self.addAction(actions["format_borders_64"])
