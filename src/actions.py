@@ -28,7 +28,7 @@ For actions that alter the grid / model see grid_actions.py.
 
 """
 
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QActionGroup
 
 from icons import Icon
 from lib.dependencies import get_enchant_version
@@ -460,7 +460,6 @@ class MainWindowActions(dict):
             icon=Icon("background_color"),
             statustip='Lauch background color dialog')
 
-
         self["freeze_cell"] = Action(self.parent, "Freeze cell",
                                      self.parent.close,
                                      icon=Icon("freeze"),
@@ -506,19 +505,18 @@ class MainWindowActions(dict):
                                     checkable=True,
                                     statustip='Set text rotation to 270°')
 
+        rotate_group = QActionGroup(self.parent)
+        rotate_group.addAction(self["rotate_0"])
+        rotate_group.addAction(self["rotate_90"])
+        rotate_group.addAction(self["rotate_180"])
+        rotate_group.addAction(self["rotate_270"])
+
         self["justify_left"] = Action(self.parent, "Left",
                                       self.parent.grid.on_justify_left,
                                       icon=Icon("justify_left"),
                                       checkable=True,
                                       statustip='Display cell result text '
                                                 'left justified')
-
-        self["justify_fill"] = Action(self.parent, "Fill",
-                                      self.parent.grid.on_justify_fill,
-                                      icon=Icon("justify_fill"),
-                                      checkable=True,
-                                      statustip='Display cell result text '
-                                                'filled into the cell')
 
         self["justify_center"] = Action(self.parent, "Center",
                                         self.parent.grid.on_justify_center,
@@ -533,6 +531,19 @@ class MainWindowActions(dict):
                                        icon=Icon("justify_right"),
                                        statustip='Display cell result text '
                                                  'right justified')
+
+        self["justify_fill"] = Action(self.parent, "Fill",
+                                      self.parent.grid.on_justify_fill,
+                                      icon=Icon("justify_fill"),
+                                      checkable=True,
+                                      statustip='Display cell result text '
+                                                'filled into the cell')
+
+        justify_group = QActionGroup(self.parent)
+        justify_group.addAction(self["justify_left"])
+        justify_group.addAction(self["justify_center"])
+        justify_group.addAction(self["justify_right"])
+        justify_group.addAction(self["justify_fill"])
 
         self["align_top"] = Action(self.parent, "Top",
                                    self.parent.grid.on_align_top,
@@ -555,46 +566,68 @@ class MainWindowActions(dict):
                                       statustip='Align cell result at the '
                                                 'bottom of the cell')
 
+        align_group = QActionGroup(self.parent)
+        align_group.addAction(self["align_top"])
+        align_group.addAction(self["align_center"])
+        align_group.addAction(self["align_bottom"])
+
         self["format_borders_all"] = \
-            Action(self.parent, "All borders", self.parent.grid.on_align_top,
+            Action(self.parent, "All borders",
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_all"), checkable=True,
                    statustip='Format all borders of selection')
 
         self["format_borders_top"] = \
-            Action(self.parent, "Top border", self.parent.grid.on_align_top,
+            Action(self.parent, "Top border",
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_top"), checkable=True,
                    statustip='Format top border of selection')
 
         self["format_borders_bottom"] = \
-            Action(self.parent, "Bottom border", self.parent.grid.on_align_top,
+            Action(self.parent, "Bottom border",
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_bottom"), checkable=True,
                    statustip='Format bottom border of selection')
 
         self["format_borders_left"] = \
-            Action(self.parent, "Left border", self.parent.grid.on_align_top,
+            Action(self.parent, "Left border",
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_left"), checkable=True,
                    statustip='Format left border of selection')
 
         self["format_borders_right"] = \
-            Action(self.parent, "Right border", self.parent.grid.on_align_top,
+            Action(self.parent, "Right border",
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_right"), checkable=True,
                    statustip='Format right border of selection')
 
         self["format_borders_outer"] = \
-            Action(self.parent, "Outer borders", self.parent.grid.on_align_top,
+            Action(self.parent, "Outer borders",
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_outer"), checkable=True,
                    statustip='Format outer borders of selection')
 
         self["format_borders_inner"] = \
-            Action(self.parent, "Inner borders", self.parent.grid.on_align_top,
+            Action(self.parent, "Inner borders",
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_inner"), checkable=True,
                    statustip='Format inner borders of selection')
 
         self["format_borders_top_bottom"] = \
             Action(self.parent, "Top and bottom borders",
-                   self.parent.grid.on_align_top,
+                   self.parent.grid.on_border_choice,
                    icon=Icon("format_borders_top_bottom"), checkable=True,
                    statustip='Format top and bottom borders of selection')
+
+        border_group = QActionGroup(self.parent)
+        border_group.addAction(self["format_borders_all"])
+        border_group.addAction(self["format_borders_top"])
+        border_group.addAction(self["format_borders_bottom"])
+        border_group.addAction(self["format_borders_left"])
+        border_group.addAction(self["format_borders_right"])
+        border_group.addAction(self["format_borders_outer"])
+        border_group.addAction(self["format_borders_inner"])
+        border_group.addAction(self["format_borders_top_bottom"])
 
         self["format_borders_0"] = Action(self.parent, "Border width 0",
                                           self.parent.grid.on_align_top,

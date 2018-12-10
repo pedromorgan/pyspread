@@ -89,7 +89,8 @@ class MultiStateBitmapButton(QToolButton):
         """Sets checked status of menu"""
 
         for __action in self.actions:
-            self.main_window.actions[__action].setChecked(action == __action)
+            if action == __action:
+                self.main_window.actions[__action].setChecked(True)
 
     def on_clicked(self):
         """Button clicked event handler. Chechs corresponding menu item"""

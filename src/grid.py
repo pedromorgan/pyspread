@@ -359,6 +359,12 @@ class Grid(QTableView):
         self.model.setData(self.selected_idx, attr, Qt.TextAlignmentRole)
         self.gui_update()
 
+    def on_border_choice(self, event):
+        """Border choice style event handler"""
+
+        self.main_window.application_states.border_choice = \
+            self.sender().text()
+
     def on_text_color_changed(self):
         """Text color change event handler"""
 

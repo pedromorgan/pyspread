@@ -22,7 +22,6 @@
 
 from PyQt5.QtWidgets import QToolBar, QToolButton
 
-from menubar import BorderChoiceMenu
 from icons import Icon
 
 
