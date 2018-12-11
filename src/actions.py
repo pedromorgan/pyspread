@@ -619,15 +619,16 @@ class MainWindowActions(dict):
                    icon=Icon("format_borders_top_bottom"), checkable=True,
                    statustip='Format top and bottom borders of selection')
 
-        border_group = QActionGroup(self.parent)
-        border_group.addAction(self["format_borders_all"])
-        border_group.addAction(self["format_borders_top"])
-        border_group.addAction(self["format_borders_bottom"])
-        border_group.addAction(self["format_borders_left"])
-        border_group.addAction(self["format_borders_right"])
-        border_group.addAction(self["format_borders_outer"])
-        border_group.addAction(self["format_borders_inner"])
-        border_group.addAction(self["format_borders_top_bottom"])
+        self.border_group = QActionGroup(self.parent)
+        self.border_group.addAction(self["format_borders_all"])
+        self.border_group.addAction(self["format_borders_top"])
+        self.border_group.addAction(self["format_borders_bottom"])
+        self.border_group.addAction(self["format_borders_left"])
+        self.border_group.addAction(self["format_borders_right"])
+        self.border_group.addAction(self["format_borders_outer"])
+        self.border_group.addAction(self["format_borders_inner"])
+        self.border_group.addAction(self["format_borders_top_bottom"])
+        self["format_borders_all"].setChecked(True)
 
         self["format_borders_0"] = Action(self.parent, "Border width 0",
                                           self.parent.grid.on_borderwidth,
@@ -674,6 +675,17 @@ class MainWindowActions(dict):
                                            icon=Icon("format_borders_64"),
                                            checkable=True,
                                            statustip='Set border width to 64')
+
+        self.border_width_group = QActionGroup(self.parent)
+        self.border_width_group.addAction(self["format_borders_0"])
+        self.border_width_group.addAction(self["format_borders_1"])
+        self.border_width_group.addAction(self["format_borders_2"])
+        self.border_width_group.addAction(self["format_borders_4"])
+        self.border_width_group.addAction(self["format_borders_8"])
+        self.border_width_group.addAction(self["format_borders_16"])
+        self.border_width_group.addAction(self["format_borders_32"])
+        self.border_width_group.addAction(self["format_borders_64"])
+        self["format_borders_1"].setChecked(True)
 
     def _add_macro_actions(self):
         """Adds actions for Macro menu"""

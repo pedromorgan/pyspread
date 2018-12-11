@@ -259,7 +259,6 @@ class BorderChoiceMenu(QMenu):
         self.addAction(actions["format_borders_inner"])
         self.addAction(actions["format_borders_top_bottom"])
 
-
 class BorderWidthMenu(QMenu):
     """QMenu for choosing the cell border width"""
 

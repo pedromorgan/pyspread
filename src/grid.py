@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
-from PyQt5.QtCore import QPointF, QRectF, QSize
+from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
 
 from config import config
 from model.model import CodeArray
@@ -90,6 +90,9 @@ class Grid(QTableView):
 
         delegate = GridCellDelegate(main_window, self.code_array)
         self.setItemDelegate(delegate)
+
+        # Select upper left cell because initial selection behaves strange
+        self.setSelection(QRect(1, 1, 1, 1), QItemSelectionModel.Select)
 
     @property
     def row(self):
@@ -363,6 +366,7 @@ class Grid(QTableView):
 
         self.main_window.application_states.border_choice = \
             self.sender().text()
+        self.gui_update()
 
     def on_text_color(self):
         """Text color change event handler"""

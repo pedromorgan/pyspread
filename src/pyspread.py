@@ -129,12 +129,18 @@ class MainWindow(QMainWindow):
     def _init_toolbars(self):
         """Initialize the main window toolbars"""
 
-        self.addToolBar(MainToolBar(self))
-        self.addToolBar(FindToolbar(self))
+        self.main_toolbar = MainToolBar(self)
+        self.find_toolbar = FindToolbar(self)
+        self.attributes_toolbar = AttributesToolbar(self)
+        self.macro_toolbar = MacroToolbar(self)
+        self.widgets_toolbar = WidgetToolbar(self)
+
+        self.addToolBar(self.main_toolbar)
+        self.addToolBar(self.find_toolbar)
         self.addToolBarBreak()
-        self.addToolBar(AttributesToolbar(self))
-        self.addToolBar(MacroToolbar(self))
-        self.addToolBar(WidgetToolbar(self))
+        self.addToolBar(self.attributes_toolbar)
+        self.addToolBar(self.macro_toolbar)
+        self.addToolBar(self.widgets_toolbar)
 
     def on_nothing(self):
         """Dummy action that does nothing"""
@@ -193,6 +199,18 @@ class MainWindow(QMainWindow):
         widgets.justify_button.set_menu_checked(attributes["justification"])
         widgets.align_button.set_current_action(attributes["vertical_align"])
         widgets.align_button.set_menu_checked(attributes["vertical_align"])
+
+        border_action = self.actions.border_group.checkedAction()
+        if border_action is not None:
+            icon = border_action.icon()
+            self.menuBar().border_submenu.setIcon(icon)
+            self.attributes_toolbar.border_menu_button.setIcon(icon)
+
+        border_width_action = self.actions.border_width_group.checkedAction()
+        if border_width_action is not None:
+            icon = border_width_action.icon()
+            self.menuBar().line_width_submenu.setIcon(icon)
+            self.attributes_toolbar.line_width_button.setIcon(icon)
 
         widgets.text_color_button.color = QColor(*attributes["textcolor"])
         widgets.background_color_button.color = QColor(*attributes["bgcolor"])
