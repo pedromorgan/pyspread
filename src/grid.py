@@ -74,15 +74,14 @@ class Grid(QTableView):
         self.selectionModel().currentChanged.connect(self.on_current_changed)
 
         self.main_window.widgets.text_color_button.colorChanged.connect(
-                self.on_text_color_changed)
+                self.on_text_color)
         self.main_window.widgets.background_color_button.colorChanged.connect(
-                self.on_background_color_changed)
+                self.on_background_color)
         self.main_window.widgets.line_color_button.colorChanged.connect(
-                self.on_line_color_changed)
-        self.main_window.widgets.font_combo.fontChanged.connect(
-                self.on_font_changed)
+                self.on_line_color)
+        self.main_window.widgets.font_combo.fontChanged.connect(self.on_font)
         self.main_window.widgets.font_size_combo.fontSizeChanged.connect(
-                self.on_font_size_changed)
+                self.on_font_size)
 
         self.verticalHeader().sectionResized.connect(self.on_row_resized)
         self.horizontalHeader().sectionResized.connect(self.on_column_resized)
@@ -219,7 +218,7 @@ class Grid(QTableView):
         self.model.code_array.col_widths[(column, self.table)] = new_width
         self.gui_update()
 
-    def on_font_changed(self):
+    def on_font(self):
         """Font change event handler"""
 
         font = self.main_window.widgets.font_combo.font
@@ -228,7 +227,7 @@ class Grid(QTableView):
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         self.gui_update()
 
-    def on_font_size_changed(self):
+    def on_font_size(self):
         """Font size change event handler"""
 
         size = self.main_window.widgets.font_size_combo.size
@@ -365,7 +364,7 @@ class Grid(QTableView):
         self.main_window.application_states.border_choice = \
             self.sender().text()
 
-    def on_text_color_changed(self):
+    def on_text_color(self):
         """Text color change event handler"""
 
         text_color = self.main_window.widgets.text_color_button.color
@@ -375,7 +374,7 @@ class Grid(QTableView):
         attr = self.selection, self.table, {"textcolor": text_color_rgb}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
-    def on_line_color_changed(self):
+    def on_line_color(self):
         """Line color change event handler"""
 
         border_choice = self.main_window.application_states.border_choice
@@ -398,15 +397,33 @@ class Grid(QTableView):
                 {"bordercolor_right": line_color_rgb})
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
-    def on_background_color_changed(self):
+    def on_background_color(self):
         """Background color change event handler"""
 
         bg_color = self.main_window.widgets.background_color_button.color
         bg_color_rgb = bg_color.getRgb()
+        self.gui_update()
 
         attr = self.selection, self.table, {"bgcolor": bg_color_rgb}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+
+    def on_borderwidth(self):
+        """Border width change event handler"""
+
+        width = int(self.sender().text().split()[-1])
         self.gui_update()
+
+        border_choice = self.main_window.application_states.border_choice
+        bottom_selection = \
+            self.selection.get_bottom_borders_selection(border_choice)
+        right_selection = \
+            self.selection.get_right_borders_selection(border_choice)
+
+        attr = bottom_selection, self.table, {"borderwidth_bottom": width}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+
+        attr = right_selection, self.table, {"borderwidth_right": width}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
     def on_merge_pressed(self):
         """Merge cells button pressed event handler"""
