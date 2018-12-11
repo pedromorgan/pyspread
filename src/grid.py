@@ -378,11 +378,25 @@ class Grid(QTableView):
     def on_line_color_changed(self):
         """Line color change event handler"""
 
-        #TODO: selection =
-        #TODO: Get selected borders to be set
+        border_choice = self.main_window.application_states.border_choice
+        bottom_selection = \
+            self.selection.get_bottom_borders_selection(border_choice)
+        right_selection = \
+            self.selection.get_right_borders_selection(border_choice)
+
         line_color = self.main_window.widgets.line_color_button.color
         line_color_rgb = line_color.getRgb()
         self.gui_update()
+
+        attr = (bottom_selection,
+                self.table,
+                {"bordercolor_bottom": line_color_rgb})
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+
+        attr = (right_selection,
+                self.table,
+                {"bordercolor_right": line_color_rgb})
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
     def on_background_color_changed(self):
         """Background color change event handler"""

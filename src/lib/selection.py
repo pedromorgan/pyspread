@@ -459,21 +459,82 @@ class Selection(object):
         return Selection(shifted_block_tl, shifted_block_br, shifted_rows,
                          shifted_cols, shifted_cells)
 
-    def grid_select(self, grid, clear_selection=True):
-        """Selects cells of grid with selection content"""
+    def get_right_borders_selection(self, border_choice):
+        """Returns selection of cells that need to be adjusted on border change
 
-        if clear_selection:
-            grid.ClearSelection()
+        The cells that are contained in the selection are those, on which
+        the right border attributes need to be adjusted on border line and
+        border color changes.
 
-        for (tl, br) in zip(self.block_tl, self.block_br):
-            grid.SelectBlock(tl[0], tl[1], br[0], br[1], addToSelected=True)
+        """
 
-        for row in self.rows:
-            grid.SelectRow(row, addToSelected=True)
+        (top, left), (bottom, right) = self.get_bbox()
 
-        for col in self.cols:
-            grid.SelectCol(col, addToSelected=True)
+        if border_choice == "All borders":
+            return Selection([(top, left-1)], [(bottom, right)], [], [], [])
 
-        for cell in self.cells:
-            grid.SelectBlock(cell[0], cell[1], cell[0], cell[1],
-                             addToSelected=True)
+        elif border_choice == "Top border":
+            return Selection([], [], [], [], [])
+
+        elif border_choice == "Bottom border":
+            return Selection([], [], [], [], [])
+
+        elif border_choice == "Left border":
+            return Selection([(top, left-1)], [(bottom, left-1)], [], [], [])
+
+        elif border_choice == "Right border":
+            return Selection([(top, right)], [(bottom, right)], [], [], [])
+
+        elif border_choice == "Outer borders":
+            return Selection([(top, right), (top, left-1)],
+                             [(bottom, right), (bottom, left-1)], [], [], [])
+
+        elif border_choice == "Inner borders":
+            return Selection([(top, left)], [(bottom, right-1)], [], [], [])
+
+        elif border_choice == "Top and bottom borders":
+            return Selection([], [], [], [], [])
+
+        else:
+            raise ValueError("border_choice {} unknown.".format(border_choice))
+
+    def get_bottom_borders_selection(self, border_choice):
+        """Returns selection of cells that need to be adjusted on border change
+
+        The cells that are contained in the selection are those, on which
+        the bottom border attributes need to be adjusted on border line and
+        border color changes.
+
+        """
+
+        (top, left), (bottom, right) = self.get_bbox()
+
+        if border_choice == "All borders":
+            return Selection([(top-1, left)], [(bottom, right)], [], [], [])
+
+        elif border_choice == "Top border":
+            return Selection([(top-1, left)], [(top-1, right)], [], [], [])
+
+        elif border_choice == "Bottom border":
+            return Selection([(bottom, left)], [(bottom, right)], [], [], [])
+
+        elif border_choice == "Left border":
+            return Selection([], [], [], [], [])
+
+        elif border_choice == "Right border":
+            return Selection([], [], [], [], [])
+
+        elif border_choice == "Outer borders":
+            return Selection([(top-1, left), (bottom, left)],
+                             [(top-1, right), (bottom, right)], [], [], [])
+
+        elif border_choice == "Inner borders":
+            return Selection([(top, left)], [(bottom-1, right)], [], [], [])
+
+        elif border_choice == "Top and bottom borders":
+            return Selection([(top-1, left), (bottom, left)],
+                             [(top-1, right), (bottom, right)], [], [], [])
+
+        else:
+            raise ValueError("border_choice {} unknown.".format(border_choice))
+
