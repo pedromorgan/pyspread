@@ -36,36 +36,69 @@ class Workflows:
         self.main_window = main_window
         self.application_states = main_window.application_states
 
+    def handle_changed_since_save(func):
+        """Decorator to handle changes since last saving the document
+
+        If changes are present then a dialog is displayed that asks if the
+        changes shall be discarded.
+        If the user selects Cancel then func is not executed.
+        If the user selects Save then the file is saved and func is executed.
+        If the user selects Discard then the file is not saved and func is
+        executed.
+        If no changes are present then func is directly executed
+
+        """
+
+        def function_wrapper(self):
+            """Check changes and display and handle the dialog"""
+
+            if self.application_states.changed_since_save:
+                discard = DiscardChangesDialog(self.main_window).discard
+                if discard is None:
+                    return
+                elif not discard:
+                    self.file_save()
+            func(self)
+
+        return function_wrapper
+
+    def reset_changed_since_save(self):
+        """Sets changed_since_save to False and updates the window title"""
+
+        # Change the main window filepath state
+        self.application_states.changed_since_save = False
+
+        # Get the current filepath
+        filepath = self.application_states.last_file_input_directory
+
+        # Change the main window title
+        window_title = "{filename} - pyspread".format(filename=filepath.name)
+        self.main_window.setWindowTitle(window_title)
+
+    @handle_changed_since_save
+    def file_new(self):
+        """File new workflow"""
+
+        #
+
+    @handle_changed_since_save
     def file_open(self):
         """File open workflow"""
-
-        # If changes have taken place save of old grid
-        if self.application_states.changed_since_save:
-            discard = DiscardChangesDialog(self.main_window).discard
-            if discard is None:
-                return
-            elif not discard:
-                self.file_save()
 
         # Get filepath from user
         file_open_dialog = FileOpenDialog(self.main_window)
         filepath = file_open_dialog.filepath
         chosen_filter = file_open_dialog.chosen_filter
-        if filepath is None or chosen_filter is None:
+        if filepath is None or not chosen_filter:
             return
 
         # Load file into grid
 
-
-        # Change the main window filepath state
-        self.application_states.changed_since_save = False
-
         # Change the main window last input directory state
         self.application_states.last_file_input_directory = filepath
 
-        # Change the main window title
-        window_title = "{filename} - pyspread".format(filename=filepath.name)
-        self.main_window.setWindowTitle(window_title)
+        # Set changed since save to False
+        self.reset_changed_since_save()
 
     def file_save(self):
         """File save workflow"""

@@ -77,7 +77,8 @@ class MainWindowActions(dict):
     def _add_file_actions(self):
         """Adds actions for File menu"""
 
-        self["new"] = Action(self.parent, "&New", self.parent.close,
+        self["new"] = Action(self.parent, "&New",
+                             self.parent.workflows.file_new,
                              icon=Icon("new"),
                              shortcut='Ctrl+n',
                              statustip='Create a new, empty spreadsheet')

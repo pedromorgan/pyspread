@@ -49,8 +49,12 @@ class DiscardChangesDialog:
     choices = QMessageBox.Discard | QMessageBox.Cancel | QMessageBox.Save
     default_choice = QMessageBox.Save
 
-    def __init__(self, main_window):
+    def __init__(self, main_window, title=None, text=None):
         self.main_window = main_window
+        if title is not None:
+            self.title = title
+        if text is not None:
+            self.title = title
         self.discard = self._get_discard_unsaved_changes_approval()
 
     def _get_discard_unsaved_changes_approval(self):
