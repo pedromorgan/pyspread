@@ -28,7 +28,7 @@ Workflows for pyspread
 
 """
 
-from modal_dialogs import DiscardChangesDialog, FileOpenDialog
+from modal_dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 
 
 class Workflows:
@@ -69,7 +69,7 @@ class Workflows:
         self.application_states.changed_since_save = False
 
         # Get the current filepath
-        filepath = self.application_states.last_file_input_directory
+        filepath = self.application_states.last_file_input_path
 
         # Change the main window title
         window_title = "{filename} - pyspread".format(filename=filepath.name)
@@ -79,7 +79,14 @@ class Workflows:
     def file_new(self):
         """File new workflow"""
 
-        #
+        # Get grid shape from user
+        shape = GridShapeDialog(self.main_window).get_shape()
+        if shape is None:
+            return
+
+        # Set new shape
+
+        # Change filepath to Path.home()
 
     @handle_changed_since_save
     def file_open(self):
@@ -95,7 +102,7 @@ class Workflows:
         # Load file into grid
 
         # Change the main window last input directory state
-        self.application_states.last_file_input_directory = filepath
+        self.application_states.last_file_input_path = filepath
 
         # Set changed since save to False
         self.reset_changed_since_save()

@@ -60,8 +60,8 @@ class ApplicationStates:
     """Holds all global application states"""
 
     changed_since_save = False
-    last_file_input_directory = Path.home()
-    last_file_output_directory = Path.home()
+    last_file_input_path = Path.home()
+    last_file_output_path = Path.home()
     border_choice = "All borders"
 
     def __setattr__(self, key, value):
