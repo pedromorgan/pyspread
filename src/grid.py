@@ -35,7 +35,7 @@ Provides
 
 """
 
-from PyQt5.QtWidgets import QTableView, QStyledItemDelegate
+from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
@@ -69,6 +69,8 @@ class Grid(QTableView):
         self.model = GridItemModel(main_window, self.code_array)
         self.setModel(self.model)
 
+        self.table_choice = TableChoice(self, dimensions[2])
+
         # Signals
         self.model.dataChanged.connect(self.on_data_changed)
         self.selectionModel().currentChanged.connect(self.on_current_changed)
@@ -92,7 +94,7 @@ class Grid(QTableView):
         self.setItemDelegate(delegate)
 
         # Select upper left cell because initial selection behaves strange
-        self.setSelection(QRect(1, 1, 1, 1), QItemSelectionModel.Select)
+        self.reset_selection()
 
     @property
     def row(self):
@@ -122,13 +124,13 @@ class Grid(QTableView):
     def table(self):
         """Current table"""
 
-        return self.main_window.table
+        return self.table_choice.table
 
     @table.setter
     def table(self, value):
         """Sets current table"""
 
-        self.main_window.table = value
+        self.table_choice.table = value
 
     @property
     def current(self):
@@ -183,7 +185,13 @@ class Grid(QTableView):
     @property
     def selected_idx(self):
         """Currently selected indices"""
+
         return self.selectionModel().selectedIndexes()
+
+    def reset_selection(self):
+        """Select upper left cell"""
+
+        self.setSelection(QRect(1, 1, 1, 1), QItemSelectionModel.Select)
 
     def gui_update(self):
         """Emits gui update signal"""
@@ -467,7 +475,7 @@ class GridItemModel(QAbstractTableModel):
     def current(self, index):
         """Tuple of row, column, table of given index"""
 
-        return index.row(), index.column(), self.main_window.table
+        return index.row(), index.column(), self.main_window.grid.table
 
     def rowCount(self, parent=QModelIndex()):
         """Overloaded rowCount for code_array backend"""
@@ -560,6 +568,39 @@ class GridItemModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return str(idx)
 
+    def reset(self, shape):
+        """Deletes all grid data including unredo data and reshapes grid"""
+
+        self.beginResetModel()
+
+        # Clear cells
+        self.code_array.dict_grid.clear()
+
+        # Clear attributes
+        del self.code_array.dict_grid.cell_attributes[:]
+
+        if shape is not None:
+            # Set shape
+            self.code_array.shape = shape
+            self.main_window.grid.table_choice.no_tables = shape[2]
+
+        # Clear row heights and column widths
+        self.code_array.row_heights.clear()
+        self.code_array.col_widths.clear()
+
+        # Clear macros
+        self.code_array.macros = ""
+
+        # Clear caches
+        self.code_array.unredo.reset()
+        self.code_array.result_cache.clear()
+
+        # Clear globals
+        self.code_array.clear_globals()
+        self.code_array.reload_modules()
+
+        self.endResetModel()
+
 
 class GridCellDelegate(QStyledItemDelegate):
 
@@ -608,7 +649,7 @@ class GridCellDelegate(QStyledItemDelegate):
 
         row = index.row()
         column = index.column()
-        table = self.main_window.table
+        table = self.main_window.grid.table
 
         # Paint bottom and right border lines of the current cell
         key = row, column, table
@@ -630,7 +671,7 @@ class GridCellDelegate(QStyledItemDelegate):
     def __paint(self, painter, option, index):
         """Calls the overloaded paint function or creates html delegate"""
 
-        key = index.row(), index.column(), self.main_window.table
+        key = index.row(), index.column(), self.main_window.grid.table
         if not self.cell_attributes[key]["markup"]:
             return super(GridCellDelegate, self).paint(painter, option, index)
 
@@ -666,7 +707,7 @@ class GridCellDelegate(QStyledItemDelegate):
     def sizeHint(self, option, index):
         """Overloads SizeHint"""
 
-        key = index.row(), index.column(), self.main_window.table
+        key = index.row(), index.column(), self.main_window.grid.table
         if not self.cell_attributes[key]["markup"]:
             return super(GridCellDelegate, self).sizeHint(option, index)
 
@@ -700,7 +741,7 @@ class GridCellDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         """Overloads QStyledItemDelegate to add cell border painting"""
 
-        key = index.row(), index.column(), self.main_window.table
+        key = index.row(), index.column(), self.main_window.grid.table
         angle = self.cell_attributes[key]["angle"]
         if abs(angle) < 0.001:
             # No rotation --> call the base class paint method
@@ -713,7 +754,7 @@ class GridCellDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         """Overloads QStyledItemDelegate to disable editor in frozen cells"""
 
-        key = index.row(), index.column(), self.main_window.table
+        key = index.row(), index.column(), self.main_window.grid.table
         if not self.cell_attributes[key]["locked"]:
             return super(GridCellDelegate, self).createEditor(parent, option,
                                                               index)
@@ -721,7 +762,7 @@ class GridCellDelegate(QStyledItemDelegate):
     def setEditorData(self, editor, index):
         row = index.row()
         column = index.column()
-        table = self.main_window.table
+        table = self.main_window.grid.table
 
         value = self.code_array((row, column, table))
         editor.setText(value)
@@ -734,3 +775,51 @@ class GridCellDelegate(QStyledItemDelegate):
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
+
+
+class TableChoice(QTabBar):
+    """The TabBar below the main grid"""
+
+    def __init__(self, grid, no_tables):
+        super().__init__(shape=QTabBar.RoundedSouth)
+        self.setExpanding(False)
+
+        self.grid = grid
+        self.no_tables = no_tables
+
+        self.currentChanged.connect(self.on_table_changed)
+
+    @property
+    def no_tables(self):
+        return self._no_tables
+
+    @no_tables.setter
+    def no_tables(self, value):
+        self._no_tables = value
+
+        if value > self.count():
+            # Insert
+            for i in range(self.count(), value):
+                self.addTab(str(i))
+
+        elif value < self.count():
+            # Remove
+            for i in range(self.count()-1, value-1, -1):
+                self.removeTab(i)
+
+    @property
+    def table(self):
+        """Returns current table from table_choice that is displayed"""
+
+        return self.currentIndex()
+
+    @table.setter
+    def table(self, value):
+        """Sets a new table to be displayed"""
+
+        self.setCurrentIndex(value)
+
+    def on_table_changed(self, current):
+        """Event handler for table changes"""
+
+        self.grid.model.dataChanged.emit(QModelIndex(), QModelIndex())

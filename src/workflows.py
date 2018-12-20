@@ -80,13 +80,20 @@ class Workflows:
         """File new workflow"""
 
         # Get grid shape from user
-        shape = GridShapeDialog(self.main_window).get_shape()
+        old_shape = self.main_window.grid.code_array.shape
+        shape = GridShapeDialog(self.main_window, old_shape).get_shape()
         if shape is None:
             return
 
-        # Set new shape
+        # Reset grid
+        self.main_window.grid.model.reset(shape)
 
-        # Change filepath to Path.home()
+        # Select upper left cell because initial selection behaves strange
+        self.main_window.grid.reset_selection()
+
+        # Reset application states
+        self.application_states.reset()
+        self.reset_changed_since_save()
 
     @handle_changed_since_save
     def file_open(self):

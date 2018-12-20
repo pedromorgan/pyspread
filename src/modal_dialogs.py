@@ -81,11 +81,21 @@ class DiscardChangesDialog:
 
 
 class GridShapeDialog(QDialog):
-    """Modal dialog for entering the number of rows, columns and tables"""
+    """Modal dialog for entering the number of rows, columns and tables
 
-    def __init__(self, main_window):
-        super(GridShapeDialog, self).__init__(main_window)
+    Parameters
+    ----------
+    * parent: QWidget
+    \tParent window
+    * shape: 3-tuple of Integer
+    \tInitial shape to be displayed in the dialog: (rows, columns, tables)
 
+    """
+
+    def __init__(self, parent, shape):
+        super(GridShapeDialog, self).__init__(parent)
+
+        self.shape = shape
         layout = QVBoxLayout(self)
         layout.addWidget(self.create_form())
         layout.addWidget(self.create_buttonbox())
@@ -122,17 +132,17 @@ class GridShapeDialog(QDialog):
         validator = QIntValidator()
         validator.setBottom(0)  # Do not allow negative values
 
-        self.row_edit = QLineEdit("1000")
+        self.row_edit = QLineEdit(str(self.shape[0]))
         self.row_edit.setAlignment(Qt.AlignRight)
         self.row_edit.setValidator(validator)
         form_layout.addRow(QLabel("Number of rows"), self.row_edit)
 
-        self.column_edit = QLineEdit("100")
+        self.column_edit = QLineEdit(str(self.shape[1]))
         self.column_edit.setAlignment(Qt.AlignRight)
         self.column_edit.setValidator(validator)
         form_layout.addRow(QLabel("Number of columns"), self.column_edit)
 
-        self.table_edit = QLineEdit("3")
+        self.table_edit = QLineEdit(str(self.shape[2]))
         self.table_edit.setAlignment(Qt.AlignRight)
         self.table_edit.setValidator(validator)
         form_layout.addRow(QLabel("Number of tables"), self.table_edit)

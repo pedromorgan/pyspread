@@ -70,6 +70,12 @@ class ApplicationStates:
                                  self=self, key=key))
         object.__setattr__(self, key, value)
 
+    def reset(self):
+        cls_attrs = (attr for attr in dir(self)
+                     if not attr.startswith("__") and attr != "reset")
+        for cls_attr in cls_attrs:
+            setattr(self, cls_attr, getattr(ApplicationStates, cls_attr))
+
 
 class MainWindow(QMainWindow):
     """Pyspread main window"""
@@ -109,20 +115,14 @@ class MainWindow(QMainWindow):
 
         self.entry_line = Entryline(self)
         self.grid = Grid(self)
-        self.table_choice = QTabBar(self, shape=QTabBar.RoundedSouth)
-        self.table_choice.setExpanding(False)
-        for i in range(self.grid.code_array.shape[2]):
-            self.table_choice.addTab(str(i))
 
         main_splitter = QSplitter(Qt.Vertical, self)
         self.setCentralWidget(main_splitter)
 
         main_splitter.addWidget(self.entry_line)
         main_splitter.addWidget(self.grid)
-        main_splitter.addWidget(self.table_choice)
+        main_splitter.addWidget(self.grid.table_choice)
         main_splitter.setSizes([self.entry_line.minimumHeight(), 9999, 20])
-
-        self.table_choice.currentChanged.connect(self.on_table_changed)
 
         self.gui_update.connect(self.on_gui_update)
 
@@ -146,23 +146,6 @@ class MainWindow(QMainWindow):
         """Dummy action that does nothing"""
 
         pass
-
-    @property
-    def table(self):
-        """Returns current table from table_choice that is displayed"""
-
-        return self.table_choice.currentIndex()
-
-    @table.setter
-    def table(self, value):
-        """Sets a new table to be displayed"""
-
-        self.table_choice.setCurrentIndex(value)
-
-    def on_table_changed(self, current):
-        """Event handler for table changes"""
-
-        self.grid.model.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def on_gui_update(self, attributes):
         """GUI update event handler.
