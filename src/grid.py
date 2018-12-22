@@ -442,7 +442,7 @@ class Grid(QTableView):
 
         # This is not done in the model because setSpan does not work there
 
-        bbox = self.selection.get_grid_bbox(self.code_array.shape)
+        bbox = self.selection.get_grid_bbox(self.model.shape)
         (top, left), (bottom, right) = bbox
 
         # Check if current cell is already merged
@@ -472,6 +472,32 @@ class GridItemModel(QAbstractTableModel):
         self.main_window = main_window
         self.code_array = code_array
 
+    def handle_model_changes(func):
+        """Decorator to handle changing/resetting model data"""
+
+        def function_wrapper(self, *args, **kwargs):
+            """Insert wrapping commands needed by QAbstractTableModel"""
+
+            self.beginResetModel()
+            func(self, *args, **kwargs)
+            self.endResetModel()
+
+        return function_wrapper
+
+    @property
+    def shape(self):
+        """Returns 3-tuple of rows, columns and tables"""
+
+        return self.code_array.shape
+
+    @shape.setter
+    @handle_model_changes
+    def shape(self, value):
+        """Sets the shape in the code array and adjusts the table_choice"""
+
+        self.code_array.shape = value
+        self.main_window.grid.table_choice.no_tables = value[2]
+
     def current(self, index):
         """Tuple of row, column, table of given index"""
 
@@ -480,12 +506,12 @@ class GridItemModel(QAbstractTableModel):
     def rowCount(self, parent=QModelIndex()):
         """Overloaded rowCount for code_array backend"""
 
-        return self.code_array.shape[0]
+        return self.shape[0]
 
     def columnCount(self, parent=QModelIndex()):
         """Overloaded columnCount for code_array backend"""
 
-        return self.code_array.shape[1]
+        return self.shape[1]
 
     def data(self, index, role=Qt.DisplayRole):
         """Overloaded data for code_array backend"""
@@ -568,21 +594,15 @@ class GridItemModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return str(idx)
 
-    def reset(self, shape):
-        """Deletes all grid data including unredo data and reshapes grid"""
-
-        self.beginResetModel()
+    @handle_model_changes
+    def reset(self):
+        """Deletes all grid data including unredo data"""
 
         # Clear cells
         self.code_array.dict_grid.clear()
 
         # Clear attributes
         del self.code_array.dict_grid.cell_attributes[:]
-
-        if shape is not None:
-            # Set shape
-            self.code_array.shape = shape
-            self.main_window.grid.table_choice.no_tables = shape[2]
 
         # Clear row heights and column widths
         self.code_array.row_heights.clear()
@@ -598,8 +618,6 @@ class GridItemModel(QAbstractTableModel):
         # Clear globals
         self.code_array.clear_globals()
         self.code_array.reload_modules()
-
-        self.endResetModel()
 
 
 class GridCellDelegate(QStyledItemDelegate):

@@ -83,10 +83,14 @@ class Workflows:
         old_shape = self.main_window.grid.code_array.shape
         shape = GridShapeDialog(self.main_window, old_shape).get_shape()
         if shape is None:
+            # Abort changes because the dialog has been canceled
             return
 
         # Reset grid
-        self.main_window.grid.model.reset(shape)
+        self.main_window.grid.model.reset()
+
+        # Set new shape
+        self.main_window.grid.model.shape = shape
 
         # Select upper left cell because initial selection behaves strange
         self.main_window.grid.reset_selection()
