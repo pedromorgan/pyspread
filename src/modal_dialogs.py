@@ -171,9 +171,8 @@ class FileOpenDialog:
     """
 
     title = "Open"
-    name_filter = "Pyspread (*.pys *.pysu);;" + \
-                  "Excel (*.xlsx *.xls);;" + \
-                  "LibreOffice Calc (*.ods)"
+    name_filter = "Pyspread uncompressed (*.pysu);;" + \
+                  "Pyspread compressed (*.pys)"
     filepath = None
     chosen_filter = None
 

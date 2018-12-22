@@ -28,7 +28,11 @@ Workflows for pyspread
 
 """
 
+import bz2
 import os.path
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QProgressDialog
 
 from modal_dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 
@@ -112,13 +116,31 @@ class Workflows:
         chosen_filter = file_open_dialog.chosen_filter
         if filepath is None or not chosen_filter:
             return
+        filesize = os.path.getsize(filepath)
+
+        # Display modal progress dialog
+        progress_dialog = QProgressDialog(self.main_window)
+        progress_dialog.setWindowTitle("File open progress")
+        progress_dialog.setWindowModality(Qt.WindowModal)
+        progress_dialog.setLabelText("Opening {}...".format(filepath.name))
+        progress_dialog.setMaximum(filesize)
+        progress_dialog.show()
+        progress_dialog.setValue(0)
+        self.main_window.application.processEvents()
+        if chosen_filter == "Pyspread uncompressed (*.pysu)":
+            file_open = open
+        else:
+            file_open = bz2.open
 
         # Load file into grid
-        print(filepath)
-        print(os.path.getsize(filepath))
-        with open(filepath, "rb") as infile:
-            infile.seek(0, 2)  # EOF
-            print(infile.tell())
+        with file_open(filepath, "rb") as infile:
+            for line in infile:
+                progress_dialog.setValue(infile.tell())
+                self.main_window.application.processEvents()
+                if progress_dialog.wasCanceled():
+                    print("Canceled")
+                    break
+            progress_dialog.setValue(filesize)
 
         # Change the main window last input directory state
         self.application_states.last_file_input_path = filepath

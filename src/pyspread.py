@@ -82,9 +82,10 @@ class MainWindow(QMainWindow):
 
     gui_update = pyqtSignal(dict)
 
-    def __init__(self):
+    def __init__(self, application):
         super().__init__()
 
+        self.application = application
         self.application_states = ApplicationStates()
         self.workflows = Workflows(self)
 
@@ -206,7 +207,7 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    main_window = MainWindow()
+    main_window = MainWindow(app)
 
     app.exec_()
 
