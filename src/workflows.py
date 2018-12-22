@@ -28,6 +28,8 @@ Workflows for pyspread
 
 """
 
+import os.path
+
 from modal_dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 
 
@@ -45,7 +47,8 @@ class Workflows:
         If the user selects Save then the file is saved and func is executed.
         If the user selects Discard then the file is not saved and func is
         executed.
-        If no changes are present then func is directly executed
+        If no changes are present then func is directly executed.
+        After executing func, reset_changed_since_save is called.
 
         """
 
@@ -59,6 +62,7 @@ class Workflows:
                 elif not discard:
                     self.file_save()
             func(self)
+            self.reset_changed_since_save()
 
         return function_wrapper
 
@@ -97,7 +101,6 @@ class Workflows:
 
         # Reset application states
         self.application_states.reset()
-        self.reset_changed_since_save()
 
     @handle_changed_since_save
     def file_open(self):
@@ -111,12 +114,14 @@ class Workflows:
             return
 
         # Load file into grid
+        print(filepath)
+        print(os.path.getsize(filepath))
+        with open(filepath, "rb") as infile:
+            infile.seek(0, 2)  # EOF
+            print(infile.tell())
 
         # Change the main window last input directory state
         self.application_states.last_file_input_path = filepath
-
-        # Set changed since save to False
-        self.reset_changed_since_save()
 
     def file_save(self):
         """File save workflow"""

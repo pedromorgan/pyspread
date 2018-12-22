@@ -35,6 +35,8 @@ Provides
 
 """
 
+from contextlib import contextmanager
+
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont
@@ -472,17 +474,13 @@ class GridItemModel(QAbstractTableModel):
         self.main_window = main_window
         self.code_array = code_array
 
-    def handle_model_changes(func):
-        """Decorator to handle changing/resetting model data"""
+    @contextmanager
+    def model_reset(self):
+        """Conext manager for handle changing/resetting model data"""
 
-        def function_wrapper(self, *args, **kwargs):
-            """Insert wrapping commands needed by QAbstractTableModel"""
-
-            self.beginResetModel()
-            func(self, *args, **kwargs)
-            self.endResetModel()
-
-        return function_wrapper
+        self.beginResetModel()
+        yield
+        self.endResetModel()
 
     @property
     def shape(self):
@@ -491,12 +489,12 @@ class GridItemModel(QAbstractTableModel):
         return self.code_array.shape
 
     @shape.setter
-    @handle_model_changes
     def shape(self, value):
         """Sets the shape in the code array and adjusts the table_choice"""
 
-        self.code_array.shape = value
-        self.main_window.grid.table_choice.no_tables = value[2]
+        with self.model_reset():
+            self.code_array.shape = value
+            self.main_window.grid.table_choice.no_tables = value[2]
 
     def current(self, index):
         """Tuple of row, column, table of given index"""
@@ -594,30 +592,30 @@ class GridItemModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return str(idx)
 
-    @handle_model_changes
     def reset(self):
         """Deletes all grid data including unredo data"""
 
-        # Clear cells
-        self.code_array.dict_grid.clear()
+        with self.model_reset():
+            # Clear cells
+            self.code_array.dict_grid.clear()
 
-        # Clear attributes
-        del self.code_array.dict_grid.cell_attributes[:]
+            # Clear attributes
+            del self.code_array.dict_grid.cell_attributes[:]
 
-        # Clear row heights and column widths
-        self.code_array.row_heights.clear()
-        self.code_array.col_widths.clear()
+            # Clear row heights and column widths
+            self.code_array.row_heights.clear()
+            self.code_array.col_widths.clear()
 
-        # Clear macros
-        self.code_array.macros = ""
+            # Clear macros
+            self.code_array.macros = ""
 
-        # Clear caches
-        self.code_array.unredo.reset()
-        self.code_array.result_cache.clear()
+            # Clear caches
+            self.code_array.unredo.reset()
+            self.code_array.result_cache.clear()
 
-        # Clear globals
-        self.code_array.clear_globals()
-        self.code_array.reload_modules()
+            # Clear globals
+            self.code_array.clear_globals()
+            self.code_array.reload_modules()
 
 
 class GridCellDelegate(QStyledItemDelegate):
