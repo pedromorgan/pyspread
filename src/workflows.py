@@ -35,6 +35,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QProgressDialog
 
 from modal_dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
+from interfaces.pys import PysReader
 
 
 class Workflows:
@@ -124,6 +125,7 @@ class Workflows:
         progress_dialog.setWindowModality(Qt.WindowModal)
         progress_dialog.setLabelText("Opening {}...".format(filepath.name))
         progress_dialog.setMaximum(filesize)
+        progress_dialog.setMinimumDuration(3000)
         progress_dialog.show()
         progress_dialog.setValue(0)
         self.main_window.application.processEvents()
@@ -134,13 +136,19 @@ class Workflows:
 
         # Load file into grid
         with file_open(filepath, "rb") as infile:
-            for line in infile:
+            for line in PysReader(infile, self.main_window.grid.code_array):
+                print(self.main_window.grid.code_array.dict_grid)
                 progress_dialog.setValue(infile.tell())
                 self.main_window.application.processEvents()
                 if progress_dialog.wasCanceled():
-                    print("Canceled")
+                    self.main_window.grid.model.reset()
+                    self.main_window.grid.reset_selection()
+                    self.application_states.reset()
                     break
             progress_dialog.setValue(filesize)
+
+        self.main_window.grid.reset_selection()
+        self.application_states.reset()
 
         # Change the main window last input directory state
         self.application_states.last_file_input_path = filepath
