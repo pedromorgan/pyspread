@@ -439,6 +439,33 @@ class Grid(QTableView):
         attr = right_selection, self.table, {"borderwidth_right": width}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
 
+    def update_cell_spans(self):
+        """Update cell spans from model data"""
+
+        self.clearSpans()
+
+        spans = {}  # Dict of (top, left): (bottom, right)
+
+        for selection, table, attrs in self.model.code_array.cell_attributes:
+            if table == self.table:
+                try:
+                    if attrs["merge_area"] is None:
+                        bbox = self.selection.get_grid_bbox(self.model.shape)
+                        (top, left), (_, _) = bbox
+                        spans[(top, left)] = None
+                    else:
+                        top, left, bottom, right = attrs["merge_area"]
+                        spans[(top, left)] = bottom, right
+                except KeyError:
+                    pass
+
+        for top, left in spans:
+            try:
+                bottom, right = spans[(top, left)]
+                self.setSpan(top, left, bottom-top+1, right-left+1)
+            except TypeError:
+                pass
+
     def on_merge_pressed(self):
         """Merge cells button pressed event handler"""
 
@@ -449,22 +476,21 @@ class Grid(QTableView):
 
         # Check if current cell is already merged
         if self.columnSpan(top, left) > 1 or self.rowSpan(top, left) > 1:
-            self.setSpan(top, left, 1, 1)
             selection = Selection([], [], [], [], [(top, left)])
             attr = selection, self.table, {"merge_area": None}
         elif self.columnSpan(self.row, self.column) > 1 \
                 or self.rowSpan(self.row, self.column) > 1:
             # Unmerge the cell that merges the current cell (!)
-            self.setSpan(self.row, self.column, 1, 1)
             selection = Selection([], [], [], [], [(self.row, self.column)])
             attr = selection, self.table, {"merge_area": None}
         else:
             # Merge and store the current selection (!)
-            self.setSpan(top, left, bottom-top+1, right-left+1)
             merging_selection = Selection([], [], [], [], [(top, left)])
             attr = merging_selection, self.table, {"merge_area":
                                                    (top, left, bottom, right)}
-        self.code_array.cell_attributes.undoable_append(attr)
+
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.update_cell_spans()
 
 
 class GridItemModel(QAbstractTableModel):
@@ -838,4 +864,5 @@ class TableChoice(QTabBar):
     def on_table_changed(self, current):
         """Event handler for table changes"""
 
+        self.grid.update_cell_spans()
         self.grid.model.dataChanged.emit(QModelIndex(), QModelIndex())
