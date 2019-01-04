@@ -312,7 +312,8 @@ class DataArray(object):
     # It is not used for importinf and exporting data because these operations
     # are partial to the grid.
 
-    def _get_data(self):
+    @property
+    def data(self):
         """Returns dict of data content.
 
         Keys
@@ -344,7 +345,8 @@ class DataArray(object):
 
         return data
 
-    def _set_data(self, **kwargs):
+    @data.setter
+    def data(self, **kwargs):
         """Sets data from given parameters
 
         Old values are deleted.
@@ -387,125 +389,58 @@ class DataArray(object):
         if "macros" in kwargs:
             self.macros = kwargs["macros"]
 
-    data = property(_get_data, _set_data)
-
-    def get_row_height(self, row, tab):
-        """Returns row height"""
-
-        try:
-            return self.row_heights[(row, tab)]
-
-        except KeyError:
-            return config["default_row_height"]
-
-    def get_col_width(self, col, tab):
-        """Returns column width"""
-
-        try:
-            return self.col_widths[(col, tab)]
-
-        except KeyError:
-            return config["default_col_width"]
-
-    # Row and column attributes mask
-    # Keys have the format (row, table)
-
-    def _get_row_heights(self):
-        """Returns row_heights dict"""
+    @property
+    def row_heights(self):
+        """row_heights interface to dict_grid"""
 
         return self.dict_grid.row_heights
 
-    def _set_row_heights(self, row_heights):
-        """Sets  macros string"""
+    @row_heights.setter
+    def _row_heights(self, row_heights):
+        """row_heights interface to dict_grid"""
 
         self.dict_grid.row_heights = row_heights
 
-    row_heights = property(_get_row_heights, _set_row_heights)
-
-    def _get_col_widths(self):
-        """Returns col_widths dict"""
+    @property
+    def col_widths(self):
+        """col_widths interface to dict_grid"""
 
         return self.dict_grid.col_widths
 
-    def _set_col_widths(self, col_widths):
-        """Sets  macros string"""
+    @col_widths.setter
+    def col_widths(self, col_widths):
+        """col_widths interface to dict_grid"""
 
         self.dict_grid.col_widths = col_widths
 
-    col_widths = property(_get_col_widths, _set_col_widths)
-
-    # Cell attributes mask
-    def _get_cell_attributes(self):
-        """Returns cell_attributes list"""
+    @property
+    def cell_attributes(self):
+        """cell_attributes interface to dict_grid"""
 
         return self.dict_grid.cell_attributes
 
-    def _set_cell_attributes(self, value):
-        """Setter for cell_atributes"""
+    @cell_attributes.setter
+    def cell_attributes(self, value):
+        """cell_attributes interface to dict_grid"""
 
-        # Empty cell_attributes first
+        # First empty cell_attributes
         self.cell_attributes[:] = []
         self.cell_attributes.extend(value)
 
-    cell_attributes = attributes = \
-        property(_get_cell_attributes, _set_cell_attributes)
-
-    def __iter__(self):
-        """Returns iterator over self.dict_grid"""
-
-        return iter(self.dict_grid)
-
-    def _get_macros(self):
-        """Returns macros string"""
+    @property
+    def macros(self):
+        """macros interface to dict_grid"""
 
         return self.dict_grid.macros
 
+    @macros.setter
     def _set_macros(self, macros):
         """Sets  macros string"""
 
         self.dict_grid.macros = macros
 
-    macros = property(_get_macros, _set_macros)
-
-    def keys(self):
-        """Returns keys in self.dict_grid"""
-
-        return list(self.dict_grid.keys())
-
-    def pop(self, key, mark_unredo=True):
-        """Pops dict_grid with undo and redo support
-
-        Parameters
-        ----------
-        key: 3-tuple of Integer
-        \tCell key that shall be popped
-        mark_unredo: Boolean, defaults to True
-        \tIf True then an unredo marker is set after the operation
-
-        """
-
-        result = self.dict_grid.pop(key)
-
-        # UnRedo support
-
-        if mark_unredo:
-            self.unredo.mark()
-
-        undo_operation = (self.__setitem__, [key, result, mark_unredo])
-        redo_operation = (self.pop, [key, mark_unredo])
-
-        self.unredo.append(undo_operation, redo_operation)
-
-        if mark_unredo:
-            self.unredo.mark()
-
-        # End UnRedo support
-
-        return result
-
-    # Shape mask
-
-    def _get_shape(self):
+    @property
+    def shape(self):
         """Returns dict_grid shape"""
 
         return self.dict_grid.shape
@@ -549,38 +484,14 @@ class DataArray(object):
 
         # End UnRedo support
 
-    shape = property(_get_shape, _set_shape)
+    @shape.setter
+    def shape(self, shape):
+        self._set_shape(shape)
 
-    def get_last_filled_cell(self, table=None):
-        """Returns key for the bottommost rightmost cell with content
+    def __iter__(self):
+        """Returns iterator over self.dict_grid"""
 
-        Parameters
-        ----------
-        table: Integer, defaults to None
-        \tLimit search to this table
-
-        """
-
-        maxrow = 0
-        maxcol = 0
-
-        for row, col, tab in self.dict_grid:
-            if table is None or tab == table:
-                maxrow = max(row, maxrow)
-                maxcol = max(col, maxcol)
-
-        return maxrow, maxcol, table
-
-    # Pickle support
-
-    def __getstate__(self):
-        """Returns dict_grid for pickling
-
-        Note that all persistent data is contained in the DictGrid class
-
-        """
-
-        return {"dict_grid": self.dict_grid}
+        return iter(self.dict_grid)
 
     # Slice support
 
@@ -695,6 +606,91 @@ class DataArray(object):
 
         if mark_unredo and unredo_mark:
             self.unredo.mark()
+
+    def get_row_height(self, row, tab):
+        """Returns row height"""
+
+        try:
+            return self.row_heights[(row, tab)]
+
+        except KeyError:
+            return config["default_row_height"]
+
+    def get_col_width(self, col, tab):
+        """Returns column width"""
+
+        try:
+            return self.col_widths[(col, tab)]
+
+        except KeyError:
+            return config["default_col_width"]
+
+    def keys(self):
+        """Returns keys in self.dict_grid"""
+
+        return list(self.dict_grid.keys())
+
+    def pop(self, key, mark_unredo=True):
+        """Pops dict_grid with undo and redo support
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer
+        \tCell key that shall be popped
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
+
+        result = self.dict_grid.pop(key)
+
+        # UnRedo support
+
+        if mark_unredo:
+            self.unredo.mark()
+
+        undo_operation = (self.__setitem__, [key, result, mark_unredo])
+        redo_operation = (self.pop, [key, mark_unredo])
+
+        self.unredo.append(undo_operation, redo_operation)
+
+        if mark_unredo:
+            self.unredo.mark()
+
+        # End UnRedo support
+
+        return result
+
+    def get_last_filled_cell(self, table=None):
+        """Returns key for the bottommost rightmost cell with content
+
+        Parameters
+        ----------
+        table: Integer, defaults to None
+        \tLimit search to this table
+
+        """
+
+        maxrow = 0
+        maxcol = 0
+
+        for row, col, tab in self.dict_grid:
+            if table is None or tab == table:
+                maxrow = max(row, maxrow)
+                maxcol = max(col, maxcol)
+
+        return maxrow, maxcol, table
+
+    # Pickle support
+
+    def __getstate__(self):
+        """Returns dict_grid for pickling
+
+        Note that all persistent data is contained in the DictGrid class
+
+        """
+
+        return {"dict_grid": self.dict_grid}
 
     def cell_array_generator(self, key):
         """Generator traversing cells specified in key
