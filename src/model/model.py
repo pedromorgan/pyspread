@@ -607,6 +607,17 @@ class DataArray(object):
         if mark_unredo and unredo_mark:
             self.unredo.mark()
 
+    # Pickle support
+
+    def __getstate__(self):
+        """Returns dict_grid for pickling
+
+        Note that all persistent data is contained in the DictGrid class
+
+        """
+
+        return {"dict_grid": self.dict_grid}
+
     def get_row_height(self, row, tab):
         """Returns row height"""
 
@@ -680,17 +691,6 @@ class DataArray(object):
                 maxcol = max(col, maxcol)
 
         return maxrow, maxcol, table
-
-    # Pickle support
-
-    def __getstate__(self):
-        """Returns dict_grid for pickling
-
-        Note that all persistent data is contained in the DictGrid class
-
-        """
-
-        return {"dict_grid": self.dict_grid}
 
     def cell_array_generator(self, key):
         """Generator traversing cells specified in key
