@@ -236,7 +236,7 @@ class PysReader:
             # Therefore, if not new line is inserted, the codeis broken
             self.code_array.dict_grid.macros += "\n"
 
-        self.code_array.dict_grid.macros += line.decode("utf-8")
+        self.code_array.dict_grid.macros += line
 
 
 class PysWriter(object):

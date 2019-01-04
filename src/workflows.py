@@ -119,6 +119,9 @@ class Workflows:
             return
         filesize = os.path.getsize(filepath)
 
+        # Reset grid
+        self.main_window.grid.model.reset()
+
         # Display modal progress dialog
         progress_dialog = QProgressDialog(self.main_window)
         progress_dialog.setWindowTitle("File open progress")
@@ -137,17 +140,24 @@ class Workflows:
         # Load file into grid
         with file_open(filepath, "rb") as infile:
             for line in PysReader(infile, self.main_window.grid.code_array):
-                print(self.main_window.grid.code_array.dict_grid)
                 progress_dialog.setValue(infile.tell())
                 self.main_window.application.processEvents()
                 if progress_dialog.wasCanceled():
                     self.main_window.grid.model.reset()
-                    self.main_window.grid.reset_selection()
-                    self.application_states.reset()
                     break
             progress_dialog.setValue(filesize)
 
+        # Explicitly set the grid shape
+        shape = self.main_window.grid.code_array.shape
+        self.main_window.grid.model.shape = shape
+
+        # Update the cell spans because this is unsupported by the model
+        self.main_window.grid.update_cell_spans()
+
+        # Select upper left cell because initial selection behaves strangely
         self.main_window.grid.reset_selection()
+
+        # Reset application states
         self.application_states.reset()
 
         # Change the main window last input directory state

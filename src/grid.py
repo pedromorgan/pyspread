@@ -39,6 +39,7 @@ from contextlib import contextmanager
 
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
+from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
@@ -97,6 +98,8 @@ class Grid(QTableView):
 
         # Select upper left cell because initial selection behaves strange
         self.reset_selection()
+
+    # Properties
 
     @property
     def row(self):
@@ -190,6 +193,41 @@ class Grid(QTableView):
 
         return self.selectionModel().selectedIndexes()
 
+    # Overrides
+
+    def closeEditor(self, editor, hint):
+        """Overrides QTableView.closeEditor
+
+        Changes to overridden behavior:
+         * Data is submitted when a cell is changed without pressing <Enter>
+           e.g. by mouse click or arrow keys.
+
+        """
+
+        if hint == QAbstractItemDelegate.NoHint:
+            hint = QAbstractItemDelegate.SubmitModelCache
+
+        super().closeEditor(editor, hint)
+
+    def keyPressEvent(self, event):
+        """Overrides QTableView.keyPressEvent
+
+        Changes to overridden behavior:
+         * The cell in the next row is selected
+
+        """
+
+        print(event.key(), Qt.Key_Return)
+        if event.key() in (Qt.Key_Enter, Qt.Key_Return):
+            if event.modifiers() & Qt.ShiftModifier:
+                print('The Shift key is pressed')
+                raise NotImplementedError
+            self.current = self.row + 1, self.column
+        else:
+            super().keyPressEvent(event)
+
+    # Helpers
+
     def reset_selection(self):
         """Select upper left cell"""
 
@@ -200,6 +238,8 @@ class Grid(QTableView):
 
         attributes = self.code_array.cell_attributes[self.current]
         self.main_window.gui_update.emit(attributes)
+
+    # Event handlers
 
     def on_data_changed(self):
         """Event handler for data changes"""
@@ -456,7 +496,7 @@ class Grid(QTableView):
                     else:
                         top, left, bottom, right = attrs["merge_area"]
                         spans[(top, left)] = bottom, right
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
 
         for top, left in spans:
