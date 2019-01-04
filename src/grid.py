@@ -217,7 +217,6 @@ class Grid(QTableView):
 
         """
 
-        print(event.key(), Qt.Key_Return)
         if event.key() in (Qt.Key_Enter, Qt.Key_Return):
             if event.modifiers() & Qt.ShiftModifier:
                 print('The Shift key is pressed')
@@ -582,13 +581,17 @@ class GridItemModel(QAbstractTableModel):
 
         key = self.current(index)
 
-        if role == Qt.DisplayRole:
+        if role in (Qt.DisplayRole, Qt.ToolTipRole):
             value = self.code_array[key]
-            return str(value) if value is not None else ""
-
-        if role == Qt.ToolTipRole:
-            value = self.code_array[key]
-            return wrap_text(str(value) if value is not None else "")
+            if value is None:
+                value = ""
+            try:
+                if role == Qt.DisplayRole:
+                    return str(value)
+                else:
+                    return wrap_text(str(value))
+            except RecursionError as err:
+                return str(err)
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:

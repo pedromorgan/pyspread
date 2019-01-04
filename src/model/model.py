@@ -45,6 +45,7 @@ import base64
 import bz2
 from copy import copy
 import datetime
+from inspect import isgenerator
 from itertools import product
 import re
 import sys
@@ -53,7 +54,7 @@ import numpy
 
 from config import config
 
-from lib.typechecks import is_slice_like, is_string_like, is_generator_like
+from lib.typechecks import is_slice_like, is_string_like
 from lib.selection import Selection
 
 from .unredo import UnRedo
@@ -1175,7 +1176,7 @@ class CodeArray(DataArray):
             if ele is None:
                 res.append(None)
 
-            elif not is_string_like(ele) and is_generator_like(ele):
+            elif not is_string_like(ele) and isgenerator(ele):
                 # Nested generator
                 res.append(self._make_nested_list(ele))
 
@@ -1256,7 +1257,7 @@ class CodeArray(DataArray):
         if code is None:
             return
 
-        elif is_generator_like(code):
+        elif isgenerator(code):
             # We have a generator object
 
             return numpy.array(self._make_nested_list(code), dtype="O")
@@ -1366,7 +1367,7 @@ class CodeArray(DataArray):
         """Clears all newly assigned globals"""
 
         base_keys = ['cStringIO', 'KeyValueStore', 'UnRedo',
-                     'is_generator_like', 'is_string_like', 'bz2', 'base64',
+                     'isgenerator', 'is_string_like', 'bz2', 'base64',
                      '__package__', 're', 'config', '__doc__',
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'sys', 'is_slice_like', '__name__',
