@@ -28,53 +28,48 @@ Functions for converting between QPixmap and numoy array
 
 """
 
-import copy
-import numpy as np
+from copy import deepcopy
+import numpy
 
-def np2qpixmap(np_img):
-    frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
-    img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
-    return QtGui.QPixmap.fromImage(img)
+from PyQt5.QtGui import QImage
 
 
-a = np.random.randint(0,256,size=(100,100,3)).astype(np.uint32)
-b = (255 << 24 | a[:,:,0] << 16 | a[:,:,1] << 8 | a[:,:,2]).flatten() # pack RGB values
-b = (255 << 24 | a[:,:,0] << 16 | a[:,:,1] << 8 | a[:,:,2])
-im = PySide.QtGui.QImage(b, 100, 100, PySide.QtGui.QImage.Format_RGB32)
+def ndarray2qimage(array):
+    """Converts a numpy ndarray to a QImage with Format_ARGB32_Premultiplied
 
+    Parameters
+    ----------
+     * ndarray: numpy.ndarray with dtype uint32
+    \t3D numpy ndarray that contains color values as A, R, G, B
 
-Great solution! To make it work for me, I needed to make a small change and use PySide.QtGui.QImage.Format_ARGB32. The rest is the same. – P.R. Sep 26 '13 at 20:42
-care to explain the b=... line, I don't get it at all... :s why 255, 24, 16, 8 ? I'm guessing it's related to 2^8, 2^4, 2^3 but what about 24? Also an explanation would be nice, thank you! – evan54 Jan 10 '15 at 2:08
-@evan54, the red, green, and blue values are packed into the first 8 bytes, bytes 8-16, and bytes 16-24 respectively. The last 8 bytes are sometimes used for the alpha value. In this case, 255 is the maximum value for an 8 bit value which just says that all the colors should be visible (no transparency). – user545424 Jan 10 '15 at 19:17
-
-def qt_image_to_array(img, share_memory=False):
-    """ Creates a numpy array from a QImage.
-
-        If share_memory is True, the numpy array and the QImage is shared.
-        Be careful: make sure the numpy array is destroyed before the image,
-        otherwise the array will point to unreserved memory!!
     """
-    assert isinstance(img, QtGui.QImage), "img must be a QtGui.QImage object"
-    assert img.format() == QtGui.QImage.Format.Format_RGB32, \
-        "img format must be QImage.Format.Format_RGB32, got: {}".format(img.format())
 
-    img_size = img.size()
-    buffer = img.constBits()
+    assert isinstance(array, numpy.ndarray), "array must be a numpy.ndarray"
+    assert len(array.shape) == 3 and array.shape[2] == 4, \
+        "array must have the shape (width, height, 4)"
 
-    # Sanity check
-    n_bits_buffer = len(buffer) * 8
-    n_bits_image  = img_size.width() * img_size.height() * img.depth()
-    assert n_bits_buffer == n_bits_image, \
-        "size mismatch: {} != {}".format(n_bits_buffer, n_bits_image)
+    height, width, depth = array.shape
 
-    assert img.depth() == 32, "unexpected image depth: {}".format(img.depth())
+    buffer = (array[:, :, 0] << 24 | array[:, :, 1] << 16
+              | array[:, :, 2] << 8 | array[:, :, 3])
 
-    # Note the different width height parameter order!
-    arr = np.ndarray(shape  = (img_size.height(), img_size.width(), img.depth()//8),
-                     buffer = buffer,
-                     dtype  = np.uint8)
+    qimage = QImage(buffer, width, height, QImage.Format_ARGB32)
+    return qimage.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
 
-    if share_memory:
-        return arr
-    else:
-        return copy.deepcopy(arr)
+
+def qimage_to_array(qimage):
+    """Returns a numpy array from a QImage.
+
+    The format of the numpy array elements follows RGBA
+
+    """
+
+    assert isinstance(qimage, QImage), "img must be a QtGui.QImage object"
+
+    img = qimage.convertToFormat(QImage.Format.Format_ARGB32)
+
+    height, width, channels = img.height(), img.width(), 4
+
+    string = img.bits().asstring(width * height * channels)
+    array = numpy.fromstring(string, dtype=numpy.uint8)
+    return array.reshape((height, width, channels))

@@ -40,7 +40,7 @@ from contextlib import contextmanager
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtWidgets import QAbstractItemDelegate
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPixmap
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPixmap, QImage
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
@@ -49,6 +49,7 @@ from config import config
 from model.model import CodeArray
 from lib.selection import Selection
 from lib.string_helpers import wrap_text
+from lib.images import ndarray2qimage, qimage_to_array
 
 
 class Grid(QTableView):
@@ -621,10 +622,10 @@ class GridItemModel(QAbstractTableModel):
             renderer = self.code_array.cell_attributes[key]["renderer"]
             if renderer == "image":
                 value = self.code_array[key]
-                if isinstance(value, QPixmap):
+                if isinstance(value, QPixmap) or isinstance(value, QImage):
                     return value
                 elif hasattr(value, "shape") and len(value.shape) == 3:
-                    raise NotImplementedError
+                    return ndarray2qimage(value)
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:
