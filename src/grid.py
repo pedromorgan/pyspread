@@ -593,27 +593,38 @@ class GridItemModel(QAbstractTableModel):
     def data(self, index, role=Qt.DisplayRole):
         """Overloaded data for code_array backend"""
 
-        key = self.current(index)
-
-        if role in (Qt.DisplayRole, Qt.ToolTipRole):
-            value = self.code_array[key]
-            if value is None:
-                value = ""
+        def safe_str(obj):
+            """Returns str(obj), on RecursionError returns error message"""
             try:
-                if role == Qt.DisplayRole:
-                    if isinstance(value, QPixmap):
-                        return ""
-                    else:
-                        return str(value)
-                else:
-                    return wrap_text(str(value))
+                return str(value)
             except RecursionError as err:
                 return str(err)
 
-        if role == Qt.DecorationRole:
+        key = self.current(index)
+
+        if role == Qt.DisplayRole:
             value = self.code_array[key]
-            if isinstance(value, QPixmap):
-                return value
+            renderer = self.code_array.cell_attributes[key]["renderer"]
+            if renderer == "image" or value is None:
+                return ""
+            else:
+                return safe_str(value)
+
+        if role == Qt.ToolTipRole:
+            value = self.code_array[key]
+            if value is None:
+                return ""
+            else:
+                return wrap_text(safe_str(value))
+
+        if role == Qt.DecorationRole:
+            renderer = self.code_array.cell_attributes[key]["renderer"]
+            if renderer == "image":
+                value = self.code_array[key]
+                if isinstance(value, QPixmap):
+                    return value
+                elif hasattr(value, "shape") and len(value.shape) == 3:
+                    raise NotImplementedError
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:
