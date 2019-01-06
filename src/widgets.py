@@ -126,6 +126,19 @@ class JustificationButton(MultiStateBitmapButton):
         self.setToolTip("Text justification")
 
 
+class RendererButton(MultiStateBitmapButton):
+    """Cell render button for the format toolbar"""
+
+    actions = "text", "markup", "image"
+
+    def __init__(self, main_window):
+        self.main_window = main_window
+
+        super().__init__(self.actions)
+        self.setStatusTip("Cell render type")
+        self.setToolTip("Cell render type")
+
+
 class AlignmentButton(MultiStateBitmapButton):
     """Alignment button for the format toolbar"""
 
@@ -359,7 +372,7 @@ class Widgets:
         line_color = QColor(*config["grid_color"])
         self.line_color_button = LineColorButton(line_color)
 
+        self.renderer_button = RendererButton(main_window)
         self.rotate_button = RotationButton(main_window)
         self.justify_button = JustificationButton(main_window)
         self.align_button = AlignmentButton(main_window)
-

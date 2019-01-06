@@ -177,6 +177,10 @@ class PysReader:
                     elif key == "fontstyle":
                         value = wx2qt_fontstyles[value]
 
+                    elif key == "markup" and value:
+                        key = "renderer"
+                        value = "markup"
+
                     # Update justifiaction and alignment values
                     elif key in ["vertical_align", "justification"]:
                         just_align_value_tansitions = {

@@ -438,12 +438,32 @@ class MainWindowActions(dict):
                    icon=Icon("strikethrough"), checkable=True,
                    statustip='Toggle strikethrough for the selected cells')
 
-        self["markup"] = Action(self.parent, "Markup",
-                                self.parent.grid.on_markup_pressed,
+        self["text"] = Action(self.parent, "Text renderer",
+                              self.parent.grid.on_text_renderer_pressed,
+                              icon=Icon("text"),
+                              checkable=True,
+                              statustip='Show cell results as text (default). '
+                                        'Formats affect the whole cell.')
+
+        self["markup"] = Action(self.parent, "Markup renderer",
+                                self.parent.grid.on_markup_renderer_pressed,
                                 icon=Icon("markup"),
                                 checkable=True,
-                                statustip='Show cell results as markup '
-                                          '(allows partly formatted output)')
+                                statustip='Show cell results as markup, which '
+                                          'allows partly formatted output.')
+
+        self["image"] = Action(self.parent, "Image renderer",
+                               self.parent.grid.on_image_renderer_pressed,
+                               icon=Icon("image"),
+                               checkable=True,
+                               statustip='Show cell results as image. '
+                                         'A numpy array of shape (x, y, 3) '
+                                         'is expected.')
+
+        renderer_group = QActionGroup(self.parent)
+        renderer_group.addAction(self["text"])
+        renderer_group.addAction(self["markup"])
+        renderer_group.addAction(self["image"])
 
         self["text_color"] = Action(
             self.parent, "Text color...",

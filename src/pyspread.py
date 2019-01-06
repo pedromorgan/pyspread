@@ -169,8 +169,9 @@ class MainWindow(QMainWindow):
         strikethrough_action = self.actions["strikethrough"]
         strikethrough_action.setChecked(attributes["strikethrough"])
 
-        markup_action = self.actions["markup"]
-        markup_action.setChecked(attributes["markup"])
+        renderer = attributes["renderer"]
+        widgets.renderer_button.set_current_action(renderer)
+        widgets.renderer_button.set_menu_checked(renderer)
 
         lock_action = self.actions["lock_cell"]
         lock_action.setChecked(attributes["locked"])

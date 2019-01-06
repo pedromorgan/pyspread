@@ -39,8 +39,8 @@ from contextlib import contextmanager
 
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
-from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont
+from PyQt5.QtWidgets import QAbstractItemDelegate
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPixmap
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
@@ -220,7 +220,7 @@ class Grid(QTableView):
         if event.key() in (Qt.Key_Enter, Qt.Key_Return):
             if event.modifiers() & Qt.ShiftModifier:
                 print('The Shift key is pressed')
-                raise NotImplementedError
+                # raise NotImplementedError
             self.current = self.row + 1, self.column
         else:
             super().keyPressEvent(event)
@@ -320,10 +320,24 @@ class Grid(QTableView):
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         self.gui_update()
 
-    def on_markup_pressed(self, toggled):
-        """Markup button pressed event handler"""
+    def on_text_renderer_pressed(self, toggled):
+        """Text renderer button pressed event handler"""
 
-        attr = self.selection, self.table, {"markup": toggled}
+        attr = self.selection, self.table, {"renderer": "text"}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
+
+    def on_image_renderer_pressed(self, toggled):
+        """Image renderer button pressed event handler"""
+
+        attr = self.selection, self.table, {"renderer": "image"}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.gui_update()
+
+    def on_markup_renderer_pressed(self, toggled):
+        """Markup renderer button pressed event handler"""
+
+        attr = self.selection, self.table, {"renderer": "markup"}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         self.gui_update()
 
@@ -587,11 +601,19 @@ class GridItemModel(QAbstractTableModel):
                 value = ""
             try:
                 if role == Qt.DisplayRole:
-                    return str(value)
+                    if isinstance(value, QPixmap):
+                        return ""
+                    else:
+                        return str(value)
                 else:
                     return wrap_text(str(value))
             except RecursionError as err:
                 return str(err)
+
+        if role == Qt.DecorationRole:
+            value = self.code_array[key]
+            if isinstance(value, QPixmap):
+                return value
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:
@@ -753,14 +775,8 @@ class GridCellDelegate(QStyledItemDelegate):
         self._paint_bl_border_lines(x - width, y - height, width, height,
                                     painter, key)
 
-    def __paint(self, painter, option, index):
-        """Calls the overloaded paint function or creates html delegate"""
-
-        key = index.row(), index.column(), self.main_window.grid.table
-        if not self.cell_attributes[key]["markup"]:
-            return super(GridCellDelegate, self).paint(painter, option, index)
-
-        # HTML
+    def _render_markup(self, painter, option, index):
+        """HTML markup renderer"""
 
         options = QStyleOptionViewItem(option)
         self.initStyleOption(options, index)
@@ -788,6 +804,16 @@ class GridCellDelegate(QStyledItemDelegate):
         doc.documentLayout().draw(painter, ctx)
 
         painter.restore()
+
+    def __paint(self, painter, option, index):
+        """Calls the overloaded paint function or creates html delegate"""
+
+        key = index.row(), index.column(), self.main_window.grid.table
+        if self.cell_attributes[key]["renderer"] in ("text", "image"):
+            super(GridCellDelegate, self).paint(painter, option, index)
+
+        elif self.cell_attributes[key]["renderer"] == "markup":
+            self._render_markup(painter, option, index)
 
     def sizeHint(self, option, index):
         """Overloads SizeHint"""

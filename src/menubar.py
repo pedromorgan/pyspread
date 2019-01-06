@@ -173,7 +173,12 @@ class MenuBar(QMenuBar):
         format_menu.addAction(self.actions["underline"])
         format_menu.addAction(self.actions["strikethrough"])
         format_menu.addSeparator()
-        format_menu.addAction(self.actions["markup"])
+
+        renderer_submenu = format_menu.addMenu('Cell renderer')
+        renderer_submenu.addAction(self.actions["text"])
+        renderer_submenu.addAction(self.actions["image"])
+        renderer_submenu.addAction(self.actions["markup"])
+
         format_menu.addAction(self.actions["freeze_cell"])
         format_menu.addAction(self.actions["lock_cell"])
         format_menu.addAction(self.actions["merge_cells"])

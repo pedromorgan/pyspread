@@ -96,10 +96,7 @@ class AttributesToolbar(QToolBar):
 
         self.addSeparator()
 
-        self.addAction(actions["markup"])
-        self.addAction(actions["freeze_cell"])
-        self.addAction(actions["lock_cell"])
-        self.addAction(actions["merge_cells"])
+        self.addWidget(self.main_window.widgets.renderer_button)
 
         self.addSeparator()
 

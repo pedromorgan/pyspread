@@ -54,7 +54,7 @@ import numpy
 
 from config import config
 
-from lib.typechecks import is_slice_like, is_string_like
+from lib.typechecks import isslice, isstring
 from lib.selection import Selection
 
 from .unredo import UnRedo
@@ -113,7 +113,7 @@ class CellAttributes(list):
         "justification": "justify_left",
         "frozen": False,
         "merge_area": None,
-        "markup": False,
+        "renderer": "text",
         "button_cell": False,
         "panel_cell": False,
         "video_volume": None,
@@ -512,12 +512,12 @@ class DataArray(object):
         """
 
         for key_ele in key:
-            if is_slice_like(key_ele):
+            if isslice(key_ele):
                 # We have something slice-like here
 
                 return self.cell_array_generator(key)
 
-            elif is_string_like(key_ele):
+            elif isstring(key_ele):
                 # We have something string-like here
                 msg = "Cell string based access not implemented"
                 raise NotImplementedError(msg)
@@ -543,14 +543,14 @@ class DataArray(object):
         single_keys_per_dim = []
 
         for axis, key_ele in enumerate(key):
-            if is_slice_like(key_ele):
+            if isslice(key_ele):
                 # We have something slice-like here
 
                 length = key[axis]
                 slice_range = range(*key_ele.indices(length))
                 single_keys_per_dim.append(slice_range)
 
-            elif is_string_like(key_ele):
+            elif isstring(key_ele):
                 # We have something string-like here
 
                 raise NotImplementedError
@@ -1172,7 +1172,7 @@ class CodeArray(DataArray):
             if ele is None:
                 res.append(None)
 
-            elif not is_string_like(ele) and isgenerator(ele):
+            elif not isstring(ele) and isgenerator(ele):
                 # Nested generator
                 res.append(self._make_nested_list(ele))
 
@@ -1354,7 +1354,7 @@ class CodeArray(DataArray):
         """Reloads modules that are available in cells"""
 
         from importlib import reload
-        modules = [bz2, base64, re, ast, sys, numpy, datetime]  # , wx
+        modules = [bz2, base64, re, ast, sys, numpy, datetime]
 
         for module in modules:
             reload(module)
@@ -1363,11 +1363,11 @@ class CodeArray(DataArray):
         """Clears all newly assigned globals"""
 
         base_keys = ['cStringIO', 'KeyValueStore', 'UnRedo',
-                     'isgenerator', 'is_string_like', 'bz2', 'base64',
+                     'isgenerator', 'isstring', 'bz2', 'base64',
                      '__package__', 're', 'config', '__doc__',
                      'CellAttributes', 'product', 'ast', '__builtins__',
-                     '__file__', 'sys', 'is_slice_like', '__name__',
-                     'copy', 'imap', 'wx', 'ifilter', 'Selection', 'DictGrid',
+                     '__file__', 'sys', 'isslice', '__name__',
+                     'copy', 'imap', 'ifilter', 'Selection', 'DictGrid',
                      'numpy', 'CodeArray', 'DataArray', 'datetime']
 
         for key in list(globals().keys()):

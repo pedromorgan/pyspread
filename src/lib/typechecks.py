@@ -24,19 +24,18 @@
 Typechecks
 ==========
 
-typechecks.py contains functions for checking type likeness,
-i. e. existence of typical attributes of a type for objects.
+typechecks.py contains functions for checking type likeness.
 
 """
 
 
-def is_slice_like(obj):
-    """Returns True if obj is slice like, i.e. has attribute indices"""
+def isslice(obj):
+    """Returns True if obj is insatnce of slice"""
 
     return isinstance(obj, slice)
 
 
-def is_string_like(obj):
-    """Returns True if obj is string like, i.e. has method split"""
+def isstring(obj):
+    """Returns True if obj is instance of str, bytes or bytearray"""
 
     return isinstance(obj, (str, bytes, bytearray))
