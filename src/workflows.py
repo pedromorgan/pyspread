@@ -31,6 +31,7 @@ Workflows for pyspread
 import bz2
 from contextlib import contextmanager
 import os.path
+import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QProgressDialog
@@ -189,4 +190,4 @@ class Workflows:
     def file_quit(self):
         """Program exit workflow"""
 
-        self.main_window.close()
+        sys.exit()
