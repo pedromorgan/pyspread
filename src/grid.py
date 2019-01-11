@@ -40,7 +40,7 @@ from contextlib import contextmanager
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtWidgets import QAbstractItemDelegate
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPixmap, QImage
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
@@ -568,7 +568,7 @@ class GridItemModel(QAbstractTableModel):
 
     @contextmanager
     def model_reset(self):
-        """Conext manager for handle changing/resetting model data"""
+        """Context manager for handle changing/resetting model data"""
 
         self.beginResetModel()
         yield

@@ -88,66 +88,67 @@ class MainWindowActions(dict):
                               icon=Icon("open"),
                               statustip='Open spreadsheet from file')
 
-        self["save"] = Action(self.parent, "&Save", self.parent.close,
+        self["save"] = Action(self.parent, "&Save", self.parent.on_nothing,
                               icon=Icon("save"),
                               shortcut='Ctrl+s',
                               statustip='Save spreadsheet')
 
-        self["save_as"] = Action(self.parent, "Save &As", self.parent.close,
+        self["save_as"] = Action(self.parent, "Save &As", self.parent.on_nothing,
                                  icon=Icon("save_as"),
                                  shortcut='Shift+Ctrl+s',
                                  statustip='Save spreadsheet to a new file')
 
-        self["import"] = Action(self.parent, "&Import", self.parent.close,
+        self["import"] = Action(self.parent, "&Import", self.parent.on_nothing,
                                 icon=Icon("import"),
                                 statustip='Import a file and paste it into '
                                           'the current grid')
 
-        self["export"] = Action(self.parent, "&Export", self.parent.close,
+        self["export"] = Action(self.parent, "&Export", self.parent.on_nothing,
                                 icon=Icon("export"),
                                 statustip="Export selection to a file")
 
         self["approve"] = Action(self.parent, "&Approve file",
-                                 self.parent.close,
+                                 self.parent.on_nothing,
                                  icon=Icon("approve"),
                                  statustip='Approve, unfreeze and sign the '
                                            'current file')
 
         self["clear_globals"] = Action(self.parent, "&Clear globals",
-                                       self.parent.close,
+                                       self.parent.on_nothing,
                                        icon=Icon("clear_globals"),
                                        statustip='Deletes global variables '
                                                  'from memory and reloads '
                                                  'base modules')
 
         self["page_setup"] = Action(self.parent, "Page setup",
-                                    self.parent.close,
+                                    self.parent.on_nothing,
                                     icon=Icon("page_setup"),
                                     statustip='Setup printer page')
 
         self["print_preview"] = Action(self.parent, "Print preview",
-                                       self.parent.close,
+                                       self.parent.on_nothing,
                                        icon=Icon("print_preview"),
                                        statustip='Print preview')
 
-        self["print"] = Action(self.parent, "Print", self.parent.close,
+        self["print"] = Action(self.parent, "Print", self.parent.on_nothing,
                                icon=Icon("print"),
                                shortcut='Ctrl+p',
                                statustip='Print current spreadsheet')
 
         self["preferences"] = Action(self.parent, "Preferences...",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("preferences"),
                                      statustip='Pyspread setup parameters')
 
         self["new_gpg_key"] = Action(self.parent, "Switch GPG key...",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("new_gpg_key"),
                                      statustip='Create or choose a GPG key '
                                                'pair for signing and '
                                                'verifying pyspread files')
 
-        self["quit"] = Action(self.parent, "&Quit", self.parent.close,
+        self["quit"] = Action(self.parent, "&Quit",
+                             self.parent.workflows.file_quit,
                               icon=Icon("quit"),
                               shortcut='Ctrl+Q',
                               statustip='Exit pyspread')
@@ -155,58 +156,58 @@ class MainWindowActions(dict):
     def _add_edit_actions(self):
         """Adds actions for Edit menu"""
 
-        self["undo"] = Action(self.parent, "&Undo", self.parent.close,
+        self["undo"] = Action(self.parent, "&Undo", self.parent.on_nothing,
                               icon=Icon("undo"),
                               shortcut='Ctrl+z',
                               statustip='Undo last step')
 
-        self["redo"] = Action(self.parent, "&Redo", self.parent.close,
+        self["redo"] = Action(self.parent, "&Redo", self.parent.on_nothing,
                               icon=Icon("redo"),
                               shortcut='Shift+Ctrl+z',
                               statustip='Redo last undone step')
 
-        self["cut"] = Action(self.parent, "Cut", self.parent.close,
+        self["cut"] = Action(self.parent, "Cut", self.parent.on_nothing,
                              icon=Icon("cut"),
                              shortcut='Ctrl+x',
                              statustip='Cut cell to the clipboard')
 
-        self["copy"] = Action(self.parent, "&Copy", self.parent.close,
+        self["copy"] = Action(self.parent, "&Copy", self.parent.on_nothing,
                               icon=Icon("copy"),
                               shortcut='Ctrl+c',
                               statustip='Copy the input strings of the cells '
                                         'to the clipboard')
 
         self["copy_results"] = Action(self.parent, "Copy results",
-                                      self.parent.close,
+                                      self.parent.on_nothing,
                                       icon=Icon("copy_results"),
                                       shortcut='Shift+Ctrl+c',
                                       statustip='Copy the result strings of '
                                                 'the cells to the clipboard')
 
-        self["paste"] = Action(self.parent, "&Paste", self.parent.close,
+        self["paste"] = Action(self.parent, "&Paste", self.parent.on_nothing,
                                icon=Icon("paste"),
                                shortcut='Ctrl+v',
                                statustip='Paste cells from the clipboard')
 
         self["paste_as"] = Action(self.parent, "Paste as...",
-                                  self.parent.close,
+                                  self.parent.on_nothing,
                                   icon=Icon("paste_as"),
                                   shortcut='Shift+Ctrl+v',
                                   statustip='Transform clipboard and paste '
                                             'results')
 
         self["select_all"] = Action(self.parent, "&Select all",
-                                    self.parent.close,
+                                    self.parent.on_nothing,
                                     icon=Icon("select_all"),
                                     shortcut='Ctrl+a',
                                     statustip='Select all cells')
 
-        self["find"] = Action(self.parent, "&Find", self.parent.close,
+        self["find"] = Action(self.parent, "&Find", self.parent.on_nothing,
                               icon=Icon("find"),
                               shortcut='Ctrl+f',
                               statustip='Find cell by content')
 
-        self["replace"] = Action(self.parent, "&Replace...", self.parent.close,
+        self["replace"] = Action(self.parent, "&Replace...", self.parent.on_nothing,
                                  icon=Icon("replace"),
                                  shortcut='Shift+Ctrl+f',
                                  statustip='Replace sub-strings in cells')
@@ -219,56 +220,56 @@ class MainWindowActions(dict):
                                          "addding quotes")
 
         self["sort_ascending"] = Action(self.parent, "Sort ascending",
-                                        self.parent.close,
+                                        self.parent.on_nothing,
                                         icon=Icon("sort_ascending"),
                                         statustip='Sort selected columns (or '
                                                   'all if none selected) in '
                                                   'ascending order')
 
         self["sort_descending"] = Action(self.parent, "Sort descending",
-                                         self.parent.close,
+                                         self.parent.on_nothing,
                                          icon=Icon("sort_descending"),
                                          statustip='Sort selected columns (or '
                                                    'all if none selected) in '
                                                    'descending order')
 
         self["insert_rows"] = Action(self.parent, "Insert rows",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("insert_row"),
                                      statustip='Insert max(1, no. selected '
                                                'rows) rows at cursor')
 
         self["insert_columns"] = Action(self.parent, "Insert columns",
-                                        self.parent.close,
+                                        self.parent.on_nothing,
                                         icon=Icon("insert_column"),
                                         statustip='Insert max(1, no. selected '
                                                   'columns) columns at cursor')
 
         self["insert_table"] = Action(self.parent, "Insert table",
-                                      self.parent.close,
+                                      self.parent.on_nothing,
                                       icon=Icon("insert_table"),
                                       statustip='Insert table before current '
                                                 'table')
 
         self["delete_rows"] = Action(self.parent, "Delete rows",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("delete_row"),
                                      statustip='Delete max(1, no. selected '
                                                'rows) rows at cursor')
 
         self["delete_columns"] = Action(self.parent, "Delete columns",
-                                        self.parent.close,
+                                        self.parent.on_nothing,
                                         icon=Icon("delete_column"),
                                         statustip='Delete max(1, no. selected '
                                                   'columns) columns at cursor')
 
         self["delete_table"] = Action(self.parent, "Delete table",
-                                      self.parent.close,
+                                      self.parent.on_nothing,
                                       icon=Icon("delete_table"),
                                       statustip='Delete current table')
 
         self["resize_grid"] = Action(self.parent, "Resize grid",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("resize_grid"),
                                      statustip='Resizes the current grid')
 
@@ -276,60 +277,60 @@ class MainWindowActions(dict):
         """Adds actions for View menu"""
 
         self["fullscreen"] = Action(self.parent, "Fullscreen",
-                                    self.parent.close,
+                                    self.parent.on_nothing,
                                     icon=Icon("fullscreen"),
                                     shortcut='F11',
                                     statustip='Show grid in fullscreen mode '
                                               '(press <F11> to leave)')
 
         self["toggle_main_toolbar"] = Action(self.parent, "Main toolbar",
-                                             self.parent.close,
+                                             self.parent.on_nothing,
                                              checkable=True,
                                              statustip='Show/hide the main '
                                                        'toolbar')
 
         self["toggle_macro_toolbar"] = Action(self.parent, "Macro toolbar",
-                                              self.parent.close,
+                                              self.parent.on_nothing,
                                               checkable=True,
                                               statustip='Show/hide the macro '
                                                         'toolbar')
 
         self["toggle_widget_toolbar"] = Action(self.parent, "Widget toolbar",
-                                               self.parent.close,
+                                               self.parent.on_nothing,
                                                checkable=True,
                                                statustip='Show/hide the '
                                                          'widget toolbar')
 
         self["toggle_format_toolbar"] = Action(self.parent, "Format toolbar",
-                                               self.parent.close,
+                                               self.parent.on_nothing,
                                                checkable=True,
                                                statustip='Show/hide the '
                                                          'format toolbar')
 
         self["toggle_find_toolbar"] = Action(self.parent, "Find toolbar",
-                                             self.parent.close,
+                                             self.parent.on_nothing,
                                              checkable=True,
                                              statustip='Show/hide the find '
                                                        'toolbar')
 
         self["toggle_entryline"] = Action(self.parent, "Entry line",
-                                          self.parent.close,
+                                          self.parent.on_nothing,
                                           checkable=True,
                                           statustip='Show/hide the entry line')
 
         self["toggle_tablelist"] = Action(self.parent, "Table list",
-                                          self.parent.close,
+                                          self.parent.on_nothing,
                                           checkable=True,
                                           statustip='Show/hide the table list')
 
         self["toggle_macropanel"] = Action(self.parent, "Macro panel",
-                                           self.parent.close,
+                                           self.parent.on_nothing,
                                            checkable=True,
                                            statustip='Show/hide the macro '
                                                      'panel')
 
         self["goto_cell"] = Action(self.parent, "Go to cell",
-                                   self.parent.close,
+                                   self.parent.on_nothing,
                                    icon=Icon("goto_cell"),
                                    shortcut='Ctrl+g',
                                    statustip='Select a cell and put it into '
@@ -342,31 +343,31 @@ class MainWindowActions(dict):
                    checkable=True,
                    statustip='Turn the spell checker in the entry line on/off')
 
-        self["zoom_in"] = Action(self.parent, "Zoom in", self.parent.close,
+        self["zoom_in"] = Action(self.parent, "Zoom in", self.parent.on_nothing,
                                  icon=Icon("zoom_in"),
                                  shortcut='Ctrl++',
                                  statustip='Zoom in the grid')
 
-        self["zoom_out"] = Action(self.parent, "Zoom out", self.parent.close,
+        self["zoom_out"] = Action(self.parent, "Zoom out", self.parent.on_nothing,
                                   icon=Icon("zoom_out"),
                                   shortcut='Ctrl+-',
                                   statustip='Zoom out the grid')
 
         self["zoom_1"] = Action(self.parent, "Original size",
-                                self.parent.close,
+                                self.parent.on_nothing,
                                 icon=Icon("zoom_1"),
                                 shortcut='Ctrl+0',
                                 statustip='Show grid on standard zoom level')
 
         self["zoom_fit"] = Action(self.parent, "Zoom to fit",
-                                  self.parent.close,
+                                  self.parent.on_nothing,
                                   icon=Icon("zoom_fit"),
                                   shortcut='F6',
                                   statustip='Zooms the grid so that it fits '
                                             'into the window')
 
         self["refresh_cells"] = Action(self.parent, "Refresh selected cells",
-                                       self.parent.close,
+                                       self.parent.on_nothing,
                                        icon=Icon("refresh"),
                                        shortcut='F5',
                                        statustip='Refresh selected cells even '
@@ -390,21 +391,21 @@ class MainWindowActions(dict):
         """Adds actions for Format menu"""
 
         self["copy_format"] = Action(self.parent, "&Copy format",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("copy_format"),
                                      shortcut='Alt+Ctrl+c',
                                      statustip='Copy format of selection to '
                                                'the clipboard')
 
         self["paste_format"] = Action(self.parent, "&Paste format",
-                                      self.parent.close,
+                                      self.parent.on_nothing,
                                       icon=Icon("paste_format"),
                                       shortcut='Alt+Ctrl+v',
                                       statustip='Apply format from the '
                                                 'clipboard to the selected '
                                                 'cells')
 
-        self["font"] = Action(self.parent, "&Font...", self.parent.close,
+        self["font"] = Action(self.parent, "&Font...", self.parent.on_nothing,
                               icon=Icon("font_dialog"),
                               shortcut='Ctrl+n',
                               statustip='Lauch font dialog')
@@ -483,7 +484,7 @@ class MainWindowActions(dict):
             statustip='Lauch background color dialog')
 
         self["freeze_cell"] = Action(self.parent, "Freeze cell",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("freeze"),
                                      checkable=True,
                                      statustip='Freeze the selected cell so '
@@ -713,30 +714,30 @@ class MainWindowActions(dict):
         """Adds actions for Macro menu"""
 
         self["load_macros"] = Action(self.parent, "Load macros",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("load_macros"),
                                      statustip='Load macros from an external '
                                                'Python file')
 
         self["save_macros"] = Action(self.parent, "Save macros",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("save_macros"),
                                      statustip='Save macros to an external '
                                                'Python file')
 
         self["insert_image"] = Action(self.parent, "Insert image...",
-                                      self.parent.close,
+                                      self.parent.on_nothing,
                                       icon=Icon("insert_image"),
                                       statustip='Load an image from a file '
                                                 'into a cell')
 
         self["link_image"] = Action(self.parent, "Link image...",
-                                    self.parent.close,
+                                    self.parent.on_nothing,
                                     icon=Icon("link_image"),
                                     statustip='Link an image file from a cell')
 
         self["insert_chart"] = Action(self.parent, "Insert chart...",
-                                      self.parent.close,
+                                      self.parent.on_nothing,
                                       icon=Icon("insert_chart"),
                                       statustip='Create a matplotlib chart '
                                                 'and insert code so that it '
@@ -746,7 +747,7 @@ class MainWindowActions(dict):
         """Adds actions for Help menu"""
 
         self["first_steps"] = Action(self.parent, "First steps...",
-                                     self.parent.close,
+                                     self.parent.on_nothing,
                                      icon=Icon("help"),
                                      shortcut='F1',
                                      statustip='Display the first steps '
@@ -754,22 +755,22 @@ class MainWindowActions(dict):
                                                'basic overview of pyspread')
 
         self["tutorial"] = Action(self.parent, "Tutorial...",
-                                  self.parent.close,
+                                  self.parent.on_nothing,
                                   icon=Icon("tutorial"),
                                   statustip='Display a pyspread tutorial')
 
-        self["faq"] = Action(self.parent, "FAQ...", self.parent.close,
+        self["faq"] = Action(self.parent, "FAQ...", self.parent.on_nothing,
                              icon=Icon("faq"),
                              statustip='Display frequently asked questions')
 
         self["dependencies"] = Action(self.parent, "Dependencies...",
-                                      self.parent.close,
+                                      self.parent.on_nothing,
                                       icon=Icon("dependencies"),
                                       statustip='Overview of installed '
                                                 'dependencies')
 
         self["about"] = Action(self.parent, "About pyspread...",
-                               self.parent.close,
+                               self.parent.on_nothing,
                                icon=Icon("pyspread"),
                                statustip='About pyspread')
 

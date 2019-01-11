@@ -29,6 +29,7 @@ Workflows for pyspread
 """
 
 import bz2
+from contextlib import contextmanager
 import os.path
 
 from PyQt5.QtCore import Qt
@@ -107,9 +108,28 @@ class Workflows:
         # Reset application states
         self.application_states.reset()
 
+    @contextmanager
+    def progress_dialog(self, title, label, maximum, min_duration=3000):
+        """Context manager that displays a file progress dialog"""
+
+        progress_dialog = QProgressDialog(self.main_window)
+        progress_dialog.setWindowTitle(title)
+        progress_dialog.setWindowModality(Qt.WindowModal)
+        progress_dialog.setLabelText(label)
+        progress_dialog.setMaximum(maximum)
+        progress_dialog.setMinimumDuration(min_duration)
+        progress_dialog.show()
+        progress_dialog.setValue(0)
+
+        yield progress_dialog
+
+        progress_dialog.setValue(maximum)
+
     @handle_changed_since_save
     def file_open(self):
         """File open workflow"""
+
+        code_array = self.main_window.grid.code_array
 
         # Get filepath from user
         file_open_dialog = FileOpenDialog(self.main_window)
@@ -122,30 +142,27 @@ class Workflows:
         # Reset grid
         self.main_window.grid.model.reset()
 
-        # Display modal progress dialog
-        progress_dialog = QProgressDialog(self.main_window)
-        progress_dialog.setWindowTitle("File open progress")
-        progress_dialog.setWindowModality(Qt.WindowModal)
-        progress_dialog.setLabelText("Opening {}...".format(filepath.name))
-        progress_dialog.setMaximum(filesize)
-        progress_dialog.setMinimumDuration(3000)
-        progress_dialog.show()
-        progress_dialog.setValue(0)
-        self.main_window.application.processEvents()
+        # File compression handling
         if chosen_filter == "Pyspread uncompressed (*.pysu)":
-            file_open = open
+            fopen = open
         else:
-            file_open = bz2.open
+            fopen = bz2.open
+
+        # Display modal progress dialog
+
+        self.main_window.application.processEvents()
 
         # Load file into grid
-        with file_open(filepath, "rb") as infile:
-            for line in PysReader(infile, self.main_window.grid.code_array):
-                progress_dialog.setValue(infile.tell())
-                self.main_window.application.processEvents()
-                if progress_dialog.wasCanceled():
-                    self.main_window.grid.model.reset()
-                    break
-            progress_dialog.setValue(filesize)
+        with self.progress_dialog("File open progress",
+                                  "Opening {}...".format(filepath.name),
+                                  filesize) as progress_dialog:
+            with fopen(filepath, "rb") as infile:
+                for line in PysReader(infile, code_array):
+                    progress_dialog.setValue(infile.tell())
+                    self.main_window.application.processEvents()
+                    if progress_dialog.wasCanceled():
+                        self.main_window.grid.model.reset()
+                        break
 
         # Explicitly set the grid shape
         shape = self.main_window.grid.code_array.shape
@@ -167,3 +184,9 @@ class Workflows:
         """File save workflow"""
 
         raise NotImplementedError
+
+    @handle_changed_since_save
+    def file_quit(self):
+        """Program exit workflow"""
+
+        self.main_window.close()

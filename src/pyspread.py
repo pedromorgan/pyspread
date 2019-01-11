@@ -40,9 +40,8 @@ Provides
 from pathlib import Path
 import sys
 
-from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
-from PyQt5.QtWidgets import QTabBar
 from PyQt5.QtGui import QColor, QFont
 
 from icons import Icon
@@ -142,6 +141,12 @@ class MainWindow(QMainWindow):
         self.addToolBar(self.attributes_toolbar)
         self.addToolBar(self.macro_toolbar)
         self.addToolBar(self.widgets_toolbar)
+
+    def closeEvent(self, event):
+        """Overloaded close event, allows saving changes or canceling close"""
+
+        self.workflows.file_quit()
+        event.ignore()
 
     def on_nothing(self):
         """Dummy action that does nothing"""
