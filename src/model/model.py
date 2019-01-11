@@ -43,6 +43,7 @@ from builtins import object
 import ast
 import base64
 import bz2
+from collections import defaultdict
 from copy import copy
 import datetime
 from inspect import isgenerator
@@ -51,6 +52,7 @@ import re
 import sys
 
 import numpy
+from PyQt5.QtGui import QImage
 
 from config import config
 
@@ -58,23 +60,6 @@ from lib.typechecks import isslice, isstring
 from lib.selection import Selection
 
 from .unredo import UnRedo
-
-
-class KeyValueStore(dict):
-    """Key-Value store in memory. Currently a dict with default value None.
-
-    This class represents layer 0 of the model.
-
-    """
-
-    def __missing__(self, value):
-        """Returns the default value None"""
-
-        return
-
-# End of class KeyValueStore
-
-# -----------------------------------------------------------------------------
 
 
 class CellAttributes(list):
@@ -221,7 +206,7 @@ class CellAttributes(list):
 # End of class CellAttributes
 
 
-class DictGrid(KeyValueStore):
+class DictGrid(dict):
     """The core data class with all information that is stored in a pys file.
 
     Besides grid code access via standard dict operations, it provides
@@ -240,7 +225,7 @@ class DictGrid(KeyValueStore):
     """
 
     def __init__(self, shape):
-        KeyValueStore.__init__(self)
+        super().__init__()
 
         self.shape = shape
 
@@ -248,8 +233,8 @@ class DictGrid(KeyValueStore):
 
         self.macros = u""
 
-        self.row_heights = {}  # Keys have the format (row, table)
-        self.col_widths = {}  # Keys have the format (col, table)
+        self.row_heights = defaultdict(float)  # Keys have format (row, table)
+        self.col_widths = defaultdict(float)  # Keys have format (col, table)
 
     def __getitem__(self, key):
 
@@ -261,7 +246,12 @@ class DictGrid(KeyValueStore):
                 msg = msg.format(key=key, shape=shape)
                 raise IndexError(msg)
 
-        return KeyValueStore.__getitem__(self, key)
+        return super().__getitem__(key)
+
+    def __missing__(self, key):
+        """Default value is None"""
+
+        return
 
 # End of class DictGrid
 
@@ -1354,7 +1344,7 @@ class CodeArray(DataArray):
         """Reloads modules that are available in cells"""
 
         from importlib import reload
-        modules = [bz2, base64, re, ast, sys, numpy, datetime]
+        modules = [bz2, base64, re, ast, sys, numpy, datetime, QImage]
 
         for module in modules:
             reload(module)
@@ -1366,7 +1356,7 @@ class CodeArray(DataArray):
                      'isgenerator', 'isstring', 'bz2', 'base64',
                      '__package__', 're', 'config', '__doc__',
                      'CellAttributes', 'product', 'ast', '__builtins__',
-                     '__file__', 'sys', 'isslice', '__name__',
+                     '__file__', 'sys', 'isslice', '__name__', 'QImage',
                      'copy', 'imap', 'ifilter', 'Selection', 'DictGrid',
                      'numpy', 'CodeArray', 'DataArray', 'datetime']
 

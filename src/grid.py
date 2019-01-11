@@ -49,7 +49,6 @@ from config import config
 from model.model import CodeArray
 from lib.selection import Selection
 from lib.string_helpers import wrap_text
-from lib.images import ndarray2qimage, qimage_to_array
 
 
 class Grid(QTableView):
@@ -622,10 +621,8 @@ class GridItemModel(QAbstractTableModel):
             renderer = self.code_array.cell_attributes[key]["renderer"]
             if renderer == "image":
                 value = self.code_array[key]
-                if isinstance(value, QPixmap) or isinstance(value, QImage):
+                if isinstance(value, QImage):
                     return value
-                elif hasattr(value, "shape") and len(value.shape) == 3:
-                    return ndarray2qimage(value)
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:
@@ -817,15 +814,59 @@ class GridCellDelegate(QStyledItemDelegate):
 
         painter.restore()
 
+    def _render_qimage(self, painter, option, index):
+        """QImage renderer"""
+
+        qimage = index.data(Qt.DecorationRole)
+        if not isinstance(qimage, QImage):
+            return
+
+        rect_x, rect_y = option.rect.x(), option.rect.y()
+        rect_width, rect_height = option.rect.width(), option.rect.height()
+
+        key = index.row(), index.column(), self.main_window.grid.table
+        justification = self.cell_attributes[key]["justification"]
+
+        if justification == "justify_fill":
+            qimage = qimage.scaled(rect_width, rect_height,
+                                   aspectRatioMode=Qt.IgnoreAspectRatio)
+            painter.drawImage(rect_x, rect_y, qimage)
+            return
+
+        qimage = qimage.scaled(rect_width, rect_height,
+                               aspectRatioMode=Qt.KeepAspectRatio)
+        image_width = qimage.size().width()
+        image_height = qimage.size().height()
+        vertical_align = self.cell_attributes[key]["vertical_align"]
+
+        image_x, image_y = rect_x, rect_y
+
+        if justification == "justify_center":
+            image_x = rect_x + rect_width / 2 - image_width / 2
+        elif justification == "justify_right":
+            image_x = rect_x + rect_width - image_width
+
+        if vertical_align == "align_center":
+            image_y = rect_y + rect_height / 2 - image_height / 2
+        elif vertical_align == "align_bottom":
+            image_y = rect_y + rect_height - image_height
+
+        painter.drawImage(image_x, image_y, qimage)
+
     def __paint(self, painter, option, index):
         """Calls the overloaded paint function or creates html delegate"""
 
         key = index.row(), index.column(), self.main_window.grid.table
-        if self.cell_attributes[key]["renderer"] in ("text", "image"):
+        renderer = self.cell_attributes[key]["renderer"]
+
+        if renderer == "text":
             super(GridCellDelegate, self).paint(painter, option, index)
 
-        elif self.cell_attributes[key]["renderer"] == "markup":
+        elif renderer == "markup":
             self._render_markup(painter, option, index)
+
+        elif renderer == "image":
+            self._render_qimage(painter, option, index)
 
     def sizeHint(self, option, index):
         """Overloads SizeHint"""
