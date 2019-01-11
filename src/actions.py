@@ -211,7 +211,8 @@ class MainWindowActions(dict):
                                  shortcut='Shift+Ctrl+f',
                                  statustip='Replace sub-strings in cells')
 
-        self["quote"] = Action(self.parent, "&Quote", self.parent.close,
+        self["quote"] = Action(self.parent, "&Quote",
+                               self.parent.grid.on_quote,
                                icon=Icon("quote"),
                                shortcut='Ctrl+Return',
                                statustip="Convert cells' code to strings by "

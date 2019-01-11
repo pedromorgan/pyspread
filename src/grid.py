@@ -48,7 +48,7 @@ from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
 from config import config
 from model.model import CodeArray
 from lib.selection import Selection
-from lib.string_helpers import wrap_text
+from lib.string_helpers import quote, wrap_text
 
 
 class Grid(QTableView):
@@ -544,6 +544,19 @@ class Grid(QTableView):
 
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         self.update_cell_spans()
+
+    def on_quote(self):
+        """Quote cells event handler"""
+
+        __table = self.table
+        selection = self.selection
+
+        for row, column, table in self.code_array.dict_grid.keys():
+            if table == __table and (row, column) in selection:
+                code = self.code_array((row, column, table))
+                quoted_code = quote(code)
+                index = self.model.index(row, column, QModelIndex())
+                self.model.setData(index, quoted_code, Qt.EditRole)
 
 
 class GridItemModel(QAbstractTableModel):

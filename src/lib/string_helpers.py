@@ -42,20 +42,24 @@ def quote(code):
     ----------
 
     * code: String
-    \tCode thta is quoted
+    \tCode that is quoted
 
     """
 
-    try:
-        code = code.rstrip()
+    starts_and_ends = [
+        ("'", "'"),
+        ('"', '"'),
+        ("u'", "'"),
+        ('u"', '"'),
+    ]
 
-    except AttributeError:
-        # code is not a string, may be None --> There is no code to quote
+    if code is None or not isinstance(code, str):
         return code
 
-    if code and code[0] + code[-1] not in ('""', "''", "u'", '"') \
-       and '"' not in code:
-        return 'u"' + code + '"'
+    code = code.strip()
+
+    if code and not (code[0],  code[-1]) in starts_and_ends:
+        return repr(code)
     else:
         return code
 
