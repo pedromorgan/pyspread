@@ -25,6 +25,7 @@ from PyQt5.QtGui import QIcon
 PYSPREAD_PATH = PurePath('/home/mn/prog/pyspread')
 ICON_PATH = PYSPREAD_PATH / 'share/icons'
 ACTION_PATH = ICON_PATH / 'actions'
+STATUS_PATH = ICON_PATH / 'status'
 
 
 class Icon(QIcon):
@@ -32,6 +33,9 @@ class Icon(QIcon):
 
     icon_path = {
         "pyspread": str(ICON_PATH / 'pyspread.svg'),
+
+        # Status icons
+        "warning": str(STATUS_PATH / 'dialog-warning.svg'),
 
         # File menu icons
         "new": str(ACTION_PATH / 'document-new.svg'),

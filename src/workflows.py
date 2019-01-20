@@ -38,12 +38,30 @@ from PyQt5.QtWidgets import QProgressDialog
 
 from modal_dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 from interfaces.pys import PysReader
+from lib.gpg import verify
 
 
 class Workflows:
     def __init__(self, main_window):
         self.main_window = main_window
         self.application_states = main_window.application_states
+
+    @contextmanager
+    def progress_dialog(self, title, label, maximum, min_duration=3000):
+        """Context manager that displays a file progress dialog"""
+
+        progress_dialog = QProgressDialog(self.main_window)
+        progress_dialog.setWindowTitle(title)
+        progress_dialog.setWindowModality(Qt.WindowModal)
+        progress_dialog.setLabelText(label)
+        progress_dialog.setMaximum(maximum)
+        progress_dialog.setMinimumDuration(min_duration)
+        progress_dialog.show()
+        progress_dialog.setValue(0)
+
+        yield progress_dialog
+
+        progress_dialog.setValue(maximum)
 
     def handle_changed_since_save(func):
         """Decorator to handle changes since last saving the document
@@ -109,22 +127,8 @@ class Workflows:
         # Reset application states
         self.application_states.reset()
 
-    @contextmanager
-    def progress_dialog(self, title, label, maximum, min_duration=3000):
-        """Context manager that displays a file progress dialog"""
-
-        progress_dialog = QProgressDialog(self.main_window)
-        progress_dialog.setWindowTitle(title)
-        progress_dialog.setWindowModality(Qt.WindowModal)
-        progress_dialog.setLabelText(label)
-        progress_dialog.setMaximum(maximum)
-        progress_dialog.setMinimumDuration(min_duration)
-        progress_dialog.show()
-        progress_dialog.setValue(0)
-
-        yield progress_dialog
-
-        progress_dialog.setValue(maximum)
+        # Exit safe mode
+        self.main_window.safe_mode = False
 
     @handle_changed_since_save
     def file_open(self):
@@ -143,6 +147,9 @@ class Workflows:
         # Reset grid
         self.main_window.grid.model.reset()
 
+        # Is the file signed properly?
+        self.main_window.safe_mode = not verify(filepath)
+
         # File compression handling
         if chosen_filter == "Pyspread uncompressed (*.pysu)":
             fopen = open
@@ -150,7 +157,6 @@ class Workflows:
             fopen = bz2.open
 
         # Display modal progress dialog
-
         self.main_window.application.processEvents()
 
         # Load file into grid

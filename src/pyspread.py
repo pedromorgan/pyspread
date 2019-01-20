@@ -42,6 +42,7 @@ import sys
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QColor, QFont
 
 from icons import Icon
@@ -58,10 +59,12 @@ from widgets import Widgets
 class ApplicationStates:
     """Holds all global application states"""
 
-    changed_since_save = False
-    last_file_input_path = Path.home()
-    last_file_output_path = Path.home()
-    border_choice = "All borders"
+    # Note that safe_mode is not listed here but inside model.DataArray
+
+    changed_since_save = False  # If True then File actions trigger a dialog
+    last_file_input_path = Path.home()  # Initial path for opening files
+    last_file_output_path = Path.home()  # Initial path for saving files
+    border_choice = "All borders"  # The state of the border choice button
 
     def __setattr__(self, key, value):
         if not hasattr(self, key):
@@ -102,7 +105,12 @@ class MainWindow(QMainWindow):
 
         self.setWindowIcon(Icon("pyspread"))
 
-        self.statusBar()
+        self.safe_mode_widget = QSvgWidget(Icon.icon_path["warning"], self)
+        msg = "Pyspread is in safe mode.\nExpressions are not evaluated."
+        self.safe_mode_widget.setToolTip(msg)
+        self.statusBar().addPermanentWidget(self.safe_mode_widget)
+        self.safe_mode_widget.hide()
+
         self.setMenuBar(MenuBar(self))
 
         self.setGeometry(100, 100, 1000, 700)
@@ -141,6 +149,37 @@ class MainWindow(QMainWindow):
         self.addToolBar(self.attributes_toolbar)
         self.addToolBar(self.macro_toolbar)
         self.addToolBar(self.widgets_toolbar)
+
+    @property
+    def safe_mode(self):
+        """Returns safe_mode state. In safe_mode cells are not evaluated."""
+
+        return self.grid.code_array.safe_mode
+
+    @safe_mode.setter
+    def safe_mode(self, value):
+        """Sets safe mode.
+
+        This triggers the safe_mode icon in the statusbar.
+
+        If safe_mode changes from True to False then caches are cleared and
+        macros are executed.
+
+        """
+
+        if self.grid.code_array.safe_mode == bool(value):
+            return
+
+        self.grid.code_array.safe_mode = bool(value)
+
+        if value:  # Safe mode entered
+            self.safe_mode_widget.show()
+        else:  # Safe_mode disabled
+            self.safe_mode_widget.hide()
+            # Clear result cache
+            self.grid.code_array.result_cache.clear()
+            # Execute macros
+            self.grid.code_array.execute_macros()
 
     def closeEvent(self, event):
         """Overloaded close event, allows saving changes or canceling close"""

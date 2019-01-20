@@ -52,7 +52,7 @@ import re
 import sys
 
 import numpy
-from PyQt5.QtGui import QImage
+from PyQt5.QtGui import QImage, QPixmap
 
 from config import config
 
@@ -424,7 +424,7 @@ class DataArray(object):
         return self.dict_grid.macros
 
     @macros.setter
-    def _set_macros(self, macros):
+    def macros(self, macros):
         """Sets  macros string"""
 
         self.dict_grid.macros = macros
@@ -1344,7 +1344,7 @@ class CodeArray(DataArray):
         """Reloads modules that are available in cells"""
 
         from importlib import reload
-        modules = [bz2, base64, re, ast, sys, numpy, datetime, QImage]
+        modules = [bz2, base64, re, ast, sys, numpy, datetime]
 
         for module in modules:
             reload(module)
@@ -1354,7 +1354,7 @@ class CodeArray(DataArray):
 
         base_keys = ['cStringIO', 'KeyValueStore', 'UnRedo',
                      'isgenerator', 'isstring', 'bz2', 'base64',
-                     '__package__', 're', 'config', '__doc__',
+                     '__package__', 're', 'config', '__doc__', 'QPixmap',
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'sys', 'isslice', '__name__', 'QImage',
                      'copy', 'imap', 'ifilter', 'Selection', 'DictGrid',
