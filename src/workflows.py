@@ -31,13 +31,16 @@ Workflows for pyspread
 import bz2
 from contextlib import contextmanager
 import os.path
+from shutil import move
 import sys
+from tempfile import NamedTemporaryFile
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QProgressDialog
+from PyQt5.QtWidgets import QProgressDialog, QMessageBox
 
 from modal_dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
-from interfaces.pys import PysReader
+from modal_dialogs import FileSaveDialog
+from interfaces.pys import PysReader, PysWriter
 from lib.gpg import verify
 
 
@@ -156,19 +159,20 @@ class Workflows:
         else:
             fopen = bz2.open
 
-        # Display modal progress dialog
+        # Process events before showing the modal progress dialog
         self.main_window.application.processEvents()
 
         # Load file into grid
-        with self.progress_dialog("File open progress",
-                                  "Opening {}...".format(filepath.name),
-                                  filesize) as progress_dialog:
-            with fopen(filepath, "rb") as infile:
+        with fopen(filepath, "rb") as infile:
+            with self.progress_dialog("File open progress",
+                                      "Opening {}...".format(filepath.name),
+                                      filesize) as progress_dialog:
                 for line in PysReader(infile, code_array):
                     progress_dialog.setValue(infile.tell())
                     self.main_window.application.processEvents()
                     if progress_dialog.wasCanceled():
                         self.main_window.grid.model.reset()
+                        self.main_window.safe_mode = False
                         break
 
         # Explicitly set the grid shape
@@ -190,7 +194,55 @@ class Workflows:
     def file_save(self):
         """File save workflow"""
 
-        raise NotImplementedError
+        code_array = self.main_window.grid.code_array
+
+        # Get filepath from user
+        file_save_dialog = FileSaveDialog(self.main_window)
+        filepath = file_save_dialog.filepath
+        chosen_filter = file_save_dialog.chosen_filter
+
+        # Extend filepath suffix if needed
+        if chosen_filter == "Pyspread uncompressed (*.pysu)":
+            if not filepath.suffix == '.pysu':
+                filepath = filepath.with_suffix(filepath.suffix + '.pysu')
+        else:
+            # File compression handling
+            compressor = bz2.BZ2Compressor()
+            if not filepath.suffix == '.pys':
+                filepath = filepath.with_suffix(filepath.suffix + '.pys')
+
+        # Process events before showing the modal progress dialog
+        self.main_window.application.processEvents()
+
+        # Save grid to temporary file
+        with NamedTemporaryFile(delete=False) as tempfile:
+            filename = tempfile.name
+            try:
+                pys_writer = PysWriter(code_array)
+                with self.progress_dialog("File save progress",
+                                          "Saving {}...".format(filepath.name),
+                                          len(pys_writer)) as progress_dialog:
+                    for i, line in enumerate(pys_writer):
+                        if chosen_filter != "Pyspread uncompressed (*.pysu)":
+                            line = compressor.compress(line)
+                            compressor.flush()
+                        tempfile.write(line.encode('utf-8'))
+                        progress_dialog.setValue(i)
+                        self.main_window.application.processEvents()
+                        if progress_dialog.wasCanceled():
+                            tempfile.delete = True  # Delete incomplete tmpfile
+                            return
+            except (IOError, ValueError) as err:
+                tempfile.delete = True
+                QMessageBox.critical(self.main_window, "Error saving file",
+                                     err)
+                return
+        try:
+            move(filename, filepath)
+
+        except OSError as err:
+            # No tmp file present
+            QMessageBox.critical(self.main_window, "Error saving file", err)
 
     @handle_changed_since_save
     def file_quit(self):

@@ -161,16 +161,18 @@ class GridShapeDialog(QDialog):
         return button_box
 
 
-class FileOpenDialog:
-    """Modal dialog for choosing a pyspread save file
+class FileDialogBase:
+    """Base class for modal file dialogs
 
     The choosen filename is stored in the filepath attribute
     The choosen name filter is stored in the chosen_filter attribute
     If the dialog is aborted then both filepath and chosen_filter are None
 
+    _get_filepath must be overloaded
+
     """
 
-    title = "Open"
+    title = "Choose file"
     name_filter = "Pyspread uncompressed (*.pysu);;" + \
                   "Pyspread compressed (*.pys)"
     filepath = None
@@ -180,11 +182,32 @@ class FileOpenDialog:
         self.main_window = main_window
         self.filepath, self.chosen_filter = self._get_filepath()
 
+
+class FileOpenDialog(FileDialogBase):
+    """Modal dialog for choosing a pyspread file"""
+
+    title = "Open"
+
     def _get_filepath(self):
         """Returns (filepath, chosen_filter) from modal user dialog"""
 
         path = self.main_window.application_states.last_file_input_path
         filepath, chosen_filter = \
             QFileDialog.getOpenFileName(self.main_window, self.title,
+                                        str(path), self.name_filter)
+        return Path(filepath), chosen_filter
+
+
+class FileSaveDialog(FileDialogBase):
+    """Modal dialog for choosing a pyspread save file"""
+
+    title = "Save"
+
+    def _get_filepath(self):
+        """Returns (filepath, chosen_filter) from modal user dialog"""
+
+        path = self.main_window.application_states.last_file_output_path
+        filepath, chosen_filter = \
+            QFileDialog.getSaveFileName(self.main_window, self.title,
                                         str(path), self.name_filter)
         return Path(filepath), chosen_filter

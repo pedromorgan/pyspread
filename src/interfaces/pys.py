@@ -277,6 +277,18 @@ class PysWriter(object):
             for line in self._section2writer[key]():
                 yield line
 
+    def __len__(self):
+        """Returns how many lines will be written when saving the code_array"""
+
+        lines = 9  # Headers + 1 line version + 1 line shape
+        lines += len(self.code_array.dict_grid)
+        lines += len(self.code_array.cell_attributes)
+        lines += len(self.code_array.dict_grid.row_heights)
+        lines += len(self.code_array.dict_grid.col_widths)
+        lines += self.code_array.dict_grid.macros.count('\n')
+
+        return lines
+
     def _version2pys(self):
         """Writes pys file version to pys file
 
@@ -307,7 +319,7 @@ class PysWriter(object):
             code_str = self.code_array(key)
             out_str = key_str + u"\t" + code_str + u"\n"
 
-            yield out_str.encode("utf-8")
+            yield out_str
 
     def _attributes2pys(self):
         """Writes attributes to pys file
@@ -382,5 +394,4 @@ class PysWriter(object):
         """
 
         macros = self.code_array.dict_grid.macros
-        pys_macros = macros.encode("utf-8")
-        yield pys_macros
+        yield macros

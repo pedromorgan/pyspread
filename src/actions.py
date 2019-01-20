@@ -88,7 +88,8 @@ class MainWindowActions(dict):
                               icon=Icon("open"),
                               statustip='Open spreadsheet from file')
 
-        self["save"] = Action(self.parent, "&Save", self.parent.on_nothing,
+        self["save"] = Action(self.parent, "&Save",
+                              self.parent.workflows.file_save,
                               icon=Icon("save"),
                               shortcut='Ctrl+s',
                               statustip='Save spreadsheet')
