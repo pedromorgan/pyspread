@@ -94,7 +94,8 @@ class MainWindowActions(dict):
                               shortcut='Ctrl+s',
                               statustip='Save spreadsheet')
 
-        self["save_as"] = Action(self.parent, "Save &As", self.parent.on_nothing,
+        self["save_as"] = Action(self.parent, "Save &As",
+                                 self.parent.workflows.file_save_as,
                                  icon=Icon("save_as"),
                                  shortcut='Shift+Ctrl+s',
                                  statustip='Save spreadsheet to a new file')

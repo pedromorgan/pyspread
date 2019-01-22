@@ -191,25 +191,19 @@ class Workflows:
         # Change the main window last input directory state
         self.application_states.last_file_input_path = filepath
 
-    def file_save(self):
-        """File save workflow"""
+    def _save(self, filepath):
+        """Save filepath using chosen_filter
+
+        Compresses save file if filepath.suffix == '.pys'
+
+        Parameters
+        ----------
+        * filepath: pathlib.Path
+        \tSave file path
+
+        """
 
         code_array = self.main_window.grid.code_array
-
-        # Get filepath from user
-        file_save_dialog = FileSaveDialog(self.main_window)
-        filepath = file_save_dialog.filepath
-        chosen_filter = file_save_dialog.chosen_filter
-
-        # Extend filepath suffix if needed
-        if chosen_filter == "Pyspread uncompressed (*.pysu)":
-            if not filepath.suffix == '.pysu':
-                filepath = filepath.with_suffix(filepath.suffix + '.pysu')
-        else:
-            # File compression handling
-            compressor = bz2.BZ2Compressor()
-            if not filepath.suffix == '.pys':
-                filepath = filepath.with_suffix(filepath.suffix + '.pys')
 
         # Process events before showing the modal progress dialog
         self.main_window.application.processEvents()
@@ -223,10 +217,10 @@ class Workflows:
                                           "Saving {}...".format(filepath.name),
                                           len(pys_writer)) as progress_dialog:
                     for i, line in enumerate(pys_writer):
-                        if chosen_filter != "Pyspread uncompressed (*.pysu)":
-                            line = compressor.compress(line)
-                            compressor.flush()
-                        tempfile.write(line.encode('utf-8'))
+                        line = bytes(line, "utf-8")
+                        if filepath.suffix == ".pys":
+                            line = bz2.compress(line)
+                        tempfile.write(line)
                         progress_dialog.setValue(i)
                         self.main_window.application.processEvents()
                         if progress_dialog.wasCanceled():
@@ -235,7 +229,7 @@ class Workflows:
             except (IOError, ValueError) as err:
                 tempfile.delete = True
                 QMessageBox.critical(self.main_window, "Error saving file",
-                                     err)
+                                     str(err))
                 return
         try:
             move(filename, filepath)
@@ -243,6 +237,45 @@ class Workflows:
         except OSError as err:
             # No tmp file present
             QMessageBox.critical(self.main_window, "Error saving file", err)
+
+        # Change the main window filepath state
+        self.application_states.changed_since_save = False
+
+        # Set the current filepath
+        self.application_states.last_file_input_path = filepath
+
+        # Change the main window title
+        window_title = "{filename} - pyspread".format(filename=filepath.name)
+        self.main_window.setWindowTitle(window_title)
+
+    def file_save(self):
+        """File save workflow"""
+
+        if not self.application_states.changed_since_save:
+            return
+
+        filepath = self.application_states.last_file_input_path
+
+        if filepath.suffix:
+            self._save(filepath)
+        else:
+            # New, changed file that has never been saved before
+            self.file_save_as()
+
+    def file_save_as(self):
+        """File save as workflow"""
+
+        # Get filepath from user
+        file_save_dialog = FileSaveDialog(self.main_window)
+        filepath = file_save_dialog.filepath
+        chosen_filter = file_save_dialog.chosen_filter
+        filter_suffix = chosen_filter[-5:-1]  # e.g. '.pys'
+
+        # Extend filepath suffix if needed
+        if filepath.suffix != filter_suffix:
+            filepath = filepath.with_suffix(filepath.suffix + filter_suffix)
+
+        self._save(filepath)
 
     @handle_changed_since_save
     def file_quit(self):
