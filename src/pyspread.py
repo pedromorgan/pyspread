@@ -54,6 +54,7 @@ from toolbar import WidgetToolbar
 from actions import MainWindowActions
 from workflows import Workflows
 from widgets import Widgets
+from dialogs import ApproveWarningDialog
 
 
 class ApplicationStates:
@@ -191,6 +192,12 @@ class MainWindow(QMainWindow):
         """Dummy action that does nothing"""
 
         pass
+
+    def on_approve(self):
+        """Approve event handler"""
+
+        if ApproveWarningDialog(self).choice:
+            self.safe_mode = False
 
     def on_gui_update(self, attributes):
         """GUI update event handler.

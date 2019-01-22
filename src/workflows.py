@@ -38,8 +38,8 @@ from tempfile import NamedTemporaryFile
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QProgressDialog, QMessageBox
 
-from modal_dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
-from modal_dialogs import FileSaveDialog
+from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
+from dialogs import FileSaveDialog
 from interfaces.pys import PysReader, PysWriter
 from lib.gpg import verify
 
@@ -84,10 +84,10 @@ class Workflows:
             """Check changes and display and handle the dialog"""
 
             if self.application_states.changed_since_save:
-                discard = DiscardChangesDialog(self.main_window).discard
-                if discard is None:
+                choice = DiscardChangesDialog(self.main_window).choice
+                if choice is None:
                     return
-                elif not discard:
+                elif not choice:
                     self.file_save()
             func(self)
             self.reset_changed_since_save()

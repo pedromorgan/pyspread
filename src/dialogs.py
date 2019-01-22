@@ -40,11 +40,7 @@ from PyQt5.QtGui import QIntValidator
 class DiscardChangesDialog:
     """Modal dialog that asks if the user wants to discard or save unsaved data
 
-    The modal dialog is shown on __init__.
-    Results can be retrieved in the discard attribute:
-     * True iif the user confirms that unsaved changes shall be lost.
-     * False iif the user chooses to save the unsaved data.
-     * None iif the user chooses to abort the operation.
+    The modal dialog is shown on accessing the property choice.
 
     """
 
@@ -53,16 +49,12 @@ class DiscardChangesDialog:
     choices = QMessageBox.Discard | QMessageBox.Cancel | QMessageBox.Save
     default_choice = QMessageBox.Save
 
-    def __init__(self, main_window, title=None, text=None):
+    def __init__(self, main_window):
         self.main_window = main_window
-        if title is not None:
-            self.title = title
-        if text is not None:
-            self.title = title
-        self.discard = self._get_discard_unsaved_changes_approval()
 
-    def _get_discard_unsaved_changes_approval(self):
-        """User alert dialog for proceeding though unsaved changes exist
+    @property
+    def choice(self):
+        """User choice
 
         Returns True iif the user confirms in a user dialog that unsaved
         changes will be discarded if conformed.
@@ -77,6 +69,44 @@ class DiscardChangesDialog:
         if button_approval == QMessageBox.Discard:
             return True
         elif button_approval == QMessageBox.Save:
+            return False
+
+
+class ApproveWarningDialog:
+    """Modal warning dialog for approving files to be evaled
+
+    The modal dialog is shown on accessing the property choice.
+
+    """
+
+    title = "Security warning"
+    text = ("You are going to approve and trust a file that you have not "
+            "created yourself. After proceeding, the file is executed.\n \n"
+            "It may harm your system as any program can. Please check all "
+            "cells thoroughly before proceeding.\n \n"
+            "Proceed and sign this file as trusted?")
+    choices = QMessageBox.No | QMessageBox.Yes
+    default_choice = QMessageBox.No
+
+    def __init__(self, parent):
+        self.parent = parent
+
+    @property
+    def choice(self):
+        """User choice
+
+        Returns True iif the user approves leaving safe_mode.
+        Returns False iif the user chooses to stay in safe_mode
+        Returns None if the user chooses to abort the operation
+
+        """
+
+        button_approval = QMessageBox.warning(self.parent, self.title,
+                                              self.text, self.choices,
+                                              self.default_choice)
+        if button_approval == QMessageBox.Yes:
+            return True
+        elif button_approval == QMessageBox.No:
             return False
 
 

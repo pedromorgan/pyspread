@@ -110,7 +110,7 @@ class MainWindowActions(dict):
                                 statustip="Export selection to a file")
 
         self["approve"] = Action(self.parent, "&Approve file",
-                                 self.parent.on_nothing,
+                                 self.parent.on_approve,
                                  icon=Icon("approve"),
                                  statustip='Approve, unfreeze and sign the '
                                            'current file')
