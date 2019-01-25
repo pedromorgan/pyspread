@@ -37,6 +37,8 @@ Provides
 
 from contextlib import contextmanager
 
+import numpy
+
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtWidgets import QAbstractItemDelegate
@@ -49,6 +51,7 @@ from config import config
 from model.model import CodeArray
 from lib.selection import Selection
 from lib.string_helpers import quote, wrap_text
+from lib.qimage2ndarray import array2qimage
 
 
 class Grid(QTableView):
@@ -636,6 +639,12 @@ class GridItemModel(QAbstractTableModel):
                 value = self.code_array[key]
                 if isinstance(value, QImage):
                     return value
+                else:
+                    try:
+                        arr = numpy.array(value)
+                        return array2qimage(arr)
+                    except TypeError:
+                        return value
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:
