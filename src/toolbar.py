@@ -97,6 +97,7 @@ class AttributesToolbar(QToolBar):
         self.addSeparator()
 
         self.addWidget(self.main_window.widgets.renderer_button)
+        self.addAction(actions["merge_cells"])
 
         self.addSeparator()
 

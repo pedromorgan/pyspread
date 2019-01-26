@@ -328,6 +328,8 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"renderer": "text"}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        entry_line = self.main_window.entry_line
+        entry_line.highlighter.setDocument(entry_line.document())
         self.gui_update()
 
     def on_image_renderer_pressed(self, toggled):
@@ -335,6 +337,7 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"renderer": "image"}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        self.main_window.entry_line.highlighter.setDocument(None)
         self.gui_update()
 
     def on_markup_renderer_pressed(self, toggled):
@@ -342,6 +345,8 @@ class Grid(QTableView):
 
         attr = self.selection, self.table, {"renderer": "markup"}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        entry_line = self.main_window.entry_line
+        entry_line.highlighter.setDocument(entry_line.document())
         self.gui_update()
 
     def on_lock_pressed(self, toggled):
@@ -547,6 +552,7 @@ class Grid(QTableView):
 
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         self.update_cell_spans()
+        self.current = top, left
 
     def on_quote(self):
         """Quote cells event handler"""
@@ -643,7 +649,7 @@ class GridItemModel(QAbstractTableModel):
                     try:
                         arr = numpy.array(value)
                         return array2qimage(arr)
-                    except TypeError:
+                    except Exception:
                         return value
 
         if role == Qt.BackgroundColorRole:

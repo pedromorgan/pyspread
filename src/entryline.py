@@ -21,12 +21,12 @@
 
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTextEdit
+from PyQt5.QtGui import QTextOption
 
 from lib.spelltextedit import SpellTextEdit
 
 
-class Entryline(QTextEdit, SpellTextEdit):
+class Entryline(SpellTextEdit):
     """The entry line for pyspread"""
 
     def __init__(self, main_window):
@@ -37,7 +37,8 @@ class Entryline(QTextEdit, SpellTextEdit):
         min_height = self.cursorRect().y() + self.cursorRect().height() + 20
         self.setMinimumHeight(min_height)
 
-        self.setLineWrapMode(self.WidgetWidth)
+        #self.setLineWrapMode(QTextOption.WrapAnywhere)
+        self.setWordWrapMode(QTextOption.WrapAnywhere)
 
         self.highlighter.setDocument(self.document())
 
@@ -48,7 +49,7 @@ class Entryline(QTextEdit, SpellTextEdit):
             self.store_data()
             self.main_window.grid.row += 1
         else:
-            QTextEdit.keyPressEvent(self, event)
+            super().keyPressEvent(self, event)
 
     def store_data(self):
         """Stores current entry line data in grid model"""

@@ -42,6 +42,7 @@ from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 from dialogs import FileSaveDialog
 from interfaces.pys import PysReader, PysWriter
 from lib.gpg import verify
+from lib.qimage2ndarray import imread
 
 
 class Workflows:
@@ -282,3 +283,17 @@ class Workflows:
         """Program exit workflow"""
 
         sys.exit()
+
+    def insert_image(self):
+        """Insert image workflow"""
+
+        filepath = "/home/mn/Pictures/Wallpapers/snowland.jpg"
+        arr = imread(filepath)
+        arr_str = str(bz2.compress(arr.tobytes("C")))
+        shape_str = ",".join(map(str, arr.shape))
+        code = "numpy.frombuffer(bz2.decompress(" + arr_str \
+               + "), dtype=numpy.uint8).reshape("\
+               + shape_str + ")"
+        index = self.main_window.grid.currentIndex()
+        self.main_window.grid.on_image_renderer_pressed(True)
+        self.main_window.grid.model.setData(index, code, Qt.EditRole)

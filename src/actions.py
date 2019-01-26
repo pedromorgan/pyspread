@@ -728,7 +728,7 @@ class MainWindowActions(dict):
                                                'Python file')
 
         self["insert_image"] = Action(self.parent, "Insert image...",
-                                      self.parent.on_nothing,
+                                      self.parent.workflows.insert_image,
                                       icon=Icon("insert_image"),
                                       statustip='Load an image from a file '
                                                 'into a cell')
