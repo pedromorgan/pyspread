@@ -49,7 +49,7 @@ class Entryline(SpellTextEdit):
             self.store_data()
             self.main_window.grid.row += 1
         else:
-            super().keyPressEvent(self, event)
+            super().keyPressEvent(event)
 
     def store_data(self):
         """Stores current entry line data in grid model"""

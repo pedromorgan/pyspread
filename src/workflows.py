@@ -28,6 +28,7 @@ Workflows for pyspread
 
 """
 
+from base64 import b85encode, b85decode
 import bz2
 from contextlib import contextmanager
 import os.path
@@ -42,7 +43,6 @@ from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 from dialogs import FileSaveDialog
 from interfaces.pys import PysReader, PysWriter
 from lib.gpg import verify
-from lib.qimage2ndarray import imread
 
 
 class Workflows:
@@ -287,13 +287,21 @@ class Workflows:
     def insert_image(self):
         """Insert image workflow"""
 
-        filepath = "/home/mn/Pictures/Wallpapers/snowland.jpg"
-        arr = imread(filepath)
-        arr_str = str(bz2.compress(arr.tobytes("C")))
-        shape_str = ",".join(map(str, arr.shape))
-        code = "numpy.frombuffer(bz2.decompress(" + arr_str \
-               + "), dtype=numpy.uint8).reshape("\
-               + shape_str + ")"
+        filepath = "/home/mn/Pictures/Wallpapers/park-2-1600.jpg"
+
+        with open(filepath, "rb") as imgfile:
+            imgdata = b85encode(imgfile.read())
+
+        code = (r'_load_img(base64.b85decode(' +
+                repr(imgdata) +
+                '))'
+                r' if exec("'
+                r'def _load_img(data): qimg = QImage(); '
+                r'QImage.loadFromData(qimg, data); '
+                r'return qimg\n'
+                r'") is None else None'
+               )
+
         index = self.main_window.grid.currentIndex()
         self.main_window.grid.on_image_renderer_pressed(True)
         self.main_window.entry_line.setUpdatesEnabled(False)
