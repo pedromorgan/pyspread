@@ -36,10 +36,10 @@ def get_enchant_version():
 
 
 def get_gpg_version():
-    """Returns True if gpg is insatlled else false"""
+    """Returns version string if gpg is insatlled else false"""
     try:
         import gnupg
     except ImportError:
         return
 
-    return gnupg.version.versionstr
+    return gnupg.__version__

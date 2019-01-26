@@ -28,7 +28,7 @@ Workflows for pyspread
 
 """
 
-from base64 import b85encode, b85decode
+from base64 import b85encode
 import bz2
 from contextlib import contextmanager
 import os.path
@@ -42,7 +42,8 @@ from PyQt5.QtWidgets import QProgressDialog, QMessageBox
 from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 from dialogs import FileSaveDialog
 from interfaces.pys import PysReader, PysWriter
-from lib.gpg import verify
+from lib.dependencies import get_gpg_version
+from lib.gpg import sign, verify
 
 
 class Workflows:
@@ -192,6 +193,39 @@ class Workflows:
         # Change the main window last input directory state
         self.application_states.last_file_input_path = filepath
 
+    def sign(self, filepath):
+        """Signs filepath if gnupg present and pyspread not in safe mode"""
+
+        if not get_gpg_version():
+            msg = "File saved but not signed because gnupg is unavailable."
+            self.main_window.statusBar().showMessage(msg)
+            return
+
+        if self.main_window.grid.code_array.safe_mode:
+            msg = "File saved but not signed because it is unapproved."
+            self.main_window.statusBar().showMessage(msg)
+            return
+
+        try:
+            signed_data = sign(filepath)
+        except ValueError as err:
+            msg = "Error signing file: {}".format(err)
+            self.main_window.statusBar().showMessage(msg)
+            return
+
+        signature = signed_data.data
+
+        if signature is None or not signature:
+            msg = 'Error signing file. ' + signed_data.stderr
+            self.main_window.statusBar().showMessage(msg)
+            return
+
+        with open(filepath + '.sig', 'wb') as signfile:
+            signfile.write(signature)
+
+        msg = "File saved and signed."
+        self.main_window.statusBar().showMessage(msg)
+
     def _save(self, filepath):
         """Save filepath using chosen_filter
 
@@ -238,6 +272,7 @@ class Workflows:
         except OSError as err:
             # No tmp file present
             QMessageBox.critical(self.main_window, "Error saving file", err)
+            return
 
         # Change the main window filepath state
         self.application_states.changed_since_save = False
@@ -248,6 +283,8 @@ class Workflows:
         # Change the main window title
         window_title = "{filename} - pyspread".format(filename=filepath.name)
         self.main_window.setWindowTitle(window_title)
+
+        self.sign(filepath)
 
     def file_save(self):
         """File save workflow"""
@@ -299,8 +336,7 @@ class Workflows:
                 r'def _load_img(data): qimg = QImage(); '
                 r'QImage.loadFromData(qimg, data); '
                 r'return qimg\n'
-                r'") is None else None'
-               )
+                r'") is None else None')
 
         index = self.main_window.grid.currentIndex()
         self.main_window.grid.on_image_renderer_pressed(True)
