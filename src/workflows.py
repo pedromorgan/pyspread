@@ -296,4 +296,6 @@ class Workflows:
                + shape_str + ")"
         index = self.main_window.grid.currentIndex()
         self.main_window.grid.on_image_renderer_pressed(True)
+        self.main_window.entry_line.setUpdatesEnabled(False)
         self.main_window.grid.model.setData(index, code, Qt.EditRole)
+        self.main_window.entry_line.setUpdatesEnabled(True)
