@@ -34,7 +34,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QDialog, QLineEdit
 from PyQt5.QtWidgets import QLabel, QFormLayout, QVBoxLayout, QGroupBox
 from PyQt5.QtWidgets import QDialogButtonBox
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QIntValidator, QImageWriter
 
 
 class DiscardChangesDialog:
@@ -240,4 +240,28 @@ class FileSaveDialog(FileDialogBase):
         filepath, chosen_filter = \
             QFileDialog.getSaveFileName(self.main_window, self.title,
                                         str(path), self.name_filter)
+        return Path(filepath), chosen_filter
+
+
+class ImageFileOpenDialog(FileDialogBase):
+    """Modal dialog for inserting an image"""
+
+    title = "Insert image"
+
+    img_formats = QImageWriter.supportedImageFormats()
+    img_format_strings = ("*." + fmt.data().decode('utf-8')
+                          for fmt in img_formats)
+    img_format_string = " ".join(img_format_strings)
+    name_filter = "Images ({})".format(img_format_string) + ";;" \
+                  "Scalable Vector Graphics (*.svg *.svgz)"
+
+    def _get_filepath(self):
+        """Returns (filepath, chosen_filter) from modal user dialog"""
+
+        path = self.main_window.application_states.last_file_input_path
+        filepath, chosen_filter = \
+            QFileDialog.getOpenFileName(self.main_window,
+                                        self.title,
+                                        str(path),
+                                        self.name_filter)
         return Path(filepath), chosen_filter

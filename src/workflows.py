@@ -40,7 +40,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QProgressDialog, QMessageBox
 
 from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
-from dialogs import FileSaveDialog
+from dialogs import FileSaveDialog, ImageFileOpenDialog
 from interfaces.pys import PysReader, PysWriter
 from lib.dependencies import get_gpg_version
 from lib.gpg import sign, verify
@@ -324,7 +324,9 @@ class Workflows:
     def insert_image(self):
         """Insert image workflow"""
 
-        filepath = "/home/mn/Pictures/Wallpapers/park-2-1600.jpg"
+        image_file_open_dialog = ImageFileOpenDialog(self.main_window)
+        filepath = image_file_open_dialog.filepath
+        #filepath = "/home/mn/Pictures/Wallpapers/park-2-1600.jpg"
 
         with open(filepath, "rb") as imgfile:
             imgdata = b85encode(imgfile.read())

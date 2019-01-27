@@ -857,12 +857,13 @@ class GridCellDelegate(QStyledItemDelegate):
 
         if justification == "justify_fill":
             qimage = qimage.scaled(rect_width, rect_height,
-                                   aspectRatioMode=Qt.IgnoreAspectRatio)
+                                   Qt.IgnoreAspectRatio,
+                                   Qt.SmoothTransformation)
             painter.drawImage(rect_x, rect_y, qimage)
             return
 
         qimage = qimage.scaled(rect_width, rect_height,
-                               aspectRatioMode=Qt.KeepAspectRatio)
+                               Qt.KeepAspectRatio, Qt.SmoothTransformation)
         image_width = qimage.size().width()
         image_height = qimage.size().height()
         vertical_align = self.cell_attributes[key]["vertical_align"]
