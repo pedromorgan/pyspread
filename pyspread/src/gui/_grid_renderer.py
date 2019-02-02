@@ -233,8 +233,10 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
         # Button cells shall not be executed for preview
         if grid.code_array.cell_attributes[key]["button_cell"]:
             cell_preview = repr(grid.code_array(key))[:100]
+            __id = id(grid.code_array(key))
         else:
             cell_preview = repr(grid.code_array[key])[:100]
+            __id = id(grid.code_array[key])
 
         sorted_keys = sorted(grid.code_array.cell_attributes[key].iteritems())
 
@@ -255,7 +257,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer, EventMixin):
             borders.append(cell_attributes[k]["bordercolor_bottom"])
             borders.append(cell_attributes[k]["bordercolor_right"])
 
-        return (zoomed_width, zoomed_height, is_selected, cell_preview,
+        return (zoomed_width, zoomed_height, is_selected, cell_preview, __id,
                 tuple(sorted_keys), tuple(borders))
 
     def _get_cairo_bmp(self, mdc, key, rect, is_selected, view_frozen):
