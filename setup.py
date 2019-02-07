@@ -20,36 +20,31 @@
 # --------------------------------------------------------------------
 
 
-from distutils.core import setup, Command
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
 import sys
-import subprocess
-
-# Uncomment this to package with setuptools. Then extras_require is usable
-#try:
-#    import setuptools
-#except ImportError:
-#    pass
 
 
-class PyTest(Command):
-    """Class for running py.test via setup.py"""
-
-    user_options = []
+class PyTest(TestCommand):
+    user_options = [("pytest-args=", "a", "Arguments to pass to pytest")]
 
     def initialize_options(self):
-        pass
+        TestCommand.initialize_options(self)
+        self.pytest_args = ""
 
-    def finalize_options(self):
-        pass
+    def run_tests(self):
+        import shlex
 
-    def run(self):
-        errno = subprocess.call([sys.executable, 'runtests.py'])
-        raise SystemExit(errno)
+        # import here, cause outside the eggs aren't loaded
+        import pytest
+
+        errno = pytest.main(shlex.split(self.pytest_args))
+        sys.exit(errno)
 
 
 setup(
     name='pyspread',
-    version='1.1.2',
+    version='1.1.3',
     description='Python spreadsheet',
     long_description='Pyspread is a non-traditional spreadsheet application'
     ' that is based on and written in the programming language Python.',
@@ -67,9 +62,10 @@ setup(
 #        'code_completion': ['jedi>=0.8'],
 #        'basemap': ['basemap>=1.0.7'],
 #    },
+    tests_require=["pytest"],
+    cmdclass={"pytest": PyTest},
     packages=['pyspread'],
     scripts=['pyspread/pyspread'],
-    cmdclass={'test': PyTest},
     package_data={'pyspread': [
             '*.py',
             '../pyspread.sh',

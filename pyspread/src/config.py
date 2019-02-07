@@ -29,7 +29,7 @@ from ast import literal_eval
 
 import wx
 
-VERSION = "1.1.2"
+VERSION = "1.1.3"
 
 
 class DefaultConfig(object):

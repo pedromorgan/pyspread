@@ -3,6 +3,12 @@ Changelog for pyspread
 
 Note: This changelog starts at version 0.2.0
 
+1.1.3
+-----
+python-gnupg dependency made optional
+Fix for OpenBSD vlclib
+Cell cache now uses id to ensure uniqueness of cell result (fixes matplotlib 2.2.x issue)
+
 1.1.2
 -----
 Linux: Font choice combo box fixed
