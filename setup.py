@@ -52,7 +52,7 @@ setup(
     keywords=['spreadsheet', 'pyspread'],
     author='Martin Manns',
     author_email='mmanns@gmx.net',
-    url='http://manns.github.io/pyspread/',
+    url='https://manns.github.io/pyspread/',
     requires=['numpy (>=1.1)', 'wx (>=2.8.10)', 'matplotlib (>=1.1.1)',
               'pycairo (>=1.8.8)'],
 #    extras_require = {
