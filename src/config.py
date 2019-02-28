@@ -24,197 +24,130 @@ pyspread config file
 ====================
 
 """
-from builtins import object
 
-from ast import literal_eval
+from PyQt5.QtCore import QSettings
 
 VERSION = "2.0"
 
 
-class DefaultConfig(object):
+class DefaultSettings:
     """Contains default config for starting pyspread without resource file"""
 
-    def __init__(self):
-        # Config file version
-        # -------------------
+    # Config file version
+    # -------------------
 
-        self.config_version = VERSION
+    config_version = VERSION
 
-        # Cell calculation timeout in s
-        # -----------------------------
-        self.timeout = 10
+    # Cell calculation timeout in s
+    # -----------------------------
+    timeout = 10
 
-        # User defined paths
-        # ------------------
+    # User defined paths
+    # ------------------
 
-        standardpaths = None
-        self.work_path = None
+    work_path = None
 
-        # UI language
-        # -----------
+    # UI language
+    # -----------
 
-        self.ui_language = 'en'  # 'system' for system locale
+    ui_language = 'en'  # 'system' for system locale
 
-        # Spell checking lamguage
-        # -----------------------
+    # Spell checking lamguage
+    # -----------------------
 
-        self.check_spelling = False
-        self.spell_lang = 'en_US'
+    check_spelling = False
+    spell_lang = 'en_US'
 
-        # Default filetypes
-        # -----------------
+    # Default filetypes
+    # -----------------
 
-        self.default_open_filetype = 'pys'
-        self.default_save_filetype = 'pys'
+    default_open_filetype = 'pys'
+    default_save_filetype = 'pys'
 
-        # Window configuration
-        # --------------------
+    # Window configuration
+    # --------------------
 
-        self.window_position = (10, 10)
-        self.window_size = (800, 600)
-        self.window_layout = ''
-        self.icon_theme = 'Tango'
+    window_position = (10, 10)
+    window_size = (800, 600)
+    window_layout = ''
+    icon_theme = 'Tango'
 
-        self.help_window_position = (50, 50)
-        self.help_window_size = (600, 400)
+    help_window_position = (50, 50)
+    help_window_size = (600, 400)
 
-        # Grid configuration
-        # ------------------
+    # Grid configuration
+    # ------------------
 
-        self.grid_rows = 1000
-        self.grid_columns = 100
-        self.grid_tables = 3
+    grid_rows = 1000
+    grid_columns = 100
+    grid_tables = 3
 
-        self.max_unredo = 5000
+    max_unredo = 5000
 
-        self.timer_interval = 1000
+    timer_interval = 1000
 
-        # Default row height and col width e.g. for Cairo rendering
-        self.default_row_height = 23
-        self.default_col_width = 80
+    # Default row height and col width e.g. for Cairo rendering
+    default_row_height = 23
+    default_col_width = 80
 
-        # Maximum result length in a cell in characters
-        self.max_result_length = 100000
+    # Maximum result length in a cell in characters
+    max_result_length = 100000
 
-        # Colors
-        self.grid_color = (192, 192, 192)
-        self.background_color = (255, 255, 255)
-        self.text_color = (0, 0, 0)
-        self.freeze_color = (0, 0, 255)
+    # Colors
+    grid_color = (192, 192, 192)
+    background_color = (255, 255, 255)
+    text_color = (0, 0, 0)
+    freeze_color = (0, 0, 255)
 
-        # Fonts
+    # Fonts
 
-        self.font = "Sans"
-        self.font_save_enabled = "False"
+    font = "Sans"
+    font_save_enabled = "False"
 
-        # Default cell font size
+    # Default cell font size
 
-        self.font_default_size = 10
-        self.font_default_sizes = [6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32]
+    font_default_size = 10
+    font_default_sizes = [6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32]
 
-        # Zoom
+    # Zoom
 
-        self.minimum_zoom = 0.25
-        self.maximum_zoom = 8.0
+    minimum_zoom = 0.25
+    maximum_zoom = 8.0
 
-        # Increase and decrease factor on zoom in and zoom out
-        self.zoom_factor = 0.05
+    # Increase and decrease factor on zoom in and zoom out
+    zoom_factor = 0.05
 
-        # GPG parameters
-        # --------------
+    # GPG parameters
+    # --------------
 
-        self.gpg_key_fingerprint = ''
+    gpg_key_fingerprint = ''
 
-        # CSV parameters for import and export
-        # ------------------------------------
+    # CSV parameters for import and export
+    # ------------------------------------
 
-        # Number of bytes for the sniffer (should be larger than 1st+2nd line)
-        self.sniff_size = 65536
+    # Number of bytes for the sniffer (should be larger than 1st+2nd line)
+    sniff_size = 65536
 
-        # Maximum number of characters in wx.TextCtrl
-        self.max_textctrl_length = 65534
+    # Maximum number of characters in wx.TextCtrl
+    max_textctrl_length = 65534
 
 
-class Config(object):
-    """Configuration class for the application pyspread"""
+class Settings:
+    """QT5 settings accessor"""
 
-    # Only keys in default_config are config keys
+    settings = QSettings("pyspread", "pyspread")
+    defaults = DefaultSettings()
 
-    def __init__(self, defaults=None):
-        self.config_filename = "pyspreadrc"
-
-        # The current version of pyspread
-        self.version = VERSION
-
-        if defaults is None:
-            self.defaults = DefaultConfig()
-
-        else:
-            self.defaults = defaults()
-
-        self.data = DefaultConfig()
-
-        self.cfg_file = None
-
-        # Config keys to be resetted to default value on version upgrades
-        self.reset_on_version_change = ["window_layout"]
-
-        self.load()
-
-    def __getitem__(self, key):
-        """Main config element read access"""
-
-        if key == "version":
-            return self.version
-
+    def __getattr__(self, name):
         try:
-            return getattr(self.data, key)
+            value = self.settings.value(name)
+            if value is not None:
+                return value
+        except AttributeError:
+            pass  # Attribute not in stored settings
 
-        except KeyError:
-            # Probably, there is a problem with the config file --> use default
-            setattr(self.data, key, getattr(DefaultConfig(), key))
+        return getattr(self.defaults, name)
 
-            return getattr(self.data, key)
-
-        except SyntaxError:
-            # May happen if a file is not present any more
-
-            return None
-
-    def __setitem__(self, key, value):
-        """Main config element write access"""
-
-        setattr(self.data, key, value)
-
-    def load(self):
-        """Loads configuration file"""
-
-#        # Reset data
-#        self.data.__dict__.update(self.defaults.__dict__)
-#
-#        for key in self.defaults.__dict__:
-#            if self.cfg_file.Exists(key):
-#                setattr(self.data, key, self.cfg_file.Read(key))
-#
-#        # Reset keys that should be reset on version upgrades
-#        for key in self.reset_on_version_change:
-#            setattr(self.data, key, getattr(DefaultConfig(), key))
-#        self.data.config_version = self.version
-#
-#        # Delete gpg_key_uid and insert fingerprint key
-#
-#        if hasattr(self.data, "gpg_key_uid"):
-#            oldkey = "gpg_key_uid"
-#            delattr(self.data, oldkey)
-#            newkey = "gpg_key_fingerprint"
-#            setattr(self.data, newkey, getattr(DefaultConfig(), newkey))
-
-    def save(self):
-        """Saves configuration file"""
-
-#        for key in self.defaults.__dict__:
-#            data = getattr(self.data, key)
-#
-#            self.cfg_file.Write(key, data)
-
-config = Config()
+    def __setattr__(self, name, value):
+        self.settings.setValue(name, value)
+        self.settings.sync()

@@ -28,7 +28,7 @@ UnRedo contains the UnRedo class that manages undo and redo operations.
 
 """
 
-from config import config
+from config import Settings
 
 
 class UnRedo:
@@ -57,6 +57,8 @@ class UnRedo:
     \tTrue while an undo or a redo step is executed.
 
     """
+
+    settings = Settings()
 
     def __init__(self):
         """[(undofunc, [undoparams, ...], redofunc, [redoparams, ...]),
@@ -132,8 +134,8 @@ class UnRedo:
             return False
 
         # If the lists grow too large they are emptied
-        if len(self.undolist) > config["max_unredo"] or \
-           len(self.redolist) > config["max_unredo"]:
+        if len(self.undolist) > self.settings.max_unredo or \
+           len(self.redolist) > self.settings.max_unredo:
             self.reset()
 
         # Check attribute types

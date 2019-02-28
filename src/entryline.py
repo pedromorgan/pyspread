@@ -37,8 +37,8 @@ class Entryline(SpellTextEdit):
         min_height = self.cursorRect().y() + self.cursorRect().height() + 20
         self.setMinimumHeight(min_height)
 
-        #self.setLineWrapMode(QTextOption.WrapAnywhere)
         self.setWordWrapMode(QTextOption.WrapAnywhere)
+        # self.setWordWrapMode(QTextOption.NoWrap)
 
         self.highlighter.setDocument(self.document())
 

@@ -25,8 +25,6 @@ from PyQt5.QtGui import QPalette, QColor, QFont, QIntValidator, QIcon
 
 from icons import Icon
 
-from config import config
-
 
 class MultiStateBitmapButton(QToolButton):
     """QPushbutton that cycles through arbitrary states
@@ -273,13 +271,13 @@ class FontChoiceCombo(QFontComboBox):
 
     fontChanged = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, main_window):
         super().__init__()
 
         self.setMaximumWidth(150)
 
         # Set default font
-        self.setFont(QFont(config["font"]))
+        self.setFont(QFont(main_window.settings.font))
 
         self.currentFontChanged.connect(self.on_font)
 
@@ -306,15 +304,15 @@ class FontSizeCombo(QComboBox):
 
     fontSizeChanged = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, main_window):
         super().__init__()
 
         self.setEditable(True)
 
-        for size in config["font_default_sizes"]:
+        for size in main_window.settings.font_default_sizes:
             self.addItem(str(size))
 
-        idx = self.findText(str(config["font_default_size"]))
+        idx = self.findText(str(main_window.settings.font_default_size))
         if idx >= 0:
             self.setCurrentIndex(idx)
 
@@ -356,20 +354,21 @@ class Widgets:
     def __init__(self, main_window):
 
         self.main_window = main_window
+        settings = self.main_window.settings
 
         # Format toolbar widgets
 
-        self.font_combo = FontChoiceCombo()
+        self.font_combo = FontChoiceCombo(main_window)
 
-        self.font_size_combo = FontSizeCombo()
+        self.font_size_combo = FontSizeCombo(main_window)
 
-        text_color = QColor(*config["text_color"])
+        text_color = QColor(*settings.text_color)
         self.text_color_button = TextColorButton(text_color)
 
-        background_color = QColor(*config["background_color"])
+        background_color = QColor(*settings.background_color)
         self.background_color_button = BackgroundColorButton(background_color)
 
-        line_color = QColor(*config["grid_color"])
+        line_color = QColor(*settings.grid_color)
         self.line_color_button = LineColorButton(line_color)
 
         self.renderer_button = RendererButton(main_window)

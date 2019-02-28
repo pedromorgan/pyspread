@@ -42,12 +42,11 @@ import numpy
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtWidgets import QAbstractItemDelegate
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage, QTextOption
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
 
-from config import config
 from model.model import CodeArray
 from lib.selection import Selection
 from lib.string_helpers import quote, wrap_text
@@ -62,12 +61,12 @@ class Grid(QTableView):
 
         self.main_window = main_window
 
-        dimensions = (config["grid_rows"],
-                      config["grid_columns"],
-                      config["grid_tables"])
+        dimensions = (main_window.settings.grid_rows,
+                      main_window.settings.grid_columns,
+                      main_window.settings.grid_tables)
 
-        window_position = config["window_position"]
-        window_size = config["window_size"]
+        window_position = main_window.settings.window_position
+        window_size = main_window.settings.window_size
 
         self.setGeometry(*window_position, *window_size)
 
@@ -654,7 +653,7 @@ class GridItemModel(QAbstractTableModel):
 
         if role == Qt.BackgroundColorRole:
             if self.code_array.cell_attributes[key]["frozen"]:
-                pattern_rgb = config["freeze_color"]
+                pattern_rgb = self.main_window.settings.freeze_color
                 bg_color = QBrush(QColor(*pattern_rgb), Qt.BDiagPattern)
             else:
                 bg_color_rgb = self.code_array.cell_attributes[key]["bgcolor"]

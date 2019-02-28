@@ -45,6 +45,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QColor, QFont
 
+from config import Settings
 from icons import Icon
 from grid import Grid
 from entryline import Entryline
@@ -89,6 +90,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.application = application
+        self.settings = Settings()
         self.application_states = ApplicationStates()
         self.workflows = Workflows(self)
 

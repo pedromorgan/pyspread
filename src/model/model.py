@@ -54,7 +54,7 @@ import sys
 import numpy
 from PyQt5.QtGui import QImage, QPixmap
 
-from config import config
+from config import Settings
 
 from lib.typechecks import isslice, isstring
 from lib.selection import Selection
@@ -77,17 +77,19 @@ class CellAttributes(list):
 
     """
 
+    settings = Settings()
+
     default_cell_attributes = {
         "borderwidth_bottom": 1,
         "borderwidth_right": 1,
-        "bordercolor_bottom": config["grid_color"],
-        "bordercolor_right": config["grid_color"],
-        "bgcolor": config["background_color"],
-        "textfont": config["font"],
+        "bordercolor_bottom": settings.grid_color,
+        "bordercolor_right": settings.grid_color,
+        "bgcolor": settings.background_color,
+        "textfont": settings.font,
         "pointsize": 10,
         "fontweight": 50,
         "fontstyle": 0,
-        "textcolor": config["text_color"],
+        "textcolor": settings.text_color,
         "underline": False,
         "strikethrough": False,
         "locked": False,
@@ -274,6 +276,8 @@ class DataArray(object):
     \tShape of the grid
 
     """
+
+    settings = Settings()
 
     def __init__(self, shape):
         self.dict_grid = DictGrid(shape)
@@ -615,7 +619,7 @@ class DataArray(object):
             return self.row_heights[(row, tab)]
 
         except KeyError:
-            return config["default_row_height"]
+            return self.settings.default_row_height
 
     def get_col_width(self, col, tab):
         """Returns column width"""
@@ -624,7 +628,7 @@ class DataArray(object):
             return self.col_widths[(col, tab)]
 
         except KeyError:
-            return config["default_col_width"]
+            return self.settings.default_col_width
 
     def keys(self):
         """Returns keys in self.dict_grid"""
@@ -1286,7 +1290,7 @@ class CodeArray(DataArray):
                 import signal
 
                 signal.signal(signal.SIGALRM, self.handler)
-                signal.alarm(config["timeout"])
+                signal.alarm(self.settings.timeout)
 
             except Exception:
                 # No POSIX system
@@ -1354,7 +1358,7 @@ class CodeArray(DataArray):
 
         base_keys = ['cStringIO', 'KeyValueStore', 'UnRedo',
                      'isgenerator', 'isstring', 'bz2', 'base64',
-                     '__package__', 're', 'config', '__doc__', 'QPixmap',
+                     '__package__', 're', '__doc__', 'QPixmap',
                      'CellAttributes', 'product', 'ast', '__builtins__',
                      '__file__', 'sys', 'isslice', '__name__', 'QImage',
                      'copy', 'imap', 'ifilter', 'Selection', 'DictGrid',
@@ -1399,7 +1403,7 @@ class CodeArray(DataArray):
             import signal
 
             signal.signal(signal.SIGALRM, self.handler)
-            signal.alarm(config["timeout"])
+            signal.alarm(self.settings.timeout)
 
         except Exception:
             # No POSIX system
@@ -1564,6 +1568,6 @@ class CodeArray(DataArray):
                 pass
 
     def handler(self, signum, frame):
-        raise RuntimeError("Timeout after {} s.".format(config["timeout"]))
+        raise RuntimeError("Timeout after {} s.".format(self.settings.timeout))
 
 # End of class CodeArray

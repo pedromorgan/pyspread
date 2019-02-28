@@ -43,7 +43,6 @@ import ast
 from collections import OrderedDict
 
 from lib.selection import Selection
-from config import config
 
 
 def wxcolor2rgb(wxcolor):
@@ -329,6 +328,8 @@ class PysWriter(object):
 
         """
 
+        settings = self.code_array.settings
+
         # Remove doublettes
         purged_cell_attributes = []
         purged_cell_attributes_keys = []
@@ -351,7 +352,7 @@ class PysWriter(object):
                 attr_dict_list.append(key)
                 attr_dict_list.append(attr_dict[key])
 
-                if config["font_save_enabled"] and key == 'textfont':
+                if settings.font_save_enabled and key == 'textfont':
                     self.fonts_used.append(attr_dict[key])
 
             line_list = list(map(repr, sel_list + tab_list + attr_dict_list))

@@ -76,9 +76,13 @@ def wrap_text(text, width=80, maxlen=2000):
     \tWidth of the text to be wrapped
     * maxlen, defaults to 2000
     \tMaximum total text length before text in truncated and extended by [...]
+    \tIf None then truncation is disabled
 
     """
 
-    if len(text) > maxlen:
+    if text is None:
+        return
+
+    if maxlen is not None and len(text) > maxlen:
         text = text[:maxlen] + "..."
     return "\n".join(textwrap.wrap(text, width=width))

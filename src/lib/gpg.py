@@ -44,7 +44,7 @@ try:
 except ImportError:
     gnupg = None
 
-from config import config
+from config import Settings
 
 #from src.gui._gui_interfaces import get_key_params_from_user
 #
@@ -210,12 +210,14 @@ from config import config
 def fingerprint2keyid(fingerprint):
     """Returns keyid from fingerprint for private keys"""
 
+    settings = Settings()
+
     gpg = gnupg.GPG()
     private_keys = gpg.list_keys(True)
 
     keyid = None
     for private_key in private_keys:
-        if private_key['fingerprint'] == config["gpg_key_fingerprint"]:
+        if private_key['fingerprint'] == settings.gpg_key_fingerprint:
             keyid = private_key['keyid']
             break
 
@@ -228,12 +230,14 @@ def sign(filename):
     if gnupg is None:
         return
 
+    settings = Settings()
+
     with open(filename, "rb") as signfile:
-        keyid = fingerprint2keyid(config["gpg_key_fingerprint"])
+        keyid = fingerprint2keyid(settings.gpg_key_fingerprint)
 
         if keyid is None:
             msg = "No private key for fingerprint {}."
-            raise ValueError(msg.format(config["gpg_key_fingerprint"]))
+            raise ValueError(msg.format(settings.gpg_key_fingerprint))
 
         signature = gpg.sign_file(signfile, keyid=keyid, detach=True)
 
@@ -246,6 +250,8 @@ def verify(filepath, sig_extension=".sig"):
     if gnupg is None:
         return False
 
+    settings = Settings()
+
     sig_filepath = filepath.with_suffix(filepath.suffix + sig_extension)
 
     try:
@@ -254,7 +260,7 @@ def verify(filepath, sig_extension=".sig"):
     except (OSError, IOError):
         return False
 
-    pyspread_keyid = fingerprint2keyid(config["gpg_key_fingerprint"])
+    pyspread_keyid = fingerprint2keyid(settings.gpg_key_fingerprint)
 
     if verified.valid and verified.key_id == pyspread_keyid:
         return True
