@@ -45,7 +45,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QColor, QFont
 
-from config import Settings
+from settings import Settings
 from icons import Icon
 from grid import Grid
 from entryline import Entryline

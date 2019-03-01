@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright Martin Manns
@@ -20,8 +20,9 @@
 # --------------------------------------------------------------------
 
 """
-pyspread config file
-====================
+
+pyspread settings
+=================
 
 """
 
@@ -31,105 +32,61 @@ VERSION = "2.0"
 
 
 class DefaultSettings:
-    """Contains default config for starting pyspread without resource file"""
+    """Default settings for pyspread
 
-    # Config file version
-    # -------------------
+    These settings may be overridden by stored QSettings
 
-    config_version = VERSION
+    """
 
-    # Cell calculation timeout in s
-    # -----------------------------
-    timeout = 10
+    config_version = VERSION  # Config file version
 
-    # User defined paths
-    # ------------------
-
-    work_path = None
-
-    # UI language
-    # -----------
+    max_unredo = 5000
+    timeout = 10  # Cell calculation timeout in s
+    timer_interval = 1000
 
     ui_language = 'en'  # 'system' for system locale
-
-    # Spell checking lamguage
-    # -----------------------
-
-    check_spelling = False
-    spell_lang = 'en_US'
-
-    # Default filetypes
-    # -----------------
+    check_spelling = False  # Spell checking toggle
+    spell_lang = 'en_US'  # Spell checking language
 
     default_open_filetype = 'pys'
     default_save_filetype = 'pys'
 
-    # Window configuration
-    # --------------------
-
-    window_position = (10, 10)
-    window_size = (800, 600)
+    window_position = 10, 10
+    window_size = 800, 600
     window_layout = ''
     icon_theme = 'Tango'
-
-    help_window_position = (50, 50)
-    help_window_size = (600, 400)
-
-    # Grid configuration
-    # ------------------
+    help_window_position = 50, 50
+    help_window_size = 600, 400
 
     grid_rows = 1000
     grid_columns = 100
     grid_tables = 3
 
-    max_unredo = 5000
-
-    timer_interval = 1000
-
-    # Default row height and col width e.g. for Cairo rendering
     default_row_height = 23
     default_col_width = 80
 
-    # Maximum result length in a cell in characters
-    max_result_length = 100000
+    max_result_length = 100000  # Maximum result length in a cell in characters
 
-    # Colors
-    grid_color = (192, 192, 192)
-    background_color = (255, 255, 255)
-    text_color = (0, 0, 0)
-    freeze_color = (0, 0, 255)
-
-    # Fonts
+    grid_color = 192, 192, 192
+    background_color = 255, 255, 255
+    text_color = 0, 0, 0
+    freeze_color = 0, 0, 255
 
     font = "Sans"
     font_save_enabled = "False"
 
-    # Default cell font size
-
-    font_default_size = 10
+    font_default_size = 10  # Default cell font size
     font_default_sizes = [6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32]
-
-    # Zoom
 
     minimum_zoom = 0.25
     maximum_zoom = 8.0
-
-    # Increase and decrease factor on zoom in and zoom out
-    zoom_factor = 0.05
-
-    # GPG parameters
-    # --------------
+    zoom_factor = 0.05  # Increase and decrease factor on zoom in and zoom out
 
     gpg_key_fingerprint = ''
 
-    # CSV parameters for import and export
-    # ------------------------------------
-
-    # Number of bytes for the sniffer (should be larger than 1st+2nd line)
-    sniff_size = 65536
-
-    # Maximum number of characters in wx.TextCtrl
-    max_textctrl_length = 65534
+    sniff_size = 65536  # Number of bytes for csv sniffer
+    #                     sniff_size should be larger than 1st+2nd line
+    max_textctrl_length = 65534  # Maximum number of characters in wx.TextCtrl
 
 
 class Settings:

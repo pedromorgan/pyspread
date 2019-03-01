@@ -54,7 +54,7 @@ import sys
 import numpy
 from PyQt5.QtGui import QImage, QPixmap
 
-from config import Settings
+from settings import Settings
 
 from lib.typechecks import isslice, isstring
 from lib.selection import Selection

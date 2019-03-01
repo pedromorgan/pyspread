@@ -28,7 +28,7 @@ UnRedo contains the UnRedo class that manages undo and redo operations.
 
 """
 
-from config import Settings
+from settings import Settings
 
 
 class UnRedo:

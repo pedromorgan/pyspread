@@ -44,7 +44,7 @@ try:
 except ImportError:
     gnupg = None
 
-from config import Settings
+from settings import Settings
 
 #from src.gui._gui_interfaces import get_key_params_from_user
 #
