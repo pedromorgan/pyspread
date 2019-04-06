@@ -32,6 +32,7 @@ from base64 import b85encode
 import bz2
 from contextlib import contextmanager
 import os.path
+from pathlib import Path
 from shutil import move
 import sys
 from tempfile import NamedTemporaryFile
@@ -208,7 +209,7 @@ class Workflows:
 
         try:
             signed_data = sign(filepath)
-        except ValueError as err:
+        except (ValueError, IsADirectoryError) as err:
             msg = "Error signing file: {}".format(err)
             self.main_window.statusBar().showMessage(msg)
             return
@@ -306,6 +307,8 @@ class Workflows:
         # Get filepath from user
         file_save_dialog = FileSaveDialog(self.main_window)
         filepath = file_save_dialog.filepath
+        if filepath == Path('.'):
+            return  # Cancel pressed
         chosen_filter = file_save_dialog.chosen_filter
         filter_suffix = chosen_filter[-5:-1]  # e.g. '.pys'
 
