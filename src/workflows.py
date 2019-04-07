@@ -146,8 +146,10 @@ class Workflows:
         file_open_dialog = FileOpenDialog(self.main_window)
         filepath = file_open_dialog.filepath
         chosen_filter = file_open_dialog.chosen_filter
-        if filepath is None or not chosen_filter:
-            return
+        if not filepath or not chosen_filter:
+            return  # Cancel pressed
+        else:
+            filepath = Path(filepath)
         filesize = os.path.getsize(filepath)
 
         # Reset grid
@@ -307,8 +309,10 @@ class Workflows:
         # Get filepath from user
         file_save_dialog = FileSaveDialog(self.main_window)
         filepath = file_save_dialog.filepath
-        if filepath == Path('.'):
+        if not filepath:
             return  # Cancel pressed
+        else:
+            filepath = Path(filepath)
         chosen_filter = file_save_dialog.chosen_filter
         filter_suffix = chosen_filter[-5:-1]  # e.g. '.pys'
 
@@ -329,7 +333,10 @@ class Workflows:
 
         image_file_open_dialog = ImageFileOpenDialog(self.main_window)
         filepath = image_file_open_dialog.filepath
-        #filepath = "/home/mn/Pictures/Wallpapers/park-2-1600.jpg"
+        if not filepath:
+            return  # Cancel pressed
+        else:
+            filepath = Path(filepath)
 
         with open(filepath, "rb") as imgfile:
             imgdata = b85encode(imgfile.read())

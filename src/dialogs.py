@@ -28,8 +28,6 @@ Modal dialogs for pyspread
 
 """
 
-from pathlib import Path
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QDialog, QLineEdit
 from PyQt5.QtWidgets import QLabel, QFormLayout, QVBoxLayout, QGroupBox
@@ -225,7 +223,7 @@ class FileOpenDialog(FileDialogBase):
         filepath, chosen_filter = \
             QFileDialog.getOpenFileName(self.main_window, self.title,
                                         str(path), self.name_filter)
-        return Path(filepath), chosen_filter
+        return filepath, chosen_filter
 
 
 class FileSaveDialog(FileDialogBase):
@@ -240,7 +238,7 @@ class FileSaveDialog(FileDialogBase):
         filepath, chosen_filter = \
             QFileDialog.getSaveFileName(self.main_window, self.title,
                                         str(path), self.name_filter)
-        return Path(filepath), chosen_filter
+        return filepath, chosen_filter
 
 
 class ImageFileOpenDialog(FileDialogBase):
@@ -264,4 +262,4 @@ class ImageFileOpenDialog(FileDialogBase):
                                         self.title,
                                         str(path),
                                         self.name_filter)
-        return Path(filepath), chosen_filter
+        return filepath, chosen_filter
