@@ -772,7 +772,7 @@ class MainWindowActions(dict):
                                                 'dependencies')
 
         self["about"] = Action(self.parent, "About pyspread...",
-                               self.parent.on_nothing,
+                               self.parent.on_about,
                                icon=Icon("pyspread"),
                                statustip='About pyspread')
 

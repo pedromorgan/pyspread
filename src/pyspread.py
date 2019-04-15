@@ -41,11 +41,11 @@ from pathlib import Path
 import sys
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter
+from PyQt5.QtWidgets import QMainWindow, QApplication, QSplitter, QMessageBox
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QColor, QFont
 
-from settings import Settings
+from settings import Settings, VERSION
 from icons import Icon
 from grid import Grid
 from entryline import Entryline
@@ -56,6 +56,8 @@ from actions import MainWindowActions
 from workflows import Workflows
 from widgets import Widgets
 from dialogs import ApproveWarningDialog
+
+LICENSE = "GNU GENERAL PUBLIC LICENSE Version 3"
 
 
 class ApplicationStates:
@@ -200,6 +202,28 @@ class MainWindow(QMainWindow):
 
         if ApproveWarningDialog(self).choice:
             self.safe_mode = False
+
+    def on_about(self):
+        """Show about message box"""
+
+        about_msg_template = "<p>".join((
+            "<b>Pyspread</b>",
+            "A non-traditional Python spreadsheet application",
+            "Version {version}",
+            "Created by:<br>{devs}",
+            "Documented by:<br>{doc_devs}",
+            "Copyright:<br>Martin Manns",
+            "License:<br>{license}",
+            '<a href="https://manns.github.io/pyspread/">Pyspread website</a>',
+            ))
+
+        devs = "Martin Manns, Jason Sexauer<br>Vova Kolobok, mgunyho"
+
+        doc_devs = "Martin Manns, Bosko Markovic"
+
+        about_msg = about_msg_template.format(
+            version=VERSION, devs=devs, doc_devs=doc_devs, license=LICENSE)
+        QMessageBox.about(self, "About pyspread", about_msg)
 
     def on_gui_update(self, attributes):
         """GUI update event handler.
