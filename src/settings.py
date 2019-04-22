@@ -82,7 +82,7 @@ class DefaultSettings:
     maximum_zoom = 8.0
     zoom_factor = 0.05  # Increase and decrease factor on zoom in and zoom out
 
-    gpg_key_fingerprint = ''
+    signature_key = b''
 
     sniff_size = 65536  # Number of bytes for csv sniffer
     #                     sniff_size should be larger than 1st+2nd line

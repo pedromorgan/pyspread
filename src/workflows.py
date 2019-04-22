@@ -44,7 +44,7 @@ from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 from dialogs import FileSaveDialog, ImageFileOpenDialog
 from interfaces.pys import PysReader, PysWriter
 from lib.dependencies import get_gpg_version
-from lib.gpg import sign, verify
+from lib.hashing import sign, verify
 
 
 class Workflows:
@@ -156,7 +156,13 @@ class Workflows:
         self.main_window.grid.model.reset()
 
         # Is the file signed properly?
-        self.main_window.safe_mode = not verify(filepath)
+        try:
+            with open(filepath) as infile:
+                with open(filepath+".sig") as sigfile:
+                    self.main_window.safe_mode = not verify(infile.read(),
+                                                            sigfile.read())
+        except OSError:
+            self.main_window.safe_mode = True
 
         # File compression handling
         if chosen_filter == "Pyspread uncompressed (*.pysu)":
@@ -196,13 +202,8 @@ class Workflows:
         # Change the main window last input directory state
         self.application_states.last_file_input_path = filepath
 
-    def sign(self, filepath):
+    def sign_file(self, filepath):
         """Signs filepath if gnupg present and pyspread not in safe mode"""
-
-        if not get_gpg_version():
-            msg = "File saved but not signed because gnupg is unavailable."
-            self.main_window.statusBar().showMessage(msg)
-            return
 
         if self.main_window.grid.code_array.safe_mode:
             msg = "File saved but not signed because it is unapproved."
@@ -210,16 +211,15 @@ class Workflows:
             return
 
         try:
-            signed_data = sign(filepath)
-        except (ValueError, IsADirectoryError) as err:
+            with open(filepath, "rb") as infile:
+                signature = sign(infile.read())
+        except OSError as err:
             msg = "Error signing file: {}".format(err)
             self.main_window.statusBar().showMessage(msg)
             return
 
-        signature = signed_data.data
-
         if signature is None or not signature:
-            msg = 'Error signing file. ' + signed_data.stderr
+            msg = 'Error signing file. '
             self.main_window.statusBar().showMessage(msg)
             return
 
@@ -287,7 +287,7 @@ class Workflows:
         window_title = "{filename} - pyspread".format(filename=filepath.name)
         self.main_window.setWindowTitle(window_title)
 
-        self.sign(filepath)
+        self.sign_file(filepath)
 
     def file_save(self):
         """File save workflow"""
