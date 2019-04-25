@@ -138,19 +138,12 @@ class MainWindowActions(dict):
                                statustip='Print current spreadsheet')
 
         self["preferences"] = Action(self.parent, "Preferences...",
-                                     self.parent.on_nothing,
+                                     self.parent.on_preferences,
                                      icon=Icon("preferences"),
                                      statustip='Pyspread setup parameters')
 
-        self["new_gpg_key"] = Action(self.parent, "Switch GPG key...",
-                                     self.parent.on_nothing,
-                                     icon=Icon("new_gpg_key"),
-                                     statustip='Create or choose a GPG key '
-                                               'pair for signing and '
-                                               'verifying pyspread files')
-
         self["quit"] = Action(self.parent, "&Quit",
-                             self.parent.workflows.file_quit,
+                              self.parent.workflows.file_quit,
                               icon=Icon("quit"),
                               shortcut='Ctrl+Q',
                               statustip='Exit pyspread')

@@ -83,7 +83,6 @@ class MenuBar(QMenuBar):
         file_menu.addAction(self.actions["print"])
         file_menu.addSeparator()
         file_menu.addAction(self.actions["preferences"])
-        file_menu.addAction(self.actions["new_gpg_key"])
         file_menu.addSeparator()
         file_menu.addAction(self.actions["quit"])
 

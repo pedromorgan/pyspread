@@ -55,7 +55,7 @@ from toolbar import WidgetToolbar
 from actions import MainWindowActions
 from workflows import Workflows
 from widgets import Widgets
-from dialogs import ApproveWarningDialog
+from dialogs import ApproveWarningDialog, PreferencesDialog
 
 LICENSE = "GNU GENERAL PUBLIC LICENSE Version 3"
 
@@ -202,6 +202,15 @@ class MainWindow(QMainWindow):
 
         if ApproveWarningDialog(self).choice:
             self.safe_mode = False
+
+    def on_preferences(self):
+        """Preferences event handler"""
+
+        data = PreferencesDialog(self).data
+        if data is not None:
+            # Dialog has not been approved --> Store data to settings
+            for key in data:
+                self.settings.__setattr__(key, data[key])
 
     def on_about(self):
         """Show about message box"""

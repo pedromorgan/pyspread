@@ -48,8 +48,8 @@ class DefaultSettings:
     check_spelling = False  # Spell checking toggle
     spell_lang = 'en_US'  # Spell checking language
 
-    default_open_filetype = 'pys'
-    default_save_filetype = 'pys'
+    default_open_filetype = 'pysu'
+    default_save_filetype = 'pysu'
 
     window_position = 10, 10
     window_size = 800, 600

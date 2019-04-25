@@ -26,6 +26,14 @@ modal_dialogs
 
 Modal dialogs for pyspread
 
+ * DiscardChangesDialog
+ * ApproveWarningDialog
+ * GridShapeDialog
+ * (FileDialogBase)
+ * FileOpenDialog
+ * FileSaveDialog
+ * ImageFileOpenDialog
+
 """
 
 from PyQt5.QtCore import Qt
@@ -123,7 +131,7 @@ class GridShapeDialog(QDialog):
     def __init__(self, parent, shape):
         super(GridShapeDialog, self).__init__(parent)
 
-        self.shape = shape
+        self.__shape = shape
         layout = QVBoxLayout(self)
         layout.addWidget(self.create_form())
         layout.addWidget(self.create_buttonbox())
@@ -131,7 +139,8 @@ class GridShapeDialog(QDialog):
 
         self.setWindowTitle("Create a new grid")
 
-    def get_shape(self):
+    @property
+    def shape(self):
         """Executes the dialog and returns an int tuple rows, columns, tables
 
         Returns None if the dialog is canceled
@@ -160,20 +169,99 @@ class GridShapeDialog(QDialog):
         validator = QIntValidator()
         validator.setBottom(0)  # Do not allow negative values
 
-        self.row_edit = QLineEdit(str(self.shape[0]))
+        self.row_edit = QLineEdit(str(self.__shape[0]))
         self.row_edit.setAlignment(Qt.AlignRight)
         self.row_edit.setValidator(validator)
         form_layout.addRow(QLabel("Number of rows"), self.row_edit)
 
-        self.column_edit = QLineEdit(str(self.shape[1]))
+        self.column_edit = QLineEdit(str(self.__shape[1]))
         self.column_edit.setAlignment(Qt.AlignRight)
         self.column_edit.setValidator(validator)
         form_layout.addRow(QLabel("Number of columns"), self.column_edit)
 
-        self.table_edit = QLineEdit(str(self.shape[2]))
+        self.table_edit = QLineEdit(str(self.__shape[2]))
         self.table_edit.setAlignment(Qt.AlignRight)
         self.table_edit.setValidator(validator)
         form_layout.addRow(QLabel("Number of tables"), self.table_edit)
+
+        form_group_box.setLayout(form_layout)
+
+        return form_group_box
+
+    def create_buttonbox(self):
+        """Returns a QDialogButtonBox with Ok and Cancel"""
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok
+                                      | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        return button_box
+
+
+class PreferencesDialog(QDialog):
+    """Modal dialog for entering pyspread preferences"""
+
+    def __init__(self, parent):
+        super(PreferencesDialog, self).__init__(parent)
+
+        self.settings = parent.settings
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.create_form())
+        layout.addWidget(self.create_buttonbox())
+        self.setLayout(layout)
+
+        self.setWindowTitle("Preferences")
+
+    @property
+    def data(self):
+        """Executes the dialog and returns a dict containing preferences data
+
+        Returns None if the dialog is canceled
+
+        """
+
+        result = self.exec_()
+
+        if result == QDialog.Accepted:
+            try:
+                unredo = int(self.unredo_edit.text())
+                timeout = int(self.timeout_edit.text())
+                max_result_length = int(self.max_result_length_edit.text())
+            except ValueError:
+                # At least one field was empty or contained no number
+                return
+
+            return {"unredo": unredo,
+                    "timeout": timeout,
+                    "max_result_length": max_result_length}
+
+    def create_form(self):
+        """Returns form inside a QGroupBox"""
+
+        form_group_box = QGroupBox("")
+        form_layout = QFormLayout()
+
+        validator = QIntValidator()
+        validator.setBottom(0)  # Do not allow negative values
+
+        self.unredo_edit = QLineEdit(str(self.settings.max_unredo))
+        self.unredo_edit.setAlignment(Qt.AlignRight)
+        self.unredo_edit.setValidator(validator)
+        form_layout.addRow(QLabel("Number of undo steps"), self.unredo_edit)
+
+        self.timeout_edit = QLineEdit(str(self.settings.timeout))
+        self.timeout_edit.setAlignment(Qt.AlignRight)
+        self.timeout_edit.setValidator(validator)
+        form_layout.addRow(QLabel("Cell calculation timeout [s]"),
+                           self.timeout_edit)
+
+        self.max_result_length_edit = \
+            QLineEdit(str(self.settings.max_result_length))
+        self.max_result_length_edit.setAlignment(Qt.AlignRight)
+        self.max_result_length_edit.setValidator(validator)
+        form_layout.addRow(QLabel("Maximum length of cell result strings"),
+                           self.max_result_length_edit)
 
         form_group_box.setLayout(form_layout)
 

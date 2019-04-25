@@ -115,7 +115,7 @@ class Workflows:
 
         # Get grid shape from user
         old_shape = self.main_window.grid.code_array.shape
-        shape = GridShapeDialog(self.main_window, old_shape).get_shape()
+        shape = GridShapeDialog(self.main_window, old_shape).shape
         if shape is None:
             # Abort changes because the dialog has been canceled
             return
