@@ -43,7 +43,6 @@ from PyQt5.QtWidgets import QProgressDialog, QMessageBox
 from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
 from dialogs import FileSaveDialog, ImageFileOpenDialog
 from interfaces.pys import PysReader, PysWriter
-from lib.dependencies import get_gpg_version
 from lib.hashing import sign, verify
 
 
@@ -158,7 +157,8 @@ class Workflows:
         # Is the file signed properly?
         try:
             with open(filepath) as infile:
-                with open(filepath+".sig") as sigfile:
+                sigpath = filepath / ".sig"
+                with open(sigpath) as sigfile:
                     self.main_window.safe_mode = not verify(infile.read(),
                                                             sigfile.read())
         except OSError:
