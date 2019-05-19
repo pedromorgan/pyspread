@@ -1215,6 +1215,23 @@ class CodeArray(DataArray):
 
         return env
 
+    def exec_then_eval(self, code, _globals=None, _locals=None):
+        """execs multuiline code and returns eval of last code line"""
+
+        if _globals is None:
+            _globals = {}
+
+        if _locals is None:
+            _locals = {}
+
+        block = ast.parse(code, mode='exec')
+
+        # assumes last node is an expression
+        last = ast.Expression(block.body.pop().value)
+
+        exec(compile(block, '<string>', mode='exec'), _globals, _locals)
+        return eval(compile(last, '<string>', mode='eval'), _globals, _locals)
+
     def _eval_cell(self, key, code):
         """Evaluates one cell and returns its result"""
 
@@ -1297,7 +1314,7 @@ class CodeArray(DataArray):
                 pass
 
             try:
-                result = eval(expression, env, {})
+                result = self.exec_then_eval(expression, env, {})
 
             except AttributeError as err:
                 # Attribute Error includes RunTimeError
