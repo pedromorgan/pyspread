@@ -107,7 +107,7 @@ class Icon(QIcon):
         "rotate_180": str(ACTION_PATH / 'format-cell-rotate-180.svg'),
         "rotate_270": str(ACTION_PATH / 'format-cell-rotate-270.svg'),
         "justify_left": str(ACTION_PATH / 'format-justify-left.svg'),
-        "justify_fill": str(ACTION_PATH / 'format-justify-fill'),
+        "justify_fill": str(ACTION_PATH / 'format-justify-fill.svg'),
         "justify_center": str(ACTION_PATH / 'format-justify-center.svg'),
         "justify_right": str(ACTION_PATH / 'format-justify-right.svg'),
         "align_top": str(ACTION_PATH / 'format-text-align-top.svg'),
