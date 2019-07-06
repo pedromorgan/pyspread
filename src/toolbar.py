@@ -113,7 +113,7 @@ class AttributesToolbar(QToolBar):
         self.border_menu_button.setIcon(Icon("border_menu"))
         self.addWidget(self.border_menu_button)
         self.border_menu_button.setPopupMode(
-            QToolButton.ToolButtonPopupMode.InstantPopup)
+            QToolButton.InstantPopup)
 
         self.line_width_button = QToolButton(self)
         line_width_submenu = self.main_window.menuBar().line_width_submenu
@@ -121,7 +121,7 @@ class AttributesToolbar(QToolBar):
         self.line_width_button.setIcon(Icon("format_borders"))
         self.addWidget(self.line_width_button)
         self.line_width_button.setPopupMode(
-            QToolButton.ToolButtonPopupMode.InstantPopup)
+            QToolButton.InstantPopup)
 
         self.addSeparator()
 
