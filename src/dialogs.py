@@ -33,14 +33,20 @@ Modal dialogs for pyspread
  * FileOpenDialog
  * FileSaveDialog
  * ImageFileOpenDialog
+ * ChartDialog
 
 """
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QDialog, QLineEdit
 from PyQt5.QtWidgets import QLabel, QFormLayout, QVBoxLayout, QGroupBox
-from PyQt5.QtWidgets import QDialogButtonBox
+from PyQt5.QtWidgets import QDialogButtonBox, QSplitter
 from PyQt5.QtGui import QIntValidator, QImageWriter
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+import numpy as np
+
+from lib.spelltextedit import SpellTextEdit
 
 
 class DiscardChangesDialog:
@@ -351,3 +357,73 @@ class ImageFileOpenDialog(FileDialogBase):
                                         str(path),
                                         self.name_filter)
         return filepath, chosen_filter
+
+
+class ChartDialog(QDialog):
+    """The chart dialog"""
+
+    def __init__(self, parent):
+        super(ChartDialog, self).__init__(parent)
+        self.setWindowTitle("Chart dialog")
+        self.parent = parent
+
+        self.chart_ui()
+
+    def chart_ui(self):
+        self.editor = SpellTextEdit(self)
+        canvas = FigureCanvasQTAgg(Figure(figsize=(5, 5), dpi=100))
+        self.splitter = QSplitter(self)
+        buttonbox = self.create_buttonbox()
+
+        self.splitter.addWidget(self.editor)
+        self.splitter.addWidget(canvas)
+        self.splitter.setOpaqueResize(False)
+        self.splitter.setSizes([9999, 9999])
+
+        # Layout
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.splitter)
+        layout.addWidget(buttonbox)
+        self.setLayout(layout)
+
+    def apply(self):
+        """Executes the code in the dialog and updates the canvas"""
+
+        # Get current cell
+        key = self.parent.grid.current
+        code = self.editor.toPlainText()
+
+        figure = self.parent.grid.code_array._eval_cell(key, code)
+        canvas = FigureCanvasQTAgg(figure)
+        self.splitter.replaceWidget(1, canvas)
+        canvas.draw()
+
+    def create_buttonbox(self):
+        """Returns a QDialogButtonBox with Ok and Cancel"""
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok
+                                      | QDialogButtonBox.Apply
+                                      | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        button_box.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        return button_box
+
+
+class Canvas(FigureCanvasQTAgg):
+    def __init__(self, parent, figure):
+
+        self.axes = figure.add_subplot(111)
+
+        FigureCanvasQTAgg.__init__(self, figure)
+        self.setParent(parent)
+
+        self.plot()
+
+    def plot(self):
+        x = np.array([50, 30, 25])
+
+        labels = ['Apples', 'Bananas', 'Melons']
+        ax = self.figure.add_subplot(111)
+
+        ax.pie(x, labels=labels)

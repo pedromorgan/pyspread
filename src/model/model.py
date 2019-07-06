@@ -43,6 +43,7 @@ from builtins import object
 import ast
 import base64
 import bz2
+from matplotlib.figure import Figure
 from collections import defaultdict
 from copy import copy
 import datetime
@@ -1175,28 +1176,6 @@ class CodeArray(DataArray):
 
         return res
 
-    def _get_assignment_target_end(self, ast_module):
-        """Returns position of 1st char after assignment traget.
-
-        If there is no assignment, -1 is returned
-
-        If there are more than one of any ( expressions or assigments)
-        then a ValueError is raised.
-
-        """
-
-        if len(ast_module.body) > 1:
-            raise ValueError("More than one expression or assignment.")
-
-        elif len(ast_module.body) > 0 and \
-                type(ast_module.body[0]) is ast.Assign:
-            if len(ast_module.body[0].targets) != 1:
-                raise ValueError("More than one assignment target.")
-            else:
-                return len(ast_module.body[0].targets[0].id)
-
-        return -1
-
     def _get_updated_environment(self, env_dict=None):
         """Returns globals environment with 'magic' variable
 
@@ -1227,17 +1206,27 @@ class CodeArray(DataArray):
         block = ast.parse(code, mode='exec')
 
         # assumes last node is an expression
-        last = ast.Expression(block.body.pop().value)
+        last_body = block.body.pop()
+        last = ast.Expression(last_body.value)
 
         exec(compile(block, '<string>', mode='exec'), _globals, _locals)
-        return eval(compile(last, '<string>', mode='eval'), _globals, _locals)
+        res = eval(compile(last, '<string>', mode='eval'), _globals, _locals)
+
+        if hasattr(last_body, "targets"):
+            for target in last_body.targets:
+                print(target.id, type(res))
+                _globals[target.id] = res
+
+        globals().update(_globals)
+
+        return res
 
     def _eval_cell(self, key, code):
         """Evaluates one cell and returns its result"""
 
         # Flatten helper function
         def nn(val):
-            """Returns flat numpy arraz without None values"""
+            """Returns flat numpy array without None values"""
             try:
                 return numpy.array([_f for _f in val.flat if _f])
 
@@ -1248,7 +1237,7 @@ class CodeArray(DataArray):
         # Set up environment for evaluation
 
         env_dict = {'X': key[0], 'Y': key[1], 'Z': key[2], 'bz2': bz2,
-                    'base64': base64, 'nn': nn,
+                    'base64': base64, 'nn': nn, 'Figure': Figure,
                     'R': key[0], 'C': key[1], 'T': key[2], 'S': self}
         env = self._get_updated_environment(env_dict=env_dict)
 
@@ -1269,75 +1258,38 @@ class CodeArray(DataArray):
 
             return numpy.array(self._make_nested_list(code), dtype="O")
 
-        # If only 1 term in front of the "=" --> global
+        try:
+            import signal
+
+            signal.signal(signal.SIGALRM, self.handler)
+            signal.alarm(self.settings.timeout)
+
+        except Exception:
+            # No POSIX system
+            pass
 
         try:
-            assignment_target_error = None
-            module = ast.parse(code)
-            assignment_target_end = self._get_assignment_target_end(module)
-
-        except ValueError as err:
-            assignment_target_error = ValueError(err)
+            result = self.exec_then_eval(code, env, {})
 
         except AttributeError as err:
             # Attribute Error includes RunTimeError
-            assignment_target_error = AttributeError(err)
+            result = AttributeError(err)
+
+        except RuntimeError as err:
+            result = RuntimeError(err)
 
         except Exception as err:
-            assignment_target_error = Exception(err)
+            result = Exception(err)
 
-        if assignment_target_error is None and assignment_target_end != -1:
-            glob_var = code[:assignment_target_end]
-            expression = code.split("=", 1)[1]
-            expression = expression.strip()
-
-            # Delete result cache because assignment changes results
-            self.result_cache.clear()
-
-        else:
-            glob_var = None
-            expression = code
-
-        if assignment_target_error is not None:
-            result = assignment_target_error
-
-        else:
-
+        finally:
             try:
-                import signal
-
-                signal.signal(signal.SIGALRM, self.handler)
-                signal.alarm(self.settings.timeout)
-
+                signal.alarm(0)
             except Exception:
                 # No POSIX system
                 pass
 
-            try:
-                result = self.exec_then_eval(expression, env, {})
-
-            except AttributeError as err:
-                # Attribute Error includes RunTimeError
-                result = AttributeError(err)
-
-            except RuntimeError as err:
-                result = RuntimeError(err)
-
-            except Exception as err:
-                result = Exception(err)
-
-            finally:
-                try:
-                    signal.alarm(0)
-                except Exception:
-                    # No POSIX system
-                    pass
-
         # Change back cell value for evaluation from other cells
         self.dict_grid[key] = _old_code
-
-        if glob_var is not None:
-            globals().update({glob_var: result})
 
         return result
 

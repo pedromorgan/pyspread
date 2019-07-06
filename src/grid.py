@@ -701,6 +701,7 @@ class GridItemModel(QAbstractTableModel):
         if role == Qt.EditRole:
             self.code_array[self.current(index)] = "{}".format(value)
             self.dataChanged.emit(index, index)
+            print(value)
 
             return True
 

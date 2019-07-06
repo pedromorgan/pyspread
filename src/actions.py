@@ -732,7 +732,7 @@ class MainWindowActions(dict):
                                     statustip='Link an image file from a cell')
 
         self["insert_chart"] = Action(self.parent, "Insert chart...",
-                                      self.parent.on_nothing,
+                                      self.parent.workflows.insert_chart,
                                       icon=Icon("insert_chart"),
                                       statustip='Create a matplotlib chart '
                                                 'and insert code so that it '

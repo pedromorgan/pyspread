@@ -41,7 +41,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QProgressDialog, QMessageBox
 
 from dialogs import DiscardChangesDialog, FileOpenDialog, GridShapeDialog
-from dialogs import FileSaveDialog, ImageFileOpenDialog
+from dialogs import FileSaveDialog, ImageFileOpenDialog, ChartDialog
 from interfaces.pys import PysReader, PysWriter
 from lib.hashing import sign, verify
 
@@ -355,3 +355,9 @@ class Workflows:
         self.main_window.entry_line.setUpdatesEnabled(False)
         self.main_window.grid.model.setData(index, code, Qt.EditRole)
         self.main_window.entry_line.setUpdatesEnabled(True)
+
+    def insert_chart(self):
+        """Insert chart workflow"""
+
+        chart_dialog = ChartDialog(self.main_window)
+        chart_dialog.show()

@@ -151,7 +151,7 @@ class SpellTextEdit(QPlainTextEdit):
     # into a second column.
     max_suggestions = 20
 
-    def __init__(self):
+    def __init__(self, parent=None):
 
         super().__init__()
 
