@@ -138,8 +138,6 @@ class Icon(QIcon):
         "merge_cells": str(ACTION_PATH / 'format-merge-cells.svg'),
 
         # Macro menu icons
-        "load_macros": str(ACTION_PATH / 'macro-open.svg'),
-        "save_macros": str(ACTION_PATH / 'macro-save.svg'),
         "insert_image": str(ACTION_PATH / 'macro-insert-image.svg'),
         "link_image": str(ACTION_PATH / 'macro-link-image.svg'),
         "insert_chart": str(ACTION_PATH / 'macro-insert-chart.svg'),

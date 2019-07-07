@@ -313,11 +313,6 @@ class MainWindowActions(dict):
                                           checkable=True,
                                           statustip='Show/hide the entry line')
 
-        self["toggle_tablelist"] = Action(self.parent, "Table list",
-                                          self.parent.on_nothing,
-                                          checkable=True,
-                                          statustip='Show/hide the table list')
-
         self["toggle_macropanel"] = Action(self.parent, "Macro panel",
                                            self.parent.on_nothing,
                                            checkable=True,
@@ -707,18 +702,6 @@ class MainWindowActions(dict):
 
     def _add_macro_actions(self):
         """Adds actions for Macro menu"""
-
-        self["load_macros"] = Action(self.parent, "Load macros",
-                                     self.parent.on_nothing,
-                                     icon=Icon("load_macros"),
-                                     statustip='Load macros from an external '
-                                               'Python file')
-
-        self["save_macros"] = Action(self.parent, "Save macros",
-                                     self.parent.on_nothing,
-                                     icon=Icon("save_macros"),
-                                     statustip='Save macros to an external '
-                                               'Python file')
 
         self["insert_image"] = Action(self.parent, "Insert image...",
                                       self.parent.workflows.insert_image,
