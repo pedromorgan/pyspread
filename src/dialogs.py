@@ -394,6 +394,7 @@ class ChartDialog(QDialog):
         code = self.editor.toPlainText()
 
         figure = self.parent.grid.code_array._eval_cell(key, code)
+        print(type(figure))
         canvas = FigureCanvasQTAgg(figure)
         self.splitter.replaceWidget(1, canvas)
         canvas.draw()

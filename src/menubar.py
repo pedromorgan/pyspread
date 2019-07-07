@@ -139,7 +139,6 @@ class MenuBar(QMenuBar):
         toolbar_submenu.addAction(self.actions["toggle_find_toolbar"])
 
         view_menu.addAction(self.actions["toggle_entryline"])
-        view_menu.addAction(self.actions["toggle_tablelist"])
         view_menu.addAction(self.actions["toggle_macropanel"])
         view_menu.addSeparator()
         view_menu.addAction(self.actions["goto_cell"])
@@ -220,9 +219,6 @@ class MenuBar(QMenuBar):
 
         macro_menu = self.addMenu('&Macro')
 
-        macro_menu.addAction(self.actions["load_macros"])
-        macro_menu.addAction(self.actions["save_macros"])
-        macro_menu.addSeparator()
         macro_menu.addAction(self.actions["insert_image"])
         macro_menu.addAction(self.actions["link_image"])
         macro_menu.addAction(self.actions["insert_chart"])
