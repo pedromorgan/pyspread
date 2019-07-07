@@ -91,6 +91,7 @@ class MainWindow(QMainWindow):
     def __init__(self, application):
         super().__init__()
 
+        self._loading = True
         self.application = application
         self.settings = Settings()
         self.application_states = ApplicationStates()
@@ -104,10 +105,12 @@ class MainWindow(QMainWindow):
         self._init_toolbars()
 
         self.show()
+        self._loading = False
 
     def _init_window(self):
         """Initialize main window components"""
 
+        self.setWindowTitle('Pyspread')
         self.setWindowIcon(Icon("pyspread"))
 
         self.safe_mode_widget = QSvgWidget(Icon.icon_path["warning"], self)
@@ -119,7 +122,23 @@ class MainWindow(QMainWindow):
         self.setMenuBar(MenuBar(self))
 
         self.setGeometry(100, 100, 1000, 700)
-        self.setWindowTitle('Pyspread')
+        geom = self.settings.qsettings.value('MainWindow.geometry')
+        if geom:
+            self.restoreGeometry(geom)
+
+    def resizeEvent(self, event):
+        super(MainWindow, self).resizeEvent(event)
+        if self._loading:
+            return
+        self.settings.qsettings.setValue('MainWindow.geometry', self.saveGeometry())
+        self.settings.qsettings.sync()
+
+
+    def closeEvent(self, event):
+        """Overloaded close event, allows saving changes or canceling close"""
+        self.workflows.file_quit()
+        event.ignore()
+
 
     def _init_widgets(self):
         """Initialize widgets"""
@@ -186,11 +205,7 @@ class MainWindow(QMainWindow):
             # Execute macros
             self.grid.code_array.execute_macros()
 
-    def closeEvent(self, event):
-        """Overloaded close event, allows saving changes or canceling close"""
 
-        self.workflows.file_quit()
-        event.ignore()
 
     def on_nothing(self):
         """Dummy action that does nothing"""

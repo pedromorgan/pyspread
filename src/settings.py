@@ -92,12 +92,13 @@ class DefaultSettings:
 class Settings:
     """QT5 settings accessor"""
 
-    settings = QSettings("pyspread", "pyspread")
+    qsettings = QSettings("pyspread", "pyspread")
     defaults = DefaultSettings()
 
     def __getattr__(self, name):
+
         try:
-            value = self.settings.value(name)
+            value = self.qsettings.value(name)
             if value is not None:
                 return value
         except AttributeError:
@@ -106,5 +107,5 @@ class Settings:
         return getattr(self.defaults, name)
 
     def __setattr__(self, name, value):
-        self.settings.setValue(name, value)
-        self.settings.sync()
+        self.qsettings.setValue(name, value)
+        self.qsettings.sync()
