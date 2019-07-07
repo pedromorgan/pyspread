@@ -209,8 +209,14 @@ class MainWindow(QMainWindow):
 
     def on_nothing(self):
         """Dummy action that does nothing"""
-
         pass
+
+    def on_fullscreen(self):
+        if self.windowState() == Qt.WindowFullScreen:
+            self.setWindowState(Qt.WindowMaximized)
+        else:
+            self.setWindowState(Qt.WindowFullScreen)
+
 
     def on_approve(self):
         """Approve event handler"""
