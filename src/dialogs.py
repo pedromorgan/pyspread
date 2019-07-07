@@ -40,7 +40,7 @@ Modal dialogs for pyspread
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QDialog, QLineEdit
 from PyQt5.QtWidgets import QLabel, QFormLayout, QVBoxLayout, QGroupBox
-from PyQt5.QtWidgets import QDialogButtonBox, QSplitter
+from PyQt5.QtWidgets import QDialogButtonBox, QSplitter, QTextBrowser
 from PyQt5.QtGui import QIntValidator, QImageWriter
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -245,7 +245,7 @@ class PreferencesDialog(QDialog):
     def create_form(self):
         """Returns form inside a QGroupBox"""
 
-        form_group_box = QGroupBox("")
+        form_group_box = QGroupBox("Global settings")
         form_layout = QFormLayout()
 
         validator = QIntValidator()
@@ -365,18 +365,30 @@ class ChartDialog(QDialog):
     def __init__(self, parent):
         super(ChartDialog, self).__init__(parent)
         self.setWindowTitle("Chart dialog")
+        self.setModal(True)
+        self.resize(800, 600)
         self.parent = parent
 
-        self.chart_ui()
+        self.dialog_ui()
 
-    def chart_ui(self):
+    def dialog_ui(self):
+        """Sets up dialog UI"""
+
+        msg = "Enter Python code into the editor to the left. Globals " + \
+              "such as X, Y, Z, S are available as they are in the grid. " + \
+              "The last line must result in a matplotlib figure.\n \n" + \
+              "Pressing Apply displays the figure or an error message in " + \
+              "the right area."
+
+        self.message = QTextBrowser(self)
+        self.message.setText(msg)
         self.editor = SpellTextEdit(self)
-        canvas = FigureCanvasQTAgg(Figure(figsize=(5, 5), dpi=100))
         self.splitter = QSplitter(self)
+
         buttonbox = self.create_buttonbox()
 
         self.splitter.addWidget(self.editor)
-        self.splitter.addWidget(canvas)
+        self.splitter.addWidget(self.message)
         self.splitter.setOpaqueResize(False)
         self.splitter.setSizes([9999, 9999])
 
@@ -394,10 +406,22 @@ class ChartDialog(QDialog):
         code = self.editor.toPlainText()
 
         figure = self.parent.grid.code_array._eval_cell(key, code)
-        print(type(figure))
-        canvas = FigureCanvasQTAgg(figure)
-        self.splitter.replaceWidget(1, canvas)
-        canvas.draw()
+
+        if isinstance(figure, Figure):
+            canvas = FigureCanvasQTAgg(figure)
+            self.splitter.replaceWidget(1, canvas)
+            canvas.draw()
+        else:
+            if isinstance(figure, Exception):
+                self.message.setText("Error:\n{}".format(figure))
+            else:
+                msg_text = "Error:\n{} has type '{}', " + \
+                           "which is no instance of {}."
+                msg = msg_text.format(figure,
+                                      type(figure).__name__,
+                                      Figure)
+                self.message.setText(msg)
+            self.splitter.replaceWidget(1, self.message)
 
     def create_buttonbox(self):
         """Returns a QDialogButtonBox with Ok and Cancel"""
