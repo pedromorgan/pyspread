@@ -176,6 +176,7 @@ class MenuBar(QMenuBar):
         renderer_submenu.addAction(self.actions["text"])
         renderer_submenu.addAction(self.actions["image"])
         renderer_submenu.addAction(self.actions["markup"])
+        renderer_submenu.addAction(self.actions["matplotlib"])
 
         format_menu.addAction(self.actions["freeze_cell"])
         format_menu.addAction(self.actions["lock_cell"])

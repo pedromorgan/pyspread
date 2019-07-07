@@ -127,7 +127,7 @@ class JustificationButton(MultiStateBitmapButton):
 class RendererButton(MultiStateBitmapButton):
     """Cell render button for the format toolbar"""
 
-    actions = "text", "markup", "image"
+    actions = "text", "markup", "image", "matplotlib"
 
     def __init__(self, main_window):
         self.main_window = main_window

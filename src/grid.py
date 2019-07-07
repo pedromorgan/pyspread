@@ -349,6 +349,15 @@ class Grid(QTableView):
         entry_line.highlighter.setDocument(entry_line.document())
         self.gui_update()
 
+    def on_matplotlib_renderer_pressed(self, toggled):
+        """Matplotlib renderer button pressed event handler"""
+
+        attr = self.selection, self.table, {"renderer": "matplotlib"}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        entry_line = self.main_window.entry_line
+        entry_line.highlighter.setDocument(entry_line.document())
+        self.gui_update()
+
     def on_lock_pressed(self, toggled):
         """Lock button pressed event handler"""
 

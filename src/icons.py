@@ -99,6 +99,7 @@ class Icon(QIcon):
         "markup": str(ACTION_PATH / 'format-cell-markup.svg'),
         "image": str(ACTION_PATH / 'format-cell-image.svg'),
         "text": str(ACTION_PATH / 'format-cell-text.svg'),
+        "matplotlib": str(ACTION_PATH / 'format-cell-chart.svg'),
         "line_color": str(ACTION_PATH / 'format-line-color.svg'),
         "text_color": str(ACTION_PATH / 'format-text-color.svg'),
         "background_color": str(ACTION_PATH / 'format-background-color.svg'),

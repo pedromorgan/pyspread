@@ -451,11 +451,19 @@ class MainWindowActions(dict):
                                statustip='Show cell results as image. '
                                          'A numpy array of shape (x, y, 3) '
                                          'is expected.')
+        self["matplotlib"] = \
+            Action(self.parent, "Matplotlib chart renderer",
+                   self.parent.grid.on_matplotlib_renderer_pressed,
+                   icon=Icon("matplotlib"),
+                   checkable=True,
+                   statustip='Show cell results as matplotlib chart. '
+                             'A numpy array of shape (x, y, 3) is expected.')
 
         renderer_group = QActionGroup(self.parent)
         renderer_group.addAction(self["text"])
         renderer_group.addAction(self["markup"])
         renderer_group.addAction(self["image"])
+        renderer_group.addAction(self["matplotlib"])
 
         self["text_color"] = Action(
             self.parent, "Text color...",
