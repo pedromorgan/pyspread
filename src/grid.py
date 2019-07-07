@@ -47,6 +47,12 @@ from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
 
+try:
+    import matplotlib.figure as matplotlib_figure
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+except ImportError:
+    matplotlib_figure = None
+
 from model.model import CodeArray
 from lib.selection import Selection
 from lib.string_helpers import quote, wrap_text
@@ -891,6 +897,23 @@ class GridCellDelegate(QStyledItemDelegate):
 
         painter.drawImage(image_x, image_y, qimage)
 
+    def _render_matplotlib(self, painter, option, index):
+        """Matplotlib renderer"""
+
+        if matplotlib_figure is None:
+            # matplotlib is not installed
+            return
+
+        code = index.data(Qt.DecorationRole)
+        key = index.row(), index.column(), self.main_window.grid.table
+
+        figure = self.code_array._eval_cell(key, code)
+
+        if isinstance(figure, matplotlib_figure.Figure):
+            canvas = FigureCanvasQTAgg(figure)
+
+            return canvas
+
     def __paint(self, painter, option, index):
         """Calls the overloaded paint function or creates html delegate"""
 
@@ -905,6 +928,9 @@ class GridCellDelegate(QStyledItemDelegate):
 
         elif renderer == "image":
             self._render_qimage(painter, option, index)
+
+        elif renderer == "matplotlib":
+            self._render_matplotlib(painter, option, index)
 
     def sizeHint(self, option, index):
         """Overloads SizeHint"""

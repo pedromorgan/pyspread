@@ -42,8 +42,12 @@ from PyQt5.QtWidgets import QMessageBox, QFileDialog, QDialog, QLineEdit
 from PyQt5.QtWidgets import QLabel, QFormLayout, QVBoxLayout, QGroupBox
 from PyQt5.QtWidgets import QDialogButtonBox, QSplitter, QTextBrowser
 from PyQt5.QtGui import QIntValidator, QImageWriter
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
+
+try:
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+except ImportError:
+    Figure = None
 import numpy as np
 
 from lib.spelltextedit import SpellTextEdit
@@ -363,6 +367,9 @@ class ChartDialog(QDialog):
     """The chart dialog"""
 
     def __init__(self, parent):
+        if Figure is None:
+            raise ModuleNotFoundError
+
         super(ChartDialog, self).__init__(parent)
         self.setWindowTitle("Chart dialog")
         self.setModal(True)

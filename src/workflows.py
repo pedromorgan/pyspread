@@ -359,5 +359,15 @@ class Workflows:
     def insert_chart(self):
         """Insert chart workflow"""
 
+        code_array = self.main_window.grid.code_array
+        code = code_array(self.main_window.grid.current)
+
         chart_dialog = ChartDialog(self.main_window)
+        if code is not None:
+            chart_dialog.editor.setPlainText(code)
         chart_dialog.show()
+        if chart_dialog.exec_() == ChartDialog.Accepted:
+            code = chart_dialog.editor.toPlainText()
+            index = self.main_window.grid.currentIndex()
+            self.main_window.grid.on_matplotlib_renderer_pressed(True)
+            self.main_window.grid.model.setData(index, code, Qt.EditRole)

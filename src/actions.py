@@ -30,6 +30,11 @@ For actions that alter the grid / model see grid_actions.py.
 
 from PyQt5.QtWidgets import QAction, QActionGroup
 
+try:
+    import matplotlib.figure as matplotlib_figure
+except ImportError:
+    matplotlib_figure = None
+
 from icons import Icon
 from lib.dependencies import get_enchant_version
 
@@ -451,19 +456,21 @@ class MainWindowActions(dict):
                                statustip='Show cell results as image. '
                                          'A numpy array of shape (x, y, 3) '
                                          'is expected.')
-        self["matplotlib"] = \
-            Action(self.parent, "Matplotlib chart renderer",
-                   self.parent.grid.on_matplotlib_renderer_pressed,
-                   icon=Icon("matplotlib"),
-                   checkable=True,
-                   statustip='Show cell results as matplotlib chart. '
-                             'A numpy array of shape (x, y, 3) is expected.')
+        if matplotlib_figure is not None:
+            self["matplotlib"] = \
+                Action(self.parent, "Matplotlib chart renderer",
+                       self.parent.grid.on_matplotlib_renderer_pressed,
+                       icon=Icon("matplotlib"),
+                       checkable=True,
+                       statustip='Show cell results as matplotlib chart. A '
+                                 'numpy array of shape (x, y, 3) is expected.')
 
         renderer_group = QActionGroup(self.parent)
         renderer_group.addAction(self["text"])
         renderer_group.addAction(self["markup"])
         renderer_group.addAction(self["image"])
-        renderer_group.addAction(self["matplotlib"])
+        if matplotlib_figure is not None:
+            renderer_group.addAction(self["matplotlib"])
 
         self["text_color"] = Action(
             self.parent, "Text color...",

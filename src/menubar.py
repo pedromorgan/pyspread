@@ -37,6 +37,11 @@ Provides
 
 from PyQt5.QtWidgets import QMenuBar, QMenu
 
+try:
+    import matplotlib.figure as matplotlib_figure
+except ImportError:
+    matplotlib_figure = None
+
 from icons import Icon
 
 
@@ -176,7 +181,8 @@ class MenuBar(QMenuBar):
         renderer_submenu.addAction(self.actions["text"])
         renderer_submenu.addAction(self.actions["image"])
         renderer_submenu.addAction(self.actions["markup"])
-        renderer_submenu.addAction(self.actions["matplotlib"])
+        if matplotlib_figure is not None:
+            renderer_submenu.addAction(self.actions["matplotlib"])
 
         format_menu.addAction(self.actions["freeze_cell"])
         format_menu.addAction(self.actions["lock_cell"])
@@ -222,7 +228,8 @@ class MenuBar(QMenuBar):
 
         macro_menu.addAction(self.actions["insert_image"])
         macro_menu.addAction(self.actions["link_image"])
-        macro_menu.addAction(self.actions["insert_chart"])
+        if matplotlib_figure is not None:
+            macro_menu.addAction(self.actions["insert_chart"])
 
         return macro_menu
 
