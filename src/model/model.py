@@ -303,7 +303,7 @@ class DataArray(object):
     # Data is the central content interface for loading / saving data.
     # It shall be used for loading and saving from and to pys and other files.
     # It shall be used for loading and saving macros.
-    # It is not used for importinf and exporting data because these operations
+    # It is not used for importing and exporting data because these operations
     # are partial to the grid.
 
     @property

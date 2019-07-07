@@ -62,9 +62,9 @@ class DiscardChangesDialog:
     def choice(self):
         """User choice
 
-        Returns True iif the user confirms in a user dialog that unsaved
+        Returns True if the user confirms in a user dialog that unsaved
         changes will be discarded if conformed.
-        Returns False iif the user chooses to save the unsaved data
+        Returns False if the user chooses to save the unsaved data
         Returns None if the user chooses to abort the operation
 
         """

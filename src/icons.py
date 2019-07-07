@@ -19,10 +19,11 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import os
 from pathlib import PurePath
 from PyQt5.QtGui import QIcon
 
-PYSPREAD_PATH = PurePath('/home/mn/prog/pyspread')
+PYSPREAD_PATH = PurePath(os.path.abspath( os.path.join(os.path.dirname( __file__), "..")))
 ICON_PATH = PYSPREAD_PATH / 'share/icons'
 ACTION_PATH = ICON_PATH / 'actions'
 STATUS_PATH = ICON_PATH / 'status'
@@ -106,7 +107,7 @@ class Icon(QIcon):
         "rotate_180": str(ACTION_PATH / 'format-cell-rotate-180.svg'),
         "rotate_270": str(ACTION_PATH / 'format-cell-rotate-270.svg'),
         "justify_left": str(ACTION_PATH / 'format-justify-left.svg'),
-        "justify_fill": str(ACTION_PATH / 'format-justify-fill'),
+        "justify_fill": str(ACTION_PATH / 'format-justify-fill.svg'),
         "justify_center": str(ACTION_PATH / 'format-justify-center.svg'),
         "justify_right": str(ACTION_PATH / 'format-justify-right.svg'),
         "align_top": str(ACTION_PATH / 'format-text-align-top.svg'),
