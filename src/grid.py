@@ -44,7 +44,7 @@ from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtWidgets import QAbstractItemDelegate
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
-from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
+from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QPoint
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
 
 try:
@@ -904,15 +904,16 @@ class GridCellDelegate(QStyledItemDelegate):
             # matplotlib is not installed
             return
 
-        code = index.data(Qt.DecorationRole)
         key = index.row(), index.column(), self.main_window.grid.table
-
-        figure = self.code_array._eval_cell(key, code)
+        figure = self.code_array[key]
+        print(figure)
 
         if isinstance(figure, matplotlib_figure.Figure):
             canvas = FigureCanvasQTAgg(figure)
-
-            return canvas
+            print(dir(canvas))
+            canvas.draw()
+            rect_x, rect_y = option.rect.x(), option.rect.y()
+            canvas.render(painter, QPoint(rect_x, rect_y))
 
     def __paint(self, painter, option, index):
         """Calls the overloaded paint function or creates html delegate"""
