@@ -99,6 +99,7 @@ class Icon(QIcon):
         "markup": str(ACTION_PATH / 'format-cell-markup.svg'),
         "image": str(ACTION_PATH / 'format-cell-image.svg'),
         "text": str(ACTION_PATH / 'format-cell-text.svg'),
+        "matplotlib": str(ACTION_PATH / 'format-cell-chart.svg'),
         "line_color": str(ACTION_PATH / 'format-line-color.svg'),
         "text_color": str(ACTION_PATH / 'format-text-color.svg'),
         "background_color": str(ACTION_PATH / 'format-background-color.svg'),
@@ -139,8 +140,6 @@ class Icon(QIcon):
         "merge_cells": str(ACTION_PATH / 'format-merge-cells.svg'),
 
         # Macro menu icons
-        "load_macros": str(ACTION_PATH / 'macro-open.svg'),
-        "save_macros": str(ACTION_PATH / 'macro-save.svg'),
         "insert_image": str(ACTION_PATH / 'macro-insert-image.svg'),
         "link_image": str(ACTION_PATH / 'macro-link-image.svg'),
         "insert_chart": str(ACTION_PATH / 'macro-insert-chart.svg'),

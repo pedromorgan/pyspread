@@ -3,10 +3,11 @@ dist
 build
 MANIFEST
 *.sig
-.spyderproject
-.spyderworkspace
 *.psproj
 .cache
+pyspread.egg-info
 
 # editors
 .idea/
+.spyderproject
+.spyderworkspace

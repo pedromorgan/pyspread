@@ -33,14 +33,24 @@ Modal dialogs for pyspread
  * FileOpenDialog
  * FileSaveDialog
  * ImageFileOpenDialog
+ * ChartDialog
 
 """
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QDialog, QLineEdit
 from PyQt5.QtWidgets import QLabel, QFormLayout, QVBoxLayout, QGroupBox
-from PyQt5.QtWidgets import QDialogButtonBox
+from PyQt5.QtWidgets import QDialogButtonBox, QSplitter, QTextBrowser
 from PyQt5.QtGui import QIntValidator, QImageWriter
+
+try:
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+except ImportError:
+    Figure = None
+import numpy as np
+
+from lib.spelltextedit import SpellTextEdit
 
 
 class DiscardChangesDialog:
@@ -239,7 +249,7 @@ class PreferencesDialog(QDialog):
     def create_form(self):
         """Returns form inside a QGroupBox"""
 
-        form_group_box = QGroupBox("")
+        form_group_box = QGroupBox("Global settings")
         form_layout = QFormLayout()
 
         validator = QIntValidator()
@@ -351,3 +361,101 @@ class ImageFileOpenDialog(FileDialogBase):
                                         str(path),
                                         self.name_filter)
         return filepath, chosen_filter
+
+
+class ChartDialog(QDialog):
+    """The chart dialog"""
+
+    def __init__(self, parent):
+        if Figure is None:
+            raise ModuleNotFoundError
+
+        super(ChartDialog, self).__init__(parent)
+        self.setWindowTitle("Chart dialog")
+        self.setModal(True)
+        self.resize(800, 600)
+        self.parent = parent
+
+        self.dialog_ui()
+
+    def dialog_ui(self):
+        """Sets up dialog UI"""
+
+        msg = "Enter Python code into the editor to the left. Globals " + \
+              "such as X, Y, Z, S are available as they are in the grid. " + \
+              "The last line must result in a matplotlib figure.\n \n" + \
+              "Pressing Apply displays the figure or an error message in " + \
+              "the right area."
+
+        self.message = QTextBrowser(self)
+        self.message.setText(msg)
+        self.editor = SpellTextEdit(self)
+        self.splitter = QSplitter(self)
+
+        buttonbox = self.create_buttonbox()
+
+        self.splitter.addWidget(self.editor)
+        self.splitter.addWidget(self.message)
+        self.splitter.setOpaqueResize(False)
+        self.splitter.setSizes([9999, 9999])
+
+        # Layout
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.splitter)
+        layout.addWidget(buttonbox)
+        self.setLayout(layout)
+
+    def apply(self):
+        """Executes the code in the dialog and updates the canvas"""
+
+        # Get current cell
+        key = self.parent.grid.current
+        code = self.editor.toPlainText()
+
+        figure = self.parent.grid.code_array._eval_cell(key, code)
+
+        if isinstance(figure, Figure):
+            canvas = FigureCanvasQTAgg(figure)
+            self.splitter.replaceWidget(1, canvas)
+            canvas.draw()
+        else:
+            if isinstance(figure, Exception):
+                self.message.setText("Error:\n{}".format(figure))
+            else:
+                msg_text = "Error:\n{} has type '{}', " + \
+                           "which is no instance of {}."
+                msg = msg_text.format(figure,
+                                      type(figure).__name__,
+                                      Figure)
+                self.message.setText(msg)
+            self.splitter.replaceWidget(1, self.message)
+
+    def create_buttonbox(self):
+        """Returns a QDialogButtonBox with Ok and Cancel"""
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok
+                                      | QDialogButtonBox.Apply
+                                      | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        button_box.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        return button_box
+
+
+class Canvas(FigureCanvasQTAgg):
+    def __init__(self, parent, figure):
+
+        self.axes = figure.add_subplot(111)
+
+        FigureCanvasQTAgg.__init__(self, figure)
+        self.setParent(parent)
+
+        self.plot()
+
+    def plot(self):
+        x = np.array([50, 30, 25])
+
+        labels = ['Apples', 'Bananas', 'Melons']
+        ax = self.figure.add_subplot(111)
+
+        ax.pie(x, labels=labels)

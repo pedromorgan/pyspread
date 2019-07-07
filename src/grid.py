@@ -42,10 +42,16 @@ import numpy
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtWidgets import QAbstractItemDelegate
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage, QTextOption
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
-from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
+from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QPoint
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
+
+try:
+    import matplotlib.figure as matplotlib_figure
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+except ImportError:
+    matplotlib_figure = None
 
 from model.model import CodeArray
 from lib.selection import Selection
@@ -215,15 +221,16 @@ class Grid(QTableView):
         """Overrides QTableView.keyPressEvent
 
         Changes to overridden behavior:
-         * The cell in the next row is selected
+         * If Shift is pressed, the cell in the next column is selected.
+         * If Shift is not pressed, the cell in the next row is selected.
 
         """
 
         if event.key() in (Qt.Key_Enter, Qt.Key_Return):
             if event.modifiers() & Qt.ShiftModifier:
-                print('The Shift key is pressed')
-                # raise NotImplementedError
-            self.current = self.row + 1, self.column
+                self.current = self.row, self.column + 1
+            else:
+                self.current = self.row + 1, self.column
         else:
             super().keyPressEvent(event)
 
@@ -343,6 +350,15 @@ class Grid(QTableView):
         """Markup renderer button pressed event handler"""
 
         attr = self.selection, self.table, {"renderer": "markup"}
+        self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
+        entry_line = self.main_window.entry_line
+        entry_line.highlighter.setDocument(entry_line.document())
+        self.gui_update()
+
+    def on_matplotlib_renderer_pressed(self, toggled):
+        """Matplotlib renderer button pressed event handler"""
+
+        attr = self.selection, self.table, {"renderer": "matplotlib"}
         self.model.setData(self.selected_idx, attr, Qt.DecorationRole)
         entry_line = self.main_window.entry_line
         entry_line.highlighter.setDocument(entry_line.document())
@@ -881,6 +897,24 @@ class GridCellDelegate(QStyledItemDelegate):
 
         painter.drawImage(image_x, image_y, qimage)
 
+    def _render_matplotlib(self, painter, option, index):
+        """Matplotlib renderer"""
+
+        if matplotlib_figure is None:
+            # matplotlib is not installed
+            return
+
+        key = index.row(), index.column(), self.main_window.grid.table
+        figure = self.code_array[key]
+        print(figure)
+
+        if isinstance(figure, matplotlib_figure.Figure):
+            canvas = FigureCanvasQTAgg(figure)
+            print(dir(canvas))
+            canvas.draw()
+            rect_x, rect_y = option.rect.x(), option.rect.y()
+            canvas.render(painter, QPoint(rect_x, rect_y))
+
     def __paint(self, painter, option, index):
         """Calls the overloaded paint function or creates html delegate"""
 
@@ -895,6 +929,9 @@ class GridCellDelegate(QStyledItemDelegate):
 
         elif renderer == "image":
             self._render_qimage(painter, option, index)
+
+        elif renderer == "matplotlib":
+            self._render_matplotlib(painter, option, index)
 
     def sizeHint(self, option, index):
         """Overloads SizeHint"""

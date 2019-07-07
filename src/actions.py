@@ -30,6 +30,11 @@ For actions that alter the grid / model see grid_actions.py.
 
 from PyQt5.QtWidgets import QAction, QActionGroup
 
+try:
+    import matplotlib.figure as matplotlib_figure
+except ImportError:
+    matplotlib_figure = None
+
 from icons import Icon
 from lib.dependencies import get_enchant_version
 
@@ -313,11 +318,6 @@ class MainWindowActions(dict):
                                           checkable=True,
                                           statustip='Show/hide the entry line')
 
-        self["toggle_tablelist"] = Action(self.parent, "Table list",
-                                          self.parent.on_nothing,
-                                          checkable=True,
-                                          statustip='Show/hide the table list')
-
         self["toggle_macropanel"] = Action(self.parent, "Macro panel",
                                            self.parent.on_nothing,
                                            checkable=True,
@@ -456,11 +456,21 @@ class MainWindowActions(dict):
                                statustip='Show cell results as image. '
                                          'A numpy array of shape (x, y, 3) '
                                          'is expected.')
+        if matplotlib_figure is not None:
+            self["matplotlib"] = \
+                Action(self.parent, "Matplotlib chart renderer",
+                       self.parent.grid.on_matplotlib_renderer_pressed,
+                       icon=Icon("matplotlib"),
+                       checkable=True,
+                       statustip='Show cell results as matplotlib chart. A '
+                                 'numpy array of shape (x, y, 3) is expected.')
 
         renderer_group = QActionGroup(self.parent)
         renderer_group.addAction(self["text"])
         renderer_group.addAction(self["markup"])
         renderer_group.addAction(self["image"])
+        if matplotlib_figure is not None:
+            renderer_group.addAction(self["matplotlib"])
 
         self["text_color"] = Action(
             self.parent, "Text color...",
@@ -708,18 +718,6 @@ class MainWindowActions(dict):
     def _add_macro_actions(self):
         """Adds actions for Macro menu"""
 
-        self["load_macros"] = Action(self.parent, "Load macros",
-                                     self.parent.on_nothing,
-                                     icon=Icon("load_macros"),
-                                     statustip='Load macros from an external '
-                                               'Python file')
-
-        self["save_macros"] = Action(self.parent, "Save macros",
-                                     self.parent.on_nothing,
-                                     icon=Icon("save_macros"),
-                                     statustip='Save macros to an external '
-                                               'Python file')
-
         self["insert_image"] = Action(self.parent, "Insert image...",
                                       self.parent.workflows.insert_image,
                                       icon=Icon("insert_image"),
@@ -732,7 +730,7 @@ class MainWindowActions(dict):
                                     statustip='Link an image file from a cell')
 
         self["insert_chart"] = Action(self.parent, "Insert chart...",
-                                      self.parent.on_nothing,
+                                      self.parent.workflows.insert_chart,
                                       icon=Icon("insert_chart"),
                                       statustip='Create a matplotlib chart '
                                                 'and insert code so that it '

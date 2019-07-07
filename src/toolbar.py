@@ -22,6 +22,11 @@
 
 from PyQt5.QtWidgets import QToolBar, QToolButton
 
+try:
+    import matplotlib.figure as matplotlib_figure
+except ImportError:
+    matplotlib_figure = None
+
 from icons import Icon
 
 
@@ -157,7 +162,8 @@ class MacroToolbar(QToolBar):
 
         self.addAction(actions["insert_image"])
         self.addAction(actions["link_image"])
-        self.addAction(actions["insert_chart"])
+        if matplotlib_figure is not None:
+            self.addAction(actions["insert_chart"])
 
 
 class WidgetToolbar(QToolBar):
