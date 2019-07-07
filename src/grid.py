@@ -42,7 +42,7 @@ import numpy
 from PyQt5.QtWidgets import QTableView, QStyledItemDelegate, QTabBar
 from PyQt5.QtWidgets import QStyleOptionViewItem, QApplication, QStyle
 from PyQt5.QtWidgets import QAbstractItemDelegate
-from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage, QTextOption
+from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QImage
 from PyQt5.QtGui import QAbstractTextDocumentLayout, QTextDocument
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtCore import QPointF, QRectF, QSize, QRect, QItemSelectionModel
@@ -215,15 +215,16 @@ class Grid(QTableView):
         """Overrides QTableView.keyPressEvent
 
         Changes to overridden behavior:
-         * The cell in the next row is selected
+         * If Shift is pressed, the cell in the next column is selected.
+         * If Shift is not pressed, the cell in the next row is selected.
 
         """
 
         if event.key() in (Qt.Key_Enter, Qt.Key_Return):
             if event.modifiers() & Qt.ShiftModifier:
-                print('The Shift key is pressed')
-                # raise NotImplementedError
-            self.current = self.row + 1, self.column
+                self.current = self.row, self.column + 1
+            else:
+                self.current = self.row + 1, self.column
         else:
             super().keyPressEvent(event)
 
@@ -701,7 +702,6 @@ class GridItemModel(QAbstractTableModel):
         if role == Qt.EditRole:
             self.code_array[self.current(index)] = "{}".format(value)
             self.dataChanged.emit(index, index)
-            print(value)
 
             return True
 
