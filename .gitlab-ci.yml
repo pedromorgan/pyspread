@@ -7,7 +7,7 @@ pages:
   script:
   - pip3 install -r requirements.txt
   - pip3 install -r apidocs/requirements.txt
-  - sh ./apidocs/build_docs.sh
+  - sphinx-build -a -b apidocs public/
   artifacts:
     paths:
     - public
