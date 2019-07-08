@@ -1,0 +1,14 @@
+image: python:3.6
+
+before_script:
+- pip3 install -r requirements.txt
+
+pages:
+  script:
+  - pip3 install -r requirements.txt
+  - sh ./apidocs/build_docs.sh
+  artifacts:
+    paths:
+    - public
+  only:
+  - py3_docs
