@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
 
         self.show()
         self._loading = False
-        self._previous_window_state = None
+        self._previous_window_state = self.windowState()
 
     def _init_window(self):
         """Initialize main window components"""
@@ -131,15 +131,14 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).resizeEvent(event)
         if self._loading:
             return
-        self.settings.qsettings.setValue('MainWindow.geometry', self.saveGeometry())
+        self.settings.qsettings.setValue('MainWindow.geometry',
+                                         self.saveGeometry())
         self.settings.qsettings.sync()
-
 
     def closeEvent(self, event):
         """Overloaded close event, allows saving changes or canceling close"""
         self.workflows.file_quit()
         event.ignore()
-
 
     def _init_widgets(self):
         """Initialize widgets"""
@@ -206,8 +205,6 @@ class MainWindow(QMainWindow):
             # Execute macros
             self.grid.code_array.execute_macros()
 
-
-
     def on_nothing(self):
         """Dummy action that does nothing"""
         pass
@@ -218,7 +215,6 @@ class MainWindow(QMainWindow):
         else:
             self._previous_window_state = self.windowState()
             self.setWindowState(Qt.WindowFullScreen)
-
 
     def on_approve(self):
         """Approve event handler"""
