@@ -1,4 +1,6 @@
-
+######################
+dialogs.*
+######################
 
 .. automodule:: dialogs
     :members:
