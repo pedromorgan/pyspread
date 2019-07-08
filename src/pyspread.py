@@ -106,6 +106,7 @@ class MainWindow(QMainWindow):
 
         self.show()
         self._loading = False
+        self._previous_window_state = None
 
     def _init_window(self):
         """Initialize main window components"""
@@ -213,8 +214,9 @@ class MainWindow(QMainWindow):
 
     def on_fullscreen(self):
         if self.windowState() == Qt.WindowFullScreen:
-            self.setWindowState(Qt.WindowMaximized)
+            self.setWindowState(self._previous_window_state)
         else:
+            self._previous_window_state = self.windowState()
             self.setWindowState(Qt.WindowFullScreen)
 
 
