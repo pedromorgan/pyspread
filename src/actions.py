@@ -277,7 +277,7 @@ class MainWindowActions(dict):
         """Adds actions for View menu"""
 
         self["fullscreen"] = Action(self.parent, "Fullscreen",
-                                    self.parent.on_nothing,
+                                    self.parent.on_fullscreen,
                                     icon=Icon("fullscreen"),
                                     shortcut='F11',
                                     statustip='Show grid in fullscreen mode '
