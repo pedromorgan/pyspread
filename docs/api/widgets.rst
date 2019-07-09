@@ -1,6 +1,0 @@
-######################
-widgets.*
-######################
-
-.. automodule:: widgets
-    :members:

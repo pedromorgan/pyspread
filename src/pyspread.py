@@ -56,7 +56,6 @@ from actions import MainWindowActions
 from workflows import Workflows
 from widgets import Widgets
 from dialogs import ApproveWarningDialog, PreferencesDialog
-from help_widgets import HelpDialog
 
 LICENSE = "GNU GENERAL PUBLIC LICENSE Version 3"
 
@@ -108,7 +107,6 @@ class MainWindow(QMainWindow):
         self.show()
         self._loading = False
         self._previous_window_state = self.windowState()
-
 
     def _init_window(self):
         """Initialize main window components"""
@@ -312,21 +310,6 @@ class MainWindow(QMainWindow):
         merge_cells_action = self.actions["merge_cells"]
         merge_cells_action.setChecked(attributes["merge_area"] is not None)
 
-
-
-    def on_help_first_steps(self):
-        self.show_help("first_steps")
-
-    def on_help_tutorial(self):
-        self.show_help("tutorial")
-
-    def on_help_faq(self):
-        self.show_help("faq")
-
-    def show_help(self, page):
-
-        d = HelpDialog(page=page)
-        d.exec_()
 
 def main():
     app = QApplication(sys.argv)

@@ -21,17 +21,19 @@
 
 """
 
+modal_dialogs
+-------------
 
-Modal dialogs
+Modal dialogs for pyspread
 
- * :class:`~dialogs.DiscardChangesDialog`
- * :class:`~dialogs.ApproveWarningDialog`
- * :class:`~dialogs.GridShapeDialog`
- * (:class:`~dialogs.FileDialogBase`)
- * :class:`~dialogs.FileOpenDialog`
- * :class:`~dialogs.FileSaveDialog`
- * :class:`~dialogs.ImageFileOpenDialog`
- * :class:`~dialogs.ChartDialog`
+ * DiscardChangesDialog
+ * ApproveWarningDialog
+ * GridShapeDialog
+ * (FileDialogBase)
+ * FileOpenDialog
+ * FileSaveDialog
+ * ImageFileOpenDialog
+ * ChartDialog
 
 """
 
@@ -127,10 +129,13 @@ class ApproveWarningDialog:
 class GridShapeDialog(QDialog):
     """Modal dialog for entering the number of rows, columns and tables
 
-    :param parent: the parent window
-    :type parent: QWidget
-    :param shape: Initial shape to be displayed in the dialog (rows, columns, tables)
-    :type shape: 3-tuple of Integer
+    Parameters
+    ----------
+    * parent: QWidget
+    \tParent window
+    * shape: 3-tuple of Integer
+    \tInitial shape to be displayed in the dialog: (rows, columns, tables)
+
     """
 
     def __init__(self, parent, shape):

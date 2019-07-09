@@ -740,7 +740,7 @@ class MainWindowActions(dict):
         """Adds actions for Help menu"""
 
         self["first_steps"] = Action(self.parent, "First steps...",
-                                     self.parent.on_help_first_steps,
+                                     self.parent.on_nothing,
                                      icon=Icon("help"),
                                      shortcut='F1',
                                      statustip='Display the first steps '
@@ -748,11 +748,11 @@ class MainWindowActions(dict):
                                                'basic overview of pyspread')
 
         self["tutorial"] = Action(self.parent, "Tutorial...",
-                                  self.parent.on_help_tutorial,
+                                  self.parent.on_nothing,
                                   icon=Icon("tutorial"),
                                   statustip='Display a pyspread tutorial')
 
-        self["faq"] = Action(self.parent, "FAQ...", self.parent.on_help_faq,
+        self["faq"] = Action(self.parent, "FAQ...", self.parent.on_nothing,
                              icon=Icon("faq"),
                              statustip='Display frequently asked questions')
 
