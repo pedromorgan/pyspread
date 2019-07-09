@@ -95,6 +95,10 @@ html_show_sphinx = False
 #
 html_show_copyright = False
 
+intersphinx_mapping = {
+    'py': ('https://docs.python.org/3', None)
+}
+
 
 from recommonmark.transform import AutoStructify
 github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/doc/'

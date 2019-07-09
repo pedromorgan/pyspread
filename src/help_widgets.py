@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-@author: Peter Morgan <pete@daffodil.uk.com>
-@copyright: Peter Morgan - Part of the GSTL project
-"""
 
 import os
 from PyQt5 import Qt, QtCore, QtGui, QtWidgets, QtWebEngineWidgets
