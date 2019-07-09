@@ -16,11 +16,12 @@ import sys
 os.environ["__GEN_DOCS__"] = "1"
 
 HERE_PATH =  os.path.abspath( os.path.dirname( __file__ ))
-sys.path.insert(0, HERE_PATH)
+sys.path.insert(0, HERE_PATH) # for local *.rst files
 
 ROOT_PATH = os.path.abspath( os.path.join(HERE_PATH, "..") )
 #if sys.path.count(ROOT_PATH) == 0:
 #    sys.path.insert(0, ROOT_PATH)
+
 SRC_PATH = os.path.abspath( os.path.join(ROOT_PATH, "src") )
 sys.path.insert(0, SRC_PATH)
 
@@ -47,6 +48,7 @@ extensions = [
     # 'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.graphviz',
+    'recommonmark'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,8 +57,16 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "requirements.txt"]
 
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
+}
+
+primary_domain = 'py'
+highlight_language = 'py'
 
 # -- Options for HTML output -------------------------------------------------
 html_title = 'pyspread API docs'
@@ -86,3 +96,18 @@ html_show_sphinx = False
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 #
 html_show_copyright = False
+
+intersphinx_mapping = {
+    'py': ('https://docs.python.org/3', None)
+}
+
+
+from recommonmark.transform import AutoStructify
+github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/doc/'
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+            'url_resolver': lambda url: github_doc_root + url,
+            'auto_toc_tree_section': 'Contents',
+            "enable_auto_toc_tree": True
+            }, True)
+    app.add_transform(AutoStructify)

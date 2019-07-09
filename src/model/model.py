@@ -21,16 +21,13 @@
 
 """
 
-Model
-=====
-
 The model contains the core data structures of pyspread.
-It is divided into layers.
+It is divided into the following layers.
 
-Layer 3: CodeArray
-Layer 2: DataArray
-Layer 1: DictGrid
-Layer 0: KeyValueStore
+- Layer 3: :class:`~model.model.CodeArray`
+- Layer 2: :class:`~model.model.DataArray`
+- Layer 1: :class:`~model.model.DictGrid`
+- Layer 0: KeyValueStore
 
 """
 from __future__ import absolute_import
@@ -53,7 +50,7 @@ import re
 import sys
 
 import numpy
-from PyQt5.QtGui import QImage, QPixmap
+#from PyQt5.QtGui import QImage, QPixmap
 
 from settings import Settings
 
@@ -64,16 +61,16 @@ from .unredo import UnRedo
 
 
 class CellAttributes(list):
-    """Stores cell formatting attributes in a list of 3 - tuples
+    """Stores cell formatting attributes in a list of three - tuples
 
-    The first element of each tuple is a Selection.
-    The second element is the table
-    The third element is a dict of attributes that are altered.
+    - The first element of each tuple is a Selection.
+    - The second element is the table
+    - The third element is a `dict` of attributes that are altered.
 
-    The class provides attribute read access to single cells via __getitem__
+    The class provides attribute read access to single cells via `__getitem__`
     Otherwise it behaves similar to a list.
 
-    Note that for the method undoable_append to work, unredo has to be
+    Note that for the method :class:`~model.model.CellAttributes.undoable_append` to work, unredo has to be
     defined as class attribute.
 
     """
@@ -210,13 +207,13 @@ class CellAttributes(list):
 
 
 class DictGrid(dict):
-    """The core data class with all information that is stored in a pys file.
+    """The core data class with all information that is stored in a `.pys` file.
 
     Besides grid code access via standard dict operations, it provides
     the following attributes:
 
-    * cell_attributes: Stores cell formatting attributes
-    * macros:          String of all macros
+    * :class:`~model.model.DictGrid.cell_attributes`: Stores cell formatting attributes
+    * :class:`~model.model.DictGrid.macros`: String of all macros
 
     This class represents layer 1 of the model.
 
@@ -224,6 +221,9 @@ class DictGrid(dict):
     ----------
     shape: n-tuple of integer
     \tShape of the grid
+
+    :param shape: n-tuple of integer
+    :type shape: tuple
 
     """
 
@@ -233,8 +233,10 @@ class DictGrid(dict):
         self.shape = shape
 
         self.cell_attributes = CellAttributes()
+        """Stores cell formatting attributes"""
 
         self.macros = u""
+        """String of all macros"""
 
         self.row_heights = defaultdict(float)  # Keys have format (row, table)
         self.col_widths = defaultdict(float)  # Keys have format (col, table)
@@ -271,10 +273,8 @@ class DataArray(object):
 
     This class represents layer 2 of the model.
 
-    Parameters
-    ----------
-    shape: n-tuple of integer
-    \tShape of the grid
+    :param shape: Shape of the grid
+    :type shape: n-tuple of integer
 
     """
 
@@ -1449,11 +1449,16 @@ class CodeArray(DataArray):
     def string_match(self, datastring, findstring, flags=None):
         """
         Returns position of findstring in datastring or None if not found.
-        Flags is a list of strings. Supported strings are:
-         * "MATCH_CASE": The case has to match for valid find
-         * "WHOLE_WORD": The word has to be surrounded by whitespace characters
-                         if in the middle of the string
-         * "REG_EXP":    A regular expression is evaluated.
+
+        :param datastring:
+        :param findstring:
+        :param flags: is a list of strings
+
+        Supported flag strings are:
+         * MATCH_CASE: The case has to match for valid find
+         * WHOLE_WORD: The word has to be surrounded by whitespace
+           characters if in the middle of the string
+         * REG_EXP:    A regular expression is evaluated.
 
         """
 
@@ -1485,8 +1490,7 @@ class CodeArray(DataArray):
 
         if pos == -1:
             return None
-        else:
-            return pos
+        return pos
 
     def findnextmatch(self, startkey, find_string, flags, search_result=True):
         """ Returns a tuple with the position of the next match of find_string

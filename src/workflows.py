@@ -19,14 +19,6 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-"""
-
-workflows
----------
-
-Workflows for pyspread
-
-"""
 
 from base64 import b85encode
 import bz2
@@ -47,6 +39,7 @@ from lib.hashing import sign, verify
 
 
 class Workflows:
+    """handle workflows"""
     def __init__(self, main_window):
         self.main_window = main_window
         self.application_states = main_window.application_states

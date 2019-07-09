@@ -1,16 +1,16 @@
-image: python:3.6
+image: arwineap/docker-debian-python3.6
 
-before_script:
-- pip3 install -r requirements.txt
 
 pages:
   script:
+  - apt-get update -qq
+  - apt-get install -y -qq python3-pip libgl1-mesa-dev
   - pip3 install -r requirements.txt
-  - pip3 install -r apidocs/requirements.txt
+  - pip3 install -r docs/requirements.txt
   - mkdir public
-  - sphinx-build -a -b html ./apidocs ./public/
+  - sphinx-build -n -v -a -b html ./docs ./public/
   artifacts:
     paths:
     - public
   only:
-  - py3_docs
+  - help_docs
