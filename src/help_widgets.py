@@ -258,7 +258,8 @@ class HelpPageView( QtWidgets.QWidget ):
 
     def set_data(self, page, html ):
         self.page = page
-        base_url = QtCore.QUrl.fromLocalFile( "/") # TODO
+        baseu = os.path.join(HELP_DOCS_DIR, "help")
+        base_url = QtCore.QUrl.fromLocalFile( baseu ) # TODO
 
         self.webView.setHtml(html, base_url)
 

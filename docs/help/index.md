@@ -1,4 +1,7 @@
-Index
+User Help
 ========================
 
-foo bar
+
+ - [First Steps](first_steps.md)
+ - [Tutorial](tutorial.md)
+ - [FAQ](faq.md)

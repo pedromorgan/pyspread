@@ -109,7 +109,6 @@ class MainWindow(QMainWindow):
         self._loading = False
         self._previous_window_state = self.windowState()
 
-        self.on_help_first_steps()
 
     def _init_window(self):
         """Initialize main window components"""
@@ -320,6 +319,9 @@ class MainWindow(QMainWindow):
 
     def on_help_tutorial(self):
         self.show_help("tutorial")
+
+    def on_help_faq(self):
+        self.show_help("faq")
 
     def show_help(self, page):
 
