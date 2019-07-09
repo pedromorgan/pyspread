@@ -31,12 +31,8 @@ class MultiStateBitmapButton(QToolButton):
 
     The states are defined by an iterable of QIcons
 
-    Parameters
-    ----------
-
-    * actions: List of QIcons
-    \tThe list of icons to be cycled through
-
+    :param actions: The list of icons to be cycled through
+    :type actions: list of QIcons
     """
 
     def __init__(self, actions):

@@ -171,7 +171,8 @@ If everything shall be summed, the numpy.sum function has to be used:
 numpy.sum(S[1:10,0:2,2])
 ```    
 
-yields `72`.
+yields `72`
+
 
 ## Plotting
 
@@ -181,7 +182,7 @@ Switch to table 3.
 Type into cell (0,0,3):
 ```py
 math=__import__("math")
-    
+```
 
 Type into cell (1, 0, 3):
 ```py

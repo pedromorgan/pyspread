@@ -76,7 +76,7 @@ class HelpDialog( QtWidgets.QDialog ):
             self.load_page(page)
 
     def load_content_tree(self):
-
+        """Scans for .md files and loads into tree"""
         self.tree.clear()
         self.tree.setUpdatesEnabled(False)
 
@@ -93,7 +93,7 @@ class HelpDialog( QtWidgets.QDialog ):
         self.tree.setUpdatesEnabled(True)
 
     def load_dir_node(self, pItem, pth):
-
+        """loads files as chilkdren to QTreeWidgetItem"""
         files = os.listdir(pth)
 
         for f in sorted(files):
@@ -123,6 +123,7 @@ class HelpDialog( QtWidgets.QDialog ):
         return fn.replace("_", " ").title()
 
     def select_page(self, page):
+        """Selects page in tree and tab"""
         idx = None
         if self.tabWidget.count() == 0:
             return idx
@@ -146,7 +147,7 @@ class HelpDialog( QtWidgets.QDialog ):
 
 
     def load_page(self, page):
-
+        """Load markdown page"""
 
         full_path = os.path.join(HELP_DOCS_DIR, page)
         if os.path.isdir(full_path):
@@ -225,7 +226,7 @@ class HelpDialog( QtWidgets.QDialog ):
         self.tree.blockSignals(False)
 
 class HelpPageView( QtWidgets.QWidget ):
-
+    """Parses markdown and renders  html page in WebView """
     sigPageLinkClicked = pyqtSignal(str)
 
     def __init__( self, parent=None, page=None):
