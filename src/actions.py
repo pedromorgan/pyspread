@@ -752,7 +752,7 @@ class MainWindowActions(dict):
                                   icon=Icon("tutorial"),
                                   statustip='Display a pyspread tutorial')
 
-        self["faq"] = Action(self.parent, "FAQ...", self.parent.on_nothing,
+        self["faq"] = Action(self.parent, "FAQ...", self.parent.on_help_faq,
                              icon=Icon("faq"),
                              statustip='Display frequently asked questions')
 

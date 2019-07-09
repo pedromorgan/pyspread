@@ -18,14 +18,12 @@ class C:
     node = 0
     page = 1
 
-
 class HelpDialog( QtWidgets.QDialog ):
 
 
     def __init__( self, page=None ):
         super().__init__()
 
-        self.debug = True
         self.setWindowTitle("Help")
         self.setWindowIcon(Icon("help"))
 
@@ -54,7 +52,7 @@ class HelpDialog( QtWidgets.QDialog ):
         hi.setText(C.page, "Page")
         self.tree.header().hide()
 
-        self.tree.setColumnHidden(C.page, not self.debug)
+        self.tree.setColumnHidden(C.page, True)
         self.tree.header().setStretchLastSection(True)
         self.tree.setUniformRowHeights(True)
 
@@ -73,6 +71,9 @@ class HelpDialog( QtWidgets.QDialog ):
         self.splitter.setStretchFactor(1, 2)
 
         self.load_content_tree()
+
+        if page:
+            self.load_page(page)
 
     def load_content_tree(self):
 
@@ -160,7 +161,6 @@ class HelpDialog( QtWidgets.QDialog ):
             return
 
         if not os.path.exists(full_path):
-            #print "ERROR: FILE not exits", full_path
             return
 
         html_tpl = ""
@@ -180,8 +180,6 @@ class HelpDialog( QtWidgets.QDialog ):
 
 
         self.tabWidget.blockSignals(True)
-        if self.debug:
-            print("## create view")
         webView = HelpPageView()
         nidx = self.tabWidget.addTab(webView, self.title_from_filename(page))
         webView.set_data(page, out_html )
@@ -191,8 +189,6 @@ class HelpDialog( QtWidgets.QDialog ):
 
         self.tabWidget.setCurrentIndex(nidx)
         self.select_tree_node(page)
-        if self.debug:
-            print("## view done")
         self.tabWidget.blockSignals(False)
 
 
@@ -206,8 +202,6 @@ class HelpDialog( QtWidgets.QDialog ):
 
 
     def on_tab_close_requested(self, idx):
-        if self.debug:
-            print("on_tab_close_requested", idx)
         self.tabWidget.removeTab(idx)
 
     def on_tab_changed(self, nidx):
@@ -223,8 +217,6 @@ class HelpDialog( QtWidgets.QDialog ):
 
         self.tree.blockSignals(True)
         items = self.tree.findItems(page, Qt.MatchExactly|Qt.MatchRecursive, C.page)
-        if self.debug:
-            print("select_tree_node", page, items)
         if len(items) > 0:
             self.tree.setCurrentItem(items[0])
         else:
@@ -249,8 +241,6 @@ class HelpPageView( QtWidgets.QWidget ):
 
         self.webView = QtWebEngineWidgets.QWebEngineView()
         lay.addWidget(self.webView, 2)
-
-
 
     def set_data(self, page, html ):
         self.page = page
