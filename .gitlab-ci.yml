@@ -8,7 +8,7 @@ pages:
   - pip3 install -r requirements.txt
   - pip3 install -r docs/requirements.txt
   - mkdir public
-  - sphinx-build -a -b html ./docs ./public/
+  - sphinx-build -n -v -a -b html ./docs ./public/
   artifacts:
     paths:
     - public

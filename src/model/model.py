@@ -273,10 +273,8 @@ class DataArray(object):
 
     This class represents layer 2 of the model.
 
-    Parameters
-    ----------
-    shape: n-tuple of integer
-    \tShape of the grid
+    :param shape: Shape of the grid
+    :type shape: n-tuple of integer
 
     """
 

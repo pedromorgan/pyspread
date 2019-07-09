@@ -65,6 +65,8 @@ source_suffix = {
     '.md': 'markdown',
 }
 
+primary_domain = 'py'
+highlight_language = 'py'
 
 # -- Options for HTML output -------------------------------------------------
 html_title = 'pyspread API docs'
