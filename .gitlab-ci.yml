@@ -8,9 +8,9 @@ pages:
   - pip3 install -r requirements.txt
   - pip3 install -r apidocs/requirements.txt
   - mkdir public
-  - sphinx-build -a -b html ./apidocs ./public/
+  - sphinx-build -a -b html ./docs ./public/
   artifacts:
     paths:
     - public
   only:
-  - py3_docs
+  - help_docs
