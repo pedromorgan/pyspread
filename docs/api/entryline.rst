@@ -1,6 +1,0 @@
-######################
-entryline.*
-######################
-
-.. automodule:: entryline
-    :members:
