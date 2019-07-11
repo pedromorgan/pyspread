@@ -21,7 +21,9 @@
 
 """
 
-The model contains the core data structures of pyspread.
+.. _layers:
+
+`model.py` contains the core data structures of pyspread.
 It is divided into the following layers.
 
 - Layer 3: :class:`~model.model.CodeArray`
@@ -61,17 +63,17 @@ from .unredo import UnRedo
 
 
 class CellAttributes(list):
-    """Stores cell formatting attributes in a list of three - tuples
+    """Stores cell formatting attributes in a tuple with three elements
 
-    - The first element of each tuple is a Selection.
+    - The first element of each tuple is a :class:`Selection`
     - The second element is the table
-    - The third element is a `dict` of attributes that are altered.
+    - The third element is a `dict` of attributes that are altered
 
-    The class provides attribute read access to single cells via `__getitem__`
-    Otherwise it behaves similar to a list.
+    This class provides attribute read access to single cells
+    via `__getitem__`, otherwise it behaves similar to a list.
 
-    Note that for the method :class:`~model.model.CellAttributes.undoable_append` to work, unredo has to be
-    defined as class attribute.
+    Note that for the method :class:`~model.model.CellAttributes.undoable_append` to work, unredo
+    has to be defined as class attribute.
 
     """
 
