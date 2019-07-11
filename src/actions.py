@@ -84,24 +84,24 @@ class MainWindowActions(dict):
 
         self["new"] = Action(self.parent, "&New",
                              self.parent.workflows.file_new,
-                             icon=Icon("new"),
+                             icon=Icon(Icon.new),
                              shortcut='Ctrl+n',
                              statustip='Create a new, empty spreadsheet')
 
         self["open"] = Action(self.parent, "&Open",
                               self.parent.workflows.file_open,
-                              icon=Icon("open"),
+                              icon=Icon(Icon.open),
                               statustip='Open spreadsheet from file')
 
         self["save"] = Action(self.parent, "&Save",
                               self.parent.workflows.file_save,
-                              icon=Icon("save"),
+                              icon=Icon(Icon.save),
                               shortcut='Ctrl+s',
                               statustip='Save spreadsheet')
 
         self["save_as"] = Action(self.parent, "Save &As",
                                  self.parent.workflows.file_save_as,
-                                 icon=Icon("save_as"),
+                                 icon=Icon(Icon.save_as),
                                  shortcut='Shift+Ctrl+s',
                                  statustip='Save spreadsheet to a new file')
 

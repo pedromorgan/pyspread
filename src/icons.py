@@ -24,6 +24,8 @@ from pathlib import PurePath
 from PyQt5.QtGui import QIcon
 
 PYSPREAD_PATH = PurePath(os.path.abspath( os.path.join(os.path.dirname( __file__), "..")))
+
+# All icons should be in icons path.
 ICON_PATH = PYSPREAD_PATH / 'share/icons'
 ACTION_PATH = ICON_PATH / 'actions'
 STATUS_PATH = ICON_PATH / 'status'
@@ -31,6 +33,16 @@ STATUS_PATH = ICON_PATH / 'status'
 
 class Icon(QIcon):
     """Class for getting items from names"""
+
+
+    pyspread = 'pyspread.svg'
+
+    # File menu icons
+    new = 'document-new.svg'
+    open = 'document-open.svg'
+    save = 'document-save.svg'
+    save_as = 'document-save-as.svg'
+
 
     icon_path = {
         "pyspread": str(ICON_PATH / 'pyspread.svg'),
@@ -152,5 +164,6 @@ class Icon(QIcon):
 
     }
 
-    def __init__(self, name):
-        super().__init__(self.icon_path[name])
+    def __init__(self, icon_file):
+        pth = str(ACTION_PATH) + "/" + icon_file
+        super().__init__(pth)
