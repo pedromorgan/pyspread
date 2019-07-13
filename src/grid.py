@@ -857,10 +857,11 @@ class GridCellDelegate(QStyledItemDelegate):
 
         painter.restore()
 
-    def _render_qimage(self, painter, option, index):
+    def _render_qimage(self, painter, option, index, qimage=None):
         """QImage renderer"""
 
-        qimage = index.data(Qt.DecorationRole)
+        if qimage is None:
+            qimage = index.data(Qt.DecorationRole)
         if not isinstance(qimage, QImage):
             return
 
@@ -906,14 +907,15 @@ class GridCellDelegate(QStyledItemDelegate):
 
         key = index.row(), index.column(), self.main_window.grid.table
         figure = self.code_array[key]
-        print(figure)
 
         if isinstance(figure, matplotlib_figure.Figure):
             canvas = FigureCanvasQTAgg(figure)
-            print(dir(canvas))
             canvas.draw()
-            rect_x, rect_y = option.rect.x(), option.rect.y()
-            canvas.render(painter, QPoint(rect_x, rect_y))
+            size = canvas.size()
+            width, height = size.width(), size.height()
+            image = QImage(canvas.buffer_rgba(), width, height,
+                           QImage.Format_ARGB32)
+            self._render_qimage(painter, option, index, qimage=image)
 
     def __paint(self, painter, option, index):
         """Calls the overloaded paint function or creates html delegate"""
