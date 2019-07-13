@@ -28,6 +28,9 @@ For actions that alter the grid / model see grid_actions.py.
 
 """
 
+import os
+from pathlib import PurePath
+
 from PyQt5.QtWidgets import QAction, QActionGroup
 
 try:
@@ -37,6 +40,10 @@ except ImportError:
 
 from icons import Icon
 from lib.dependencies import get_enchant_version
+
+PYSPREAD_PATH = \
+    PurePath(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+MPL_TEMPLATE_PATH = PYSPREAD_PATH / 'share/templates/matplotlib'
 
 
 class Action(QAction):
@@ -64,7 +71,7 @@ class Action(QAction):
 
 
 class MainWindowActions(dict):
-    """Holds all QActions for pyspread"""
+    """Holds all QActions for the main window"""
 
     def __init__(self, parent):
         super().__init__()
@@ -207,7 +214,8 @@ class MainWindowActions(dict):
                               shortcut='Ctrl+f',
                               statustip='Find cell by content')
 
-        self["replace"] = Action(self.parent, "&Replace...", self.parent.on_nothing,
+        self["replace"] = Action(self.parent, "&Replace...",
+                                 self.parent.on_nothing,
                                  icon=Icon("replace"),
                                  shortcut='Shift+Ctrl+f',
                                  statustip='Replace sub-strings in cells')
@@ -338,12 +346,14 @@ class MainWindowActions(dict):
                    checkable=True,
                    statustip='Turn the spell checker in the entry line on/off')
 
-        self["zoom_in"] = Action(self.parent, "Zoom in", self.parent.on_nothing,
+        self["zoom_in"] = Action(self.parent, "Zoom in",
+                                 self.parent.on_nothing,
                                  icon=Icon("zoom_in"),
                                  shortcut='Ctrl++',
                                  statustip='Zoom in the grid')
 
-        self["zoom_out"] = Action(self.parent, "Zoom out", self.parent.on_nothing,
+        self["zoom_out"] = Action(self.parent, "Zoom out",
+                                  self.parent.on_nothing,
                                   icon=Icon("zoom_out"),
                                   shortcut='Ctrl+-',
                                   statustip='Zoom out the grid')
@@ -772,3 +782,19 @@ class MainWindowActions(dict):
 
         if get_enchant_version() is None:
             self["toggle_spell_checker"].setEnabled(False)
+
+
+class ChartDialogActions(dict):
+    """QActions for chart dialog
+
+    Reads out template files in share/templates/matplotlib and
+    adds a QAction for each template.
+
+    """
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+
+        for filepath in os.listdir(MPL_TEMPLATE_PATH):
+            print(filepath)

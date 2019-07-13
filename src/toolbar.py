@@ -178,3 +178,18 @@ class WidgetToolbar(QToolBar):
         """Fills the widget toolbar with QActions"""
 
         self.addSeparator()
+
+
+class ChartToolBar(QToolBar):
+    """Toolbar for chart dialog"""
+
+    def __init__(self, parent):
+        super().__init__()
+
+        self._create_toolbar(parent.actions)
+
+    def _create_toolbar(self, actions):
+        """Fills the main toolbar with QActions"""
+
+        for action in actions:
+            self.addAction(actions[action])

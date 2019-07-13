@@ -23,7 +23,8 @@ import os
 from pathlib import PurePath
 from PyQt5.QtGui import QIcon
 
-PYSPREAD_PATH = PurePath(os.path.abspath( os.path.join(os.path.dirname( __file__), "..")))
+PYSPREAD_PATH = \
+    PurePath(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 ICON_PATH = PYSPREAD_PATH / 'share/icons'
 ACTION_PATH = ICON_PATH / 'actions'
 STATUS_PATH = ICON_PATH / 'status'

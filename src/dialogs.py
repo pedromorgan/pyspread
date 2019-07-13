@@ -48,9 +48,9 @@ try:
     from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 except ImportError:
     Figure = None
-import numpy as np
 
 from lib.spelltextedit import SpellTextEdit
+from actions import ChartDialogActions
 
 
 class DiscardChangesDialog:
@@ -376,6 +376,8 @@ class ChartDialog(QDialog):
         self.resize(800, 600)
         self.parent = parent
 
+        self.actions = ChartDialogActions(self)
+
         self.dialog_ui()
 
     def dialog_ui(self):
@@ -440,22 +442,3 @@ class ChartDialog(QDialog):
         button_box.rejected.connect(self.reject)
         button_box.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
         return button_box
-
-
-class Canvas(FigureCanvasQTAgg):
-    def __init__(self, parent, figure):
-
-        self.axes = figure.add_subplot(111)
-
-        FigureCanvasQTAgg.__init__(self, figure)
-        self.setParent(parent)
-
-        self.plot()
-
-    def plot(self):
-        x = np.array([50, 30, 25])
-
-        labels = ['Apples', 'Bananas', 'Melons']
-        ax = self.figure.add_subplot(111)
-
-        ax.pie(x, labels=labels)
